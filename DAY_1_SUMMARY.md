@@ -1,4 +1,5 @@
 # Day 1 Summary - November 11, 2025
+# Project: Forma (AI-Powered Calorie Tracking)
 
 ## ✅ Completed Tasks
 

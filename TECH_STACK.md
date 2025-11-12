@@ -1,4 +1,4 @@
-# BodyApp - Technology Stack
+# Forma - Technology Stack
 
 ## Tech Stack Decision - November 2025
 
@@ -343,10 +343,10 @@ Extensions:
 npm install -g expo-cli
 
 # Create new Expo project
-npx create-expo-app bodyapp-mobile --template blank-typescript
+npx create-expo-app forma-mobile --template blank-typescript
 
 # Navigate to project
-cd bodyapp-mobile
+cd forma-mobile
 
 # Install dependencies
 npm install @react-navigation/native @react-navigation/stack
@@ -361,8 +361,8 @@ npx expo start
 ### Backend Setup:
 ```bash
 # Create backend directory
-mkdir bodyapp-backend
-cd bodyapp-backend
+mkdir forma-backend
+cd forma-backend
 
 # Initialize Node.js project
 npm init -y

@@ -1,8 +1,8 @@
-# BodyApp Development Setup Guide
+# Forma Development Setup Guide
 
 ## Day 1 Completed Setup ✅
 
-This guide walks you through setting up your development environment for BodyApp.
+This guide walks you through setting up your development environment for Forma.
 
 ---
 
@@ -10,7 +10,7 @@ This guide walks you through setting up your development environment for BodyApp
 
 1. **Project Structure Created**
    ```
-   bodyapp/
+   forma/
    ├── mobile/              # Expo React Native app (initialized)
    ├── backend/             # Express API server (initialized)
    ├── docs/                # Documentation folder
@@ -48,7 +48,7 @@ This guide walks you through setting up your development environment for BodyApp
 ### Step 1: Test Mobile App
 
 ```bash
-cd /Users/rayzhao/workspace/bodyapp/mobile
+cd /Users/rayzhao/workspace/forma/mobile
 npx expo start
 ```
 
@@ -61,7 +61,7 @@ npx expo start
 ### Step 2: Test Backend Server
 
 ```bash
-cd /Users/rayzhao/workspace/bodyapp/backend
+cd /Users/rayzhao/workspace/forma/backend
 npm run dev
 ```
 
@@ -74,7 +74,7 @@ npm run dev
 
 **Backend:**
 ```bash
-cd /Users/rayzhao/workspace/bodyapp/backend
+cd /Users/rayzhao/workspace/forma/backend
 cp env.example .env
 ```
 
@@ -82,7 +82,7 @@ Then edit `.env` with your API keys (we'll set these up in Day 2).
 
 **Mobile:**
 ```bash
-cd /Users/rayzhao/workspace/bodyapp/mobile
+cd /Users/rayzhao/workspace/forma/mobile
 touch .env
 ```
 
@@ -141,21 +141,21 @@ brew install --cask react-native-debugger
 
 ### Test 1: Mobile App Runs
 ```bash
-cd /Users/rayzhao/workspace/bodyapp/mobile
+cd /Users/rayzhao/workspace/forma/mobile
 npx expo start
 ```
 Press `i` for iOS or `a` for Android. Should see "Open up App.tsx to start working on your app!"
 
 ### Test 2: Backend Runs
 ```bash
-cd /Users/rayzhao/workspace/bodyapp/backend
+cd /Users/rayzhao/workspace/forma/backend
 npm run dev
 ```
 Visit http://localhost:3000/health - should see JSON response.
 
 ### Test 3: TypeScript Compilation
 ```bash
-cd /Users/rayzhao/workspace/bodyapp/backend
+cd /Users/rayzhao/workspace/forma/backend
 npm run build
 ```
 Should compile without errors and create `dist/` folder.

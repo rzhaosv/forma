@@ -6,7 +6,7 @@
 │                             │
 │         [App Logo]          │
 │                             │
-│        🥗 BodyApp           │
+│          🥗 Forma           │
 │                             │
 │    AI-Powered Calorie       │
 │        Tracking             │

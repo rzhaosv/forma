@@ -1,7 +1,7 @@
 {
-  "name": "bodyapp-backend",
+  "name": "forma-backend",
   "version": "1.0.0",
-  "description": "Backend API for BodyApp calorie tracking application",
+  "description": "Backend API for Forma calorie tracking application",
   "main": "dist/server.js",
   "type": "module",
   "scripts": {

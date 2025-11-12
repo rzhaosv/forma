@@ -20,7 +20,7 @@ app.get('/health', (req: Request, res: Response) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    service: 'bodyapp-api',
+    service: 'forma-api',
     version: '1.0.0'
   });
 });
@@ -28,7 +28,7 @@ app.get('/health', (req: Request, res: Response) => {
 // API routes (to be added)
 app.get('/api/v1', (req: Request, res: Response) => {
   res.json({
-    message: 'BodyApp API v1',
+    message: 'Forma API v1',
     endpoints: {
       health: '/health',
       auth: '/api/v1/auth',
@@ -58,7 +58,7 @@ app.use((err: Error, req: Request, res: Response, next: any) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`🚀 BodyApp API server running on port ${PORT}`);
+  console.log(`🚀 Forma API server running on port ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
   console.log(`📍 API docs: http://localhost:${PORT}/api/v1`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);

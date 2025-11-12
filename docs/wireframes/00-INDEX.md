@@ -1,6 +1,6 @@
-# BodyApp Wireframes Index
+# Forma Wireframes Index
 
-Complete wireframe documentation for BodyApp MVP.
+Complete wireframe documentation for Forma MVP.
 
 ---
 

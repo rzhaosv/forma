@@ -1,6 +1,6 @@
-# BodyApp - AI-Powered Calorie Tracking
+# Forma - AI-Powered Calorie Tracking
 
-An intelligent calorie tracking application that uses AI to analyze food photos and provide instant nutritional information.
+An intelligent calorie tracking application that uses AI to analyze food photos and provide instant nutritional information. Forma creates long-term results through effortless tracking.
 
 ## 🚀 Project Status
 
@@ -10,7 +10,7 @@ An intelligent calorie tracking application that uses AI to analyze food photos 
 ## 📋 Project Structure
 
 ```
-bodyapp/
+forma/
 ├── mobile/              # React Native (Expo) mobile app
 ├── backend/             # Node.js + Express API server
 ├── docs/                # Documentation and wireframes
@@ -58,7 +58,7 @@ bodyapp/
 
 ```bash
 git clone <repository-url>
-cd bodyapp
+cd forma
 ```
 
 ### 2. Set up mobile app

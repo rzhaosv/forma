@@ -1,7 +1,7 @@
-# BodyApp - MVP Feature Specification
+# Forma - MVP Feature Specification
 
 ## Product Vision
-An AI-powered calorie tracking app that makes nutrition tracking effortless through photo recognition, similar to Cal AI.
+An AI-powered calorie tracking app that makes nutrition tracking effortless through photo recognition. Forma creates long-term results through intelligent, supportive tracking.
 
 ---
 
@@ -19,8 +19,11 @@ An AI-powered calorie tracking app that makes nutrition tracking effortless thro
   - Goal weight
   - Height
   - Age
-  - Gender
-  - Activity level
+  - x Gender
+  - x Activity level
+  - Where did you hear about us
+  - Have you tried other calorie tracking apps?
+  - Forma creates long-term results
   - Goal (lose weight, maintain, gain muscle)
 - [ ] Auto-calculate daily calorie target using Mifflin-St Jeor equation
 
