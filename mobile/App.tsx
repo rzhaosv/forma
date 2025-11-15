@@ -1,16 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
+import { CameraView, CameraType, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { analyzePhoto, AnalysisResult } from './src/services/photoUploadService';
+import { lookupBarcode, BarcodeProduct, calculateNutrition } from './src/services/barcodeService';
+
+type ScanMode = 'camera' | 'barcode';
 
 export default function App() {
+  const [scanMode, setScanMode] = useState<ScanMode>('camera');
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+  const [barcodeProduct, setBarcodeProduct] = useState<BarcodeProduct | null>(null);
+  const [scanned, setScanned] = useState(false);
+  const [servingSize, setServingSize] = useState(100);
   const cameraRef = useRef<any>(null);
 
   if (!permission) {
@@ -61,6 +68,37 @@ export default function App() {
     setCapturedPhoto(null);
     setAnalysisResult(null);
     setAnalyzing(false);
+    setBarcodeProduct(null);
+    setScanned(false);
+  };
+
+  const handleBarCodeScanned = async ({ type, data }: { type: string; data: string }) => {
+    if (scanned) return;
+    
+    setScanned(true);
+    setAnalyzing(true);
+
+    try {
+      const product = await lookupBarcode(data);
+      
+      if (product.found) {
+        setBarcodeProduct(product);
+      } else {
+        Alert.alert(
+          'Product Not Found',
+          `Barcode: ${data}\n\nThis product is not in our database. Would you like to add it manually?`,
+          [
+            { text: 'Cancel', onPress: () => { setScanned(false); setAnalyzing(false); }, style: 'cancel' },
+            { text: 'Add Manually', onPress: () => { /* Navigate to manual entry */ } },
+          ]
+        );
+      }
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to lookup barcode');
+      setScanned(false);
+    } finally {
+      setAnalyzing(false);
+    }
   };
 
   const handleAnalyzePhoto = async () => {
@@ -87,6 +125,81 @@ export default function App() {
       setAnalyzing(false);
     }
   };
+
+  // Show barcode product result
+  if (barcodeProduct && barcodeProduct.found) {
+    const nutrition = calculateNutrition(barcodeProduct, servingSize);
+    
+    return (
+      <View style={styles.container}>
+        <ScrollView style={styles.productContainer}>
+          {barcodeProduct.image_url && (
+            <Image 
+              source={{ uri: barcodeProduct.image_url }} 
+              style={styles.productImage}
+              resizeMode="contain"
+            />
+          )}
+
+          <View style={styles.productInfo}>
+            <Text style={styles.productName}>{barcodeProduct.name}</Text>
+            {barcodeProduct.brand && (
+              <Text style={styles.productBrand}>{barcodeProduct.brand}</Text>
+            )}
+            <Text style={styles.barcode}>Barcode: {barcodeProduct.barcode}</Text>
+          </View>
+
+          <View style={styles.servingCard}>
+            <Text style={styles.servingTitle}>Serving Size</Text>
+            <View style={styles.servingSelector}>
+              <TouchableOpacity 
+                style={styles.servingButton}
+                onPress={() => setServingSize(Math.max(10, servingSize - 10))}
+              >
+                <Text style={styles.servingButtonText}>−</Text>
+              </TouchableOpacity>
+              <Text style={styles.servingValue}>{servingSize}g</Text>
+              <TouchableOpacity 
+                style={styles.servingButton}
+                onPress={() => setServingSize(servingSize + 10)}
+              >
+                <Text style={styles.servingButtonText}>+</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={styles.nutritionCard}>
+            <Text style={styles.nutritionTitle}>Nutrition Facts</Text>
+            <View style={styles.nutritionRow}>
+              <Text style={styles.nutritionLabel}>Calories</Text>
+              <Text style={styles.nutritionValue}>{nutrition.calories}</Text>
+            </View>
+            <View style={styles.nutritionRow}>
+              <Text style={styles.nutritionLabel}>Protein</Text>
+              <Text style={styles.nutritionValue}>{nutrition.protein_g}g</Text>
+            </View>
+            <View style={styles.nutritionRow}>
+              <Text style={styles.nutritionLabel}>Carbs</Text>
+              <Text style={styles.nutritionValue}>{nutrition.carbs_g}g</Text>
+            </View>
+            <View style={styles.nutritionRow}>
+              <Text style={styles.nutritionLabel}>Fat</Text>
+              <Text style={styles.nutritionValue}>{nutrition.fat_g}g</Text>
+            </View>
+          </View>
+        </ScrollView>
+
+        <View style={styles.previewControls}>
+          <TouchableOpacity style={styles.button} onPress={retake}>
+            <Text style={styles.buttonText}>Scan Again</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.button, styles.primaryButton]} onPress={() => Alert.alert('Success', 'Food would be added to meal!')}>
+            <Text style={styles.buttonText}>Add to Meal</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 
   if (capturedPhoto) {
     return (
@@ -154,12 +267,76 @@ export default function App() {
     );
   }
 
+  // Barcode Scanner Mode
+  if (scanMode === 'barcode') {
+    return (
+      <View style={styles.container}>
+        <CameraView
+          style={StyleSheet.absoluteFillObject}
+          facing={facing}
+          barcodeScannerSettings={{
+            barcodeTypes: ['ean13', 'ean8', 'upc_a', 'upc_e'],
+          }}
+          onBarcodeScanned={scanned ? undefined : (result: BarcodeScanningResult) => {
+            handleBarCodeScanned({ type: result.type, data: result.data });
+          }}
+        />
+
+        <View style={styles.overlay}>
+          <View style={styles.topControls}>
+            <TouchableOpacity 
+              style={styles.modeButton}
+              onPress={() => setScanMode('camera')}
+            >
+              <Text style={styles.modeButtonText}>📸 Camera</Text>
+            </TouchableOpacity>
+            <Text style={styles.title}>🏷️ Barcode Scanner</Text>
+            <View style={{ width: 80 }} />
+          </View>
+
+          <View style={styles.centerGuide}>
+            <View style={styles.barcodeFrame} />
+            <Text style={styles.guideText}>Align barcode within the frame</Text>
+          </View>
+
+          <View style={styles.bottomControls}>
+            <TouchableOpacity 
+              style={styles.textButton}
+              onPress={() => Alert.alert('Manual Entry', 'In full app, this would open manual food search')}
+            >
+              <Text style={styles.textButtonLabel}>Can't scan? Enter manually</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {analyzing && (
+          <View style={styles.analyzingOverlay}>
+            <View style={styles.analyzingCard}>
+              <ActivityIndicator size="large" color="#6366F1" />
+              <Text style={styles.analyzingText}>Looking up product...</Text>
+            </View>
+          </View>
+        )}
+
+        <StatusBar style="light" />
+      </View>
+    );
+  }
+
+  // Camera Mode
   return (
     <View style={styles.container}>
       <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
         <View style={styles.overlay}>
           <View style={styles.topControls}>
+            <TouchableOpacity 
+              style={styles.modeButton}
+              onPress={() => setScanMode('barcode')}
+            >
+              <Text style={styles.modeButtonText}>🏷️ Barcode</Text>
+            </TouchableOpacity>
             <Text style={styles.title}>📊 Forma - Food Scanner</Text>
+            <View style={{ width: 80 }} />
           </View>
 
           <View style={styles.centerGuide}>
@@ -393,6 +570,126 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontSize: 14,
     color: '#6B7280',
+  },
+  modeButton: {
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    minWidth: 80,
+  },
+  modeButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  barcodeFrame: {
+    width: 280,
+    height: 160,
+    borderWidth: 3,
+    borderColor: '#fff',
+    borderRadius: 12,
+    backgroundColor: 'transparent',
+  },
+  textButton: {
+    paddingVertical: 12,
+  },
+  textButtonLabel: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  productContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  productImage: {
+    width: '100%',
+    height: 250,
+    backgroundColor: '#F9FAFB',
+  },
+  productInfo: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  productName: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 4,
+  },
+  productBrand: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginBottom: 8,
+  },
+  barcode: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    fontFamily: 'monospace',
+  },
+  servingCard: {
+    padding: 20,
+    backgroundColor: '#F9FAFB',
+  },
+  servingTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 12,
+  },
+  servingSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  servingButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#6366F1',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  servingButtonText: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: '600',
+  },
+  servingValue: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#111827',
+    marginHorizontal: 24,
+    minWidth: 100,
+    textAlign: 'center',
+  },
+  nutritionCard: {
+    padding: 20,
+  },
+  nutritionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 16,
+  },
+  nutritionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  nutritionLabel: {
+    fontSize: 16,
+    color: '#6B7280',
+  },
+  nutritionValue: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111827',
   },
   message: {
     textAlign: 'center',
