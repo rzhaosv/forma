@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Swipeable } from 'react-native-gesture-handler';
+import Svg, { Circle } from 'react-native-svg';
 import { signOut } from '../services/authService';
 import { useMealStore } from '../store/useMealStore';
 
@@ -150,7 +151,35 @@ export default function HomeScreen() {
         {/* Calorie Progress Card */}
         <View style={styles.progressCard}>
           <View style={styles.calorieRing}>
-            <View style={[styles.ringProgress, { borderColor: getProgressColor() }]}>
+            {/* SVG Circle Progress */}
+            <Svg width="180" height="180" style={styles.svgContainer}>
+              {/* Background Circle (gray) */}
+              <Circle
+                cx="90"
+                cy="90"
+                r="76"
+                stroke="#E5E7EB"
+                strokeWidth="14"
+                fill="none"
+              />
+              {/* Progress Circle (colored, fills based on percentage, caps at 100%) */}
+              <Circle
+                cx="90"
+                cy="90"
+                r="76"
+                stroke={getProgressColor()}
+                strokeWidth="14"
+                fill="none"
+                strokeDasharray={`${2 * Math.PI * 76}`}
+                strokeDashoffset={`${2 * Math.PI * 76 * (1 - Math.min(percentage, 100) / 100)}`}
+                strokeLinecap="round"
+                rotation="-90"
+                origin="90, 90"
+              />
+            </Svg>
+            
+            {/* Center Text Overlay */}
+            <View style={styles.centerTextContainer}>
               <Text style={styles.calorieText}>
                 {caloriesConsumed}
                 <Text style={styles.calorieGoal}> / {calorieGoal}</Text>
@@ -400,15 +429,21 @@ const styles = StyleSheet.create({
   },
   calorieRing: {
     marginBottom: 16,
-  },
-  ringProgress: {
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    borderWidth: 12,
+    width: 180,
+    height: 180,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
+    position: 'relative',
+  },
+  svgContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
+  centerTextContainer: {
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   calorieText: {
     fontSize: 28,
