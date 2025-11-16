@@ -1,7 +1,9 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, StatusBar } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, StatusBar, Alert } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { FoodRecognitionResult } from '../services/foodRecognitionService';
+import { useMealStore } from '../store/useMealStore';
+import { Meal, FoodItem, MealType } from '../types/meal.types';
 
 type RouteParams = {
   FoodResults: {
@@ -13,11 +15,50 @@ export default function FoodResultsScreen() {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RouteParams, 'FoodResults'>>();
   const { result } = route.params;
+  const { addMeal } = useMealStore();
+  const [selectedMealType, setSelectedMealType] = useState<MealType>('Lunch');
 
   const handleAddToLog = () => {
-    // TODO: Add foods to meal log
-    alert('Adding to meal log coming soon!');
-    navigation.navigate('Home' as never);
+    // Create food items from recognized foods
+    const foodItems: FoodItem[] = result.foods.map((food, index) => ({
+      id: `food-${Date.now()}-${index}`,
+      name: food.name,
+      calories: food.calories,
+      protein_g: food.protein_g,
+      carbs_g: food.carbs_g,
+      fat_g: food.fat_g,
+      portion: food.serving_size,
+      quantity: 1,
+      timestamp: new Date().toISOString(),
+    }));
+
+    // Calculate totals
+    const totalCalories = foodItems.reduce((sum, food) => sum + food.calories, 0);
+    const totalProtein = foodItems.reduce((sum, food) => sum + food.protein_g, 0);
+    const totalCarbs = foodItems.reduce((sum, food) => sum + food.carbs_g, 0);
+    const totalFat = foodItems.reduce((sum, food) => sum + food.fat_g, 0);
+
+    // Create meal
+    const meal: Meal = {
+      id: `meal-${Date.now()}`,
+      mealType: selectedMealType,
+      foods: foodItems,
+      timestamp: new Date().toISOString(),
+      totalCalories,
+      totalProtein,
+      totalCarbs,
+      totalFat,
+    };
+
+    // Add to store
+    addMeal(meal);
+
+    // Show success and navigate back
+    Alert.alert(
+      'Added to Log! 🎉',
+      `${foodItems.length} item${foodItems.length !== 1 ? 's' : ''} added to ${selectedMealType}`,
+      [{ text: 'OK', onPress: () => navigation.navigate('Home' as never) }]
+    );
   };
 
   return (
@@ -42,6 +83,30 @@ export default function FoodResultsScreen() {
           <Text style={styles.itemCount}>
             {result.foods.length} item{result.foods.length !== 1 ? 's' : ''} identified
           </Text>
+        </View>
+
+        {/* Meal Type Selector */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Add to Meal</Text>
+          <View style={styles.mealTypeSelector}>
+            {(['Breakfast', 'Lunch', 'Dinner', 'Snack'] as MealType[]).map((type) => (
+              <TouchableOpacity
+                key={type}
+                style={[
+                  styles.mealTypeButton,
+                  selectedMealType === type && styles.mealTypeButtonActive
+                ]}
+                onPress={() => setSelectedMealType(type)}
+              >
+                <Text style={[
+                  styles.mealTypeText,
+                  selectedMealType === type && styles.mealTypeTextActive
+                ]}>
+                  {type}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
 
         {/* Foods List */}
@@ -272,6 +337,30 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
+  },
+  mealTypeSelector: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 8,
+  },
+  mealTypeButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: '#F3F4F6',
+    alignItems: 'center',
+  },
+  mealTypeButtonActive: {
+    backgroundColor: '#6366F1',
+  },
+  mealTypeText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6B7280',
+  },
+  mealTypeTextActive: {
+    color: '#FFFFFF',
   },
 });
 

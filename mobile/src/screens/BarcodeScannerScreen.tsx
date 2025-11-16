@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useNavigation } from '@react-navigation/native';
-import { lookupBarcode, calculateNutrition, isValidBarcode, BarcodeProduct } from '../services/barcodeService';
+import { lookupBarcode, calculateNutrition, isValidBarcode } from '../services/barcodeService';
+import { useMealStore } from '../store/useMealStore';
+import { Meal, FoodItem, MealType } from '../types/meal.types';
 
 export default function BarcodeScannerScreen() {
   const navigation = useNavigation();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { addMeal } = useMealStore();
 
   if (!permission) {
     return (
@@ -63,14 +66,47 @@ export default function BarcodeScannerScreen() {
         `Protein: ${nutrition.protein_g}g\n` +
         `Carbs: ${nutrition.carbs_g}g\n` +
         `Fat: ${nutrition.fat_g}g\n\n` +
-        `Adding to meal log coming soon!`,
+        `Add to meal log?`,
         [
           { text: 'Scan Another', onPress: () => setScanned(false), style: 'cancel' },
           { 
-            text: 'Done', 
+            text: 'Add to Log', 
             onPress: () => {
+              // Create food item
+              const foodItem: FoodItem = {
+                id: `food-${Date.now()}`,
+                name: product.name || 'Unknown Product',
+                calories: nutrition.calories,
+                protein_g: nutrition.protein_g,
+                carbs_g: nutrition.carbs_g,
+                fat_g: nutrition.fat_g,
+                portion: '100g',
+                quantity: 1,
+                timestamp: new Date().toISOString(),
+              };
+
+              // Create meal with this food
+              const meal: Meal = {
+                id: `meal-${Date.now()}`,
+                mealType: 'Snack', // Default to Snack for scanned items
+                foods: [foodItem],
+                timestamp: new Date().toISOString(),
+                totalCalories: nutrition.calories,
+                totalProtein: nutrition.protein_g,
+                totalCarbs: nutrition.carbs_g,
+                totalFat: nutrition.fat_g,
+              };
+
+              // Add to store
+              addMeal(meal);
+
               setScanned(false);
               navigation.goBack();
+              
+              // Show success after navigation
+              setTimeout(() => {
+                Alert.alert('Added to Log! 🎉', `${product.name} added to Snack`);
+              }, 500);
             },
             style: 'default'
           }

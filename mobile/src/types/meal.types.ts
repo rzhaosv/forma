@@ -13,7 +13,7 @@ export interface FoodItem {
 
 export interface Meal {
   id: string;
-  type: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+  mealType: 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
   foods: FoodItem[];
   timestamp: string;
   totalCalories: number;
@@ -33,5 +33,5 @@ export interface DailySummary {
   proteinGoal: number;
 }
 
-export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
+export type MealType = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
 

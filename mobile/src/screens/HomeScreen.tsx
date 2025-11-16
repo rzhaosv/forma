@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,45 +11,50 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { signOut } from '../services/authService';
+import { useMealStore } from '../store/useMealStore';
+
+const MEAL_TYPE_ICONS = {
+  Breakfast: '🌅',
+  Lunch: '☀️',
+  Dinner: '🌙',
+  Snack: '🍎',
+};
 
 export default function HomeScreen() {
   const navigation = useNavigation();
   const [currentDate] = useState(new Date());
-
-  // Mock data - will be replaced with Zustand store later
-  const caloriesConsumed = 1245;
-  const caloriesGoal = 2150;
-  const caloriesLeft = caloriesGoal - caloriesConsumed;
-  const percentage = Math.round((caloriesConsumed / caloriesGoal) * 100);
+  
+  // Get real meal data from store
+  const { meals, dailySummary, calorieGoal, proteinGoal, updateDailySummary } = useMealStore();
+  
+  // Update summary when screen loads or meals change
+  useEffect(() => {
+    updateDailySummary();
+  }, [meals]);
+  
+  // Calculate values from real data
+  const caloriesConsumed = dailySummary?.totalCalories || 0;
+  const caloriesLeft = calorieGoal - caloriesConsumed;
+  const percentage = Math.round((caloriesConsumed / calorieGoal) * 100);
   
   const macros = {
-    protein: { current: 85, goal: 161 },
-    carbs: { current: 120, goal: 242 },
-    fat: { current: 45, goal: 72 },
+    protein: { 
+      current: Math.round(dailySummary?.totalProtein || 0), 
+      goal: proteinGoal 
+    },
+    carbs: { 
+      current: Math.round(dailySummary?.totalCarbs || 0), 
+      goal: Math.round(calorieGoal * 0.5 / 4) // 50% of calories from carbs
+    },
+    fat: { 
+      current: Math.round(dailySummary?.totalFat || 0), 
+      goal: Math.round(calorieGoal * 0.3 / 9) // 30% of calories from fat
+    },
   };
-
-  const meals = [
-    {
-      id: '1',
-      type: 'Breakfast',
-      icon: '🌅',
-      calories: 385,
-      items: [
-        { name: 'Oatmeal', calories: 250 },
-        { name: 'Banana', calories: 105 },
-        { name: 'Coffee', calories: 30 },
-      ],
-    },
-    {
-      id: '2',
-      type: 'Lunch',
-      icon: '☀️',
-      calories: 860,
-      items: [
-        { name: 'Chicken salad', calories: 860 },
-      ],
-    },
-  ];
+  
+  // Get today's meals grouped by type
+  const today = new Date().toISOString().split('T')[0];
+  const todayMeals = meals.filter(meal => meal.timestamp.startsWith(today));
 
   const getGreeting = () => {
     const hour = currentDate.getHours();
@@ -116,7 +121,7 @@ export default function HomeScreen() {
             <View style={[styles.ringProgress, { borderColor: getProgressColor() }]}>
               <Text style={styles.calorieText}>
                 {caloriesConsumed}
-                <Text style={styles.calorieGoal}> / {caloriesGoal}</Text>
+                <Text style={styles.calorieGoal}> / {calorieGoal}</Text>
               </Text>
               <Text style={styles.percentageText}>{percentage}%</Text>
             </View>
@@ -220,31 +225,71 @@ export default function HomeScreen() {
           <Text style={styles.sectionTitle}>Today's Meals</Text>
         </View>
 
-        {meals.map((meal) => (
-          <View key={meal.id} style={styles.mealCard}>
-            <View style={styles.mealHeader}>
-              <View style={styles.mealTitleRow}>
-                <Text style={styles.mealIcon}>{meal.icon}</Text>
-                <Text style={styles.mealType}>{meal.type}</Text>
-              </View>
-              <Text style={styles.mealCalories}>{meal.calories} cal</Text>
-            </View>
-            {meal.items.map((item, index) => (
-              <View key={index} style={styles.foodItem}>
-                <Text style={styles.foodBullet}>○</Text>
-                <Text style={styles.foodName}>{item.name}</Text>
-                <Text style={styles.foodCalories}>{item.calories}</Text>
-              </View>
-            ))}
+        {todayMeals.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateIcon}>🍽️</Text>
+            <Text style={styles.emptyStateText}>No meals logged yet today</Text>
+            <Text style={styles.emptyStateSubtext}>Use Quick Add to log your first meal!</Text>
           </View>
-        ))}
+        ) : (
+          todayMeals.map((meal) => (
+            <View key={meal.id} style={styles.mealCard}>
+              <View style={styles.mealHeader}>
+                <View style={styles.mealTitleRow}>
+                  <Text style={styles.mealIcon}>
+                    {MEAL_TYPE_ICONS[meal.mealType as keyof typeof MEAL_TYPE_ICONS] || '🍽️'}
+                  </Text>
+                  <Text style={styles.mealType}>{meal.mealType}</Text>
+                </View>
+                <Text style={styles.mealCalories}>{Math.round(meal.totalCalories)} cal</Text>
+              </View>
+              {meal.foods.map((food) => (
+                <View key={food.id} style={styles.foodItem}>
+                  <Text style={styles.foodBullet}>○</Text>
+                  <Text style={styles.foodName}>
+                    {food.name} {food.quantity > 1 ? `(${food.quantity}x)` : ''}
+                  </Text>
+                  <Text style={styles.foodCalories}>
+                    {Math.round(food.calories * food.quantity)}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          ))
+        )}
 
-        {/* Add Meal Buttons */}
-        <TouchableOpacity style={styles.addMealButton}>
-          <Text style={styles.addMealText}>+ Add Dinner</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.addMealButton}>
+        {/* Quick Add Meal Type Buttons */}
+        {!todayMeals.some(m => m.mealType === 'Breakfast') && (
+          <TouchableOpacity 
+            style={styles.addMealButton}
+            onPress={() => handleQuickAdd('photo')}
+          >
+            <Text style={styles.addMealText}>+ Add Breakfast</Text>
+          </TouchableOpacity>
+        )}
+        
+        {!todayMeals.some(m => m.mealType === 'Lunch') && (
+          <TouchableOpacity 
+            style={styles.addMealButton}
+            onPress={() => handleQuickAdd('photo')}
+          >
+            <Text style={styles.addMealText}>+ Add Lunch</Text>
+          </TouchableOpacity>
+        )}
+        
+        {!todayMeals.some(m => m.mealType === 'Dinner') && (
+          <TouchableOpacity 
+            style={styles.addMealButton}
+            onPress={() => handleQuickAdd('photo')}
+          >
+            <Text style={styles.addMealText}>+ Add Dinner</Text>
+          </TouchableOpacity>
+        )}
+        
+        <TouchableOpacity 
+          style={styles.addMealButton}
+          onPress={() => handleQuickAdd('photo')}
+        >
           <Text style={styles.addMealText}>+ Add Snack</Text>
         </TouchableOpacity>
 
@@ -486,5 +531,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#6366F1',
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 48,
+    paddingHorizontal: 32,
+  },
+  emptyStateIcon: {
+    fontSize: 64,
+    marginBottom: 16,
+  },
+  emptyStateText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#374151',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    textAlign: 'center',
   },
 });
