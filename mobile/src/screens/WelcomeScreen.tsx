@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,11 +6,38 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useGoogleSignIn, completeGoogleSignIn } from '../services/authService';
 
 export default function WelcomeScreen() {
   const navigation = useNavigation();
+  const [loadingGoogle, setLoadingGoogle] = useState(false);
+  
+  // Initialize Google Sign-In
+  const [request, response, promptAsync] = useGoogleSignIn();
+  
+  // Handle Google Sign-In response
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { id_token } = response.params;
+      handleGoogleSignIn(id_token);
+    }
+  }, [response]);
+  
+  const handleGoogleSignIn = async (idToken: string) => {
+    setLoadingGoogle(true);
+    try {
+      await completeGoogleSignIn(idToken);
+      // Navigation handled automatically by AppNavigator
+    } catch (error: any) {
+      Alert.alert('Google Sign-In Failed', error.message || 'Failed to sign in with Google');
+    } finally {
+      setLoadingGoogle(false);
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -48,13 +75,29 @@ export default function WelcomeScreen() {
         </View>
 
         {/* Social Auth Buttons */}
-        <TouchableOpacity style={styles.socialButton}>
+        <TouchableOpacity 
+          style={[styles.socialButton, styles.buttonDisabled]}
+          onPress={() => Alert.alert('Coming Soon', 'Apple Sign-In will be available in a future update!')}
+          disabled
+        >
           <Text style={styles.socialIcon}>🍎</Text>
           <Text style={styles.socialButtonText}>Continue with Apple</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.socialButton}>
-          <Text style={styles.socialIcon}>G</Text>
+        <TouchableOpacity 
+          style={[styles.socialButton, (!request || loadingGoogle) && styles.buttonDisabled]}
+          onPress={() => {
+            if (request) {
+              promptAsync();
+            }
+          }}
+          disabled={!request || loadingGoogle}
+        >
+          {loadingGoogle ? (
+            <ActivityIndicator size="small" color="#374151" style={{ marginRight: 12 }} />
+          ) : (
+            <Text style={styles.socialIcon}>G</Text>
+          )}
           <Text style={styles.socialButtonText}>Continue with Google</Text>
         </TouchableOpacity>
       </View>
@@ -173,6 +216,9 @@ const styles = StyleSheet.create({
     color: '#374151',
     fontSize: 15,
     fontWeight: '500',
+  },
+  buttonDisabled: {
+    opacity: 0.6,
   },
   footer: {
     paddingHorizontal: 24,

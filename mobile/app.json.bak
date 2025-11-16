@@ -42,7 +42,7 @@
           "cameraPermission": "Allow Forma to access your camera to scan food photos and barcodes."
         }
       ],
-      "expo-web-browser"
+      "@react-native-google-signin/google-signin"
     ],
     "extra": {
       "eas": {
