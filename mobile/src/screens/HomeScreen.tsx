@@ -1,192 +1,255 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
-  ScrollView,
   TouchableOpacity,
+  StyleSheet,
   SafeAreaView,
+  StatusBar,
+  ScrollView,
+  Alert,
 } from 'react-native';
-import { useMealStore } from '../store/useMealStore';
-import { Meal } from '../types/meal.types';
+import { useNavigation } from '@react-navigation/native';
+import { signOut } from '../services/authService';
 
-interface HomeScreenProps {
-  navigation: any;
-}
+export default function HomeScreen() {
+  const navigation = useNavigation();
+  const [currentDate] = useState(new Date());
 
-export default function HomeScreen({ navigation }: HomeScreenProps) {
-  const dailySummary = useMealStore((state) => state.dailySummary);
-  const updateDailySummary = useMealStore((state) => state.updateDailySummary);
+  // Mock data - will be replaced with Zustand store later
+  const caloriesConsumed = 1245;
+  const caloriesGoal = 2150;
+  const caloriesLeft = caloriesGoal - caloriesConsumed;
+  const percentage = Math.round((caloriesConsumed / caloriesGoal) * 100);
+  
+  const macros = {
+    protein: { current: 85, goal: 161 },
+    carbs: { current: 120, goal: 242 },
+    fat: { current: 45, goal: 72 },
+  };
 
-  useEffect(() => {
-    updateDailySummary();
-  }, []);
+  const meals = [
+    {
+      id: '1',
+      type: 'Breakfast',
+      icon: '🌅',
+      calories: 385,
+      items: [
+        { name: 'Oatmeal', calories: 250 },
+        { name: 'Banana', calories: 105 },
+        { name: 'Coffee', calories: 30 },
+      ],
+    },
+    {
+      id: '2',
+      type: 'Lunch',
+      icon: '☀️',
+      calories: 860,
+      items: [
+        { name: 'Chicken salad', calories: 860 },
+      ],
+    },
+  ];
 
-  const caloriesRemaining = dailySummary
-    ? dailySummary.calorieGoal - dailySummary.totalCalories
-    : 0;
-  const proteinRemaining = dailySummary
-    ? dailySummary.proteinGoal - dailySummary.totalProtein
-    : 0;
-  const caloriesPercent = dailySummary
-    ? Math.min((dailySummary.totalCalories / dailySummary.calorieGoal) * 100, 100)
-    : 0;
+  const getGreeting = () => {
+    const hour = currentDate.getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  };
 
-  const getMealIcon = (type: string) => {
-    switch (type) {
-      case 'breakfast':
-        return '🌅';
-      case 'lunch':
-        return '☀️';
-      case 'dinner':
-        return '🌙';
-      case 'snack':
-        return '🍎';
-      default:
-        return '🍽️';
+  const formatDate = () => {
+    return currentDate.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
+
+  const getProgressColor = () => {
+    if (percentage > 100) return '#FF3B30'; // Red - over goal
+    if (percentage > 80) return '#FF9500'; // Orange - warning
+    return '#34C759'; // Green - on track
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      Alert.alert('Error', 'Failed to sign out');
     }
   };
 
-  const renderMealCard = (meal: Meal) => (
-    <TouchableOpacity
-      key={meal.id}
-      style={styles.mealCard}
-      onPress={() => navigation.navigate('MealDetail', { mealId: meal.id })}
-    >
-      <View style={styles.mealHeader}>
-        <View style={styles.mealTitleRow}>
-          <Text style={styles.mealIcon}>{getMealIcon(meal.type)}</Text>
-          <Text style={styles.mealType}>
-            {meal.type.charAt(0).toUpperCase() + meal.type.slice(1)}
-          </Text>
-        </View>
-        <Text style={styles.mealCalories}>{Math.round(meal.totalCalories)} cal</Text>
-      </View>
-      <View style={styles.mealFoods}>
-        {meal.foods.slice(0, 3).map((food, index) => (
-          <Text key={food.id} style={styles.foodName} numberOfLines={1}>
-            • {food.name} ({food.portion})
-          </Text>
-        ))}
-        {meal.foods.length > 3 && (
-          <Text style={styles.foodName}>+ {meal.foods.length - 3} more</Text>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
+  const handleQuickAdd = (type: string) => {
+    if (type === 'photo') {
+      navigation.navigate('Camera' as never);
+    } else if (type === 'scan') {
+      Alert.alert('Barcode Scanner', 'Coming soon!');
+    } else {
+      Alert.alert('Manual Entry', 'Coming soon!');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.appTitle}>📊 Forma</Text>
-          <Text style={styles.dateText}>
-            {new Date().toLocaleDateString('en-US', {
-              weekday: 'long',
-              month: 'short',
-              day: 'numeric',
-            })}
-          </Text>
+      <StatusBar barStyle="dark-content" />
+      
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.appName}>Forma</Text>
+        <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
+          <Text style={styles.signOutText}>Sign Out</Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        {/* Greeting */}
+        <View style={styles.greetingSection}>
+          <Text style={styles.greeting}>{getGreeting()}! 👋</Text>
+          <Text style={styles.date}>{formatDate()}</Text>
         </View>
 
-        {/* Calorie Summary Card */}
-        <View style={styles.summaryCard}>
-          <View style={styles.calorieCircle}>
-            <Text style={styles.calorieNumber}>
-              {dailySummary ? Math.round(dailySummary.totalCalories) : 0}
-            </Text>
-            <Text style={styles.calorieLabel}>calories</Text>
+        {/* Calorie Progress Card */}
+        <View style={styles.progressCard}>
+          <View style={styles.calorieRing}>
+            <View style={[styles.ringProgress, { borderColor: getProgressColor() }]}>
+              <Text style={styles.calorieText}>
+                {caloriesConsumed}
+                <Text style={styles.calorieGoal}> / {caloriesGoal}</Text>
+              </Text>
+              <Text style={styles.percentageText}>{percentage}%</Text>
+            </View>
           </View>
-          <View style={styles.summaryDetails}>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Goal</Text>
-              <Text style={styles.summaryValue}>
-                {dailySummary ? dailySummary.calorieGoal : 2000} cal
+          
+          <Text style={styles.caloriesLeftLabel}>Calories Left</Text>
+          <Text style={[styles.caloriesLeft, { color: getProgressColor() }]}>
+            {caloriesLeft}
+          </Text>
+
+          {/* Macro Progress */}
+          <View style={styles.macrosContainer}>
+            <View style={styles.macroRow}>
+              <Text style={styles.macroLabel}>Protein</Text>
+              <Text style={styles.macroValue}>
+                {macros.protein.current}g / {macros.protein.goal}g
               </Text>
             </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Remaining</Text>
-              <Text
-                style={[
-                  styles.summaryValue,
-                  caloriesRemaining < 0 && styles.overGoal,
-                ]}
-              >
-                {Math.round(caloriesRemaining)} cal
-              </Text>
-            </View>
-            <View style={styles.progressBar}>
+            <View style={styles.macroBar}>
               <View
                 style={[
-                  styles.progressFill,
-                  { width: `${caloriesPercent}%` },
-                  caloriesPercent > 100 && styles.progressOverGoal,
+                  styles.macroProgress,
+                  {
+                    width: `${Math.min((macros.protein.current / macros.protein.goal) * 100, 100)}%`,
+                    backgroundColor: '#6366F1',
+                  },
+                ]}
+              />
+            </View>
+
+            <View style={styles.macroRow}>
+              <Text style={styles.macroLabel}>Carbs</Text>
+              <Text style={styles.macroValue}>
+                {macros.carbs.current}g / {macros.carbs.goal}g
+              </Text>
+            </View>
+            <View style={styles.macroBar}>
+              <View
+                style={[
+                  styles.macroProgress,
+                  {
+                    width: `${Math.min((macros.carbs.current / macros.carbs.goal) * 100, 100)}%`,
+                    backgroundColor: '#34C759',
+                  },
+                ]}
+              />
+            </View>
+
+            <View style={styles.macroRow}>
+              <Text style={styles.macroLabel}>Fat</Text>
+              <Text style={styles.macroValue}>
+                {macros.fat.current}g / {macros.fat.goal}g
+              </Text>
+            </View>
+            <View style={styles.macroBar}>
+              <View
+                style={[
+                  styles.macroProgress,
+                  {
+                    width: `${Math.min((macros.fat.current / macros.fat.goal) * 100, 100)}%`,
+                    backgroundColor: '#FF9500',
+                  },
                 ]}
               />
             </View>
           </View>
         </View>
 
-        {/* Macros Card */}
-        <View style={styles.macrosCard}>
-          <View style={styles.macroItem}>
-            <Text style={styles.macroValue}>
-              {dailySummary ? Math.round(dailySummary.totalProtein) : 0}g
-            </Text>
-            <Text style={styles.macroLabel}>Protein</Text>
-          </View>
-          <View style={styles.macroItem}>
-            <Text style={styles.macroValue}>
-              {dailySummary ? Math.round(dailySummary.totalCarbs) : 0}g
-            </Text>
-            <Text style={styles.macroLabel}>Carbs</Text>
-          </View>
-          <View style={styles.macroItem}>
-            <Text style={styles.macroValue}>
-              {dailySummary ? Math.round(dailySummary.totalFat) : 0}g
-            </Text>
-            <Text style={styles.macroLabel}>Fat</Text>
-          </View>
+        {/* Quick Add Section */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Quick Add</Text>
+        </View>
+        <View style={styles.quickAddContainer}>
+          <TouchableOpacity
+            style={styles.quickAddButton}
+            onPress={() => handleQuickAdd('photo')}
+          >
+            <Text style={styles.quickAddIcon}>📸</Text>
+            <Text style={styles.quickAddText}>Photo</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.quickAddButton}
+            onPress={() => handleQuickAdd('scan')}
+          >
+            <Text style={styles.quickAddIcon}>📊</Text>
+            <Text style={styles.quickAddText}>Scan</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.quickAddButton}
+            onPress={() => handleQuickAdd('manual')}
+          >
+            <Text style={styles.quickAddIcon}>✏️</Text>
+            <Text style={styles.quickAddText}>Manual</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Meals Section */}
-        <View style={styles.mealsSection}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Today's Meals</Text>
-          </View>
+        {/* Today's Meals */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Today's Meals</Text>
+        </View>
 
-          {dailySummary && dailySummary.meals.length > 0 ? (
-            dailySummary.meals.map((meal) => renderMealCard(meal))
-          ) : (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyIcon}>🍽️</Text>
-              <Text style={styles.emptyText}>No meals logged yet</Text>
-              <Text style={styles.emptySubtext}>
-                Tap the camera button below to scan your first meal
-              </Text>
+        {meals.map((meal) => (
+          <View key={meal.id} style={styles.mealCard}>
+            <View style={styles.mealHeader}>
+              <View style={styles.mealTitleRow}>
+                <Text style={styles.mealIcon}>{meal.icon}</Text>
+                <Text style={styles.mealType}>{meal.type}</Text>
+              </View>
+              <Text style={styles.mealCalories}>{meal.calories} cal</Text>
             </View>
-          )}
-        </View>
-      </ScrollView>
+            {meal.items.map((item, index) => (
+              <View key={index} style={styles.foodItem}>
+                <Text style={styles.foodBullet}>○</Text>
+                <Text style={styles.foodName}>{item.name}</Text>
+                <Text style={styles.foodCalories}>{item.calories}</Text>
+              </View>
+            ))}
+          </View>
+        ))}
 
-      {/* Add Meal Button */}
-      <View style={styles.bottomBar}>
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => navigation.navigate('Camera')}
-        >
-          <Text style={styles.addButtonIcon}>📸</Text>
-          <Text style={styles.addButtonText}>Scan Food</Text>
+        {/* Add Meal Buttons */}
+        <TouchableOpacity style={styles.addMealButton}>
+          <Text style={styles.addMealText}>+ Add Dinner</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.addButtonSecondary}
-          onPress={() => navigation.navigate('AddFood')}
-        >
-          <Text style={styles.addButtonIcon}>➕</Text>
-          <Text style={styles.addButtonText}>Add Manually</Text>
+
+        <TouchableOpacity style={styles.addMealButton}>
+          <Text style={styles.addMealText}>+ Add Snack</Text>
         </TouchableOpacity>
-      </View>
+
+        <View style={{ height: 40 }} />
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -196,145 +259,174 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F9FAFB',
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  appName: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  signOutButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  signOutText: {
+    fontSize: 14,
+    color: '#6366F1',
+    fontWeight: '600',
+  },
   scrollView: {
     flex: 1,
   },
-  header: {
+  greetingSection: {
     paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 16,
-    backgroundColor: '#FFF',
   },
-  appTitle: {
+  greeting: {
     fontSize: 28,
     fontWeight: '700',
     color: '#111827',
     marginBottom: 4,
   },
-  dateText: {
-    fontSize: 14,
+  date: {
+    fontSize: 16,
     color: '#6B7280',
   },
-  summaryCard: {
-    backgroundColor: '#6366F1',
-    marginHorizontal: 20,
-    marginTop: 20,
-    borderRadius: 16,
-    padding: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: '#6366F1',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  calorieCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 20,
-  },
-  calorieNumber: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#FFF',
-  },
-  calorieLabel: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.9)',
-    marginTop: 4,
-  },
-  summaryDetails: {
-    flex: 1,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  summaryLabel: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.9)',
-  },
-  summaryValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#FFF',
-  },
-  overGoal: {
-    color: '#FEE2E2',
-  },
-  progressBar: {
-    height: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 4,
-    marginTop: 8,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#FFF',
-    borderRadius: 4,
-  },
-  progressOverGoal: {
-    backgroundColor: '#FEE2E2',
-  },
-  macrosCard: {
-    flexDirection: 'row',
-    backgroundColor: '#FFF',
-    marginHorizontal: 20,
-    marginTop: 16,
+  progressCard: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    marginBottom: 24,
     borderRadius: 16,
     padding: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  macroItem: {
-    flex: 1,
+    shadowRadius: 8,
+    elevation: 3,
     alignItems: 'center',
   },
-  macroValue: {
-    fontSize: 24,
+  calorieRing: {
+    marginBottom: 16,
+  },
+  ringProgress: {
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    borderWidth: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+  },
+  calorieText: {
+    fontSize: 28,
     fontWeight: '700',
     color: '#111827',
   },
-  macroLabel: {
-    fontSize: 12,
+  calorieGoal: {
+    fontSize: 18,
+    fontWeight: '400',
+    color: '#6B7280',
+  },
+  percentageText: {
+    fontSize: 20,
+    fontWeight: '600',
     color: '#6B7280',
     marginTop: 4,
   },
-  mealsSection: {
-    marginTop: 24,
-    paddingHorizontal: 20,
-    paddingBottom: 100,
+  caloriesLeftLabel: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 4,
   },
-  sectionHeader: {
+  caloriesLeft: {
+    fontSize: 32,
+    fontWeight: '700',
+    marginBottom: 24,
+  },
+  macrosContainer: {
+    width: '100%',
+  },
+  macroRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 6,
+  },
+  macroLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+  },
+  macroValue: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  macroBar: {
+    height: 6,
+    backgroundColor: '#E5E7EB',
+    borderRadius: 3,
+    marginBottom: 12,
+    overflow: 'hidden',
+  },
+  macroProgress: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  sectionHeader: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
     color: '#111827',
   },
+  quickAddContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingHorizontal: 16,
+    marginBottom: 24,
+  },
+  quickAddButton: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 20,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+    minWidth: 100,
+  },
+  quickAddIcon: {
+    fontSize: 32,
+    marginBottom: 8,
+  },
+  quickAddText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+  },
   mealCard: {
-    backgroundColor: '#FFF',
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    marginBottom: 12,
     borderRadius: 12,
     padding: 16,
-    marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
     elevation: 2,
   },
   mealHeader: {
@@ -348,87 +440,51 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   mealIcon: {
-    fontSize: 24,
+    fontSize: 20,
     marginRight: 8,
   },
   mealType: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#111827',
   },
   mealCalories: {
     fontSize: 16,
-    fontWeight: '700',
-    color: '#6366F1',
+    fontWeight: '600',
+    color: '#6B7280',
   },
-  mealFoods: {
-    gap: 4,
+  foodItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+  },
+  foodBullet: {
+    fontSize: 16,
+    color: '#9CA3AF',
+    marginRight: 8,
   },
   foodName: {
-    fontSize: 14,
+    flex: 1,
+    fontSize: 15,
+    color: '#374151',
+  },
+  foodCalories: {
+    fontSize: 15,
     color: '#6B7280',
   },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: 16,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 8,
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center',
-    paddingHorizontal: 40,
-  },
-  bottomBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#FFF',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    paddingBottom: 32,
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-    flexDirection: 'row',
-    gap: 12,
-  },
-  addButton: {
-    flex: 1,
-    backgroundColor: '#6366F1',
+  addMealButton: {
+    marginHorizontal: 16,
+    marginBottom: 12,
     paddingVertical: 16,
     borderRadius: 12,
-    flexDirection: 'row',
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    borderStyle: 'dashed',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
   },
-  addButtonSecondary: {
-    flex: 1,
-    backgroundColor: '#374151',
-    paddingVertical: 16,
-    borderRadius: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  addButtonIcon: {
-    fontSize: 20,
-  },
-  addButtonText: {
-    color: '#FFF',
+  addMealText: {
     fontSize: 16,
     fontWeight: '600',
+    color: '#6366F1',
   },
 });
-
