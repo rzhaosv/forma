@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useNavigation } from '@react-navigation/native';
@@ -15,6 +15,7 @@ export default function BarcodeScannerScreen() {
   const [selectedMealType, setSelectedMealType] = useState<MealType>('Snack');
   const [scannedProduct, setScannedProduct] = useState<any>(null);
   const { addMeal } = useMealStore();
+  const isProcessing = useRef(false);
 
   if (!permission) {
     return (
@@ -36,45 +37,67 @@ export default function BarcodeScannerScreen() {
   }
 
   const handleBarCodeScanned = async ({ type, data }: { type: string; data: string }) => {
-    if (scanned || loading) return;
+    // Prevent multiple rapid scans using ref (faster than state)
+    if (scanned || loading || isProcessing.current) return;
 
+    isProcessing.current = true;
     setScanned(true);
     setLoading(true);
 
-    // Validate barcode
-    if (!isValidBarcode(data)) {
-      Alert.alert(
-        'Invalid Barcode',
-        'Please scan a valid product barcode (UPC-A, EAN-8, or EAN-13)',
-        [{ text: 'Try Again', onPress: () => setScanned(false) }]
-      );
-      setLoading(false);
-      return;
-    }
-
-    // Look up product
-    const product = await lookupBarcode(data);
-    setLoading(false);
-
-    if (product.found) {
-      // Store product and show meal selector
-      setScannedProduct(product);
-      setShowMealSelector(true);
-    } else {
-      Alert.alert(
-        'Product Not Found',
-        `Barcode: ${product.barcode}\n\n${product.error || 'This product is not in our database yet.'}\n\nTry manual entry instead.`,
-        [
-          { text: 'Cancel', onPress: () => setScanned(false), style: 'cancel' },
-          { 
-            text: 'Back', 
+    try {
+      // Validate barcode
+      if (!isValidBarcode(data)) {
+        setLoading(false);
+        Alert.alert(
+          'Invalid Barcode',
+          'Please scan a valid product barcode (UPC-A, EAN-8, or EAN-13)',
+          [{ 
+            text: 'OK', 
             onPress: () => {
               setScanned(false);
-              navigation.goBack();
-            },
-            style: 'default'
+              isProcessing.current = false;
+            }
+          }]
+        );
+        return;
+      }
+
+      // Look up product
+      const product = await lookupBarcode(data);
+      setLoading(false);
+
+      if (product.found) {
+        // Store product and show meal selector
+        setScannedProduct(product);
+        setShowMealSelector(true);
+        isProcessing.current = false;
+      } else {
+        // Product not found - show simple error
+        Alert.alert(
+          'Product Not Found',
+          'This barcode is not in our database. Try scanning another product or use manual entry.',
+          [{ 
+            text: 'OK', 
+            onPress: () => {
+              setScanned(false);
+              isProcessing.current = false;
+            }
+          }]
+        );
+      }
+    } catch (error) {
+      // Handle any unexpected errors gracefully
+      setLoading(false);
+      Alert.alert(
+        'Scan Error',
+        'Something went wrong. Please try again.',
+        [{ 
+          text: 'OK', 
+          onPress: () => {
+            setScanned(false);
+            isProcessing.current = false;
           }
-        ]
+        }]
       );
     }
   };
@@ -212,6 +235,7 @@ export default function BarcodeScannerScreen() {
                     setShowMealSelector(false);
                     setScannedProduct(null);
                     setScanned(false);
+                    isProcessing.current = false;
                   }}
                 >
                   <Text style={styles.cancelButtonText}>Cancel</Text>
