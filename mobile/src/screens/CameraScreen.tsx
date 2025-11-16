@@ -1,9 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { signOut } from '../services/authService';
+import { useNavigation } from '@react-navigation/native';
 
 export default function CameraScreen() {
+  const navigation = useNavigation();
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
@@ -31,31 +32,49 @@ export default function CameraScreen() {
     if (cameraRef.current) {
       try {
         const photo = await cameraRef.current.takePictureAsync();
-        Alert.alert('Photo Captured', `Photo saved: ${photo?.uri}`);
+        Alert.alert(
+          'Photo Captured! 📸',
+          'AI food analysis coming soon. This will identify foods and calculate calories automatically.',
+          [
+            { text: 'Take Another', style: 'cancel' },
+            { 
+              text: 'Done', 
+              onPress: () => navigation.goBack(),
+              style: 'default'
+            }
+          ]
+        );
         // TODO: Send to AI for analysis
+        console.log('Photo URI:', photo?.uri);
       } catch (error) {
         Alert.alert('Error', 'Failed to take picture');
       }
     }
   };
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-    } catch (error) {
-      Alert.alert('Error', 'Failed to sign out');
-    }
-  };
-
   return (
     <View style={styles.container}>
       <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
-        {/* Header */}
+        {/* Header with Back Button */}
         <View style={styles.header}>
-          <Text style={styles.title}>Forma</Text>
-          <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-            <Text style={styles.signOutText}>Sign Out</Text>
+          <TouchableOpacity 
+            style={styles.backButton} 
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.backText}>← Back</Text>
           </TouchableOpacity>
+          <Text style={styles.title}>Take Photo</Text>
+          <View style={styles.placeholder} />
+        </View>
+
+        {/* Instructions */}
+        <View style={styles.instructionsContainer}>
+          <Text style={styles.instructionsText}>
+            📸 Position food in frame
+          </Text>
+          <Text style={styles.instructionsSubtext}>
+            AI will identify and calculate calories
+          </Text>
         </View>
 
         {/* Controls */}
@@ -98,23 +117,52 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 60,
     paddingHorizontal: 20,
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    paddingBottom: 16,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  backButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  backText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: '700',
     color: '#FFF',
   },
-  signOutButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 8,
+  placeholder: {
+    width: 60,
   },
-  signOutText: {
-    color: '#FFF',
-    fontSize: 14,
+  instructionsContainer: {
+    position: 'absolute',
+    top: 140,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  instructionsText: {
+    fontSize: 18,
     fontWeight: '600',
+    color: '#FFF',
+    textAlign: 'center',
+    marginBottom: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
+  instructionsSubtext: {
+    fontSize: 14,
+    color: '#FFF',
+    textAlign: 'center',
+    opacity: 0.9,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   controls: {
     position: 'absolute',
