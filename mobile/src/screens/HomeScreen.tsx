@@ -84,8 +84,8 @@ export default function HomeScreen() {
   const handleQuickAdd = (type: string) => {
     if (type === 'photo') {
       navigation.navigate('Camera' as never);
-    } else if (type === 'scan') {
-      Alert.alert('Barcode Scanner', 'Coming soon!');
+    } else if (type === 'barcode') {
+      navigation.navigate('BarcodeScanner' as never);
     } else {
       Alert.alert('Manual Entry', 'Coming soon!');
     }
@@ -200,10 +200,10 @@ export default function HomeScreen() {
 
           <TouchableOpacity
             style={styles.quickAddButton}
-            onPress={() => handleQuickAdd('scan')}
+            onPress={() => handleQuickAdd('barcode')}
           >
             <Text style={styles.quickAddIcon}>📊</Text>
-            <Text style={styles.quickAddText}>Scan</Text>
+            <Text style={styles.quickAddText}>Barcode</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
