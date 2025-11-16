@@ -14,8 +14,15 @@ export default function BarcodeScannerScreen() {
   const [showMealSelector, setShowMealSelector] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('Snack');
   const [scannedProduct, setScannedProduct] = useState<any>(null);
+  const [servingQuantity, setServingQuantity] = useState(1);
   const { addMeal } = useMealStore();
   const isProcessing = useRef(false);
+
+  // Helper function to parse serving size to grams
+  const parseServingSize = (servingSize: string): number => {
+    const match = servingSize.match(/(\d+(\.\d+)?)\s*g/i);
+    return match ? parseFloat(match[1]) : 100; // Default to 100g if can't parse
+  };
 
   if (!permission) {
     return (
@@ -105,40 +112,46 @@ export default function BarcodeScannerScreen() {
   const handleAddToLog = () => {
     if (!scannedProduct) return;
 
-    const nutrition = calculateNutrition(scannedProduct, 100);
+    // Calculate nutrition based on serving size
+    const servingSizeG = parseServingSize(scannedProduct.serving_size || '100g');
+    const nutritionPerServing = calculateNutrition(scannedProduct, servingSizeG);
 
     // Create food item
     const foodItem: FoodItem = {
       id: `food-${Date.now()}`,
       name: scannedProduct.name || 'Unknown Product',
-      calories: nutrition.calories,
-      protein_g: nutrition.protein_g,
-      carbs_g: nutrition.carbs_g,
-      fat_g: nutrition.fat_g,
-      portion: '100g',
-      quantity: 1,
+      calories: nutritionPerServing.calories,
+      protein_g: nutritionPerServing.protein_g,
+      carbs_g: nutritionPerServing.carbs_g,
+      fat_g: nutritionPerServing.fat_g,
+      portion: scannedProduct.serving_size || '100g',
+      quantity: servingQuantity,
       timestamp: new Date().toISOString(),
     };
 
-    // Create meal with this food
+    // Create meal with this food (multiply by quantity)
     const meal: Meal = {
       id: `meal-${Date.now()}`,
       mealType: selectedMealType,
       foods: [foodItem],
       timestamp: new Date().toISOString(),
-      totalCalories: nutrition.calories,
-      totalProtein: nutrition.protein_g,
-      totalCarbs: nutrition.carbs_g,
-      totalFat: nutrition.fat_g,
+      totalCalories: nutritionPerServing.calories * servingQuantity,
+      totalProtein: nutritionPerServing.protein_g * servingQuantity,
+      totalCarbs: nutritionPerServing.carbs_g * servingQuantity,
+      totalFat: nutritionPerServing.fat_g * servingQuantity,
     };
 
     // Add to store
     addMeal(meal);
 
+    // Reset serving quantity for next scan
+    setServingQuantity(1);
+
     // Navigate back and show success
     navigation.goBack();
     setTimeout(() => {
-      Alert.alert('Added to Log! 🎉', `${scannedProduct.name} added to ${selectedMealType}`);
+      const servingText = servingQuantity === 1 ? '1 serving' : `${servingQuantity} servings`;
+      Alert.alert('Added to Log! 🎉', `${scannedProduct.name} (${servingText}) added to ${selectedMealType}`);
     }, 500);
   };
 
@@ -202,9 +215,40 @@ export default function BarcodeScannerScreen() {
               
               <View style={styles.nutritionSummary}>
                 <Text style={styles.caloriesBig}>
-                  {calculateNutrition(scannedProduct, 100).calories}
+                  {calculateNutrition(scannedProduct, parseServingSize(scannedProduct.serving_size || '100g')).calories}
                 </Text>
-                <Text style={styles.caloriesLabel}>calories per 100g</Text>
+                <Text style={styles.caloriesLabel}>
+                  calories per serving ({scannedProduct.serving_size || '100g'})
+                </Text>
+              </View>
+
+              {/* Serving Quantity Selector */}
+              <View style={styles.servingSelectorContainer}>
+                <Text style={styles.selectorTitle}>Servings:</Text>
+                <View style={styles.servingButtons}>
+                  <TouchableOpacity
+                    style={[styles.servingButton, servingQuantity <= 0.5 && styles.servingButtonDisabled]}
+                    onPress={() => setServingQuantity(Math.max(0.5, servingQuantity - 0.5))}
+                    disabled={servingQuantity <= 0.5}
+                  >
+                    <Text style={styles.servingButtonText}>−</Text>
+                  </TouchableOpacity>
+                  
+                  <View style={styles.servingDisplay}>
+                    <Text style={styles.servingQuantityText}>{servingQuantity}</Text>
+                  </View>
+                  
+                  <TouchableOpacity
+                    style={[styles.servingButton, servingQuantity >= 10 && styles.servingButtonDisabled]}
+                    onPress={() => setServingQuantity(Math.min(10, servingQuantity + 0.5))}
+                    disabled={servingQuantity >= 10}
+                  >
+                    <Text style={styles.servingButtonText}>+</Text>
+                  </TouchableOpacity>
+                </View>
+                <Text style={styles.totalCaloriesText}>
+                  Total: {Math.round(calculateNutrition(scannedProduct, parseServingSize(scannedProduct.serving_size || '100g')).calories * servingQuantity)} calories
+                </Text>
               </View>
 
               <Text style={styles.selectorTitle}>Add to:</Text>
@@ -235,6 +279,7 @@ export default function BarcodeScannerScreen() {
                     setShowMealSelector(false);
                     setScannedProduct(null);
                     setScanned(false);
+                    setServingQuantity(1);
                     isProcessing.current = false;
                   }}
                 >
@@ -494,6 +539,56 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#FFFFFF',
+  },
+  servingSelectorContainer: {
+    marginBottom: 20,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+  },
+  servingButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  servingButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#6366F1',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  servingButtonDisabled: {
+    backgroundColor: '#E5E7EB',
+    opacity: 0.5,
+  },
+  servingButtonText: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  servingDisplay: {
+    minWidth: 80,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    marginHorizontal: 16,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  servingQuantityText: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  totalCaloriesText: {
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginTop: 4,
   },
 });
 
