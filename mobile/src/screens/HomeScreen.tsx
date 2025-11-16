@@ -93,8 +93,8 @@ export default function HomeScreen() {
       navigation.navigate('Camera' as never);
     } else if (type === 'barcode') {
       navigation.navigate('BarcodeScanner' as never);
-    } else {
-      Alert.alert('Manual Entry', 'Coming soon!');
+    } else if (type === 'manual') {
+      navigation.navigate('ManualEntry' as never);
     }
   };
 
@@ -109,7 +109,6 @@ export default function HomeScreen() {
           style: 'destructive',
           onPress: () => {
             deleteMeal(mealId);
-            Alert.alert('Deleted', 'Meal removed from log');
           },
         },
       ]
