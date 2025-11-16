@@ -11,6 +11,9 @@ export default function BarcodeScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showMealSelector, setShowMealSelector] = useState(false);
+  const [selectedMealType, setSelectedMealType] = useState<MealType>('Snack');
+  const [scannedProduct, setScannedProduct] = useState<any>(null);
   const { addMeal } = useMealStore();
 
   if (!permission) {
@@ -54,70 +57,15 @@ export default function BarcodeScannerScreen() {
     setLoading(false);
 
     if (product.found) {
-      // Calculate nutrition for standard serving
-      const nutrition = calculateNutrition(product, 100);
-      
-      Alert.alert(
-        `${product.name}`,
-        `${product.brand ? product.brand + '\n' : ''}` +
-        `Barcode: ${product.barcode}\n\n` +
-        `Per 100g:\n` +
-        `Calories: ${nutrition.calories} kcal\n` +
-        `Protein: ${nutrition.protein_g}g\n` +
-        `Carbs: ${nutrition.carbs_g}g\n` +
-        `Fat: ${nutrition.fat_g}g\n\n` +
-        `Add to meal log?`,
-        [
-          { text: 'Scan Another', onPress: () => setScanned(false), style: 'cancel' },
-          { 
-            text: 'Add to Log', 
-            onPress: () => {
-              // Create food item
-              const foodItem: FoodItem = {
-                id: `food-${Date.now()}`,
-                name: product.name || 'Unknown Product',
-                calories: nutrition.calories,
-                protein_g: nutrition.protein_g,
-                carbs_g: nutrition.carbs_g,
-                fat_g: nutrition.fat_g,
-                portion: '100g',
-                quantity: 1,
-                timestamp: new Date().toISOString(),
-              };
-
-              // Create meal with this food
-              const meal: Meal = {
-                id: `meal-${Date.now()}`,
-                mealType: 'Snack', // Default to Snack for scanned items
-                foods: [foodItem],
-                timestamp: new Date().toISOString(),
-                totalCalories: nutrition.calories,
-                totalProtein: nutrition.protein_g,
-                totalCarbs: nutrition.carbs_g,
-                totalFat: nutrition.fat_g,
-              };
-
-              // Add to store
-              addMeal(meal);
-
-              setScanned(false);
-              navigation.goBack();
-              
-              // Show success after navigation
-              setTimeout(() => {
-                Alert.alert('Added to Log! 🎉', `${product.name} added to Snack`);
-              }, 500);
-            },
-            style: 'default'
-          }
-        ]
-      );
+      // Store product and show meal selector
+      setScannedProduct(product);
+      setShowMealSelector(true);
     } else {
       Alert.alert(
         'Product Not Found',
         `Barcode: ${product.barcode}\n\n${product.error || 'This product is not in our database yet.'}\n\nTry manual entry instead.`,
         [
-          { text: 'Try Again', onPress: () => setScanned(false), style: 'cancel' },
+          { text: 'Cancel', onPress: () => setScanned(false), style: 'cancel' },
           { 
             text: 'Back', 
             onPress: () => {
@@ -131,6 +79,46 @@ export default function BarcodeScannerScreen() {
     }
   };
 
+  const handleAddToLog = () => {
+    if (!scannedProduct) return;
+
+    const nutrition = calculateNutrition(scannedProduct, 100);
+
+    // Create food item
+    const foodItem: FoodItem = {
+      id: `food-${Date.now()}`,
+      name: scannedProduct.name || 'Unknown Product',
+      calories: nutrition.calories,
+      protein_g: nutrition.protein_g,
+      carbs_g: nutrition.carbs_g,
+      fat_g: nutrition.fat_g,
+      portion: '100g',
+      quantity: 1,
+      timestamp: new Date().toISOString(),
+    };
+
+    // Create meal with this food
+    const meal: Meal = {
+      id: `meal-${Date.now()}`,
+      mealType: selectedMealType,
+      foods: [foodItem],
+      timestamp: new Date().toISOString(),
+      totalCalories: nutrition.calories,
+      totalProtein: nutrition.protein_g,
+      totalCarbs: nutrition.carbs_g,
+      totalFat: nutrition.fat_g,
+    };
+
+    // Add to store
+    addMeal(meal);
+
+    // Navigate back and show success
+    navigation.goBack();
+    setTimeout(() => {
+      Alert.alert('Added to Log! 🎉', `${scannedProduct.name} added to ${selectedMealType}`);
+    }, 500);
+  };
+
   return (
     <View style={styles.container}>
       <CameraView
@@ -139,7 +127,7 @@ export default function BarcodeScannerScreen() {
         barcodeScannerSettings={{
           barcodeTypes: ['ean13', 'ean8', 'upc_a', 'upc_e'],
         }}
-        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+        onBarcodeScanned={scanned || showMealSelector ? undefined : handleBarCodeScanned}
       >
         {/* Header with Back Button */}
         <View style={styles.header}>
@@ -154,28 +142,91 @@ export default function BarcodeScannerScreen() {
         </View>
 
         {/* Scanning Frame */}
-        <View style={styles.scanningArea}>
-          <View style={styles.scanFrame}>
-            <View style={[styles.corner, styles.topLeft]} />
-            <View style={[styles.corner, styles.topRight]} />
-            <View style={[styles.corner, styles.bottomLeft]} />
-            <View style={[styles.corner, styles.bottomRight]} />
+        {/* Scanning Area - Hide when meal selector is shown */}
+        {!showMealSelector && (
+          <View style={styles.scanningArea}>
+            <View style={styles.scanFrame}>
+              <View style={[styles.corner, styles.topLeft]} />
+              <View style={[styles.corner, styles.topRight]} />
+              <View style={[styles.corner, styles.bottomLeft]} />
+              <View style={[styles.corner, styles.bottomRight]} />
+              
+              {loading && (
+                <View style={styles.loadingOverlay}>
+                  <ActivityIndicator size="large" color="#6366F1" />
+                  <Text style={styles.loadingText}>Looking up product...</Text>
+                </View>
+              )}
+            </View>
             
-            {loading && (
-              <View style={styles.loadingOverlay}>
-                <ActivityIndicator size="large" color="#6366F1" />
-                <Text style={styles.loadingText}>Looking up product...</Text>
-              </View>
-            )}
+            <Text style={styles.instructionsText}>
+              Position barcode in frame
+            </Text>
+            <Text style={styles.instructionsSubtext}>
+              UPC, EAN-13, and EAN-8 supported
+            </Text>
           </View>
-          
-          <Text style={styles.instructionsText}>
-            Position barcode in frame
-          </Text>
-          <Text style={styles.instructionsSubtext}>
-            UPC, EAN-13, and EAN-8 supported
-          </Text>
-        </View>
+        )}
+
+        {/* Meal Selector Overlay */}
+        {showMealSelector && scannedProduct && (
+          <View style={styles.mealSelectorOverlay}>
+            <View style={styles.mealSelectorCard}>
+              <Text style={styles.productName}>{scannedProduct.name}</Text>
+              {scannedProduct.brand && (
+                <Text style={styles.productBrand}>{scannedProduct.brand}</Text>
+              )}
+              
+              <View style={styles.nutritionSummary}>
+                <Text style={styles.caloriesBig}>
+                  {calculateNutrition(scannedProduct, 100).calories}
+                </Text>
+                <Text style={styles.caloriesLabel}>calories per 100g</Text>
+              </View>
+
+              <Text style={styles.selectorTitle}>Add to:</Text>
+              <View style={styles.mealTypeButtons}>
+                {(['Breakfast', 'Lunch', 'Dinner', 'Snack'] as MealType[]).map((type) => (
+                  <TouchableOpacity
+                    key={type}
+                    style={[
+                      styles.mealTypeButton,
+                      selectedMealType === type && styles.mealTypeButtonActive
+                    ]}
+                    onPress={() => setSelectedMealType(type)}
+                  >
+                    <Text style={[
+                      styles.mealTypeButtonText,
+                      selectedMealType === type && styles.mealTypeButtonTextActive
+                    ]}>
+                      {type}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <View style={styles.actionButtons}>
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  onPress={() => {
+                    setShowMealSelector(false);
+                    setScannedProduct(null);
+                    setScanned(false);
+                  }}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={styles.addButton}
+                  onPress={handleAddToLog}
+                >
+                  <Text style={styles.addButtonText}>Add to Log</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )}
       </CameraView>
     </View>
   );
@@ -312,6 +363,113 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 16,
     fontWeight: '600',
+  },
+  mealSelectorOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  mealSelectorCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    maxWidth: 400,
+  },
+  productName: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  productBrand: {
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  nutritionSummary: {
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#E5E7EB',
+    marginBottom: 20,
+  },
+  caloriesBig: {
+    fontSize: 36,
+    fontWeight: '700',
+    color: '#6366F1',
+  },
+  caloriesLabel: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginTop: 4,
+  },
+  selectorTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 12,
+  },
+  mealTypeButtons: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 20,
+  },
+  mealTypeButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    backgroundColor: '#F3F4F6',
+    alignItems: 'center',
+  },
+  mealTypeButtonActive: {
+    backgroundColor: '#6366F1',
+  },
+  mealTypeButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#6B7280',
+  },
+  mealTypeButtonTextActive: {
+    color: '#FFFFFF',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  cancelButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: '#F3F4F6',
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+  },
+  addButton: {
+    flex: 2,
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: '#6366F1',
+    alignItems: 'center',
+  },
+  addButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
 });
 
