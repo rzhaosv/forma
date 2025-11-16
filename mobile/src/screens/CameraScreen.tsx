@@ -1,12 +1,14 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useNavigation } from '@react-navigation/native';
+import { analyzeFoodPhoto, mockAnalyzeFoodPhoto } from '../services/foodRecognitionService';
 
 export default function CameraScreen() {
   const navigation = useNavigation();
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
+  const [analyzing, setAnalyzing] = useState(false);
   const cameraRef = useRef<CameraView>(null);
 
   if (!permission) {
@@ -29,25 +31,53 @@ export default function CameraScreen() {
   };
 
   const takePicture = async () => {
-    if (cameraRef.current) {
+    if (cameraRef.current && !analyzing) {
       try {
+        setAnalyzing(true);
         const photo = await cameraRef.current.takePictureAsync();
+        
+        if (!photo) {
+          throw new Error('No photo captured');
+        }
+
+        console.log('📸 Photo captured, analyzing...');
+        
+        // Try real API first, fallback to mock if no API key
+        let result;
+        try {
+          result = await analyzeFoodPhoto(photo.uri);
+        } catch (apiError: any) {
+          if (apiError.message.includes('API key not configured')) {
+            console.log('⚠️ Using mock data (API key not configured)');
+            result = await mockAnalyzeFoodPhoto(photo.uri);
+          } else {
+            throw apiError;
+          }
+        }
+
+        setAnalyzing(false);
+
+        if (result.success && result.foods.length > 0) {
+          // Navigate to results screen
+          navigation.navigate('FoodResults' as never, { result } as never);
+        } else {
+          Alert.alert(
+            'No Food Detected',
+            result.error || 'Could not identify any food in this photo. Try taking another photo with better lighting.',
+            [
+              { text: 'Try Again', style: 'default' }
+            ]
+          );
+        }
+
+      } catch (error: any) {
+        setAnalyzing(false);
+        console.error('Camera error:', error);
         Alert.alert(
-          'Photo Captured! 📸',
-          'AI food analysis coming soon. This will identify foods and calculate calories automatically.',
-          [
-            { text: 'Take Another', style: 'cancel' },
-            { 
-              text: 'Done', 
-              onPress: () => navigation.goBack(),
-              style: 'default'
-            }
-          ]
+          'Error',
+          error.message || 'Failed to analyze photo. Please try again.',
+          [{ text: 'OK' }]
         );
-        // TODO: Send to AI for analysis
-        console.log('Photo URI:', photo?.uri);
-      } catch (error) {
-        Alert.alert('Error', 'Failed to take picture');
       }
     }
   };
@@ -67,24 +97,44 @@ export default function CameraScreen() {
           <View style={styles.placeholder} />
         </View>
 
-        {/* Instructions */}
-        <View style={styles.instructionsContainer}>
-          <Text style={styles.instructionsText}>
-            📸 Position food in frame
-          </Text>
-          <Text style={styles.instructionsSubtext}>
-            AI will identify and calculate calories
-          </Text>
-        </View>
+        {/* Instructions or Analyzing Overlay */}
+        {analyzing ? (
+          <View style={styles.analyzingOverlay}>
+            <ActivityIndicator size="large" color="#FFF" />
+            <Text style={styles.analyzingText}>Analyzing food...</Text>
+            <Text style={styles.analyzingSubtext}>This may take a few seconds</Text>
+          </View>
+        ) : (
+          <View style={styles.instructionsContainer}>
+            <Text style={styles.instructionsText}>
+              📸 Position food in frame
+            </Text>
+            <Text style={styles.instructionsSubtext}>
+              AI will identify and calculate calories
+            </Text>
+          </View>
+        )}
 
         {/* Controls */}
         <View style={styles.controls}>
-          <TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing}>
+          <TouchableOpacity 
+            style={styles.flipButton} 
+            onPress={toggleCameraFacing}
+            disabled={analyzing}
+          >
             <Text style={styles.flipText}>🔄</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
-            <View style={styles.captureButtonInner} />
+          <TouchableOpacity 
+            style={[styles.captureButton, analyzing && styles.buttonDisabled]} 
+            onPress={takePicture}
+            disabled={analyzing}
+          >
+            {analyzing ? (
+              <ActivityIndicator size="large" color="#6366F1" />
+            ) : (
+              <View style={styles.captureButtonInner} />
+            )}
           </TouchableOpacity>
           
           <View style={styles.flipButton} />
@@ -163,6 +213,31 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
+  },
+  analyzingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  analyzingText: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#FFF',
+    marginTop: 16,
+  },
+  analyzingSubtext: {
+    fontSize: 14,
+    color: '#FFF',
+    marginTop: 8,
+    opacity: 0.9,
+  },
+  buttonDisabled: {
+    opacity: 0.5,
   },
   controls: {
     position: 'absolute',
