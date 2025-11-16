@@ -10,6 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Swipeable } from 'react-native-gesture-handler';
 import { signOut } from '../services/authService';
 import { useMealStore } from '../store/useMealStore';
 
@@ -25,7 +26,7 @@ export default function HomeScreen() {
   const [currentDate] = useState(new Date());
   
   // Get real meal data from store
-  const { meals, dailySummary, calorieGoal, proteinGoal, updateDailySummary } = useMealStore();
+  const { meals, dailySummary, calorieGoal, proteinGoal, updateDailySummary, deleteMeal } = useMealStore();
   
   // Update summary when screen loads or meals change
   useEffect(() => {
@@ -94,6 +95,37 @@ export default function HomeScreen() {
     } else {
       Alert.alert('Manual Entry', 'Coming soon!');
     }
+  };
+
+  const handleDeleteMeal = (mealId: string, mealType: string) => {
+    Alert.alert(
+      'Delete Meal',
+      `Are you sure you want to delete this ${mealType}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            deleteMeal(mealId);
+            Alert.alert('Deleted', 'Meal removed from log');
+          },
+        },
+      ]
+    );
+  };
+
+  const renderRightActions = (mealId: string, mealType: string) => {
+    return (
+      <View style={styles.swipeDeleteContainer}>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleDeleteMeal(mealId, mealType)}
+        >
+          <Text style={styles.deleteButtonText}>Delete</Text>
+        </TouchableOpacity>
+      </View>
+    );
   };
 
   return (
@@ -233,28 +265,35 @@ export default function HomeScreen() {
           </View>
         ) : (
           todayMeals.map((meal) => (
-            <View key={meal.id} style={styles.mealCard}>
-              <View style={styles.mealHeader}>
-                <View style={styles.mealTitleRow}>
-                  <Text style={styles.mealIcon}>
-                    {MEAL_TYPE_ICONS[meal.mealType as keyof typeof MEAL_TYPE_ICONS] || '🍽️'}
-                  </Text>
-                  <Text style={styles.mealType}>{meal.mealType}</Text>
+            <Swipeable
+              key={meal.id}
+              renderRightActions={() => renderRightActions(meal.id, meal.mealType)}
+              overshootRight={false}
+              rightThreshold={40}
+            >
+              <View style={styles.mealCard}>
+                <View style={styles.mealHeader}>
+                  <View style={styles.mealTitleRow}>
+                    <Text style={styles.mealIcon}>
+                      {MEAL_TYPE_ICONS[meal.mealType as keyof typeof MEAL_TYPE_ICONS] || '🍽️'}
+                    </Text>
+                    <Text style={styles.mealType}>{meal.mealType}</Text>
+                  </View>
+                  <Text style={styles.mealCalories}>{Math.round(meal.totalCalories)} cal</Text>
                 </View>
-                <Text style={styles.mealCalories}>{Math.round(meal.totalCalories)} cal</Text>
+                {meal.foods.map((food) => (
+                  <View key={food.id} style={styles.foodItem}>
+                    <Text style={styles.foodBullet}>○</Text>
+                    <Text style={styles.foodName}>
+                      {food.name} {food.quantity > 1 ? `(${food.quantity}x)` : ''}
+                    </Text>
+                    <Text style={styles.foodCalories}>
+                      {Math.round(food.calories * food.quantity)}
+                    </Text>
+                  </View>
+                ))}
               </View>
-              {meal.foods.map((food) => (
-                <View key={food.id} style={styles.foodItem}>
-                  <Text style={styles.foodBullet}>○</Text>
-                  <Text style={styles.foodName}>
-                    {food.name} {food.quantity > 1 ? `(${food.quantity}x)` : ''}
-                  </Text>
-                  <Text style={styles.foodCalories}>
-                    {Math.round(food.calories * food.quantity)}
-                  </Text>
-                </View>
-              ))}
-            </View>
+            </Swipeable>
           ))
         )}
 
@@ -552,5 +591,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#9CA3AF',
     textAlign: 'center',
+  },
+  swipeDeleteContainer: {
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    marginBottom: 15,
+  },
+  deleteButton: {
+    backgroundColor: '#EF4444',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 80,
+    height: '100%',
+    borderTopRightRadius: 16,
+    borderBottomRightRadius: 16,
+  },
+  deleteButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+    fontSize: 14,
   },
 });
