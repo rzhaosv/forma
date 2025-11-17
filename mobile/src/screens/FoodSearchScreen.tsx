@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   StatusBar,
   FlatList,
+  ScrollView,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { searchFoods, FoodDatabaseItem, calculateNutritionForServing } from '../services/foodDatabaseService';
@@ -125,7 +126,11 @@ export default function FoodSearchScreen() {
           <View style={styles.placeholder} />
         </View>
 
-        <View style={styles.selectedFoodContainer}>
+        <ScrollView 
+          style={styles.scrollView}
+          contentContainerStyle={styles.selectedFoodContainer}
+          showsVerticalScrollIndicator={true}
+        >
           <Text style={styles.selectedFoodName}>{selectedFood.name}</Text>
           <Text style={styles.selectedFoodCategory}>{selectedFood.category}</Text>
 
@@ -217,7 +222,7 @@ export default function FoodSearchScreen() {
               <Text style={styles.nutritionValue}>{nutrition.fat_g}g</Text>
             </View>
           </View>
-        </View>
+        </ScrollView>
 
         {/* Add Button */}
         <View style={styles.bottomBar}>
@@ -391,9 +396,12 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
     textAlign: 'center',
   },
-  selectedFoodContainer: {
+  scrollView: {
     flex: 1,
+  },
+  selectedFoodContainer: {
     padding: 20,
+    paddingBottom: 100, // Extra padding for bottom bar
   },
   selectedFoodName: {
     fontSize: 24,
