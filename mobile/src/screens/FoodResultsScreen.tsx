@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, StatusBar, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, StatusBar, Alert } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { FoodRecognitionResult } from '../services/foodRecognitionService';
+import { FoodRecognitionResult, IdentifiedFood } from '../services/foodRecognitionService';
 import { useMealStore } from '../store/useMealStore';
 import { Meal, FoodItem, MealType } from '../types/meal.types';
-import { trackFoodAccurate } from '../services/aiFeedbackService';
+import { trackFoodAccurate, trackFoodEdit } from '../services/aiFeedbackService';
 
 type RouteParams = {
   FoodResults: {
@@ -12,26 +12,41 @@ type RouteParams = {
   };
 };
 
+interface EditableFood extends IdentifiedFood {
+  quantity: number;
+}
+
 export default function FoodResultsScreen() {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RouteParams, 'FoodResults'>>();
   const { result } = route.params;
   const { addMeal } = useMealStore();
   const [selectedMealType, setSelectedMealType] = useState<MealType>('Lunch');
+  
+  // Editable food state - initialize with AI results
+  const [editableFoods, setEditableFoods] = useState<EditableFood[]>(
+    result.foods.map(food => ({ ...food, quantity: 1 }))
+  );
+
+  const updateFood = (index: number, updates: Partial<EditableFood>) => {
+    setEditableFoods(prev => prev.map((food, i) => 
+      i === index ? { ...food, ...updates } : food
+    ));
+  };
 
   const handleAddToLog = async () => {
     const mealId = `meal-${Date.now()}`;
     
-    // Create food items from recognized foods
-    const foodItems: FoodItem[] = result.foods.map((food, index) => ({
+    // Create food items from editable foods (with quantity multiplier)
+    const foodItems: FoodItem[] = editableFoods.map((food, index) => ({
       id: `food-${Date.now()}-${index}`,
       name: food.name,
-      calories: food.calories,
-      protein_g: food.protein_g,
-      carbs_g: food.carbs_g,
-      fat_g: food.fat_g,
+      calories: food.calories * food.quantity,
+      protein_g: food.protein_g * food.quantity,
+      carbs_g: food.carbs_g * food.quantity,
+      fat_g: food.fat_g * food.quantity,
       portion: food.serving_size,
-      quantity: 1,
+      quantity: food.quantity,
       timestamp: new Date().toISOString(),
     }));
 
@@ -56,17 +71,46 @@ export default function FoodResultsScreen() {
     // Add to store
     addMeal(meal);
 
-    // Track AI feedback (mark as accurate since user accepted without editing)
-    for (let i = 0; i < result.foods.length; i++) {
-      const food = result.foods[i];
-      await trackFoodAccurate(mealId, foodItems[i].id, {
-        name: food.name,
-        calories: food.calories,
-        protein_g: food.protein_g,
-        carbs_g: food.carbs_g,
-        fat_g: food.fat_g,
-        confidence: food.confidence,
-      });
+    // Track AI feedback - check if user edited anything
+    for (let i = 0; i < editableFoods.length; i++) {
+      const editedFood = editableFoods[i];
+      const originalFood = result.foods[i];
+      
+      const wasEdited = 
+        editedFood.name !== originalFood.name ||
+        editedFood.calories !== originalFood.calories ||
+        editedFood.protein_g !== originalFood.protein_g ||
+        editedFood.carbs_g !== originalFood.carbs_g ||
+        editedFood.fat_g !== originalFood.fat_g ||
+        editedFood.quantity !== 1;
+
+      if (wasEdited) {
+        // Track as edited
+        await trackFoodEdit(mealId, foodItems[i].id, {
+          name: originalFood.name,
+          calories: originalFood.calories,
+          protein_g: originalFood.protein_g,
+          carbs_g: originalFood.carbs_g,
+          fat_g: originalFood.fat_g,
+          confidence: originalFood.confidence,
+        }, {
+          name: editedFood.name,
+          calories: editedFood.calories * editedFood.quantity,
+          protein_g: editedFood.protein_g * editedFood.quantity,
+          carbs_g: editedFood.carbs_g * editedFood.quantity,
+          fat_g: editedFood.fat_g * editedFood.quantity,
+        });
+      } else {
+        // Track as accurate
+        await trackFoodAccurate(mealId, foodItems[i].id, {
+          name: originalFood.name,
+          calories: originalFood.calories,
+          protein_g: originalFood.protein_g,
+          carbs_g: originalFood.carbs_g,
+          fat_g: originalFood.fat_g,
+          confidence: originalFood.confidence,
+        });
+      }
     }
 
     // Show success and navigate back
@@ -94,10 +138,13 @@ export default function FoodResultsScreen() {
         {/* Summary Card */}
         <View style={styles.summaryCard}>
           <Text style={styles.summaryLabel}>Total Calories</Text>
-          <Text style={styles.summaryValue}>{result.total_calories}</Text>
+          <Text style={styles.summaryValue}>
+            {Math.round(editableFoods.reduce((sum, food) => sum + (food.calories * food.quantity), 0))}
+          </Text>
           <Text style={styles.summaryUnit}>kcal</Text>
+          <View style={styles.summaryDivider} />
           <Text style={styles.itemCount}>
-            {result.foods.length} item{result.foods.length !== 1 ? 's' : ''} identified
+            {editableFoods.length} food item{editableFoods.length !== 1 ? 's' : ''} identified
           </Text>
         </View>
 
@@ -129,42 +176,160 @@ export default function FoodResultsScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Identified Foods</Text>
           
-          {result.foods.map((food, index) => (
-            <View key={index} style={styles.foodCard}>
-              <View style={styles.foodHeader}>
-                <Text style={styles.foodName}>{food.name}</Text>
-                <Text style={styles.foodCalories}>{food.calories} cal</Text>
-              </View>
-              
-              <View style={styles.foodDetails}>
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Serving:</Text>
-                  <Text style={styles.detailValue}>{food.serving_size}</Text>
+          {editableFoods.map((food, index) => {
+            const totalCalories = food.calories * food.quantity;
+            const totalProtein = food.protein_g * food.quantity;
+            const totalCarbs = food.carbs_g * food.quantity;
+            const totalFat = food.fat_g * food.quantity;
+            
+            return (
+              <View key={index} style={styles.foodCard}>
+                {/* Food Name - Large Editable Box */}
+                <View style={styles.foodNameContainer}>
+                  <Text style={styles.foodNameLabel}>Food Name</Text>
+                  <TextInput
+                    style={styles.foodNameInput}
+                    value={food.name}
+                    onChangeText={(text) => updateFood(index, { name: text })}
+                    placeholder="Enter food name"
+                    placeholderTextColor="#9CA3AF"
+                  />
                 </View>
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Confidence:</Text>
+
+                {/* Serving Size - Editable Box */}
+                <View style={styles.inputBox}>
+                  <Text style={styles.inputLabel}>Serving Size</Text>
+                  <TextInput
+                    style={styles.inputField}
+                    value={food.serving_size}
+                    onChangeText={(text) => updateFood(index, { serving_size: text })}
+                    placeholder="e.g., 150g, 1 cup"
+                    placeholderTextColor="#9CA3AF"
+                  />
+                </View>
+
+                {/* Confidence Badge (read-only) */}
+                <View style={styles.confidenceContainer}>
+                  <Text style={styles.confidenceLabel}>AI Confidence:</Text>
                   <View style={styles.confidenceBadge}>
                     <Text style={styles.confidenceText}>{food.confidence}%</Text>
                   </View>
                 </View>
-              </View>
 
-              <View style={styles.macrosRow}>
-                <View style={styles.macroItem}>
-                  <Text style={styles.macroValue}>{food.protein_g}g</Text>
-                  <Text style={styles.macroLabel}>Protein</Text>
+                {/* Quantity Selector */}
+                <View style={styles.quantitySection}>
+                  <Text style={styles.quantityLabel}>Quantity</Text>
+                  <View style={styles.quantityBox}>
+                    <TouchableOpacity
+                      style={styles.quantityButton}
+                      onPress={() => updateFood(index, { quantity: Math.max(0.5, food.quantity - 0.5) })}
+                    >
+                      <Text style={styles.quantityButtonText}>−</Text>
+                    </TouchableOpacity>
+                    <View style={styles.quantityDisplay}>
+                      <Text style={styles.quantityValue}>{food.quantity}</Text>
+                    </View>
+                    <TouchableOpacity
+                      style={styles.quantityButton}
+                      onPress={() => updateFood(index, { quantity: food.quantity + 0.5 })}
+                    >
+                      <Text style={styles.quantityButtonText}>+</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <View style={styles.macroItem}>
-                  <Text style={styles.macroValue}>{food.carbs_g}g</Text>
-                  <Text style={styles.macroLabel}>Carbs</Text>
+
+                {/* Editable Macros - Grid Layout */}
+                <View style={styles.macrosSection}>
+                  <Text style={styles.macrosSectionTitle}>Nutrition (per serving)</Text>
+                  <View style={styles.macrosGrid}>
+                    <View style={styles.macroBox}>
+                      <Text style={styles.macroBoxLabel}>Calories</Text>
+                      <TextInput
+                        style={styles.macroBoxInput}
+                        value={food.calories.toString()}
+                        onChangeText={(text) => {
+                          const val = parseFloat(text) || 0;
+                          updateFood(index, { calories: val });
+                        }}
+                        keyboardType="numeric"
+                        placeholder="0"
+                        placeholderTextColor="#9CA3AF"
+                      />
+                      <Text style={styles.macroBoxUnit}>cal</Text>
+                    </View>
+                    <View style={styles.macroBox}>
+                      <Text style={styles.macroBoxLabel}>Protein</Text>
+                      <TextInput
+                        style={styles.macroBoxInput}
+                        value={food.protein_g.toString()}
+                        onChangeText={(text) => {
+                          const val = parseFloat(text) || 0;
+                          updateFood(index, { protein_g: val });
+                        }}
+                        keyboardType="numeric"
+                        placeholder="0"
+                        placeholderTextColor="#9CA3AF"
+                      />
+                      <Text style={styles.macroBoxUnit}>g</Text>
+                    </View>
+                    <View style={styles.macroBox}>
+                      <Text style={styles.macroBoxLabel}>Carbs</Text>
+                      <TextInput
+                        style={styles.macroBoxInput}
+                        value={food.carbs_g.toString()}
+                        onChangeText={(text) => {
+                          const val = parseFloat(text) || 0;
+                          updateFood(index, { carbs_g: val });
+                        }}
+                        keyboardType="numeric"
+                        placeholder="0"
+                        placeholderTextColor="#9CA3AF"
+                      />
+                      <Text style={styles.macroBoxUnit}>g</Text>
+                    </View>
+                    <View style={styles.macroBox}>
+                      <Text style={styles.macroBoxLabel}>Fat</Text>
+                      <TextInput
+                        style={styles.macroBoxInput}
+                        value={food.fat_g.toString()}
+                        onChangeText={(text) => {
+                          const val = parseFloat(text) || 0;
+                          updateFood(index, { fat_g: val });
+                        }}
+                        keyboardType="numeric"
+                        placeholder="0"
+                        placeholderTextColor="#9CA3AF"
+                      />
+                      <Text style={styles.macroBoxUnit}>g</Text>
+                    </View>
+                  </View>
                 </View>
-                <View style={styles.macroItem}>
-                  <Text style={styles.macroValue}>{food.fat_g}g</Text>
-                  <Text style={styles.macroLabel}>Fat</Text>
+
+                {/* Total Display */}
+                <View style={styles.totalSection}>
+                  <Text style={styles.totalLabel}>Total ({food.quantity} {food.quantity === 1 ? 'serving' : 'servings'})</Text>
+                  <View style={styles.totalBox}>
+                    <View style={styles.totalItem}>
+                      <Text style={styles.totalValue}>{totalCalories}</Text>
+                      <Text style={styles.totalUnit}>cal</Text>
+                    </View>
+                    <View style={styles.totalItem}>
+                      <Text style={styles.totalValue}>{totalProtein.toFixed(1)}</Text>
+                      <Text style={styles.totalUnit}>g protein</Text>
+                    </View>
+                    <View style={styles.totalItem}>
+                      <Text style={styles.totalValue}>{totalCarbs.toFixed(1)}</Text>
+                      <Text style={styles.totalUnit}>g carbs</Text>
+                    </View>
+                    <View style={styles.totalItem}>
+                      <Text style={styles.totalValue}>{totalFat.toFixed(1)}</Text>
+                      <Text style={styles.totalUnit}>g fat</Text>
+                    </View>
+                  </View>
                 </View>
               </View>
-            </View>
-          ))}
+            );
+          })}
         </View>
 
         <View style={{ height: 100 }} />
@@ -215,36 +380,49 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   summaryCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#6366F1',
     margin: 16,
-    padding: 24,
-    borderRadius: 16,
+    padding: 28,
+    borderRadius: 20,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 5,
   },
   summaryLabel: {
-    fontSize: 14,
-    color: '#6B7280',
+    fontSize: 13,
+    color: '#FFFFFF',
+    opacity: 0.9,
     marginBottom: 8,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   summaryValue: {
-    fontSize: 48,
+    fontSize: 56,
     fontWeight: '700',
-    color: '#6366F1',
+    color: '#FFFFFF',
+    marginBottom: 4,
   },
   summaryUnit: {
     fontSize: 16,
-    color: '#6B7280',
-    marginTop: -8,
+    color: '#FFFFFF',
+    opacity: 0.8,
+    marginBottom: 16,
+  },
+  summaryDivider: {
+    width: 40,
+    height: 2,
+    backgroundColor: '#FFFFFF',
+    opacity: 0.3,
+    marginBottom: 12,
   },
   itemCount: {
     fontSize: 14,
-    color: '#9CA3AF',
-    marginTop: 12,
+    color: '#FFFFFF',
+    opacity: 0.9,
   },
   section: {
     paddingHorizontal: 16,
@@ -257,80 +435,82 @@ const styles = StyleSheet.create({
   },
   foodCard: {
     backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  foodHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
+  foodNameContainer: {
+    marginBottom: 16,
   },
-  foodName: {
-    fontSize: 16,
+  foodNameLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6B7280',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  foodNameInput: {
+    fontSize: 18,
     fontWeight: '700',
     color: '#111827',
-    flex: 1,
+    backgroundColor: '#F9FAFB',
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
-  foodCalories: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#6366F1',
-  },
-  foodDetails: {
+  inputBox: {
     marginBottom: 12,
   },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  detailLabel: {
-    fontSize: 14,
+  inputLabel: {
+    fontSize: 12,
+    fontWeight: '600',
     color: '#6B7280',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
-  detailValue: {
-    fontSize: 14,
-    color: '#374151',
+  inputField: {
+    fontSize: 15,
     fontWeight: '500',
+    color: '#374151',
+    backgroundColor: '#F9FAFB',
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  confidenceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+  },
+  confidenceLabel: {
+    fontSize: 13,
+    color: '#6B7280',
+    marginRight: 8,
   },
   confidenceBadge: {
     backgroundColor: '#EEF2FF',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
   },
   confidenceText: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#6366F1',
     fontWeight: '600',
-  },
-  macrosRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-    paddingTop: 12,
-  },
-  macroItem: {
-    alignItems: 'center',
-  },
-  macroValue: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  macroLabel: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginTop: 4,
   },
   actions: {
     padding: 16,
@@ -377,6 +557,146 @@ const styles = StyleSheet.create({
   },
   mealTypeTextActive: {
     color: '#FFFFFF',
+  },
+  quantitySection: {
+    marginTop: 16,
+    marginBottom: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+  },
+  quantityLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6B7280',
+    marginBottom: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  quantityBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    padding: 8,
+  },
+  quantityButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#6366F1',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  quantityButtonText: {
+    fontSize: 22,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  quantityDisplay: {
+    minWidth: 60,
+    alignItems: 'center',
+    marginHorizontal: 16,
+  },
+  quantityValue: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  macrosSection: {
+    marginTop: 16,
+    marginBottom: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+  },
+  macrosSectionTitle: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6B7280',
+    marginBottom: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  macrosGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  macroBox: {
+    flex: 1,
+    minWidth: '47%',
+    backgroundColor: '#F9FAFB',
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    padding: 12,
+    alignItems: 'center',
+  },
+  macroBoxLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#6B7280',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  macroBoxInput: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
+    textAlign: 'center',
+    width: '100%',
+    paddingVertical: 4,
+  },
+  macroBoxUnit: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    marginTop: 4,
+  },
+  totalSection: {
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 2,
+    borderTopColor: '#E5E7EB',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    padding: 16,
+  },
+  totalLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6B7280',
+    marginBottom: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    textAlign: 'center',
+  },
+  totalBox: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    justifyContent: 'space-around',
+  },
+  totalItem: {
+    alignItems: 'center',
+    minWidth: 70,
+  },
+  totalValue: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#6366F1',
+  },
+  totalUnit: {
+    fontSize: 11,
+    color: '#6B7280',
+    marginTop: 4,
   },
 });
 
