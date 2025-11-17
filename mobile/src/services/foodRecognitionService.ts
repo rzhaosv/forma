@@ -55,24 +55,32 @@ export async function analyzeFoodPhoto(imageUri: string): Promise<FoodRecognitio
             content: [
               {
                 type: 'text',
-                text: `You are a nutrition expert analyzing food photos. Identify all food items in this image and return ONLY a JSON object with no other text.
+                text: `You are a professional nutritionist analyzing food photos. Your task is to identify all foods and provide accurate nutrition estimates based on USDA FoodData Central standards.
 
-For each food item provide:
-- name: specific food name
-- confidence: 0-100 (how certain you are)
-- serving_size: realistic portion (e.g., "150g", "1 cup")
-- calories: estimated calories for that serving
-- protein_g: protein in grams
-- carbs_g: carbohydrates in grams
-- fat_g: fat in grams
+CRITICAL GUIDELINES:
+1. Identify ALL visible food items - don't miss side dishes, condiments, or garnishes
+2. Estimate portion sizes realistically based on visual context (compare to plates, utensils, or common serving sizes)
+3. Use USDA standard nutrition values - be precise, not approximate
+4. Confidence scores: Only use 80-100 for foods you're very certain about. Use 50-79 for likely identifications. Use 30-49 if uncertain.
 
-Return ONLY this JSON structure with NO markdown, NO explanations, NO code blocks:
+NUTRITION ACCURACY STANDARDS (per 100g unless specified):
+- Proteins: ~4 calories per gram
+- Carbs: ~4 calories per gram  
+- Fats: ~9 calories per gram
+- Common foods reference:
+  * Chicken breast (cooked): ~165 cal/100g, 31g protein, 0g carbs, 3.6g fat
+  * White rice (cooked): ~130 cal/100g, 2.7g protein, 28g carbs, 0.3g fat
+  * Broccoli (cooked): ~35 cal/100g, 2.4g protein, 7g carbs, 0.4g fat
+  * Salmon (cooked): ~206 cal/100g, 25g protein, 0g carbs, 12g fat
+  * Pasta (cooked): ~131 cal/100g, 5g protein, 25g carbs, 1.1g fat
+
+Return ONLY valid JSON (no markdown, no explanations):
 {
   "foods": [
     {
-      "name": "Grilled Chicken Breast",
-      "confidence": 92,
-      "serving_size": "150g",
+      "name": "Specific food name (e.g., 'Grilled Chicken Breast', not just 'Chicken')",
+      "confidence": 85,
+      "serving_size": "Realistic portion like '150g' or '1 medium breast'",
       "calories": 248,
       "protein_g": 46.5,
       "carbs_g": 0,
@@ -81,7 +89,12 @@ Return ONLY this JSON structure with NO markdown, NO explanations, NO code block
   ]
 }
 
-If multiple foods are visible, include all of them in the array. Be realistic with portions and nutrition values.`
+IMPORTANT:
+- Include ALL foods visible in the image
+- Be conservative with portion estimates - it's better to underestimate than overestimate
+- If you see multiple servings of the same food, count them separately
+- Account for cooking methods (fried = more calories, grilled = fewer)
+- Return valid JSON only - no markdown code blocks`
               },
               {
                 type: 'image_url',

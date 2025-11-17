@@ -4,6 +4,7 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { FoodRecognitionResult } from '../services/foodRecognitionService';
 import { useMealStore } from '../store/useMealStore';
 import { Meal, FoodItem, MealType } from '../types/meal.types';
+import { trackFoodAccurate } from '../services/aiFeedbackService';
 
 type RouteParams = {
   FoodResults: {
@@ -18,7 +19,9 @@ export default function FoodResultsScreen() {
   const { addMeal } = useMealStore();
   const [selectedMealType, setSelectedMealType] = useState<MealType>('Lunch');
 
-  const handleAddToLog = () => {
+  const handleAddToLog = async () => {
+    const mealId = `meal-${Date.now()}`;
+    
     // Create food items from recognized foods
     const foodItems: FoodItem[] = result.foods.map((food, index) => ({
       id: `food-${Date.now()}-${index}`,
@@ -40,7 +43,7 @@ export default function FoodResultsScreen() {
 
     // Create meal
     const meal: Meal = {
-      id: `meal-${Date.now()}`,
+      id: mealId,
       mealType: selectedMealType,
       foods: foodItems,
       timestamp: new Date().toISOString(),
@@ -52,6 +55,19 @@ export default function FoodResultsScreen() {
 
     // Add to store
     addMeal(meal);
+
+    // Track AI feedback (mark as accurate since user accepted without editing)
+    for (let i = 0; i < result.foods.length; i++) {
+      const food = result.foods[i];
+      await trackFoodAccurate(mealId, foodItems[i].id, {
+        name: food.name,
+        calories: food.calories,
+        protein_g: food.protein_g,
+        carbs_g: food.carbs_g,
+        fat_g: food.fat_g,
+        confidence: food.confidence,
+      });
+    }
 
     // Show success and navigate back
     Alert.alert(
