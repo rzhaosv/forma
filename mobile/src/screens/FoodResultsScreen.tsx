@@ -5,6 +5,7 @@ import { FoodRecognitionResult, IdentifiedFood } from '../services/foodRecogniti
 import { useMealStore } from '../store/useMealStore';
 import { Meal, FoodItem, MealType } from '../types/meal.types';
 import { trackFoodAccurate, trackFoodEdit } from '../services/aiFeedbackService';
+import { useTheme } from '../hooks/useTheme';
 
 type RouteParams = {
   FoodResults: {
@@ -21,6 +22,7 @@ export default function FoodResultsScreen() {
   const route = useRoute<RouteProp<RouteParams, 'FoodResults'>>();
   const { result } = route.params;
   const { addMeal } = useMealStore();
+  const { colors, isDark } = useTheme();
   const [selectedMealType, setSelectedMealType] = useState<MealType>('Lunch');
   
   // Editable food state - initialize with AI results
@@ -121,49 +123,220 @@ export default function FoodResultsScreen() {
     );
   };
 
+  const dynamicStyles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      backgroundColor: colors.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    backText: {
+      fontSize: 16,
+      color: colors.primary,
+      fontWeight: '600',
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    summaryCard: {
+      backgroundColor: colors.primary,
+      margin: 16,
+      padding: 28,
+      borderRadius: 20,
+      alignItems: 'center',
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 12,
+      elevation: 5,
+    },
+    summaryLabel: {
+      fontSize: 13,
+      color: '#FFFFFF',
+      opacity: 0.9,
+      marginBottom: 8,
+      fontWeight: '600',
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+    },
+    summaryValue: {
+      fontSize: 56,
+      fontWeight: '700',
+      color: '#FFFFFF',
+      marginBottom: 4,
+    },
+    summaryUnit: {
+      fontSize: 16,
+      color: '#FFFFFF',
+      opacity: 0.8,
+      marginBottom: 16,
+    },
+    itemCount: {
+      fontSize: 14,
+      color: '#FFFFFF',
+      opacity: 0.9,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.text,
+      marginBottom: 12,
+    },
+    foodCard: {
+      backgroundColor: colors.surface,
+      padding: 20,
+      borderRadius: 16,
+      marginBottom: 16,
+      shadowColor: colors.shadowColor,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: isDark ? 0.3 : 0.1,
+      shadowRadius: 8,
+      elevation: 3,
+    },
+    foodNameInput: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.text,
+      backgroundColor: colors.inputBackground,
+      borderWidth: 2,
+      borderColor: colors.inputBorder,
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+    },
+    inputField: {
+      fontSize: 15,
+      fontWeight: '500',
+      color: colors.inputText,
+      backgroundColor: colors.inputBackground,
+      borderWidth: 2,
+      borderColor: colors.inputBorder,
+      borderRadius: 10,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+    },
+    mealTypeButton: {
+      flex: 1,
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      backgroundColor: colors.surfaceSecondary,
+      alignItems: 'center',
+    },
+    mealTypeButtonActive: {
+      backgroundColor: colors.primary,
+    },
+    mealTypeText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.textSecondary,
+    },
+    mealTypeTextActive: {
+      color: '#FFFFFF',
+    },
+    macroBox: {
+      flex: 1,
+      minWidth: '47%',
+      backgroundColor: colors.inputBackground,
+      borderWidth: 2,
+      borderColor: colors.inputBorder,
+      borderRadius: 12,
+      padding: 12,
+      alignItems: 'center',
+    },
+    macroBoxInput: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: colors.text,
+      textAlign: 'center',
+      width: '100%',
+      paddingVertical: 4,
+    },
+    totalSection: {
+      marginTop: 16,
+      paddingTop: 16,
+      borderTopWidth: 2,
+      borderTopColor: colors.border,
+      backgroundColor: colors.surfaceSecondary,
+      borderRadius: 12,
+      padding: 16,
+    },
+    totalValue: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.primary,
+    },
+    primaryButton: {
+      backgroundColor: colors.primary,
+      paddingVertical: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    primaryButtonText: {
+      color: '#FFFFFF',
+      fontSize: 16,
+      fontWeight: '600',
+    },
+  });
+
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaView style={dynamicStyles.container}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       
       {/* Header */}
-      <View style={styles.header}>
+      <View style={dynamicStyles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backText}>← Retake</Text>
+          <Text style={dynamicStyles.backText}>← Retake</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Food Identified</Text>
+        <Text style={dynamicStyles.title}>Food Identified</Text>
         <View style={styles.placeholder} />
       </View>
 
       <ScrollView style={styles.scrollView}>
         {/* Summary Card */}
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryLabel}>Total Calories</Text>
-          <Text style={styles.summaryValue}>
+        <View style={dynamicStyles.summaryCard}>
+          <Text style={dynamicStyles.summaryLabel}>Total Calories</Text>
+          <Text style={dynamicStyles.summaryValue}>
             {Math.round(editableFoods.reduce((sum, food) => sum + (food.calories * food.quantity), 0))}
           </Text>
-          <Text style={styles.summaryUnit}>kcal</Text>
+          <Text style={dynamicStyles.summaryUnit}>kcal</Text>
           <View style={styles.summaryDivider} />
-          <Text style={styles.itemCount}>
+          <Text style={dynamicStyles.itemCount}>
             {editableFoods.length} food item{editableFoods.length !== 1 ? 's' : ''} identified
           </Text>
         </View>
 
         {/* Meal Type Selector */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Add to Meal</Text>
+          <Text style={dynamicStyles.sectionTitle}>Add to Meal</Text>
           <View style={styles.mealTypeSelector}>
             {(['Breakfast', 'Lunch', 'Dinner', 'Snack'] as MealType[]).map((type) => (
               <TouchableOpacity
                 key={type}
                 style={[
-                  styles.mealTypeButton,
-                  selectedMealType === type && styles.mealTypeButtonActive
+                  dynamicStyles.mealTypeButton,
+                  selectedMealType === type && dynamicStyles.mealTypeButtonActive
                 ]}
                 onPress={() => setSelectedMealType(type)}
               >
                 <Text style={[
-                  styles.mealTypeText,
-                  selectedMealType === type && styles.mealTypeTextActive
+                  dynamicStyles.mealTypeText,
+                  selectedMealType === type && dynamicStyles.mealTypeTextActive
                 ]}>
                   {type}
                 </Text>
@@ -183,16 +356,16 @@ export default function FoodResultsScreen() {
             const totalFat = food.fat_g * food.quantity;
             
             return (
-              <View key={index} style={styles.foodCard}>
+              <View key={index} style={dynamicStyles.foodCard}>
                 {/* Food Name - Large Editable Box */}
                 <View style={styles.foodNameContainer}>
                   <Text style={styles.foodNameLabel}>Food Name</Text>
                   <TextInput
-                    style={styles.foodNameInput}
+                    style={dynamicStyles.foodNameInput}
                     value={food.name}
                     onChangeText={(text) => updateFood(index, { name: text })}
                     placeholder="Enter food name"
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor={colors.placeholder}
                   />
                 </View>
 
@@ -200,11 +373,11 @@ export default function FoodResultsScreen() {
                 <View style={styles.inputBox}>
                   <Text style={styles.inputLabel}>Serving Size</Text>
                   <TextInput
-                    style={styles.inputField}
+                    style={dynamicStyles.inputField}
                     value={food.serving_size}
                     onChangeText={(text) => updateFood(index, { serving_size: text })}
                     placeholder="e.g., 150g, 1 cup"
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor={colors.placeholder}
                   />
                 </View>
 
@@ -242,10 +415,10 @@ export default function FoodResultsScreen() {
                 <View style={styles.macrosSection}>
                   <Text style={styles.macrosSectionTitle}>Nutrition (per serving)</Text>
                   <View style={styles.macrosGrid}>
-                    <View style={styles.macroBox}>
+                    <View style={dynamicStyles.macroBox}>
                       <Text style={styles.macroBoxLabel}>Calories</Text>
                       <TextInput
-                        style={styles.macroBoxInput}
+                        style={dynamicStyles.macroBoxInput}
                         value={food.calories.toString()}
                         onChangeText={(text) => {
                           const val = parseFloat(text) || 0;
@@ -253,14 +426,14 @@ export default function FoodResultsScreen() {
                         }}
                         keyboardType="numeric"
                         placeholder="0"
-                        placeholderTextColor="#9CA3AF"
+                        placeholderTextColor={colors.placeholder}
                       />
                       <Text style={styles.macroBoxUnit}>cal</Text>
                     </View>
-                    <View style={styles.macroBox}>
+                    <View style={dynamicStyles.macroBox}>
                       <Text style={styles.macroBoxLabel}>Protein</Text>
                       <TextInput
-                        style={styles.macroBoxInput}
+                        style={dynamicStyles.macroBoxInput}
                         value={food.protein_g.toString()}
                         onChangeText={(text) => {
                           const val = parseFloat(text) || 0;
@@ -268,14 +441,14 @@ export default function FoodResultsScreen() {
                         }}
                         keyboardType="numeric"
                         placeholder="0"
-                        placeholderTextColor="#9CA3AF"
+                        placeholderTextColor={colors.placeholder}
                       />
                       <Text style={styles.macroBoxUnit}>g</Text>
                     </View>
-                    <View style={styles.macroBox}>
+                    <View style={dynamicStyles.macroBox}>
                       <Text style={styles.macroBoxLabel}>Carbs</Text>
                       <TextInput
-                        style={styles.macroBoxInput}
+                        style={dynamicStyles.macroBoxInput}
                         value={food.carbs_g.toString()}
                         onChangeText={(text) => {
                           const val = parseFloat(text) || 0;
@@ -283,14 +456,14 @@ export default function FoodResultsScreen() {
                         }}
                         keyboardType="numeric"
                         placeholder="0"
-                        placeholderTextColor="#9CA3AF"
+                        placeholderTextColor={colors.placeholder}
                       />
                       <Text style={styles.macroBoxUnit}>g</Text>
                     </View>
-                    <View style={styles.macroBox}>
+                    <View style={dynamicStyles.macroBox}>
                       <Text style={styles.macroBoxLabel}>Fat</Text>
                       <TextInput
-                        style={styles.macroBoxInput}
+                        style={dynamicStyles.macroBoxInput}
                         value={food.fat_g.toString()}
                         onChangeText={(text) => {
                           const val = parseFloat(text) || 0;
@@ -298,7 +471,7 @@ export default function FoodResultsScreen() {
                         }}
                         keyboardType="numeric"
                         placeholder="0"
-                        placeholderTextColor="#9CA3AF"
+                        placeholderTextColor={colors.placeholder}
                       />
                       <Text style={styles.macroBoxUnit}>g</Text>
                     </View>
@@ -306,23 +479,23 @@ export default function FoodResultsScreen() {
                 </View>
 
                 {/* Total Display */}
-                <View style={styles.totalSection}>
+                <View style={dynamicStyles.totalSection}>
                   <Text style={styles.totalLabel}>Total ({food.quantity} {food.quantity === 1 ? 'serving' : 'servings'})</Text>
                   <View style={styles.totalBox}>
                     <View style={styles.totalItem}>
-                      <Text style={styles.totalValue}>{totalCalories}</Text>
+                      <Text style={dynamicStyles.totalValue}>{totalCalories}</Text>
                       <Text style={styles.totalUnit}>cal</Text>
                     </View>
                     <View style={styles.totalItem}>
-                      <Text style={styles.totalValue}>{totalProtein.toFixed(1)}</Text>
+                      <Text style={dynamicStyles.totalValue}>{totalProtein.toFixed(1)}</Text>
                       <Text style={styles.totalUnit}>g protein</Text>
                     </View>
                     <View style={styles.totalItem}>
-                      <Text style={styles.totalValue}>{totalCarbs.toFixed(1)}</Text>
+                      <Text style={dynamicStyles.totalValue}>{totalCarbs.toFixed(1)}</Text>
                       <Text style={styles.totalUnit}>g carbs</Text>
                     </View>
                     <View style={styles.totalItem}>
-                      <Text style={styles.totalValue}>{totalFat.toFixed(1)}</Text>
+                      <Text style={dynamicStyles.totalValue}>{totalFat.toFixed(1)}</Text>
                       <Text style={styles.totalUnit}>g fat</Text>
                     </View>
                   </View>
@@ -338,10 +511,10 @@ export default function FoodResultsScreen() {
       {/* Bottom Actions */}
       <View style={styles.actions}>
         <TouchableOpacity 
-          style={styles.primaryButton}
+          style={dynamicStyles.primaryButton}
           onPress={handleAddToLog}
         >
-          <Text style={styles.primaryButtonText}>Add to Meal Log</Text>
+          <Text style={dynamicStyles.primaryButtonText}>Add to Meal Log</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

@@ -14,6 +14,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 import Svg, { Circle } from 'react-native-svg';
 import { signOut } from '../services/authService';
 import { useMealStore } from '../store/useMealStore';
+import { useTheme } from '../hooks/useTheme';
 
 const MEAL_TYPE_ICONS = {
   Breakfast: '🌅',
@@ -25,6 +26,7 @@ const MEAL_TYPE_ICONS = {
 export default function HomeScreen() {
   const navigation = useNavigation();
   const [currentDate] = useState(new Date());
+  const { colors, isDark } = useTheme();
   
   // Get real meal data from store
   const { meals, dailySummary, calorieGoal, proteinGoal, updateDailySummary, deleteMeal } = useMealStore();
@@ -129,27 +131,204 @@ export default function HomeScreen() {
     );
   };
 
+  const dynamicStyles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingTop: 20,
+      paddingBottom: 10,
+      backgroundColor: colors.background,
+    },
+    appName: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      color: colors.text,
+    },
+    signOutButton: {
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      backgroundColor: colors.surfaceSecondary,
+      borderRadius: 8,
+    },
+    signOutText: {
+      color: colors.textSecondary,
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    greeting: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: colors.text,
+    },
+    date: {
+      fontSize: 16,
+      color: colors.textSecondary,
+      marginTop: 4,
+    },
+    progressCard: {
+      backgroundColor: colors.surface,
+      marginHorizontal: 20,
+      borderRadius: 16,
+      padding: 20,
+      marginBottom: 20,
+      shadowColor: colors.shadowColor,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: isDark ? 0.3 : 0.1,
+      shadowRadius: 8,
+      elevation: 3,
+      alignItems: 'center',
+    },
+    calorieText: {
+      fontSize: 28,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    calorieGoal: {
+      fontSize: 18,
+      color: colors.textSecondary,
+    },
+    percentageText: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      marginTop: 4,
+    },
+    caloriesLeftLabel: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      marginTop: 8,
+    },
+    macroLabel: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.textSecondary,
+      width: 60,
+    },
+    macroValue: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      marginRight: 10,
+    },
+    macroBar: {
+      flex: 1,
+      height: 8,
+      backgroundColor: colors.divider,
+      borderRadius: 4,
+      overflow: 'hidden',
+    },
+    sectionTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: colors.text,
+    },
+    quickAddButton: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      paddingVertical: 15,
+      alignItems: 'center',
+      shadowColor: colors.shadowColor,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: isDark ? 0.3 : 0.05,
+      shadowRadius: 4,
+      elevation: 2,
+    },
+    quickAddText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.textSecondary,
+    },
+    mealCard: {
+      backgroundColor: colors.surface,
+      marginHorizontal: 20,
+      borderRadius: 16,
+      padding: 15,
+      marginBottom: 15,
+      shadowColor: colors.shadowColor,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: isDark ? 0.3 : 0.05,
+      shadowRadius: 8,
+      elevation: 3,
+    },
+    mealType: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    mealCalories: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.textSecondary,
+    },
+    foodName: {
+      flex: 1,
+      fontSize: 15,
+      color: colors.text,
+    },
+    addMealButton: {
+      backgroundColor: colors.surface,
+      marginHorizontal: 20,
+      marginTop: 10,
+      paddingVertical: 15,
+      borderRadius: 12,
+      borderWidth: 2,
+      borderColor: colors.border,
+      borderStyle: 'dashed',
+      alignItems: 'center',
+    },
+    addMealText: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.primary,
+    },
+    emptyStateText: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: colors.text,
+      textAlign: 'center',
+      marginBottom: 8,
+    },
+    emptyStateSubtext: {
+      fontSize: 14,
+      color: colors.textTertiary,
+      textAlign: 'center',
+    },
+  });
+
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaView style={dynamicStyles.container}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.appName}>Forma</Text>
-        <TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
-          <Text style={styles.signOutText}>Sign Out</Text>
-        </TouchableOpacity>
+      <View style={dynamicStyles.header}>
+        <Text style={dynamicStyles.appName}>Forma</Text>
+        <View style={{ flexDirection: 'row', gap: 12 }}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Settings' as never)}
+            style={[dynamicStyles.signOutButton, { marginRight: 0 }]}
+          >
+            <Text style={dynamicStyles.signOutText}>⚙️</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleSignOut} style={dynamicStyles.signOutButton}>
+            <Text style={dynamicStyles.signOutText}>Sign Out</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Greeting */}
         <View style={styles.greetingSection}>
-          <Text style={styles.greeting}>{getGreeting()}! 👋</Text>
-          <Text style={styles.date}>{formatDate()}</Text>
+          <Text style={dynamicStyles.greeting}>{getGreeting()}! 👋</Text>
+          <Text style={dynamicStyles.date}>{formatDate()}</Text>
         </View>
 
         {/* Calorie Progress Card */}
-        <View style={styles.progressCard}>
+        <View style={dynamicStyles.progressCard}>
           <View style={styles.calorieRing}>
             {/* SVG Circle Progress */}
             <Svg width="180" height="180" style={styles.svgContainer}>
@@ -158,7 +337,7 @@ export default function HomeScreen() {
                 cx="90"
                 cy="90"
                 r="76"
-                stroke="#E5E7EB"
+                stroke={colors.divider}
                 strokeWidth="14"
                 fill="none"
               />
@@ -180,15 +359,15 @@ export default function HomeScreen() {
             
             {/* Center Text Overlay */}
             <View style={styles.centerTextContainer}>
-              <Text style={styles.calorieText}>
+              <Text style={dynamicStyles.calorieText}>
                 {caloriesConsumed}
-                <Text style={styles.calorieGoal}> / {calorieGoal}</Text>
+                <Text style={dynamicStyles.calorieGoal}> / {calorieGoal}</Text>
               </Text>
-              <Text style={styles.percentageText}>{percentage}%</Text>
+              <Text style={dynamicStyles.percentageText}>{percentage}%</Text>
             </View>
           </View>
           
-          <Text style={styles.caloriesLeftLabel}>Calories Left</Text>
+          <Text style={dynamicStyles.caloriesLeftLabel}>Calories Left</Text>
           <Text style={[styles.caloriesLeft, { color: getProgressColor() }]}>
             {caloriesLeft}
           </Text>
@@ -196,54 +375,54 @@ export default function HomeScreen() {
           {/* Macro Progress */}
           <View style={styles.macrosContainer}>
             <View style={styles.macroRow}>
-              <Text style={styles.macroLabel}>Protein</Text>
-              <Text style={styles.macroValue}>
+              <Text style={dynamicStyles.macroLabel}>Protein</Text>
+              <Text style={dynamicStyles.macroValue}>
                 {macros.protein.current}g / {macros.protein.goal}g
               </Text>
             </View>
-            <View style={styles.macroBar}>
+            <View style={dynamicStyles.macroBar}>
               <View
                 style={[
                   styles.macroProgress,
                   {
                     width: `${Math.min((macros.protein.current / macros.protein.goal) * 100, 100)}%`,
-                    backgroundColor: '#6366F1',
+                    backgroundColor: colors.primary,
                   },
                 ]}
               />
             </View>
 
             <View style={styles.macroRow}>
-              <Text style={styles.macroLabel}>Carbs</Text>
-              <Text style={styles.macroValue}>
+              <Text style={dynamicStyles.macroLabel}>Carbs</Text>
+              <Text style={dynamicStyles.macroValue}>
                 {macros.carbs.current}g / {macros.carbs.goal}g
               </Text>
             </View>
-            <View style={styles.macroBar}>
+            <View style={dynamicStyles.macroBar}>
               <View
                 style={[
                   styles.macroProgress,
                   {
                     width: `${Math.min((macros.carbs.current / macros.carbs.goal) * 100, 100)}%`,
-                    backgroundColor: '#34C759',
+                    backgroundColor: colors.success,
                   },
                 ]}
               />
             </View>
 
             <View style={styles.macroRow}>
-              <Text style={styles.macroLabel}>Fat</Text>
-              <Text style={styles.macroValue}>
+              <Text style={dynamicStyles.macroLabel}>Fat</Text>
+              <Text style={dynamicStyles.macroValue}>
                 {macros.fat.current}g / {macros.fat.goal}g
               </Text>
             </View>
-            <View style={styles.macroBar}>
+            <View style={dynamicStyles.macroBar}>
               <View
                 style={[
                   styles.macroProgress,
                   {
                     width: `${Math.min((macros.fat.current / macros.fat.goal) * 100, 100)}%`,
-                    backgroundColor: '#FF9500',
+                    backgroundColor: colors.warning,
                   },
                 ]}
               />
@@ -253,44 +432,44 @@ export default function HomeScreen() {
 
         {/* Quick Add Section */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Quick Add</Text>
+          <Text style={dynamicStyles.sectionTitle}>Quick Add</Text>
         </View>
         <View style={styles.quickAddContainer}>
           <TouchableOpacity
-            style={styles.quickAddButton}
+            style={dynamicStyles.quickAddButton}
             onPress={() => handleQuickAdd('photo')}
           >
             <Text style={styles.quickAddIcon}>📸</Text>
-            <Text style={styles.quickAddText}>Photo</Text>
+            <Text style={dynamicStyles.quickAddText}>Photo</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.quickAddButton}
+            style={dynamicStyles.quickAddButton}
             onPress={() => handleQuickAdd('barcode')}
           >
             <Text style={styles.quickAddIcon}>📊</Text>
-            <Text style={styles.quickAddText}>Barcode</Text>
+            <Text style={dynamicStyles.quickAddText}>Barcode</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.quickAddButton}
+            style={dynamicStyles.quickAddButton}
             onPress={() => handleQuickAdd('manual')}
           >
             <Text style={styles.quickAddIcon}>✏️</Text>
-            <Text style={styles.quickAddText}>Manual</Text>
+            <Text style={dynamicStyles.quickAddText}>Manual</Text>
           </TouchableOpacity>
         </View>
 
         {/* Today's Meals */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Today's Meals</Text>
+          <Text style={dynamicStyles.sectionTitle}>Today's Meals</Text>
         </View>
 
         {todayMeals.length === 0 ? (
           <View style={styles.emptyState}>
             <Text style={styles.emptyStateIcon}>🍽️</Text>
-            <Text style={styles.emptyStateText}>No meals logged yet today</Text>
-            <Text style={styles.emptyStateSubtext}>Use Quick Add to log your first meal!</Text>
+            <Text style={dynamicStyles.emptyStateText}>No meals logged yet today</Text>
+            <Text style={dynamicStyles.emptyStateSubtext}>Use Quick Add to log your first meal!</Text>
           </View>
         ) : (
           todayMeals.map((meal) => (
@@ -300,20 +479,20 @@ export default function HomeScreen() {
               overshootRight={false}
               rightThreshold={40}
             >
-              <View style={styles.mealCard}>
+              <View style={dynamicStyles.mealCard}>
                 <View style={styles.mealHeader}>
                   <View style={styles.mealTitleRow}>
                     <Text style={styles.mealIcon}>
                       {MEAL_TYPE_ICONS[meal.mealType as keyof typeof MEAL_TYPE_ICONS] || '🍽️'}
                     </Text>
-                    <Text style={styles.mealType}>{meal.mealType}</Text>
+                    <Text style={dynamicStyles.mealType}>{meal.mealType}</Text>
                   </View>
-                  <Text style={styles.mealCalories}>{Math.round(meal.totalCalories)} cal</Text>
+                  <Text style={dynamicStyles.mealCalories}>{Math.round(meal.totalCalories)} cal</Text>
                 </View>
                 {meal.foods.map((food) => (
                   <View key={food.id} style={styles.foodItem}>
                     <Text style={styles.foodBullet}>○</Text>
-                    <Text style={styles.foodName}>
+                    <Text style={dynamicStyles.foodName}>
                       {food.name} {food.quantity > 1 ? `(${food.quantity}x)` : ''}
                     </Text>
                     <Text style={styles.foodCalories}>
@@ -327,39 +506,39 @@ export default function HomeScreen() {
         )}
 
         {/* Quick Add Meal Type Buttons */}
-        {!todayMeals.some(m => m.mealType === 'Breakfast') && (
-          <TouchableOpacity 
-            style={styles.addMealButton}
-            onPress={() => handleQuickAdd('photo')}
-          >
-            <Text style={styles.addMealText}>+ Add Breakfast</Text>
-          </TouchableOpacity>
-        )}
-        
-        {!todayMeals.some(m => m.mealType === 'Lunch') && (
-          <TouchableOpacity 
-            style={styles.addMealButton}
-            onPress={() => handleQuickAdd('photo')}
-          >
-            <Text style={styles.addMealText}>+ Add Lunch</Text>
-          </TouchableOpacity>
-        )}
-        
-        {!todayMeals.some(m => m.mealType === 'Dinner') && (
-          <TouchableOpacity 
-            style={styles.addMealButton}
-            onPress={() => handleQuickAdd('photo')}
-          >
-            <Text style={styles.addMealText}>+ Add Dinner</Text>
-          </TouchableOpacity>
-        )}
-        
-        <TouchableOpacity 
-          style={styles.addMealButton}
-          onPress={() => handleQuickAdd('photo')}
-        >
-          <Text style={styles.addMealText}>+ Add Snack</Text>
-        </TouchableOpacity>
+            {!todayMeals.some(m => m.mealType === 'Breakfast') && (
+              <TouchableOpacity 
+                style={dynamicStyles.addMealButton}
+                onPress={() => handleQuickAdd('photo')}
+              >
+                <Text style={dynamicStyles.addMealText}>+ Add Breakfast</Text>
+              </TouchableOpacity>
+            )}
+            
+            {!todayMeals.some(m => m.mealType === 'Lunch') && (
+              <TouchableOpacity 
+                style={dynamicStyles.addMealButton}
+                onPress={() => handleQuickAdd('photo')}
+              >
+                <Text style={dynamicStyles.addMealText}>+ Add Lunch</Text>
+              </TouchableOpacity>
+            )}
+            
+            {!todayMeals.some(m => m.mealType === 'Dinner') && (
+              <TouchableOpacity 
+                style={dynamicStyles.addMealButton}
+                onPress={() => handleQuickAdd('photo')}
+              >
+                <Text style={dynamicStyles.addMealText}>+ Add Dinner</Text>
+              </TouchableOpacity>
+            )}
+            
+            <TouchableOpacity 
+              style={dynamicStyles.addMealButton}
+              onPress={() => handleQuickAdd('photo')}
+            >
+              <Text style={dynamicStyles.addMealText}>+ Add Snack</Text>
+            </TouchableOpacity>
 
         <View style={{ height: 40 }} />
       </ScrollView>

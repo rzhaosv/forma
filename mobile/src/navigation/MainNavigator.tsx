@@ -6,6 +6,7 @@ import BarcodeScannerScreen from '../screens/BarcodeScannerScreen';
 import FoodResultsScreen from '../screens/FoodResultsScreen';
 import ManualEntryScreen from '../screens/ManualEntryScreen';
 import FoodSearchScreen from '../screens/FoodSearchScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 const Stack = createStackNavigator();
 
@@ -22,7 +23,8 @@ export default function MainNavigator() {
       <Stack.Screen name="FoodResults" component={FoodResultsScreen} />
       <Stack.Screen name="ManualEntry" component={ManualEntryScreen} />
       <Stack.Screen name="FoodSearch" component={FoodSearchScreen} />
-      {/* Add more screens: Profile, Progress, Settings, etc. */}
+      <Stack.Screen name="Settings" component={SettingsScreen} />
+      {/* Add more screens: Profile, Progress, etc. */}
     </Stack.Navigator>
   );
 }
