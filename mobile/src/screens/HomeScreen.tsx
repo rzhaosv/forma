@@ -94,7 +94,8 @@ export default function HomeScreen() {
     } else if (type === 'barcode') {
       navigation.navigate('BarcodeScanner' as never);
     } else if (type === 'manual') {
-      navigation.navigate('ManualEntry' as never);
+      // Navigate directly to food search for better UX
+      navigation.navigate('FoodSearch' as never);
     }
   };
 

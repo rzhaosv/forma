@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,12 +12,19 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useMealStore } from '../store/useMealStore';
 import { Meal, FoodItem, MealType } from '../types/meal.types';
 
+type RouteParams = {
+  ManualEntry: {
+    selectedFood?: FoodItem;
+  };
+};
+
 export default function ManualEntryScreen() {
   const navigation = useNavigation();
+  const route = useRoute<RouteProp<RouteParams, 'ManualEntry'>>();
   const { addMeal } = useMealStore();
   
   const [foodName, setFoodName] = useState('');
@@ -28,6 +35,20 @@ export default function ManualEntryScreen() {
   const [portion, setPortion] = useState('');
   const [quantity, setQuantity] = useState('1');
   const [selectedMealType, setSelectedMealType] = useState<MealType>('Lunch');
+
+  // Handle food selected from search
+  useEffect(() => {
+    if (route.params?.selectedFood) {
+      const food = route.params.selectedFood;
+      setFoodName(food.name);
+      setCalories(food.calories.toString());
+      setProtein(food.protein_g.toString());
+      setCarbs(food.carbs_g.toString());
+      setFat(food.fat_g.toString());
+      setPortion(food.portion);
+      setQuantity(food.quantity.toString());
+    }
+  }, [route.params]);
 
   const handleAddFood = () => {
     // Validation
@@ -104,6 +125,22 @@ export default function ManualEntryScreen() {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
+          {/* Search Database Button */}
+          <TouchableOpacity
+            style={styles.searchButton}
+            onPress={() => navigation.navigate('FoodSearch' as never)}
+          >
+            <Text style={styles.searchButtonIcon}>🔍</Text>
+            <Text style={styles.searchButtonText}>Search Food Database</Text>
+            <Text style={styles.searchButtonSubtext}>Find foods with nutrition data</Text>
+          </TouchableOpacity>
+
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>or enter manually</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
           {/* Food Name */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Food Name *</Text>
@@ -359,6 +396,45 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
+  },
+  searchButton: {
+    backgroundColor: '#EEF2FF',
+    borderRadius: 12,
+    padding: 20,
+    alignItems: 'center',
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: '#6366F1',
+    borderStyle: 'dashed',
+  },
+  searchButtonIcon: {
+    fontSize: 32,
+    marginBottom: 8,
+  },
+  searchButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#6366F1',
+    marginBottom: 4,
+  },
+  searchButtonSubtext: {
+    fontSize: 13,
+    color: '#6B7280',
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E5E7EB',
+  },
+  dividerText: {
+    marginHorizontal: 16,
+    fontSize: 14,
+    color: '#9CA3AF',
   },
 });
 
