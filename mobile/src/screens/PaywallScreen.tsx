@@ -9,11 +9,15 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  Dimensions,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
 import { useTheme } from '../hooks/useTheme';
 import { PurchasesPackage } from 'react-native-purchases';
+import { LinearGradient } from 'expo-linear-gradient';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function PaywallScreen() {
   const navigation = useNavigation();
@@ -129,6 +133,7 @@ export default function PaywallScreen() {
     },
     backButton: {
       marginRight: 16,
+      padding: 4,
     },
     backText: {
       fontSize: 16,
@@ -142,104 +147,198 @@ export default function PaywallScreen() {
       flex: 1,
     },
     scrollContent: {
-      padding: 20,
+      paddingBottom: 40,
     },
     heroSection: {
       alignItems: 'center',
-      marginBottom: 32,
-    },
-    heroIcon: {
-      fontSize: 80,
-      marginBottom: 16,
-    },
-    heroTitle: {
-      fontSize: 28,
-      fontWeight: '700',
-      color: colors.text,
-      textAlign: 'center',
+      paddingTop: 32,
+      paddingBottom: 32,
+      paddingHorizontal: 20,
       marginBottom: 8,
     },
+    heroGradient: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: 300,
+      opacity: isDark ? 0.1 : 0.05,
+    },
+    heroIcon: {
+      fontSize: 90,
+      marginBottom: 20,
+    },
+    heroTitle: {
+      fontSize: 32,
+      fontWeight: '800',
+      color: colors.text,
+      textAlign: 'center',
+      marginBottom: 12,
+      letterSpacing: -0.5,
+    },
     heroSubtitle: {
-      fontSize: 16,
+      fontSize: 17,
       color: colors.textSecondary,
       textAlign: 'center',
       lineHeight: 24,
+      maxWidth: SCREEN_WIDTH - 80,
+    },
+    trialBadge: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 20,
+      alignSelf: 'center',
+      marginTop: 16,
+    },
+    trialBadgeText: {
+      fontSize: 14,
+      fontWeight: '700',
     },
     featuresSection: {
+      paddingHorizontal: 20,
       marginBottom: 32,
     },
-    featureItem: {
+    featuresTitle: {
+      fontSize: 22,
+      fontWeight: '700',
+      color: colors.text,
+      marginBottom: 20,
+      textAlign: 'center',
+    },
+    featureGrid: {
       flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 16,
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+    },
+    featureItem: {
+      width: (SCREEN_WIDTH - 60) / 2,
       backgroundColor: colors.surface,
-      padding: 16,
-      borderRadius: 12,
+      padding: 18,
+      borderRadius: 16,
+      marginBottom: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: 'center',
     },
     featureIcon: {
-      fontSize: 24,
-      marginRight: 12,
+      fontSize: 32,
+      marginBottom: 8,
     },
     featureText: {
-      flex: 1,
-      fontSize: 16,
+      fontSize: 14,
       color: colors.text,
+      fontWeight: '600',
+      textAlign: 'center',
     },
     packagesSection: {
+      paddingHorizontal: 20,
       marginBottom: 24,
+    },
+    packagesTitle: {
+      fontSize: 22,
+      fontWeight: '700',
+      color: colors.text,
+      marginBottom: 20,
+      textAlign: 'center',
     },
     packageCard: {
       backgroundColor: colors.surface,
-      borderRadius: 16,
-      padding: 20,
+      borderRadius: 20,
+      padding: 24,
       marginBottom: 16,
       borderWidth: 2,
       borderColor: colors.border,
+      shadowColor: colors.shadowColor,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: isDark ? 0.3 : 0.1,
+      shadowRadius: 8,
+      elevation: 4,
     },
     packageCardSelected: {
       borderColor: colors.primary,
-      backgroundColor: colors.primary + '10',
+      backgroundColor: isDark ? colors.primary + '15' : colors.primary + '08',
+      shadowColor: colors.primary,
+      shadowOpacity: 0.3,
     },
     packageHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      alignItems: 'center',
+      alignItems: 'flex-start',
       marginBottom: 12,
     },
     packageName: {
-      fontSize: 20,
-      fontWeight: '700',
+      fontSize: 22,
+      fontWeight: '800',
       color: colors.text,
+      flex: 1,
+    },
+    packagePriceContainer: {
+      alignItems: 'flex-end',
     },
     packagePrice: {
-      fontSize: 24,
-      fontWeight: '700',
+      fontSize: 28,
+      fontWeight: '800',
       color: colors.primary,
+      letterSpacing: -1,
     },
     packagePeriod: {
       fontSize: 14,
       color: colors.textSecondary,
-      marginBottom: 8,
+      marginTop: 4,
     },
     savingsBadge: {
       backgroundColor: colors.success,
-      paddingHorizontal: 12,
-      paddingVertical: 4,
-      borderRadius: 12,
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      borderRadius: 8,
       alignSelf: 'flex-start',
-      marginTop: 8,
+      marginTop: 12,
+      marginBottom: 8,
     },
     savingsText: {
       color: '#FFFFFF',
+      fontSize: 13,
+      fontWeight: '700',
+    },
+    trialBadgeInline: {
+      backgroundColor: isDark ? colors.primary + '30' : colors.primary + '15',
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      borderRadius: 8,
+      alignSelf: 'flex-start',
+      marginTop: 8,
+      marginBottom: 8,
+    },
+    trialBadgeInlineText: {
+      color: colors.primary,
+      fontSize: 13,
+      fontWeight: '700',
+    },
+    popularBadge: {
+      position: 'absolute',
+      top: -12,
+      right: 20,
+      backgroundColor: colors.primary,
+      paddingHorizontal: 12,
+      paddingVertical: 4,
+      borderRadius: 12,
+    },
+    popularBadgeText: {
+      color: '#FFFFFF',
       fontSize: 12,
-      fontWeight: '600',
+      fontWeight: '700',
     },
     purchaseButton: {
-      backgroundColor: colors.primary,
-      paddingVertical: 16,
-      borderRadius: 12,
+      paddingVertical: 18,
+      borderRadius: 14,
       alignItems: 'center',
-      marginTop: 8,
+      marginTop: 12,
+      overflow: 'hidden',
+    },
+    purchaseButtonGradient: {
+      width: '100%',
+      alignItems: 'center',
+      paddingVertical: 18,
     },
     purchaseButtonDisabled: {
       backgroundColor: colors.surfaceSecondary,
@@ -249,25 +348,33 @@ export default function PaywallScreen() {
       color: '#FFFFFF',
       fontSize: 18,
       fontWeight: '700',
+      letterSpacing: 0.5,
     },
     restoreButton: {
-      paddingVertical: 12,
+      paddingVertical: 16,
       alignItems: 'center',
+      marginTop: 8,
     },
     restoreButtonText: {
       color: colors.primary,
       fontSize: 16,
       fontWeight: '600',
     },
-    trialBadge: {
-      paddingHorizontal: 16,
-      paddingVertical: 8,
-      borderRadius: 20,
-      alignSelf: 'center',
+    footer: {
+      paddingHorizontal: 20,
+      paddingTop: 24,
+      alignItems: 'center',
     },
-    trialBadgeText: {
-      fontSize: 14,
-      fontWeight: '700',
+    footerText: {
+      fontSize: 12,
+      color: colors.textTertiary,
+      textAlign: 'center',
+      lineHeight: 18,
+      marginBottom: 8,
+    },
+    footerLink: {
+      color: colors.primary,
+      textDecorationLine: 'underline',
     },
     loadingOverlay: {
       position: 'absolute',
@@ -275,9 +382,16 @@ export default function PaywallScreen() {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
       justifyContent: 'center',
       alignItems: 'center',
+      zIndex: 1000,
+    },
+    loadingText: {
+      color: '#FFFFFF',
+      marginTop: 16,
+      fontSize: 16,
+      fontWeight: '600',
     },
   });
 
@@ -296,22 +410,28 @@ export default function PaywallScreen() {
         <Text style={dynamicStyles.title}>Upgrade to Premium</Text>
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={dynamicStyles.scrollContent}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={dynamicStyles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Hero Section */}
         <View style={dynamicStyles.heroSection}>
+          <LinearGradient
+            colors={[colors.primary, colors.primaryLight]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={dynamicStyles.heroGradient}
+          />
           <Text style={dynamicStyles.heroIcon}>💎</Text>
-          <Text style={dynamicStyles.heroTitle}>Unlock All Features</Text>
+          <Text style={dynamicStyles.heroTitle}>Unlock Premium</Text>
           {subscriptionStatus === 'trial' && trialInfo && trialInfo.isActive ? (
             <>
               <Text style={dynamicStyles.heroSubtitle}>
                 You're enjoying your free trial! 🎉
               </Text>
-              <View style={[dynamicStyles.trialBadge, { backgroundColor: colors.success + '20', marginTop: 16 }]}>
+              <View style={[dynamicStyles.trialBadge, { backgroundColor: colors.success + '20' }]}>
                 <Text style={[dynamicStyles.trialBadgeText, { color: colors.success }]}>
                   {trialInfo.daysRemaining} day{trialInfo.daysRemaining !== 1 ? 's' : ''} left in trial
                 </Text>
               </View>
-              <Text style={[dynamicStyles.heroSubtitle, { marginTop: 16, fontSize: 14 }]}>
+              <Text style={[dynamicStyles.heroSubtitle, { marginTop: 16, fontSize: 15 }]}>
                 Subscribe now to continue premium access after your trial ends
               </Text>
             </>
@@ -322,82 +442,98 @@ export default function PaywallScreen() {
           )}
         </View>
 
-        {/* Features List */}
+        {/* Features Grid */}
         <View style={dynamicStyles.featuresSection}>
-          <View style={dynamicStyles.featureItem}>
-            <Text style={dynamicStyles.featureIcon}>📸</Text>
-            <Text style={dynamicStyles.featureText}>Unlimited Photo Scans</Text>
-          </View>
-          <View style={dynamicStyles.featureItem}>
-            <Text style={dynamicStyles.featureIcon}>📊</Text>
-            <Text style={dynamicStyles.featureText}>Unlimited Barcode Scanning</Text>
-          </View>
-          <View style={dynamicStyles.featureItem}>
-            <Text style={dynamicStyles.featureIcon}>📈</Text>
-            <Text style={dynamicStyles.featureText}>Advanced Analytics (30+ day history)</Text>
-          </View>
-          <View style={dynamicStyles.featureItem}>
-            <Text style={dynamicStyles.featureIcon}>🍳</Text>
-            <Text style={dynamicStyles.featureText}>Recipe Builder</Text>
-          </View>
-          <View style={dynamicStyles.featureItem}>
-            <Text style={dynamicStyles.featureIcon}>📤</Text>
-            <Text style={dynamicStyles.featureText}>Export Data (CSV/PDF)</Text>
-          </View>
-          <View style={dynamicStyles.featureItem}>
-            <Text style={dynamicStyles.featureIcon}>✨</Text>
-            <Text style={dynamicStyles.featureText}>Ad-Free Experience</Text>
-          </View>
-          <View style={dynamicStyles.featureItem}>
-            <Text style={dynamicStyles.featureIcon}>🎯</Text>
-            <Text style={dynamicStyles.featureText}>Priority Support</Text>
+          <Text style={dynamicStyles.featuresTitle}>Everything You Need</Text>
+          <View style={dynamicStyles.featureGrid}>
+            <View style={dynamicStyles.featureItem}>
+              <Text style={dynamicStyles.featureIcon}>📸</Text>
+              <Text style={dynamicStyles.featureText}>Unlimited Photo Scans</Text>
+            </View>
+            <View style={dynamicStyles.featureItem}>
+              <Text style={dynamicStyles.featureIcon}>📊</Text>
+              <Text style={dynamicStyles.featureText}>Barcode Scanning</Text>
+            </View>
+            <View style={dynamicStyles.featureItem}>
+              <Text style={dynamicStyles.featureIcon}>📈</Text>
+              <Text style={dynamicStyles.featureText}>Advanced Analytics</Text>
+            </View>
+            <View style={dynamicStyles.featureItem}>
+              <Text style={dynamicStyles.featureIcon}>🍳</Text>
+              <Text style={dynamicStyles.featureText}>Recipe Builder</Text>
+            </View>
+            <View style={dynamicStyles.featureItem}>
+              <Text style={dynamicStyles.featureIcon}>📤</Text>
+              <Text style={dynamicStyles.featureText}>Export Data</Text>
+            </View>
+            <View style={dynamicStyles.featureItem}>
+              <Text style={dynamicStyles.featureIcon}>✨</Text>
+              <Text style={dynamicStyles.featureText}>Ad-Free</Text>
+            </View>
           </View>
         </View>
 
         {/* Packages */}
         <View style={dynamicStyles.packagesSection}>
+          <Text style={dynamicStyles.packagesTitle}>Choose Your Plan</Text>
           {loading && !availablePackages ? (
-            <ActivityIndicator size="large" color={colors.primary} />
+            <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 40 }} />
           ) : (
             <>
               {annualPackage && (
-                <TouchableOpacity
-                  style={[
-                    dynamicStyles.packageCard,
-                    selectedPackage?.identifier === annualPackage.identifier && dynamicStyles.packageCardSelected,
-                  ]}
-                  onPress={() => setSelectedPackage(annualPackage)}
-                >
-                  <View style={dynamicStyles.packageHeader}>
-                    <Text style={dynamicStyles.packageName}>Annual</Text>
-                    <Text style={dynamicStyles.packagePrice}>{formatPrice(annualPackage)}</Text>
+                <View style={{ position: 'relative' }}>
+                  <View style={dynamicStyles.popularBadge}>
+                    <Text style={dynamicStyles.popularBadgeText}>BEST VALUE</Text>
                   </View>
-                  <Text style={dynamicStyles.packagePeriod}>per year</Text>
-                  {savings && (
-                    <View style={dynamicStyles.savingsBadge}>
-                      <Text style={dynamicStyles.savingsText}>Save {savings}%</Text>
-                    </View>
-                  )}
-                  {subscriptionStatus !== 'trial' && (
-                    <View style={[dynamicStyles.savingsBadge, { backgroundColor: colors.primary + '20', marginTop: 8 }]}>
-                      <Text style={[dynamicStyles.savingsText, { color: colors.primary }]}>
-                        3-day free trial
-                      </Text>
-                    </View>
-                  )}
                   <TouchableOpacity
                     style={[
-                      dynamicStyles.purchaseButton,
-                      loading && dynamicStyles.purchaseButtonDisabled,
+                      dynamicStyles.packageCard,
+                      selectedPackage?.identifier === annualPackage.identifier && dynamicStyles.packageCardSelected,
                     ]}
-                    onPress={() => handlePurchase(annualPackage)}
-                    disabled={loading}
+                    onPress={() => setSelectedPackage(annualPackage)}
+                    activeOpacity={0.8}
                   >
-                    <Text style={dynamicStyles.purchaseButtonText}>
-                      {loading ? 'Processing...' : subscriptionStatus === 'trial' ? 'Subscribe Annual' : 'Start Free Trial'}
-                    </Text>
+                    <View style={dynamicStyles.packageHeader}>
+                      <Text style={dynamicStyles.packageName}>Annual</Text>
+                      <View style={dynamicStyles.packagePriceContainer}>
+                        <Text style={dynamicStyles.packagePrice}>{formatPrice(annualPackage)}</Text>
+                        <Text style={dynamicStyles.packagePeriod}>per year</Text>
+                      </View>
+                    </View>
+                    {savings && (
+                      <View style={dynamicStyles.savingsBadge}>
+                        <Text style={dynamicStyles.savingsText}>Save {savings}%</Text>
+                      </View>
+                    )}
+                    {subscriptionStatus !== 'trial' && (
+                      <View style={dynamicStyles.trialBadgeInline}>
+                        <Text style={dynamicStyles.trialBadgeInlineText}>
+                          3-day free trial
+                        </Text>
+                      </View>
+                    )}
+                    <TouchableOpacity
+                      style={[
+                        dynamicStyles.purchaseButton,
+                        loading && dynamicStyles.purchaseButtonDisabled,
+                      ]}
+                      onPress={() => handlePurchase(annualPackage)}
+                      disabled={loading}
+                      activeOpacity={0.9}
+                    >
+                      <LinearGradient
+                        colors={[colors.primary, colors.primaryDark]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={dynamicStyles.purchaseButtonGradient}
+                      >
+                        <Text style={dynamicStyles.purchaseButtonText}>
+                          {loading ? 'Processing...' : subscriptionStatus === 'trial' ? 'Subscribe Annual' : 'Start Free Trial'}
+                        </Text>
+                      </LinearGradient>
+                    </TouchableOpacity>
                   </TouchableOpacity>
-                </TouchableOpacity>
+                </View>
               )}
 
               {monthlyPackage && (
@@ -407,15 +543,18 @@ export default function PaywallScreen() {
                     selectedPackage?.identifier === monthlyPackage.identifier && dynamicStyles.packageCardSelected,
                   ]}
                   onPress={() => setSelectedPackage(monthlyPackage)}
+                  activeOpacity={0.8}
                 >
                   <View style={dynamicStyles.packageHeader}>
                     <Text style={dynamicStyles.packageName}>Monthly</Text>
-                    <Text style={dynamicStyles.packagePrice}>{formatPrice(monthlyPackage)}</Text>
+                    <View style={dynamicStyles.packagePriceContainer}>
+                      <Text style={dynamicStyles.packagePrice}>{formatPrice(monthlyPackage)}</Text>
+                      <Text style={dynamicStyles.packagePeriod}>per month</Text>
+                    </View>
                   </View>
-                  <Text style={dynamicStyles.packagePeriod}>per month</Text>
                   {subscriptionStatus !== 'trial' && (
-                    <View style={[dynamicStyles.savingsBadge, { backgroundColor: colors.primary + '20', marginTop: 8 }]}>
-                      <Text style={[dynamicStyles.savingsText, { color: colors.primary }]}>
+                    <View style={dynamicStyles.trialBadgeInline}>
+                      <Text style={dynamicStyles.trialBadgeInlineText}>
                         3-day free trial
                       </Text>
                     </View>
@@ -427,10 +566,18 @@ export default function PaywallScreen() {
                     ]}
                     onPress={() => handlePurchase(monthlyPackage)}
                     disabled={loading}
+                    activeOpacity={0.9}
                   >
-                    <Text style={dynamicStyles.purchaseButtonText}>
-                      {loading ? 'Processing...' : subscriptionStatus === 'trial' ? 'Subscribe Monthly' : 'Start Free Trial'}
-                    </Text>
+                    <LinearGradient
+                      colors={[colors.primary, colors.primaryDark]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={dynamicStyles.purchaseButtonGradient}
+                    >
+                      <Text style={dynamicStyles.purchaseButtonText}>
+                        {loading ? 'Processing...' : subscriptionStatus === 'trial' ? 'Subscribe Monthly' : 'Start Free Trial'}
+                      </Text>
+                    </LinearGradient>
                   </TouchableOpacity>
                 </TouchableOpacity>
               )}
@@ -458,12 +605,23 @@ export default function PaywallScreen() {
           <Text style={dynamicStyles.restoreButtonText}>Restore Purchases</Text>
         </TouchableOpacity>
 
-        <View style={{ height: 40 }} />
+        {/* Footer */}
+        <View style={dynamicStyles.footer}>
+          <Text style={dynamicStyles.footerText}>
+            Subscriptions auto-renew unless cancelled. Cancel anytime in Settings.
+          </Text>
+          <Text style={dynamicStyles.footerText}>
+            By subscribing, you agree to our{' '}
+            <Text style={dynamicStyles.footerLink}>Terms of Service</Text> and{' '}
+            <Text style={dynamicStyles.footerLink}>Privacy Policy</Text>
+          </Text>
+        </View>
       </ScrollView>
 
       {loading && (
         <View style={dynamicStyles.loadingOverlay}>
           <ActivityIndicator size="large" color="#FFFFFF" />
+          <Text style={dynamicStyles.loadingText}>Processing...</Text>
         </View>
       )}
     </SafeAreaView>

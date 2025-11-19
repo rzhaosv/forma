@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { analyzeFoodPhoto, mockAnalyzeFoodPhoto } from '../services/foodRecognitionService';
 import { canPerformPhotoScan, recordPhotoScan, getRemainingPhotoScans } from '../utils/subscriptionLimits';
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
+import PaywallModal from '../components/PaywallModal';
 
 export default function CameraScreen() {
   const navigation = useNavigation();
@@ -13,6 +14,7 @@ export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [analyzing, setAnalyzing] = useState(false);
   const [remainingScans, setRemainingScans] = useState<number | null>(null);
+  const [showPaywall, setShowPaywall] = useState(false);
   const cameraRef = useRef<CameraView>(null);
 
   useEffect(() => {
@@ -52,18 +54,7 @@ export default function CameraScreen() {
         if (!isPremium) {
           const canScan = await canPerformPhotoScan();
           if (!canScan) {
-            Alert.alert(
-              'Daily Limit Reached',
-              'You\'ve reached your daily limit of 5 photo scans. Upgrade to Premium for unlimited scans!',
-              [
-                { text: 'Cancel', style: 'cancel' },
-                { 
-                  text: 'Upgrade', 
-                  onPress: () => navigation.navigate('Paywall' as never),
-                  style: 'default'
-                },
-              ]
-            );
+            setShowPaywall(true);
             return;
           }
         }
@@ -187,6 +178,15 @@ export default function CameraScreen() {
           <View style={styles.flipButton} />
         </View>
       </CameraView>
+
+      {/* Paywall Modal */}
+      <PaywallModal
+        visible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        title="Daily Limit Reached"
+        message="You've reached your daily limit of 5 photo scans. Upgrade to Premium for unlimited scans!"
+        showFeatures={true}
+      />
     </View>
   );
 }
