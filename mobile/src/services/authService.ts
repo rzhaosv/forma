@@ -11,6 +11,7 @@ import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import { auth } from '../config/firebase';
 import { useAuthStore } from '../store/useAuthStore';
+import { useSubscriptionStore } from '../store/useSubscriptionStore';
 
 // Complete the auth session
 WebBrowser.maybeCompleteAuthSession();
@@ -70,9 +71,18 @@ export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
       // User is signed in
       const token = await user.getIdToken();
       store.setUser(user, token);
+      
+      // Initialize RevenueCat with user ID
+      try {
+        await useSubscriptionStore.getState().initialize(user.uid);
+      } catch (error) {
+        console.error('Failed to initialize RevenueCat:', error);
+      }
     } else {
       // User is signed out
       store.clearUser();
+      // Reset subscription status
+      useSubscriptionStore.getState().setSubscriptionStatus('free');
     }
 
     // Call optional callback

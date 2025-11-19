@@ -1,15 +1,30 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useNavigation } from '@react-navigation/native';
 import { analyzeFoodPhoto, mockAnalyzeFoodPhoto } from '../services/foodRecognitionService';
+import { canPerformPhotoScan, recordPhotoScan, getRemainingPhotoScans } from '../utils/subscriptionLimits';
+import { useSubscriptionStore } from '../store/useSubscriptionStore';
 
 export default function CameraScreen() {
   const navigation = useNavigation();
+  const { isPremium } = useSubscriptionStore();
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [analyzing, setAnalyzing] = useState(false);
+  const [remainingScans, setRemainingScans] = useState<number | null>(null);
   const cameraRef = useRef<CameraView>(null);
+
+  useEffect(() => {
+    loadRemainingScans();
+  }, []);
+
+  const loadRemainingScans = async () => {
+    if (!isPremium) {
+      const remaining = await getRemainingPhotoScans();
+      setRemainingScans(remaining);
+    }
+  };
 
   if (!permission) {
     return <View style={styles.container}><Text>Loading...</Text></View>;
@@ -33,6 +48,26 @@ export default function CameraScreen() {
   const takePicture = async () => {
     if (cameraRef.current && !analyzing) {
       try {
+        // Check photo scan limit for free users
+        if (!isPremium) {
+          const canScan = await canPerformPhotoScan();
+          if (!canScan) {
+            Alert.alert(
+              'Daily Limit Reached',
+              'You\'ve reached your daily limit of 5 photo scans. Upgrade to Premium for unlimited scans!',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                { 
+                  text: 'Upgrade', 
+                  onPress: () => navigation.navigate('Paywall' as never),
+                  style: 'default'
+                },
+              ]
+            );
+            return;
+          }
+        }
+
         setAnalyzing(true);
         const photo = await cameraRef.current.takePictureAsync();
         
@@ -41,6 +76,12 @@ export default function CameraScreen() {
         }
 
         console.log('📸 Photo captured, analyzing...');
+        
+        // Record the scan for free users
+        if (!isPremium) {
+          await recordPhotoScan();
+          await loadRemainingScans();
+        }
         
         // Try real API first, fallback to mock if no API key
         let result;
@@ -94,7 +135,13 @@ export default function CameraScreen() {
             <Text style={styles.backText}>← Back</Text>
           </TouchableOpacity>
           <Text style={styles.title}>Take Photo</Text>
-          <View style={styles.placeholder} />
+          {!isPremium && remainingScans !== null ? (
+            <View style={styles.scanCounter}>
+              <Text style={styles.scanCounterText}>{remainingScans} left</Text>
+            </View>
+          ) : (
+            <View style={styles.placeholder} />
+          )}
         </View>
 
         {/* Instructions or Analyzing Overlay */}
@@ -186,6 +233,17 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     width: 60,
+  },
+  scanCounter: {
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  scanCounterText: {
+    color: '#FFF',
+    fontSize: 12,
+    fontWeight: '600',
   },
   instructionsContainer: {
     position: 'absolute',

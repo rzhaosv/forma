@@ -7,12 +7,15 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useMealStore } from '../store/useMealStore';
 import { Meal, DailySummary } from '../types/meal.types';
 import { useTheme } from '../hooks/useTheme';
 import { Swipeable } from 'react-native-gesture-handler';
+import { useSubscriptionStore } from '../store/useSubscriptionStore';
+import { isDateWithinHistoryLimit } from '../utils/subscriptionLimits';
 
 const MEAL_TYPE_ICONS = {
   Breakfast: '🌅',
@@ -28,15 +31,22 @@ export default function MealHistoryScreen() {
   
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  // Get all unique dates with meals, sorted descending
+  const { isPremium } = useSubscriptionStore();
+
+  // Get all unique dates with meals, sorted descending, filtered by subscription limit
   const datesWithMeals = useMemo(() => {
     const dateSet = new Set<string>();
     meals.forEach(meal => {
       const date = meal.timestamp.split('T')[0];
-      dateSet.add(date);
+      const mealDate = new Date(date);
+      
+      // Filter by history limit for free users
+      if (isPremium || isDateWithinHistoryLimit(mealDate)) {
+        dateSet.add(date);
+      }
     });
     return Array.from(dateSet).sort((a, b) => b.localeCompare(a));
-  }, [meals]);
+  }, [meals, isPremium]);
 
   // Get meals for selected date
   const selectedDateMeals = useMemo(() => {
@@ -62,6 +72,25 @@ export default function MealHistoryScreen() {
   const navigateDate = (days: number) => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + days);
+    
+    // Check history limit for free users
+    const { isPremium } = useSubscriptionStore.getState();
+    if (!isPremium && !isDateWithinHistoryLimit(newDate)) {
+      Alert.alert(
+        'Premium Feature',
+        'Free users can only view the last 7 days of history. Upgrade to Premium for unlimited history!',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { 
+            text: 'Upgrade', 
+            onPress: () => navigation.navigate('Paywall' as never),
+            style: 'default'
+          },
+        ]
+      );
+      return;
+    }
+    
     setSelectedDate(newDate);
   };
 
@@ -445,14 +474,34 @@ export default function MealHistoryScreen() {
             {datesWithMeals.slice(0, 7).map((dateStr) => {
               const date = new Date(dateStr);
               const isSelected = dateStr === selectedDateStr;
+              const isWithinLimit = isPremium || isDateWithinHistoryLimit(date);
+              
               return (
                 <TouchableOpacity
                   key={dateStr}
                   style={[
                     dynamicStyles.dateListItem,
                     isSelected && dynamicStyles.dateListItemActive,
+                    !isWithinLimit && { opacity: 0.5 },
                   ]}
-                  onPress={() => setSelectedDate(date)}
+                  onPress={() => {
+                    if (!isWithinLimit) {
+                      Alert.alert(
+                        'Premium Feature',
+                        'Free users can only view the last 7 days of history. Upgrade to Premium for unlimited history!',
+                        [
+                          { text: 'Cancel', style: 'cancel' },
+                          { 
+                            text: 'Upgrade', 
+                            onPress: () => navigation.navigate('Paywall' as never),
+                            style: 'default'
+                          },
+                        ]
+                      );
+                    } else {
+                      setSelectedDate(date);
+                    }
+                  }}
                 >
                   <Text
                     style={[

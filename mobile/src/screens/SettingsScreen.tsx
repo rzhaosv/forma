@@ -101,6 +101,24 @@ export default function SettingsScreen() {
       </View>
 
       <ScrollView style={styles.scrollView}>
+        {/* Subscription Section */}
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Subscription</Text>
+          
+          <TouchableOpacity
+            style={dynamicStyles.settingRow}
+            onPress={() => navigation.navigate('Subscription' as never)}
+          >
+            <View style={dynamicStyles.settingContent}>
+              <Text style={dynamicStyles.settingLabel}>Manage Subscription</Text>
+              <Text style={dynamicStyles.settingDescription}>
+                View and manage your premium subscription
+              </Text>
+            </View>
+            <Text style={{ fontSize: 16, color: colors.textSecondary }}>→</Text>
+          </TouchableOpacity>
+        </View>
+
         {/* Goals Section */}
         <View style={dynamicStyles.section}>
           <Text style={dynamicStyles.sectionTitle}>Goals</Text>

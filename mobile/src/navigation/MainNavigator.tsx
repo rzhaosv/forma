@@ -12,6 +12,8 @@ import GoalsScreen from '../screens/GoalsScreen';
 import RecipeBuilderScreen from '../screens/RecipeBuilderScreen';
 import RecipeListScreen from '../screens/RecipeListScreen';
 import MealHistoryScreen from '../screens/MealHistoryScreen';
+import PaywallScreen from '../screens/PaywallScreen';
+import SubscriptionScreen from '../screens/SubscriptionScreen';
 
 const Stack = createStackNavigator();
 
@@ -34,6 +36,8 @@ export default function MainNavigator() {
       <Stack.Screen name="RecipeBuilder" component={RecipeBuilderScreen} />
       <Stack.Screen name="RecipeList" component={RecipeListScreen} />
       <Stack.Screen name="MealHistory" component={MealHistoryScreen} />
+      <Stack.Screen name="Paywall" component={PaywallScreen} />
+      <Stack.Screen name="Subscription" component={SubscriptionScreen} />
       {/* Add more screens: Profile, etc. */}
     </Stack.Navigator>
   );
