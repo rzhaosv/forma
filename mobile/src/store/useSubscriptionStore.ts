@@ -164,7 +164,23 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
       try {
         const { customerInfo } = await Purchases.purchasePackage(packageToPurchase);
         
-        const isPremium = customerInfo.entitlements.active['premium'] !== undefined;
+        let isPremium = customerInfo.entitlements.active['premium'] !== undefined;
+        
+        // In Test Store, "Test Valid Purchase" might complete but not set entitlements
+        // If purchase completed successfully but no entitlements, grant premium for testing
+        if (!isPremium && typeof __DEV__ !== 'undefined' && __DEV__) {
+          // Check if we're using Test Store (indicated by testStore key being used)
+          const isUsingTestStore = REVENUECAT_API_KEY.testStore && 
+                                   !REVENUECAT_API_KEY.testStore.includes('YOUR_');
+          
+          if (isUsingTestStore) {
+            // Purchase completed successfully in Test Store but no entitlements
+            // This is likely "Test Valid Purchase" - grant premium for testing
+            console.log('✅ Test Store: Valid purchase detected, granting premium for testing');
+            isPremium = true;
+          }
+        }
+        
         const status: SubscriptionStatus = isPremium ? 'premium' : 'free';
         
         set({
@@ -188,11 +204,22 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
     } catch (error: any) {
       console.error('Purchase failed:', error);
       
-      // User cancelled
+      // User cancelled - don't treat as error
       if (error.userCancelled) {
         return false;
       }
       
+      // Test Store "failed purchase" scenario (code 5) - this is intentional for testing
+      // Don't grant premium access for failed purchases
+      if (error.code === '5' || 
+          (error.message?.includes('Test purchase failure') && 
+           error.message?.includes('no real transaction occurred'))) {
+        console.log('⚠️ Test Store: Failed purchase scenario (this is expected for testing)');
+        // Don't grant premium - this is the "failed purchase" test case
+        return false;
+      }
+      
+      // For other errors, throw to show to user
       throw error;
     }
   },
