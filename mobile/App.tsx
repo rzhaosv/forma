@@ -6,18 +6,21 @@ import AppNavigator from './src/navigation/AppNavigator';
 import { useThemeStore } from './src/store/useThemeStore';
 import { useProgressStore } from './src/store/useProgressStore';
 import { useMealStore } from './src/store/useMealStore';
+import { useRecipeStore } from './src/store/useRecipeStore';
 
 export default function App() {
   const initializeTheme = useThemeStore((state) => state.initialize);
   const initializeProgress = useProgressStore((state) => state.initialize);
   const initializeMealStore = useMealStore((state) => state.initialize);
+  const initializeRecipeStore = useRecipeStore((state) => state.initialize);
 
   useEffect(() => {
-    // Initialize theme, progress, and meal store on app start
+    // Initialize all stores on app start
     initializeTheme();
     initializeProgress();
     initializeMealStore();
-  }, [initializeTheme, initializeProgress, initializeMealStore]);
+    initializeRecipeStore();
+  }, [initializeTheme, initializeProgress, initializeMealStore, initializeRecipeStore]);
 
   return (
     <GestureHandlerRootView style={styles.container}>

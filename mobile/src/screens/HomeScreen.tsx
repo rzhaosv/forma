@@ -241,13 +241,14 @@ export default function HomeScreen() {
     },
     quickAddContainer: {
       flexDirection: 'row',
-      justifyContent: 'space-around',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
       marginHorizontal: 20,
       marginBottom: 20,
       gap: 10,
     },
     quickAddButton: {
-      flex: 1,
+      width: '48%',
       backgroundColor: colors.surface,
       borderRadius: 12,
       paddingVertical: 15,
@@ -506,6 +507,14 @@ export default function HomeScreen() {
           >
             <Text style={styles.quickAddIcon}>✏️</Text>
             <Text style={dynamicStyles.quickAddText}>Manual</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={dynamicStyles.quickAddButton}
+            onPress={() => navigation.navigate('RecipeList' as never)}
+          >
+            <Text style={styles.quickAddIcon}>🍳</Text>
+            <Text style={dynamicStyles.quickAddText}>Recipe</Text>
           </TouchableOpacity>
         </View>
 
