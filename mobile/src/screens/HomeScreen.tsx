@@ -77,9 +77,9 @@ export default function HomeScreen() {
   };
 
   const getProgressColor = () => {
-    if (percentage > 100) return '#FF3B30'; // Red - over goal
-    if (percentage > 80) return '#FF9500'; // Orange - warning
-    return '#34C759'; // Green - on track
+    if (percentage > 100) return colors.error; // Red - over goal
+    if (percentage > 80) return colors.warning; // Orange - warning
+    return colors.success; // Green - on track
   };
 
   const handleSignOut = async () => {
@@ -136,6 +136,9 @@ export default function HomeScreen() {
       flex: 1,
       backgroundColor: colors.background,
     },
+    scrollView: {
+      flex: 1,
+    },
     header: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -160,6 +163,11 @@ export default function HomeScreen() {
       color: colors.textSecondary,
       fontSize: 14,
       fontWeight: '600',
+    },
+    greetingSection: {
+      paddingHorizontal: 20,
+      marginTop: 10,
+      marginBottom: 20,
     },
     greeting: {
       fontSize: 24,
@@ -221,10 +229,22 @@ export default function HomeScreen() {
       borderRadius: 4,
       overflow: 'hidden',
     },
+    sectionHeader: {
+      paddingHorizontal: 20,
+      marginBottom: 15,
+      marginTop: 20,
+    },
     sectionTitle: {
       fontSize: 20,
       fontWeight: 'bold',
       color: colors.text,
+    },
+    quickAddContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      marginHorizontal: 20,
+      marginBottom: 20,
+      gap: 10,
     },
     quickAddButton: {
       flex: 1,
@@ -286,6 +306,11 @@ export default function HomeScreen() {
       fontWeight: '600',
       color: colors.primary,
     },
+    emptyState: {
+      alignItems: 'center',
+      paddingVertical: 48,
+      paddingHorizontal: 32,
+    },
     emptyStateText: {
       fontSize: 18,
       fontWeight: '600',
@@ -298,6 +323,24 @@ export default function HomeScreen() {
       color: colors.textTertiary,
       textAlign: 'center',
     },
+    caloriesLeft: {
+      fontSize: 32,
+      fontWeight: '700',
+      marginBottom: 24,
+    },
+    foodCalories: {
+      fontSize: 15,
+      color: colors.textSecondary,
+    },
+    foodBullet: {
+      fontSize: 16,
+      color: colors.textTertiary,
+      marginRight: 8,
+    },
+    emptyStateIcon: {
+      fontSize: 64,
+      marginBottom: 16,
+    },
   });
 
   return (
@@ -308,6 +351,12 @@ export default function HomeScreen() {
       <View style={dynamicStyles.header}>
         <Text style={dynamicStyles.appName}>Forma</Text>
         <View style={{ flexDirection: 'row', gap: 12 }}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Progress' as never)}
+            style={[dynamicStyles.signOutButton, { marginRight: 0 }]}
+          >
+            <Text style={dynamicStyles.signOutText}>📊</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate('Settings' as never)}
             style={[dynamicStyles.signOutButton, { marginRight: 0 }]}
@@ -320,9 +369,9 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView style={dynamicStyles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Greeting */}
-        <View style={styles.greetingSection}>
+        <View style={dynamicStyles.greetingSection}>
           <Text style={dynamicStyles.greeting}>{getGreeting()}! 👋</Text>
           <Text style={dynamicStyles.date}>{formatDate()}</Text>
         </View>
@@ -368,7 +417,7 @@ export default function HomeScreen() {
           </View>
           
           <Text style={dynamicStyles.caloriesLeftLabel}>Calories Left</Text>
-          <Text style={[styles.caloriesLeft, { color: getProgressColor() }]}>
+          <Text style={[dynamicStyles.caloriesLeft, { color: getProgressColor() }]}>
             {caloriesLeft}
           </Text>
 
@@ -431,10 +480,10 @@ export default function HomeScreen() {
         </View>
 
         {/* Quick Add Section */}
-        <View style={styles.sectionHeader}>
+        <View style={dynamicStyles.sectionHeader}>
           <Text style={dynamicStyles.sectionTitle}>Quick Add</Text>
         </View>
-        <View style={styles.quickAddContainer}>
+        <View style={dynamicStyles.quickAddContainer}>
           <TouchableOpacity
             style={dynamicStyles.quickAddButton}
             onPress={() => handleQuickAdd('photo')}
@@ -461,13 +510,13 @@ export default function HomeScreen() {
         </View>
 
         {/* Today's Meals */}
-        <View style={styles.sectionHeader}>
+        <View style={dynamicStyles.sectionHeader}>
           <Text style={dynamicStyles.sectionTitle}>Today's Meals</Text>
         </View>
 
         {todayMeals.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateIcon}>🍽️</Text>
+          <View style={dynamicStyles.emptyState}>
+            <Text style={dynamicStyles.emptyStateIcon}>🍽️</Text>
             <Text style={dynamicStyles.emptyStateText}>No meals logged yet today</Text>
             <Text style={dynamicStyles.emptyStateSubtext}>Use Quick Add to log your first meal!</Text>
           </View>
@@ -491,11 +540,11 @@ export default function HomeScreen() {
                 </View>
                 {meal.foods.map((food) => (
                   <View key={food.id} style={styles.foodItem}>
-                    <Text style={styles.foodBullet}>○</Text>
+                    <Text style={dynamicStyles.foodBullet}>○</Text>
                     <Text style={dynamicStyles.foodName}>
                       {food.name} {food.quantity > 1 ? `(${food.quantity}x)` : ''}
                     </Text>
-                    <Text style={styles.foodCalories}>
+                    <Text style={dynamicStyles.foodCalories}>
                       {Math.round(food.calories * food.quantity)}
                     </Text>
                   </View>
