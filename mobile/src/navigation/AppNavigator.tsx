@@ -5,13 +5,23 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import MainNavigator from './MainNavigator';
+import OnboardingNavigator from './OnboardingNavigator';
 import { useAuthStore } from '../store/useAuthStore';
+import { useOnboardingStore } from '../store/useOnboardingStore';
 import { listenToAuthChanges } from '../services/authService';
+import { useTheme } from '../hooks/useTheme';
 
 const Stack = createStackNavigator();
 
 export default function AppNavigator() {
   const { isAuthenticated, isLoading } = useAuthStore();
+  const { isComplete: isOnboardingComplete, isLoading: isOnboardingLoading, initialize: initializeOnboarding } = useOnboardingStore();
+  const { colors } = useTheme();
+
+  // Initialize onboarding store
+  useEffect(() => {
+    initializeOnboarding();
+  }, [initializeOnboarding]);
 
   // Listen to auth state changes
   useEffect(() => {
@@ -20,10 +30,10 @@ export default function AppNavigator() {
   }, []);
 
   // Show loading screen while checking auth state
-  if (isLoading) {
+  if (isLoading || isOnboardingLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#6366F1" />
+      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -39,9 +49,10 @@ export default function AppNavigator() {
         // Authenticated screens
         <Stack.Screen name="Main" component={MainNavigator} />
       ) : (
-        // Auth screens
+        // Auth/Onboarding screens
         <>
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
+          <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
           <Stack.Screen name="SignIn" component={SignInScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
         </>

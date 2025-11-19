@@ -53,12 +53,12 @@ export default function WelcomeScreen() {
 
       {/* Auth Buttons */}
       <View style={styles.authContainer}>
-        <TouchableOpacity 
-          style={styles.primaryButton}
-          onPress={() => navigation.navigate('SignUp' as never)}
-        >
-          <Text style={styles.primaryButtonText}>Sign Up</Text>
-        </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.primaryButton}
+              onPress={() => navigation.navigate('Onboarding' as never)}
+            >
+              <Text style={styles.primaryButtonText}>Get Started</Text>
+            </TouchableOpacity>
 
         <TouchableOpacity 
           style={styles.secondaryButton}

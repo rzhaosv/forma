@@ -30,10 +30,10 @@ const calculateMealTotals = (foods: FoodItem[]) => {
 };
 
 export const useMealStore = create<MealStore>((set, get) => ({
-  meals: [],
-  dailySummary: null,
-  calorieGoal: 2000,
-  proteinGoal: 150,
+      meals: [],
+      dailySummary: null,
+      calorieGoal: 2000,
+      proteinGoal: 150,
   
   addMeal: (meal) => {
     set((state) => ({
