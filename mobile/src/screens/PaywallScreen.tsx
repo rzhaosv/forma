@@ -24,6 +24,7 @@ export default function PaywallScreen() {
     restorePurchases,
     getAvailablePackages,
     subscriptionStatus,
+    trialInfo,
   } = useSubscriptionStore();
   
   const [loading, setLoading] = useState(false);
@@ -258,6 +259,16 @@ export default function PaywallScreen() {
       fontSize: 16,
       fontWeight: '600',
     },
+    trialBadge: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 20,
+      alignSelf: 'center',
+    },
+    trialBadgeText: {
+      fontSize: 14,
+      fontWeight: '700',
+    },
     loadingOverlay: {
       position: 'absolute',
       top: 0,
@@ -290,9 +301,25 @@ export default function PaywallScreen() {
         <View style={dynamicStyles.heroSection}>
           <Text style={dynamicStyles.heroIcon}>💎</Text>
           <Text style={dynamicStyles.heroTitle}>Unlock All Features</Text>
-          <Text style={dynamicStyles.heroSubtitle}>
-            Get unlimited access to all premium features and accelerate your progress
-          </Text>
+          {subscriptionStatus === 'trial' && trialInfo && trialInfo.isActive ? (
+            <>
+              <Text style={dynamicStyles.heroSubtitle}>
+                You're enjoying your free trial! 🎉
+              </Text>
+              <View style={[dynamicStyles.trialBadge, { backgroundColor: colors.success + '20', marginTop: 16 }]}>
+                <Text style={[dynamicStyles.trialBadgeText, { color: colors.success }]}>
+                  {trialInfo.daysRemaining} day{trialInfo.daysRemaining !== 1 ? 's' : ''} left in trial
+                </Text>
+              </View>
+              <Text style={[dynamicStyles.heroSubtitle, { marginTop: 16, fontSize: 14 }]}>
+                Subscribe now to continue premium access after your trial ends
+              </Text>
+            </>
+          ) : (
+            <Text style={dynamicStyles.heroSubtitle}>
+              Start your 3-day free trial and get unlimited access to all premium features
+            </Text>
+          )}
         </View>
 
         {/* Features List */}
@@ -351,6 +378,13 @@ export default function PaywallScreen() {
                       <Text style={dynamicStyles.savingsText}>Save {savings}%</Text>
                     </View>
                   )}
+                  {subscriptionStatus !== 'trial' && (
+                    <View style={[dynamicStyles.savingsBadge, { backgroundColor: colors.primary + '20', marginTop: 8 }]}>
+                      <Text style={[dynamicStyles.savingsText, { color: colors.primary }]}>
+                        3-day free trial
+                      </Text>
+                    </View>
+                  )}
                   <TouchableOpacity
                     style={[
                       dynamicStyles.purchaseButton,
@@ -360,7 +394,7 @@ export default function PaywallScreen() {
                     disabled={loading}
                   >
                     <Text style={dynamicStyles.purchaseButtonText}>
-                      {loading ? 'Processing...' : 'Subscribe Annual'}
+                      {loading ? 'Processing...' : subscriptionStatus === 'trial' ? 'Subscribe Annual' : 'Start Free Trial'}
                     </Text>
                   </TouchableOpacity>
                 </TouchableOpacity>
@@ -379,6 +413,13 @@ export default function PaywallScreen() {
                     <Text style={dynamicStyles.packagePrice}>{formatPrice(monthlyPackage)}</Text>
                   </View>
                   <Text style={dynamicStyles.packagePeriod}>per month</Text>
+                  {subscriptionStatus !== 'trial' && (
+                    <View style={[dynamicStyles.savingsBadge, { backgroundColor: colors.primary + '20', marginTop: 8 }]}>
+                      <Text style={[dynamicStyles.savingsText, { color: colors.primary }]}>
+                        3-day free trial
+                      </Text>
+                    </View>
+                  )}
                   <TouchableOpacity
                     style={[
                       dynamicStyles.purchaseButton,
@@ -388,7 +429,7 @@ export default function PaywallScreen() {
                     disabled={loading}
                   >
                     <Text style={dynamicStyles.purchaseButtonText}>
-                      {loading ? 'Processing...' : 'Subscribe Monthly'}
+                      {loading ? 'Processing...' : subscriptionStatus === 'trial' ? 'Subscribe Monthly' : 'Start Free Trial'}
                     </Text>
                   </TouchableOpacity>
                 </TouchableOpacity>

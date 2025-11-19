@@ -22,6 +22,7 @@ export default function SubscriptionScreen() {
     subscriptionStatus, 
     isPremium, 
     customerInfo,
+    trialInfo,
     checkSubscriptionStatus,
     restorePurchases,
   } = useSubscriptionStore();
@@ -201,6 +202,16 @@ export default function SubscriptionScreen() {
       color: colors.textSecondary,
       fontSize: 14,
     },
+    trialBadge: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 20,
+      alignSelf: 'center',
+    },
+    trialBadgeText: {
+      fontSize: 14,
+      fontWeight: '700',
+    },
   });
 
   const expirationDate = getExpirationDate();
@@ -224,7 +235,20 @@ export default function SubscriptionScreen() {
       <ScrollView style={styles.scrollView} contentContainerStyle={dynamicStyles.scrollContent}>
         {/* Status Card */}
         <View style={dynamicStyles.statusCard}>
-          {isPremium ? (
+          {subscriptionStatus === 'trial' && trialInfo && trialInfo.isActive ? (
+            <>
+              <Text style={dynamicStyles.statusIcon}>🎁</Text>
+              <Text style={dynamicStyles.statusTitle}>Free Trial Active</Text>
+              <Text style={dynamicStyles.statusSubtitle}>
+                You're enjoying your 3-day free trial!
+              </Text>
+              <View style={[dynamicStyles.trialBadge, { backgroundColor: colors.success + '20', marginTop: 16 }]}>
+                <Text style={[dynamicStyles.trialBadgeText, { color: colors.success }]}>
+                  {trialInfo.daysRemaining} day{trialInfo.daysRemaining !== 1 ? 's' : ''} remaining
+                </Text>
+              </View>
+            </>
+          ) : isPremium ? (
             <>
               <Text style={dynamicStyles.statusIcon}>💎</Text>
               <Text style={dynamicStyles.statusTitle}>Premium Active</Text>
@@ -237,14 +261,44 @@ export default function SubscriptionScreen() {
               <Text style={dynamicStyles.statusIcon}>📱</Text>
               <Text style={dynamicStyles.statusTitle}>Free Plan</Text>
               <Text style={dynamicStyles.statusSubtitle}>
-                Upgrade to unlock unlimited features and advanced analytics
+                {trialInfo && !trialInfo.isActive 
+                  ? 'Your free trial has ended. Upgrade to continue premium access!'
+                  : 'Start your 3-day free trial and unlock unlimited features'}
               </Text>
             </>
           )}
         </View>
 
+        {/* Trial Details */}
+        {subscriptionStatus === 'trial' && trialInfo && trialInfo.isActive && (
+          <View style={dynamicStyles.infoCard}>
+            <Text style={dynamicStyles.infoTitle}>Free Trial</Text>
+            
+            <View style={dynamicStyles.infoRow}>
+              <Text style={dynamicStyles.infoLabel}>Started</Text>
+              <Text style={dynamicStyles.infoValue}>
+                {formatDate(trialInfo.startDate)}
+              </Text>
+            </View>
+            
+            <View style={dynamicStyles.infoRow}>
+              <Text style={dynamicStyles.infoLabel}>Ends</Text>
+              <Text style={dynamicStyles.infoValue}>
+                {formatDate(trialInfo.endDate)}
+              </Text>
+            </View>
+            
+            <View style={[dynamicStyles.infoRow, dynamicStyles.infoRowLast]}>
+              <Text style={dynamicStyles.infoLabel}>Days Remaining</Text>
+              <Text style={[dynamicStyles.infoValue, { color: colors.warning }]}>
+                {trialInfo.daysRemaining}
+              </Text>
+            </View>
+          </View>
+        )}
+
         {/* Subscription Details */}
-        {isPremium && customerInfo && (
+        {isPremium && customerInfo && subscriptionStatus === 'premium' && (
           <View style={dynamicStyles.infoCard}>
             <Text style={dynamicStyles.infoTitle}>Current Plan</Text>
             
@@ -265,7 +319,7 @@ export default function SubscriptionScreen() {
             <View style={[dynamicStyles.infoRow, dynamicStyles.infoRowLast]}>
               <Text style={dynamicStyles.infoLabel}>Status</Text>
               <Text style={[dynamicStyles.infoValue, { color: colors.success }]}>
-                {subscriptionStatus === 'trial' ? 'Trial' : 'Active'}
+                Active
               </Text>
             </View>
           </View>
@@ -299,7 +353,21 @@ export default function SubscriptionScreen() {
             style={dynamicStyles.upgradeButton}
             onPress={() => navigation.navigate('Paywall' as never)}
           >
-            <Text style={dynamicStyles.upgradeButtonText}>Upgrade to Premium</Text>
+            <Text style={dynamicStyles.upgradeButtonText}>
+              {subscriptionStatus === 'trial' && trialInfo && !trialInfo.isActive
+                ? 'Subscribe to Premium'
+                : 'Start Free Trial'}
+            </Text>
+          </TouchableOpacity>
+        )}
+        
+        {/* Subscribe Button (during trial) */}
+        {subscriptionStatus === 'trial' && trialInfo && trialInfo.isActive && (
+          <TouchableOpacity
+            style={dynamicStyles.upgradeButton}
+            onPress={() => navigation.navigate('Paywall' as never)}
+          >
+            <Text style={dynamicStyles.upgradeButtonText}>Subscribe Now</Text>
           </TouchableOpacity>
         )}
 
