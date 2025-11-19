@@ -52,6 +52,15 @@ interface SubscriptionState {
   restorePurchases: () => Promise<boolean>;
   getAvailablePackages: () => Promise<PurchasesPackage[] | null>;
   setSubscriptionStatus: (status: SubscriptionStatus) => void;
+  syncPurchases: () => Promise<void>;
+  getSubscriptionInfo: () => {
+    productIdentifier: string | null;
+    expirationDate: string | null;
+    willRenew: boolean;
+    isActive: boolean;
+    periodType: 'NORMAL' | 'TRIAL' | 'INTRO' | null;
+  };
+  openManageSubscription: () => Promise<void>;
 }
 
 const SUBSCRIPTION_STATUS_KEY = '@forma_subscription_status';
@@ -468,6 +477,105 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
       subscriptionStatus: status,
       isPremium: status === 'premium' || status === 'trial',
     });
+  },
+  
+  syncPurchases: async () => {
+    try {
+      // Check if Purchases is configured
+      try {
+        await Purchases.syncPurchases();
+        // Refresh customer info after sync
+        await get().checkSubscriptionStatus();
+      } catch (purchasesError: any) {
+        // If Purchases isn't configured, just return
+        if (purchasesError.message?.includes('no singleton instance') ||
+            purchasesError.message?.includes('not configured')) {
+          console.warn('RevenueCat not configured. Cannot sync purchases.');
+          return;
+        } else {
+          throw purchasesError;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to sync purchases:', error);
+    }
+  },
+  
+  getSubscriptionInfo: () => {
+    const state = get();
+    const customerInfo = state.customerInfo;
+    
+    if (!customerInfo) {
+      return {
+        productIdentifier: null,
+        expirationDate: null,
+        willRenew: false,
+        isActive: false,
+        periodType: null as 'NORMAL' | 'TRIAL' | 'INTRO' | null,
+      };
+    }
+    
+    const entitlement = customerInfo.entitlements.active['premium'];
+    
+    if (!entitlement) {
+      return {
+        productIdentifier: null,
+        expirationDate: null,
+        willRenew: false,
+        isActive: false,
+        periodType: null as 'NORMAL' | 'TRIAL' | 'INTRO' | null,
+      };
+    }
+    
+    // Type-safe period type conversion
+    const periodType = entitlement.periodType;
+    let typedPeriodType: 'NORMAL' | 'TRIAL' | 'INTRO' | null = null;
+    if (periodType === 'NORMAL' || periodType === 'TRIAL' || periodType === 'INTRO') {
+      typedPeriodType = periodType;
+    }
+    
+    return {
+      productIdentifier: entitlement.productIdentifier || null,
+      expirationDate: entitlement.expirationDate || null,
+      willRenew: entitlement.willRenew ?? false,
+      isActive: true,
+      periodType: typedPeriodType,
+    };
+  },
+  
+  openManageSubscription: async () => {
+    try {
+      // Check if Purchases is configured
+      try {
+        // RevenueCat provides a method to open the platform's subscription management
+        // On iOS: Opens App Store subscription management
+        // On Android: Opens Google Play subscription management
+        const platform = require('react-native').Platform.OS;
+        const { Linking } = require('react-native');
+        
+        if (platform === 'ios') {
+          // iOS App Store subscription management URL
+          await Linking.openURL('https://apps.apple.com/account/subscriptions');
+        } else if (platform === 'android') {
+          // Android Google Play subscription management URL
+          // This requires the package name - using a generic approach
+          await Linking.openURL('https://play.google.com/store/account/subscriptions?package=YOUR_PACKAGE_NAME&sku=YOUR_SKU');
+          // Note: Replace YOUR_PACKAGE_NAME and YOUR_SKU with actual values
+          // Alternative: Use RevenueCat's manage account if available
+        }
+      } catch (purchasesError: any) {
+        // If Purchases isn't configured, show manual instructions
+        if (purchasesError.message?.includes('no singleton instance') ||
+            purchasesError.message?.includes('not configured')) {
+          throw new Error('Please manage your subscription through your device\'s App Store or Google Play settings.');
+        } else {
+          throw purchasesError;
+        }
+      }
+    } catch (error: any) {
+      console.error('Failed to open subscription management:', error);
+      throw error;
+    }
   },
 }));
 

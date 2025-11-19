@@ -8,6 +8,9 @@ import {
   StatusBar,
   ScrollView,
   Alert,
+  Linking,
+  Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
@@ -23,20 +26,33 @@ export default function SubscriptionScreen() {
     isPremium, 
     customerInfo,
     trialInfo,
+    availablePackages,
     checkSubscriptionStatus,
     restorePurchases,
+    syncPurchases,
+    getSubscriptionInfo,
+    openManageSubscription,
+    purchasePackage,
+    getAvailablePackages,
   } = useSubscriptionStore();
   
   const [loading, setLoading] = useState(false);
+  const [changingPlan, setChangingPlan] = useState(false);
 
   useEffect(() => {
     refreshStatus();
+    loadPackages();
   }, []);
 
   const refreshStatus = async () => {
     setLoading(true);
     await checkSubscriptionStatus();
+    await syncPurchases();
     setLoading(false);
+  };
+
+  const loadPackages = async () => {
+    await getAvailablePackages();
   };
 
   const handleRestore = async () => {
@@ -76,6 +92,134 @@ export default function SubscriptionScreen() {
     const entitlement = customerInfo.entitlements.active['premium'];
     if (!entitlement || entitlement.willRenew === false) return null;
     return entitlement.expirationDate;
+  };
+
+  const handleCancelSubscription = () => {
+    Alert.alert(
+      'Cancel Subscription?',
+      'Are you sure you want to cancel your subscription? You\'ll continue to have access until the end of your current billing period, but your subscription will not renew.',
+      [
+        {
+          text: 'Keep Subscription',
+          style: 'cancel',
+        },
+        {
+          text: 'Cancel Subscription',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setLoading(true);
+              await openManageSubscription();
+            } catch (error: any) {
+              Alert.alert(
+                'Manage Subscription',
+                error.message || 'Please manage your subscription through your device\'s App Store or Google Play settings.\n\niOS: Settings > [Your Name] > Subscriptions\nAndroid: Play Store > Payments & Subscriptions > Subscriptions',
+                [
+                  {
+                    text: 'Open Settings',
+                    onPress: async () => {
+                      if (Platform.OS === 'ios') {
+                        await Linking.openURL('https://apps.apple.com/account/subscriptions');
+                      } else {
+                        await Linking.openURL('https://play.google.com/store/account');
+                      }
+                    },
+                  },
+                  { text: 'OK', style: 'cancel' },
+                ]
+              );
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleChangePlan = () => {
+    const subscriptionInfo = getSubscriptionInfo();
+    const currentPlan = subscriptionInfo.productIdentifier?.toLowerCase();
+    
+    const monthlyPackage = availablePackages?.find(pkg => 
+      pkg.identifier.toLowerCase().includes('monthly')
+    );
+    const annualPackage = availablePackages?.find(pkg => 
+      pkg.identifier.toLowerCase().includes('annual') || 
+      pkg.identifier.toLowerCase().includes('yearly')
+    );
+
+    const isCurrentlyMonthly = currentPlan?.includes('monthly');
+    const isCurrentlyAnnual = currentPlan?.includes('annual') || currentPlan?.includes('yearly');
+
+    Alert.alert(
+      'Change Plan',
+      isCurrentlyMonthly
+        ? 'Switch to Annual plan to save money? Your current subscription will be cancelled and replaced with the new plan.'
+        : 'Switch to Monthly plan? Your current subscription will be cancelled and replaced with the new plan.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Change Plan',
+          onPress: async () => {
+            setChangingPlan(true);
+            try {
+              const newPackage = isCurrentlyMonthly ? annualPackage : monthlyPackage;
+              if (!newPackage) {
+                Alert.alert('Error', 'Package not available. Please try again later.');
+                return;
+              }
+
+              const success = await purchasePackage(newPackage);
+              if (success) {
+                Alert.alert(
+                  'Plan Changed',
+                  'Your subscription plan has been successfully changed!',
+                  [{ text: 'OK' }]
+                );
+                await refreshStatus();
+              }
+            } catch (error: any) {
+              if (!error.userCancelled) {
+                Alert.alert('Error', error.message || 'Failed to change plan. Please try again.');
+              }
+            } finally {
+              setChangingPlan(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleManageSubscription = async () => {
+    try {
+      setLoading(true);
+      await openManageSubscription();
+    } catch (error: any) {
+      Alert.alert(
+        'Manage Subscription',
+        error.message || 'Please manage your subscription through your device\'s App Store or Google Play settings.\n\niOS: Settings > [Your Name] > Subscriptions\nAndroid: Play Store > Payments & Subscriptions > Subscriptions',
+        [
+          {
+            text: 'Open Settings',
+            onPress: async () => {
+              if (Platform.OS === 'ios') {
+                await Linking.openURL('https://apps.apple.com/account/subscriptions');
+              } else {
+                await Linking.openURL('https://play.google.com/store/account');
+              }
+            },
+          },
+          { text: 'OK', style: 'cancel' },
+        ]
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const dynamicStyles = StyleSheet.create({
@@ -212,6 +356,32 @@ export default function SubscriptionScreen() {
       fontSize: 14,
       fontWeight: '700',
     },
+    actionButton: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      paddingVertical: 14,
+      borderRadius: 12,
+      alignItems: 'center',
+      marginBottom: 12,
+    },
+    actionButtonText: {
+      color: colors.primary,
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    cancelButton: {
+      paddingVertical: 14,
+      borderRadius: 12,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: colors.error + '40',
+    },
+    cancelButtonText: {
+      color: colors.error,
+      fontSize: 16,
+      fontWeight: '600',
+    },
   });
 
   const expirationDate = getExpirationDate();
@@ -298,32 +468,79 @@ export default function SubscriptionScreen() {
         )}
 
         {/* Subscription Details */}
-        {isPremium && customerInfo && subscriptionStatus === 'premium' && (
-          <View style={dynamicStyles.infoCard}>
-            <Text style={dynamicStyles.infoTitle}>Current Plan</Text>
-            
-            {expirationDate && (
-              <View style={dynamicStyles.infoRow}>
-                <Text style={dynamicStyles.infoLabel}>Expires</Text>
-                <Text style={dynamicStyles.infoValue}>{formatDate(expirationDate)}</Text>
+        {isPremium && customerInfo && subscriptionStatus === 'premium' && (() => {
+          const subscriptionInfo = getSubscriptionInfo();
+          const planName = subscriptionInfo.productIdentifier?.toLowerCase().includes('monthly')
+            ? 'Monthly'
+            : subscriptionInfo.productIdentifier?.toLowerCase().includes('annual') ||
+              subscriptionInfo.productIdentifier?.toLowerCase().includes('yearly')
+            ? 'Annual'
+            : 'Premium';
+
+          return (
+            <>
+              <View style={dynamicStyles.infoCard}>
+                <Text style={dynamicStyles.infoTitle}>Current Plan</Text>
+                
+                <View style={dynamicStyles.infoRow}>
+                  <Text style={dynamicStyles.infoLabel}>Plan</Text>
+                  <Text style={dynamicStyles.infoValue}>{planName}</Text>
+                </View>
+                
+                {expirationDate && (
+                  <View style={dynamicStyles.infoRow}>
+                    <Text style={dynamicStyles.infoLabel}>
+                      {subscriptionInfo.willRenew ? 'Next Billing' : 'Expires'}
+                    </Text>
+                    <Text style={dynamicStyles.infoValue}>{formatDate(expirationDate)}</Text>
+                  </View>
+                )}
+                
+                <View style={[dynamicStyles.infoRow, dynamicStyles.infoRowLast]}>
+                  <Text style={dynamicStyles.infoLabel}>Status</Text>
+                  <Text style={[dynamicStyles.infoValue, { color: colors.success }]}>
+                    {subscriptionInfo.willRenew ? 'Active • Auto-renewing' : 'Active • Not renewing'}
+                  </Text>
+                </View>
               </View>
-            )}
-            
-            {nextBillingDate && (
-              <View style={dynamicStyles.infoRow}>
-                <Text style={dynamicStyles.infoLabel}>Next Billing</Text>
-                <Text style={dynamicStyles.infoValue}>{formatDate(nextBillingDate)}</Text>
-              </View>
-            )}
-            
-            <View style={[dynamicStyles.infoRow, dynamicStyles.infoRowLast]}>
-              <Text style={dynamicStyles.infoLabel}>Status</Text>
-              <Text style={[dynamicStyles.infoValue, { color: colors.success }]}>
-                Active
-              </Text>
-            </View>
-          </View>
-        )}
+
+              {/* Change Plan Option */}
+              {subscriptionInfo.willRenew && availablePackages && availablePackages.length > 1 && (
+                <TouchableOpacity
+                  style={[dynamicStyles.actionButton, { marginBottom: 12 }]}
+                  onPress={handleChangePlan}
+                  disabled={changingPlan}
+                >
+                  {changingPlan ? (
+                    <ActivityIndicator size="small" color={colors.primary} />
+                  ) : (
+                    <Text style={dynamicStyles.actionButtonText}>Change Plan</Text>
+                  )}
+                </TouchableOpacity>
+              )}
+
+              {/* Manage Subscription Button */}
+              <TouchableOpacity
+                style={dynamicStyles.actionButton}
+                onPress={handleManageSubscription}
+                disabled={loading}
+              >
+                <Text style={dynamicStyles.actionButtonText}>Manage Subscription</Text>
+              </TouchableOpacity>
+
+              {/* Cancel Subscription Button */}
+              {subscriptionInfo.willRenew && (
+                <TouchableOpacity
+                  style={[dynamicStyles.cancelButton, { marginTop: 16 }]}
+                  onPress={handleCancelSubscription}
+                  disabled={loading}
+                >
+                  <Text style={dynamicStyles.cancelButtonText}>Cancel Subscription</Text>
+                </TouchableOpacity>
+              )}
+            </>
+          );
+        })()}
 
         {/* Free Tier Info */}
         {!isPremium && (
