@@ -11,6 +11,7 @@ import ProgressScreen from '../screens/ProgressScreen';
 import GoalsScreen from '../screens/GoalsScreen';
 import RecipeBuilderScreen from '../screens/RecipeBuilderScreen';
 import RecipeListScreen from '../screens/RecipeListScreen';
+import MealHistoryScreen from '../screens/MealHistoryScreen';
 
 const Stack = createStackNavigator();
 
@@ -32,6 +33,7 @@ export default function MainNavigator() {
       <Stack.Screen name="Goals" component={GoalsScreen} />
       <Stack.Screen name="RecipeBuilder" component={RecipeBuilderScreen} />
       <Stack.Screen name="RecipeList" component={RecipeListScreen} />
+      <Stack.Screen name="MealHistory" component={MealHistoryScreen} />
       {/* Add more screens: Profile, etc. */}
     </Stack.Navigator>
   );
