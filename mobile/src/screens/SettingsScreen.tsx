@@ -101,6 +101,24 @@ export default function SettingsScreen() {
       </View>
 
       <ScrollView style={styles.scrollView}>
+        {/* Goals Section */}
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Goals</Text>
+          
+          <TouchableOpacity
+            style={dynamicStyles.settingRow}
+            onPress={() => navigation.navigate('Goals' as never)}
+          >
+            <View style={dynamicStyles.settingContent}>
+              <Text style={dynamicStyles.settingLabel}>Daily Goals</Text>
+              <Text style={dynamicStyles.settingDescription}>
+                Set your calorie and protein targets
+              </Text>
+            </View>
+            <Text style={{ fontSize: 16, color: colors.textSecondary }}>→</Text>
+          </TouchableOpacity>
+        </View>
+
         {/* Appearance Section */}
         <View style={dynamicStyles.section}>
           <Text style={dynamicStyles.sectionTitle}>Appearance</Text>

@@ -1,5 +1,6 @@
 // Meal logging state management
 import { create } from 'zustand';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Meal, FoodItem, DailySummary } from '../types/meal.types';
 
 interface MealStore {
@@ -14,8 +15,11 @@ interface MealStore {
   removeFoodFromMeal: (mealId: string, foodId: string) => void;
   deleteMeal: (mealId: string) => void;
   updateDailySummary: () => void;
-  setGoals: (calorieGoal: number, proteinGoal: number) => void;
+  setGoals: (calorieGoal: number, proteinGoal: number) => Promise<void>;
+  initialize: () => Promise<void>;
 }
+
+const GOALS_STORAGE_KEY = '@forma_goals';
 
 const calculateMealTotals = (foods: FoodItem[]) => {
   return foods.reduce(
@@ -30,10 +34,10 @@ const calculateMealTotals = (foods: FoodItem[]) => {
 };
 
 export const useMealStore = create<MealStore>((set, get) => ({
-      meals: [],
-      dailySummary: null,
-      calorieGoal: 2000,
-      proteinGoal: 150,
+  meals: [],
+  dailySummary: null,
+  calorieGoal: 2000,
+  proteinGoal: 150,
   
   addMeal: (meal) => {
     set((state) => ({
@@ -113,8 +117,27 @@ export const useMealStore = create<MealStore>((set, get) => ({
     });
   },
   
-  setGoals: (calorieGoal, proteinGoal) => {
+  setGoals: async (calorieGoal, proteinGoal) => {
     set({ calorieGoal, proteinGoal });
     get().updateDailySummary();
+    
+    // Persist goals to AsyncStorage
+    try {
+      await AsyncStorage.setItem(GOALS_STORAGE_KEY, JSON.stringify({ calorieGoal, proteinGoal }));
+    } catch (error) {
+      console.error('Failed to save goals:', error);
+    }
+  },
+  
+  initialize: async () => {
+    try {
+      const goalsStr = await AsyncStorage.getItem(GOALS_STORAGE_KEY);
+      if (goalsStr) {
+        const { calorieGoal, proteinGoal } = JSON.parse(goalsStr);
+        set({ calorieGoal, proteinGoal });
+      }
+    } catch (error) {
+      console.error('Failed to load goals:', error);
+    }
   },
 }));
