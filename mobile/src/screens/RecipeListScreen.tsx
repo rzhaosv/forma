@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,12 +15,43 @@ import { Recipe } from '../types/meal.types';
 import { useTheme } from '../hooks/useTheme';
 import { useMealStore } from '../store/useMealStore';
 import { FoodItem, MealType } from '../types/meal.types';
+import { useSubscriptionStore } from '../store/useSubscriptionStore';
+import { getSubscriptionLimits } from '../utils/subscriptionLimits';
+import PaywallModal from '../components/PaywallModal';
 
 export default function RecipeListScreen() {
   const navigation = useNavigation();
   const { colors, isDark } = useTheme();
   const { recipes, deleteRecipe } = useRecipeStore();
   const { addMeal } = useMealStore();
+  const { isPremium } = useSubscriptionStore();
+  const [showPaywall, setShowPaywall] = useState(false);
+
+  useEffect(() => {
+    // Check if recipe builder is allowed
+    const limits = getSubscriptionLimits();
+    if (!limits.allowRecipeBuilder && !isPremium) {
+      // Don't show paywall immediately, only when they try to create
+    }
+  }, [isPremium]);
+
+  const handleCreateRecipe = () => {
+    const limits = getSubscriptionLimits();
+    if (!limits.allowRecipeBuilder && !isPremium) {
+      setShowPaywall(true);
+      return;
+    }
+    navigation.navigate('RecipeBuilder' as never);
+  };
+
+  const handleEditRecipe = (recipeId: string) => {
+    const limits = getSubscriptionLimits();
+    if (!limits.allowRecipeBuilder && !isPremium) {
+      setShowPaywall(true);
+      return;
+    }
+    navigation.navigate('RecipeBuilder' as never, { recipeId } as never);
+  };
 
   const handleDeleteRecipe = (recipe: Recipe) => {
     Alert.alert(
@@ -162,7 +193,7 @@ export default function RecipeListScreen() {
           <View style={dynamicStyles.recipeActions}>
             <TouchableOpacity
               style={dynamicStyles.actionButton}
-              onPress={() => navigation.navigate('RecipeBuilder' as never, { recipeId: recipe.id } as never)}
+              onPress={() => handleEditRecipe(recipe.id)}
             >
               <Text style={[dynamicStyles.actionButtonText, { color: colors.primary }]}>✏️</Text>
             </TouchableOpacity>
@@ -279,6 +310,13 @@ export default function RecipeListScreen() {
     <SafeAreaView style={dynamicStyles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       
+      <PaywallModal
+        visible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        title="Recipe Builder is Premium"
+        message="Upgrade to premium to create and manage custom recipes with automatic nutrition calculation."
+      />
+      
       {/* Header */}
       <View style={dynamicStyles.header}>
         <TouchableOpacity
@@ -290,7 +328,7 @@ export default function RecipeListScreen() {
         <Text style={dynamicStyles.title}>My Recipes</Text>
         <TouchableOpacity
           style={dynamicStyles.addButton}
-          onPress={() => navigation.navigate('RecipeBuilder' as never)}
+          onPress={handleCreateRecipe}
         >
           <Text style={dynamicStyles.addButtonText}>+ New</Text>
         </TouchableOpacity>
@@ -305,7 +343,7 @@ export default function RecipeListScreen() {
           </Text>
           <TouchableOpacity
             style={[dynamicStyles.addButton, { marginTop: 24 }]}
-            onPress={() => navigation.navigate('RecipeBuilder' as never)}
+            onPress={handleCreateRecipe}
           >
             <Text style={dynamicStyles.addButtonText}>Create Recipe</Text>
           </TouchableOpacity>

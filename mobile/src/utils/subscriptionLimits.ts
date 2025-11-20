@@ -41,7 +41,7 @@ export const getSubscriptionLimits = (): SubscriptionLimits => {
     maxHistoryDays: 7,
     allowBarcodeScanning: true, // Allowed with daily limit
     allowAdvancedAnalytics: false,
-    allowRecipeBuilder: true, // Recipe builder is available in free tier
+    allowRecipeBuilder: false, // Recipe builder is premium only
     allowDataExport: false,
   };
 };

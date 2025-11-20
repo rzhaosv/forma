@@ -19,6 +19,9 @@ import { Recipe, RecipeIngredient } from '../types/meal.types';
 import { FoodItem, MealType } from '../types/meal.types';
 import { useTheme } from '../hooks/useTheme';
 import { searchFoods, FoodDatabaseItem } from '../services/foodDatabaseService';
+import { useSubscriptionStore } from '../store/useSubscriptionStore';
+import { getSubscriptionLimits } from '../utils/subscriptionLimits';
+import PaywallModal from '../components/PaywallModal';
 
 type RouteParams = {
   RecipeBuilder: {
@@ -33,9 +36,19 @@ export default function RecipeBuilderScreen() {
   const { colors, isDark } = useTheme();
   const { recipes, addRecipe, updateRecipe, getRecipe } = useRecipeStore();
   const { addMeal } = useMealStore();
+  const { isPremium } = useSubscriptionStore();
+  const [showPaywall, setShowPaywall] = useState(false);
   
   const editingRecipe = route.params?.recipeId ? getRecipe(route.params.recipeId) : null;
   const mealType = route.params?.mealType || 'Lunch';
+
+  // Check if recipe builder is allowed
+  useEffect(() => {
+    const limits = getSubscriptionLimits();
+    if (!limits.allowRecipeBuilder && !isPremium) {
+      setShowPaywall(true);
+    }
+  }, [isPremium]);
   
   const [recipeName, setRecipeName] = useState(editingRecipe?.name || '');
   const [description, setDescription] = useState(editingRecipe?.description || '');
@@ -403,6 +416,29 @@ export default function RecipeBuilderScreen() {
       fontWeight: '700',
     },
   });
+
+  // Show paywall if user doesn't have access
+  if (showPaywall) {
+    return (
+      <SafeAreaView style={dynamicStyles.container}>
+        <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+        <PaywallModal
+          visible={showPaywall}
+          onClose={async () => {
+            // Check if user upgraded
+            const limits = getSubscriptionLimits();
+            if (limits.allowRecipeBuilder || isPremium) {
+              setShowPaywall(false);
+            } else {
+              navigation.goBack();
+            }
+          }}
+          title="Recipe Builder is Premium"
+          message="Upgrade to premium to create and manage custom recipes with automatic nutrition calculation."
+        />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={dynamicStyles.container}>
