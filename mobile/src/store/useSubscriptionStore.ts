@@ -192,6 +192,8 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         return;
       }
       
+      console.log('🎁 Starting trial for user:', userId);
+      
       // Store current user ID to ensure trial data is user-specific
       await AsyncStorage.setItem(CURRENT_USER_ID_KEY, userId);
       set({ currentUserId: userId });
@@ -214,6 +216,8 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         isActive: true,
       };
       
+      console.log('✅ Trial started successfully:', trialInfo);
+      
       set({
         trialInfo,
         subscriptionStatus: 'trial',
@@ -221,6 +225,10 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
       });
       
       await AsyncStorage.setItem(SUBSCRIPTION_STATUS_KEY, 'trial');
+      
+      // Verify trial was saved correctly
+      const verifyTrial = await get().checkTrialStatus(userId);
+      console.log('🔍 Verification - trial status check:', verifyTrial);
     } catch (error) {
       console.error('Failed to start trial:', error);
     }
@@ -345,6 +353,16 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
       try {
         const customerInfo = await Purchases.getCustomerInfo();
         
+        // Ensure currentUserId is set from customerInfo
+        const customerUserId = customerInfo.originalAppUserId;
+        if (customerUserId) {
+          const currentStoreUserId = get().currentUserId;
+          if (!currentStoreUserId || currentStoreUserId !== customerUserId) {
+            set({ currentUserId: customerUserId });
+            await AsyncStorage.setItem(CURRENT_USER_ID_KEY, customerUserId);
+          }
+        }
+        
         const hasActiveSubscription = customerInfo.entitlements.active['premium'] !== undefined;
         
         // If user has active subscription, use that (overrides trial)
@@ -365,11 +383,68 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         }
         
         // No active subscription - check trial status for current user
-        const currentUserId = get().currentUserId;
-        const trialInfo = currentUserId ? await get().checkTrialStatus(currentUserId) : null;
+        let currentUserId = get().currentUserId || customerUserId;
+        
+        // If still no userId, try to get from stored key
+        if (!currentUserId) {
+          const storedUserId = await AsyncStorage.getItem(CURRENT_USER_ID_KEY);
+          if (storedUserId) {
+            currentUserId = storedUserId;
+            set({ currentUserId });
+          }
+        }
+        
+        if (!currentUserId) {
+          console.warn('⚠️ No user ID available to check trial status');
+          // Check if there's an active trial in the store (might have been just set)
+          const storeTrialInfo = get().trialInfo;
+          if (storeTrialInfo && storeTrialInfo.isActive) {
+            console.log('✅ Found active trial in store:', storeTrialInfo);
+            set({
+              subscriptionStatus: 'trial',
+              isPremium: true,
+              customerInfo,
+              trialInfo: storeTrialInfo,
+            });
+            await AsyncStorage.setItem(SUBSCRIPTION_STATUS_KEY, 'trial');
+            return;
+          }
+          
+          set({
+            subscriptionStatus: 'free',
+            isPremium: false,
+            customerInfo,
+            trialInfo: null,
+          });
+          await AsyncStorage.setItem(SUBSCRIPTION_STATUS_KEY, 'free');
+          return;
+        }
+        
+        // Check stored status first - if it's trial, verify it's still active
+        const storedStatus = await AsyncStorage.getItem(SUBSCRIPTION_STATUS_KEY);
+        if (storedStatus === 'trial') {
+          const trialInfo = await get().checkTrialStatus(currentUserId);
+          if (trialInfo && trialInfo.isActive) {
+            console.log('✅ Active trial found (from stored status):', trialInfo);
+            set({
+              subscriptionStatus: 'trial',
+              isPremium: true,
+              customerInfo,
+              trialInfo,
+            });
+            return;
+          } else {
+            // Trial expired or not found - clear it
+            console.log('⚠️ Stored trial status but trial not active - clearing');
+            await AsyncStorage.setItem(SUBSCRIPTION_STATUS_KEY, 'free');
+          }
+        }
+        
+        const trialInfo = await get().checkTrialStatus(currentUserId);
         
         if (trialInfo && trialInfo.isActive) {
           // Trial is active, grant premium access
+          console.log('✅ Active trial found:', trialInfo);
           set({
             subscriptionStatus: 'trial',
             isPremium: true,
@@ -379,6 +454,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
           await AsyncStorage.setItem(SUBSCRIPTION_STATUS_KEY, 'trial');
         } else {
           // No subscription and no active trial
+          console.log('📊 No active trial - status set to free', { trialInfo, currentUserId, storedStatus });
           set({
             subscriptionStatus: 'free',
             isPremium: false,
@@ -425,31 +501,27 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
     try {
       // Check if Purchases is configured
       try {
+        // Get current user ID before purchase
+        let currentUserId = get().currentUserId;
+        
         // Check if user has used their local trial before purchasing
-        const currentUserId = get().currentUserId;
         const currentTrialInfo = currentUserId ? await get().checkTrialStatus(currentUserId) : null;
         const hasUsedTrial = currentTrialInfo !== null;
         
         const { customerInfo } = await Purchases.purchasePackage(packageToPurchase);
         
-        let isPremium = customerInfo.entitlements.active['premium'] !== undefined;
-        
-        // In Test Store, "Test Valid Purchase" might complete but not set entitlements
-        // If purchase completed successfully but no entitlements, grant premium for testing
-        if (!isPremium && typeof __DEV__ !== 'undefined' && __DEV__) {
-          // Check if we're using Test Store (indicated by testStore key being used)
-          const isUsingTestStore = REVENUECAT_API_KEY.testStore && 
-                                   !REVENUECAT_API_KEY.testStore.includes('YOUR_');
-          
-          if (isUsingTestStore) {
-            // Purchase completed successfully in Test Store but no entitlements
-            // This is likely "Test Valid Purchase" - grant premium for testing
-            console.log('✅ Test Store: Valid purchase detected, granting premium for testing');
-            isPremium = true;
+        // Ensure currentUserId is set from customerInfo
+        if (customerInfo.originalAppUserId) {
+          if (!currentUserId || currentUserId !== customerInfo.originalAppUserId) {
+            currentUserId = customerInfo.originalAppUserId;
+            set({ currentUserId });
+            await AsyncStorage.setItem(CURRENT_USER_ID_KEY, currentUserId);
           }
         }
         
-        // Check if this is a trial period from RevenueCat
+        const hasRealEntitlement = customerInfo.entitlements.active['premium'] !== undefined;
+        
+        // Check if this is a trial period from RevenueCat (only if real entitlement exists)
         const entitlement = customerInfo.entitlements.active['premium'];
         const isRevenueCatTrial = entitlement?.periodType === 'TRIAL' || entitlement?.isSandbox === true;
         
@@ -457,19 +529,41 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         let finalIsPremium: boolean;
         let finalTrialInfo = currentTrialInfo;
         
-        if (isPremium) {
+        if (hasRealEntitlement) {
           // Has RevenueCat entitlement - use that
           finalStatus = isRevenueCatTrial ? 'trial' : 'premium';
           finalIsPremium = true;
         } else if (!hasUsedTrial && currentUserId) {
           // No RevenueCat entitlement but user hasn't used local trial - start local trial
-          console.log('Purchase initiated but no entitlements - starting local 3-day trial');
+          // This handles both test purchases and real purchases that don't have entitlements yet
+          console.log('🎁 Purchase completed but no entitlements - starting local 3-day trial for user:', currentUserId);
           await get().startTrial(currentUserId);
+          
+          // Wait a moment for trial to be fully saved
+          await new Promise(resolve => setTimeout(resolve, 200));
+          
+          // Verify trial was saved
           finalTrialInfo = await get().checkTrialStatus(currentUserId);
-          finalStatus = 'trial';
-          finalIsPremium = true;
+          if (!finalTrialInfo || !finalTrialInfo.isActive) {
+            console.error('❌ Failed to start trial - retrying...');
+            await get().startTrial(currentUserId);
+            await new Promise(resolve => setTimeout(resolve, 200));
+            finalTrialInfo = await get().checkTrialStatus(currentUserId);
+          }
+          
+          console.log('✅ Trial started:', finalTrialInfo);
+          
+          if (finalTrialInfo && finalTrialInfo.isActive) {
+            finalStatus = 'trial';
+            finalIsPremium = true;
+          } else {
+            console.error('❌ Trial start failed - falling back to free');
+            finalStatus = 'free';
+            finalIsPremium = false;
+          }
         } else {
           // No entitlements and trial already used
+          console.log('📊 No entitlements and trial already used:', { hasUsedTrial, currentUserId });
           finalStatus = 'free';
           finalIsPremium = false;
         }
@@ -482,6 +576,13 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         });
         
         await AsyncStorage.setItem(SUBSCRIPTION_STATUS_KEY, finalStatus);
+        
+        console.log('📊 Final subscription status after purchase:', {
+          status: finalStatus,
+          isPremium: finalIsPremium,
+          trialInfo: finalTrialInfo,
+          currentUserId,
+        });
         
         return finalIsPremium;
       } catch (purchasesError: any) {
