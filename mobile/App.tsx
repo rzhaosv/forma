@@ -4,23 +4,15 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 import AppNavigator from './src/navigation/AppNavigator';
 import { useThemeStore } from './src/store/useThemeStore';
-import { useProgressStore } from './src/store/useProgressStore';
-import { useMealStore } from './src/store/useMealStore';
-import { useRecipeStore } from './src/store/useRecipeStore';
 
 export default function App() {
   const initializeTheme = useThemeStore((state) => state.initialize);
-  const initializeProgress = useProgressStore((state) => state.initialize);
-  const initializeMealStore = useMealStore((state) => state.initialize);
-  const initializeRecipeStore = useRecipeStore((state) => state.initialize);
 
   useEffect(() => {
-    // Initialize all stores on app start
+    // Initialize theme store (doesn't require userId)
+    // All other stores are initialized in authService when user logs in
     initializeTheme();
-    initializeProgress();
-    initializeMealStore();
-    initializeRecipeStore();
-  }, [initializeTheme, initializeProgress, initializeMealStore, initializeRecipeStore]);
+  }, [initializeTheme]);
 
   return (
     <GestureHandlerRootView style={styles.container}>

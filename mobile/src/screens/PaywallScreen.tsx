@@ -27,6 +27,7 @@ export default function PaywallScreen() {
     purchasePackage, 
     restorePurchases,
     getAvailablePackages,
+    checkSubscriptionStatus,
     subscriptionStatus,
     trialInfo,
   } = useSubscriptionStore();
@@ -35,8 +36,18 @@ export default function PaywallScreen() {
   const [selectedPackage, setSelectedPackage] = useState<PurchasesPackage | null>(null);
 
   useEffect(() => {
-    loadPackages();
+    refreshStatus();
   }, []);
+
+  const refreshStatus = async () => {
+    setLoading(true);
+    try {
+      await checkSubscriptionStatus();
+      await getAvailablePackages();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadPackages = async () => {
     setLoading(true);
@@ -49,6 +60,9 @@ export default function PaywallScreen() {
     try {
       const success = await purchasePackage(pkg);
       if (success) {
+        // Refresh subscription status after purchase
+        await checkSubscriptionStatus();
+        
         Alert.alert(
           'Welcome to Premium! 🎉',
           'You now have access to all premium features.',

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -19,12 +19,8 @@ import { FoodItem, MealType } from '../types/meal.types';
 export default function RecipeListScreen() {
   const navigation = useNavigation();
   const { colors, isDark } = useTheme();
-  const { recipes, deleteRecipe, initialize } = useRecipeStore();
+  const { recipes, deleteRecipe } = useRecipeStore();
   const { addMeal } = useMealStore();
-
-  useEffect(() => {
-    initialize();
-  }, [initialize]);
 
   const handleDeleteRecipe = (recipe: Recipe) => {
     Alert.alert(
@@ -41,7 +37,7 @@ export default function RecipeListScreen() {
     );
   };
 
-  const handleAddToMeal = (recipe: Recipe, mealType: MealType) => {
+  const handleAddToMeal = async (recipe: Recipe, mealType: MealType) => {
     const recipeFood: FoodItem = {
       id: `recipe-${recipe.id}-${Date.now()}`,
       name: recipe.name,
@@ -65,7 +61,7 @@ export default function RecipeListScreen() {
       totalFat: recipeFood.fat_g,
     };
 
-    addMeal(meal);
+    await addMeal(meal);
     Alert.alert('Added to Meal', `Added ${recipe.name} to ${mealType}`);
     navigation.navigate('Home' as never);
   };

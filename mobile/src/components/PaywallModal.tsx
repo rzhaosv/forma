@@ -39,6 +39,7 @@ export default function PaywallModal({
     purchasePackage,
     restorePurchases,
     getAvailablePackages,
+    checkSubscriptionStatus,
     subscriptionStatus,
     trialInfo,
   } = useSubscriptionStore();
@@ -48,9 +49,19 @@ export default function PaywallModal({
 
   useEffect(() => {
     if (visible) {
-      loadPackages();
+      refreshStatus();
     }
   }, [visible]);
+
+  const refreshStatus = async () => {
+    setLoading(true);
+    try {
+      await checkSubscriptionStatus();
+      await getAvailablePackages();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadPackages = async () => {
     setLoading(true);
@@ -63,6 +74,9 @@ export default function PaywallModal({
     try {
       const success = await purchasePackage(pkg);
       if (success) {
+        // Refresh subscription status after purchase
+        await checkSubscriptionStatus();
+        
         Alert.alert('Welcome to Premium! 🎉', 'You now have access to all premium features.', [
           {
             text: 'OK',

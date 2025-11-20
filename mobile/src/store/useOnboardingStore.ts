@@ -34,22 +34,27 @@ interface OnboardingState {
   isLoading: boolean;
   currentStep: number;
   data: OnboardingData;
+  currentUserId: string | null;
   setStep: (step: number) => void;
   updateData: (data: Partial<OnboardingData>) => void;
   calculateGoals: () => void;
   completeOnboarding: () => Promise<void>;
-  initialize: () => Promise<void>;
+  initialize: (userId: string) => Promise<void>;
   reset: () => Promise<void>;
+  clearData: () => Promise<void>;
 }
 
-const ONBOARDING_STORAGE_KEY = '@forma_onboarding_complete';
-const ONBOARDING_DATA_KEY = '@forma_onboarding_data';
+const getStorageKeys = (userId: string) => ({
+  complete: `@forma_onboarding_complete_${userId}`,
+  data: `@forma_onboarding_data_${userId}`,
+});
 
 export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   isComplete: false,
   isLoading: true,
   currentStep: 1,
   data: {},
+  currentUserId: null,
   
   setStep: (step: number) => {
     set({ currentStep: step });
@@ -118,29 +123,39 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   
   completeOnboarding: async () => {
     const { data } = get();
+    const userId = get().currentUserId;
+    
+    if (!userId) {
+      console.error('Cannot complete onboarding: user ID is required');
+      return;
+    }
     
     // Calculate goals before completing
     get().calculateGoals();
     
     try {
-      await AsyncStorage.setItem(ONBOARDING_STORAGE_KEY, 'true');
-      await AsyncStorage.setItem(ONBOARDING_DATA_KEY, JSON.stringify(data));
+      const keys = getStorageKeys(userId);
+      await AsyncStorage.setItem(keys.complete, 'true');
+      await AsyncStorage.setItem(keys.data, JSON.stringify(data));
       set({ isComplete: true, currentStep: 1 });
     } catch (error) {
       console.error('Failed to save onboarding data:', error);
     }
   },
   
-  initialize: async () => {
+  initialize: async (userId: string) => {
     try {
-      const isComplete = await AsyncStorage.getItem(ONBOARDING_STORAGE_KEY);
-      const dataStr = await AsyncStorage.getItem(ONBOARDING_DATA_KEY);
+      set({ currentUserId: userId });
+      const keys = getStorageKeys(userId);
+      
+      const isComplete = await AsyncStorage.getItem(keys.complete);
+      const dataStr = await AsyncStorage.getItem(keys.data);
       
       if (isComplete === 'true') {
         const data = dataStr ? JSON.parse(dataStr) : {};
         set({ isComplete: true, data, currentStep: 1, isLoading: false });
       } else {
-        set({ isLoading: false });
+        set({ isComplete: false, isLoading: false, data: {} });
       }
     } catch (error) {
       console.error('Failed to load onboarding data:', error);
@@ -149,13 +164,27 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   },
   
   reset: async () => {
+    const userId = get().currentUserId;
+    if (!userId) return;
+    
     try {
-      await AsyncStorage.removeItem(ONBOARDING_STORAGE_KEY);
-      await AsyncStorage.removeItem(ONBOARDING_DATA_KEY);
+      const keys = getStorageKeys(userId);
+      await AsyncStorage.removeItem(keys.complete);
+      await AsyncStorage.removeItem(keys.data);
       set({ isComplete: false, currentStep: 1, data: {} });
     } catch (error) {
       console.error('Failed to reset onboarding:', error);
     }
+  },
+  
+  clearData: async () => {
+    set({ 
+      isComplete: false, 
+      isLoading: false,
+      currentStep: 1, 
+      data: {},
+      currentUserId: null,
+    });
   },
 }));
 

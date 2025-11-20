@@ -27,6 +27,7 @@ interface ProgressState {
   weightEntries: WeightEntry[];
   streak: number;
   lastLoggedDate: string | null;
+  currentUserId: string | null;
   
   // Actions
   addWeightEntry: (weight_kg: number, notes?: string) => Promise<void>;
@@ -35,16 +36,20 @@ interface ProgressState {
   getWeeklySummaries: (weeks?: number) => WeeklySummary[];
   calculateStreak: () => number;
   getDailyCalories: (date: string) => number;
-  initialize: () => Promise<void>;
+  initialize: (userId: string) => Promise<void>;
+  clearData: () => Promise<void>;
 }
 
-const WEIGHT_ENTRIES_KEY = '@forma_weight_entries';
-const LAST_LOGGED_KEY = '@forma_last_logged_date';
+const getStorageKeys = (userId: string) => ({
+  weightEntries: `@forma_weight_entries_${userId}`,
+  lastLogged: `@forma_last_logged_date_${userId}`,
+});
 
 export const useProgressStore = create<ProgressState>((set, get) => ({
   weightEntries: [],
   streak: 0,
   lastLoggedDate: null,
+  currentUserId: null,
   
   addWeightEntry: async (weight_kg: number, notes?: string) => {
     const entry: WeightEntry = {
@@ -64,10 +69,14 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     const streak = get().calculateStreak();
     set({ streak });
     
-    try {
-      await AsyncStorage.setItem(WEIGHT_ENTRIES_KEY, JSON.stringify(updatedEntries));
-    } catch (error) {
-      console.error('Failed to save weight entry:', error);
+    const userId = get().currentUserId;
+    if (userId) {
+      try {
+        const keys = getStorageKeys(userId);
+        await AsyncStorage.setItem(keys.weightEntries, JSON.stringify(updatedEntries));
+      } catch (error) {
+        console.error('Failed to save weight entry:', error);
+      }
     }
   },
   
@@ -79,10 +88,14 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     const streak = get().calculateStreak();
     set({ streak });
     
-    try {
-      await AsyncStorage.setItem(WEIGHT_ENTRIES_KEY, JSON.stringify(updatedEntries));
-    } catch (error) {
-      console.error('Failed to delete weight entry:', error);
+    const userId = get().currentUserId;
+    if (userId) {
+      try {
+        const keys = getStorageKeys(userId);
+        await AsyncStorage.setItem(keys.weightEntries, JSON.stringify(updatedEntries));
+      } catch (error) {
+        console.error('Failed to delete weight entry:', error);
+      }
     }
   },
   
@@ -188,12 +201,17 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     return dayMeals.reduce((sum, meal) => sum + meal.totalCalories, 0);
   },
   
-  initialize: async () => {
+  initialize: async (userId: string) => {
     try {
-      const weightEntriesStr = await AsyncStorage.getItem(WEIGHT_ENTRIES_KEY);
+      set({ currentUserId: userId });
+      const keys = getStorageKeys(userId);
+      
+      const weightEntriesStr = await AsyncStorage.getItem(keys.weightEntries);
       if (weightEntriesStr) {
         const entries = JSON.parse(weightEntriesStr);
         set({ weightEntries: entries });
+      } else {
+        set({ weightEntries: [] });
       }
       
       // Calculate initial streak
@@ -202,6 +220,15 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     } catch (error) {
       console.error('Failed to load progress data:', error);
     }
+  },
+  
+  clearData: async () => {
+    set({ 
+      weightEntries: [], 
+      streak: 0, 
+      lastLoggedDate: null,
+      currentUserId: null,
+    });
   },
 }));
 

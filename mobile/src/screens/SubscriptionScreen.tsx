@@ -467,8 +467,8 @@ export default function SubscriptionScreen() {
           </View>
         )}
 
-        {/* Subscription Details */}
-        {isPremium && customerInfo && subscriptionStatus === 'premium' && (() => {
+        {/* Subscription Details - Show for active subscriptions */}
+        {isPremium && subscriptionStatus === 'premium' && customerInfo && (() => {
           const subscriptionInfo = getSubscriptionInfo();
           const planName = subscriptionInfo.productIdentifier?.toLowerCase().includes('monthly')
             ? 'Monthly'
@@ -542,8 +542,36 @@ export default function SubscriptionScreen() {
           );
         })()}
 
-        {/* Free Tier Info */}
-        {!isPremium && (
+        {/* Trial Status Info - Show during active trial */}
+        {subscriptionStatus === 'trial' && trialInfo && trialInfo.isActive && (
+          <View style={dynamicStyles.infoCard}>
+            <Text style={dynamicStyles.infoTitle}>Trial Status</Text>
+            
+            <View style={dynamicStyles.infoRow}>
+              <Text style={dynamicStyles.infoLabel}>Status</Text>
+              <Text style={[dynamicStyles.infoValue, { color: colors.success }]}>
+                Free Trial Active
+              </Text>
+            </View>
+            
+            {trialInfo.endDate && (
+              <View style={dynamicStyles.infoRow}>
+                <Text style={dynamicStyles.infoLabel}>Trial Ends</Text>
+                <Text style={dynamicStyles.infoValue}>{formatDate(trialInfo.endDate)}</Text>
+              </View>
+            )}
+            
+            <View style={[dynamicStyles.infoRow, dynamicStyles.infoRowLast]}>
+              <Text style={dynamicStyles.infoLabel}>Access Level</Text>
+              <Text style={[dynamicStyles.infoValue, { color: colors.primary }]}>
+                Premium Features Active
+              </Text>
+            </View>
+          </View>
+        )}
+
+        {/* Free Tier Info - Only show if truly on free tier (not trial or premium) */}
+        {!isPremium && subscriptionStatus === 'free' && (
           <View style={dynamicStyles.infoCard}>
             <Text style={dynamicStyles.infoTitle}>Free Tier Limits</Text>
             
@@ -564,29 +592,28 @@ export default function SubscriptionScreen() {
           </View>
         )}
 
-        {/* Upgrade Button */}
-        {!isPremium && (
+        {/* Upgrade/Subscribe Buttons */}
+        {subscriptionStatus === 'trial' && trialInfo && trialInfo.isActive ? (
+          // During active trial, show subscribe button
+          <TouchableOpacity
+            style={dynamicStyles.upgradeButton}
+            onPress={() => navigation.navigate('Paywall' as never)}
+          >
+            <Text style={dynamicStyles.upgradeButtonText}>Subscribe to Continue Premium</Text>
+          </TouchableOpacity>
+        ) : !isPremium && subscriptionStatus === 'free' ? (
+          // On free tier (no active trial), show start trial button
           <TouchableOpacity
             style={dynamicStyles.upgradeButton}
             onPress={() => navigation.navigate('Paywall' as never)}
           >
             <Text style={dynamicStyles.upgradeButtonText}>
-              {subscriptionStatus === 'trial' && trialInfo && !trialInfo.isActive
+              {trialInfo && !trialInfo.isActive
                 ? 'Subscribe to Premium'
                 : 'Start Free Trial'}
             </Text>
           </TouchableOpacity>
-        )}
-        
-        {/* Subscribe Button (during trial) */}
-        {subscriptionStatus === 'trial' && trialInfo && trialInfo.isActive && (
-          <TouchableOpacity
-            style={dynamicStyles.upgradeButton}
-            onPress={() => navigation.navigate('Paywall' as never)}
-          >
-            <Text style={dynamicStyles.upgradeButtonText}>Subscribe Now</Text>
-          </TouchableOpacity>
-        )}
+        ) : null}
 
         {/* Restore Purchases */}
         <TouchableOpacity

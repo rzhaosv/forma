@@ -8,18 +8,23 @@ interface MealStore {
   dailySummary: DailySummary | null;
   calorieGoal: number;
   proteinGoal: number;
+  currentUserId: string | null;
   
   // Actions
-  addMeal: (meal: Meal) => void;
+  addMeal: (meal: Meal) => Promise<void>;
   addFoodToMeal: (mealId: string, food: FoodItem) => void;
   removeFoodFromMeal: (mealId: string, foodId: string) => void;
   deleteMeal: (mealId: string) => void;
   updateDailySummary: () => void;
   setGoals: (calorieGoal: number, proteinGoal: number) => Promise<void>;
-  initialize: () => Promise<void>;
+  initialize: (userId: string) => Promise<void>;
+  clearData: () => Promise<void>;
 }
 
-const GOALS_STORAGE_KEY = '@forma_goals';
+const getStorageKeys = (userId: string) => ({
+  meals: `@forma_meals_${userId}`,
+  goals: `@forma_goals_${userId}`,
+});
 
 const calculateMealTotals = (foods: FoodItem[]) => {
   return foods.reduce(
@@ -38,15 +43,28 @@ export const useMealStore = create<MealStore>((set, get) => ({
   dailySummary: null,
   calorieGoal: 2000,
   proteinGoal: 150,
+  currentUserId: null,
   
-  addMeal: (meal) => {
+  addMeal: async (meal) => {
     set((state) => ({
       meals: [...state.meals, meal],
     }));
     get().updateDailySummary();
+    
+    // Persist meals
+    const userId = get().currentUserId;
+    if (userId) {
+      try {
+        const keys = getStorageKeys(userId);
+        const meals = get().meals;
+        await AsyncStorage.setItem(keys.meals, JSON.stringify(meals));
+      } catch (error) {
+        console.error('Failed to save meals:', error);
+      }
+    }
   },
   
-  addFoodToMeal: (mealId, food) => {
+  addFoodToMeal: async (mealId, food) => {
     set((state) => ({
       meals: state.meals.map((meal) => {
         if (meal.id === mealId) {
@@ -62,9 +80,21 @@ export const useMealStore = create<MealStore>((set, get) => ({
       }),
     }));
     get().updateDailySummary();
+    
+    // Persist meals
+    const userId = get().currentUserId;
+    if (userId) {
+      try {
+        const keys = getStorageKeys(userId);
+        const meals = get().meals;
+        await AsyncStorage.setItem(keys.meals, JSON.stringify(meals));
+      } catch (error) {
+        console.error('Failed to save meals:', error);
+      }
+    }
   },
   
-  removeFoodFromMeal: (mealId, foodId) => {
+  removeFoodFromMeal: async (mealId, foodId) => {
     set((state) => ({
       meals: state.meals.map((meal) => {
         if (meal.id === mealId) {
@@ -80,13 +110,37 @@ export const useMealStore = create<MealStore>((set, get) => ({
       }),
     }));
     get().updateDailySummary();
+    
+    // Persist meals
+    const userId = get().currentUserId;
+    if (userId) {
+      try {
+        const keys = getStorageKeys(userId);
+        const meals = get().meals;
+        await AsyncStorage.setItem(keys.meals, JSON.stringify(meals));
+      } catch (error) {
+        console.error('Failed to save meals:', error);
+      }
+    }
   },
   
-  deleteMeal: (mealId) => {
+  deleteMeal: async (mealId) => {
     set((state) => ({
       meals: state.meals.filter((meal) => meal.id !== mealId),
     }));
     get().updateDailySummary();
+    
+    // Persist meals
+    const userId = get().currentUserId;
+    if (userId) {
+      try {
+        const keys = getStorageKeys(userId);
+        const meals = get().meals;
+        await AsyncStorage.setItem(keys.meals, JSON.stringify(meals));
+      } catch (error) {
+        console.error('Failed to save meals:', error);
+      }
+    }
   },
   
   updateDailySummary: () => {
@@ -122,22 +176,50 @@ export const useMealStore = create<MealStore>((set, get) => ({
     get().updateDailySummary();
     
     // Persist goals to AsyncStorage
-    try {
-      await AsyncStorage.setItem(GOALS_STORAGE_KEY, JSON.stringify({ calorieGoal, proteinGoal }));
-    } catch (error) {
-      console.error('Failed to save goals:', error);
+    const userId = get().currentUserId;
+    if (userId) {
+      try {
+        const keys = getStorageKeys(userId);
+        await AsyncStorage.setItem(keys.goals, JSON.stringify({ calorieGoal, proteinGoal }));
+      } catch (error) {
+        console.error('Failed to save goals:', error);
+      }
     }
   },
   
-  initialize: async () => {
+  initialize: async (userId: string) => {
     try {
-      const goalsStr = await AsyncStorage.getItem(GOALS_STORAGE_KEY);
+      set({ currentUserId: userId });
+      const keys = getStorageKeys(userId);
+      
+      // Load meals
+      const mealsStr = await AsyncStorage.getItem(keys.meals);
+      if (mealsStr) {
+        const meals = JSON.parse(mealsStr);
+        set({ meals });
+        get().updateDailySummary();
+      } else {
+        set({ meals: [] });
+      }
+      
+      // Load goals
+      const goalsStr = await AsyncStorage.getItem(keys.goals);
       if (goalsStr) {
         const { calorieGoal, proteinGoal } = JSON.parse(goalsStr);
         set({ calorieGoal, proteinGoal });
       }
     } catch (error) {
-      console.error('Failed to load goals:', error);
+      console.error('Failed to load meal data:', error);
     }
+  },
+  
+  clearData: async () => {
+    set({ 
+      meals: [], 
+      dailySummary: null, 
+      calorieGoal: 2000, 
+      proteinGoal: 150,
+      currentUserId: null,
+    });
   },
 }));

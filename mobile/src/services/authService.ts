@@ -12,6 +12,10 @@ import * as WebBrowser from 'expo-web-browser';
 import { auth } from '../config/firebase';
 import { useAuthStore } from '../store/useAuthStore';
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
+import { useMealStore } from '../store/useMealStore';
+import { useProgressStore } from '../store/useProgressStore';
+import { useRecipeStore } from '../store/useRecipeStore';
+import { useOnboardingStore } from '../store/useOnboardingStore';
 
 // Complete the auth session
 WebBrowser.maybeCompleteAuthSession();
@@ -72,17 +76,44 @@ export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
       const token = await user.getIdToken();
       store.setUser(user, token);
       
-      // Initialize RevenueCat with user ID
+      const userId = user.uid;
+      
+      // Initialize all stores with user-specific data
       try {
-        await useSubscriptionStore.getState().initialize(user.uid);
+        // Initialize meal store (meals, goals)
+        await useMealStore.getState().initialize(userId);
+        
+        // Initialize progress store (weight entries, streaks)
+        await useProgressStore.getState().initialize(userId);
+        
+        // Initialize recipe store
+        await useRecipeStore.getState().initialize(userId);
+        
+        // Initialize onboarding store
+        await useOnboardingStore.getState().initialize(userId);
+        
+        // Initialize subscription store (subscription, trial)
+        await useSubscriptionStore.getState().initialize(userId);
       } catch (error) {
-        console.error('Failed to initialize RevenueCat:', error);
+        console.error('Failed to initialize user stores:', error);
       }
     } else {
-      // User is signed out
+      // User is signed out - clear all user-specific data
       store.clearUser();
-      // Reset subscription status
-      useSubscriptionStore.getState().setSubscriptionStatus('free');
+      
+      // Clear all stores
+      try {
+        await useMealStore.getState().clearData();
+        await useProgressStore.getState().clearData();
+        await useRecipeStore.getState().clearData();
+        await useOnboardingStore.getState().clearData();
+        
+        // Reset subscription status and clear trial data
+        useSubscriptionStore.getState().setSubscriptionStatus('free');
+        await useSubscriptionStore.getState().clearTrialData();
+      } catch (error) {
+        console.error('Failed to clear user data on logout:', error);
+      }
     }
 
     // Call optional callback

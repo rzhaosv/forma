@@ -7,13 +7,15 @@ import { Recipe, RecipeIngredient } from '../types/meal.types';
 
 interface RecipeStore {
   recipes: Recipe[];
+  currentUserId: string | null;
   
   // Actions
   addRecipe: (recipe: Omit<Recipe, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   updateRecipe: (id: string, recipe: Partial<Recipe>) => Promise<void>;
   deleteRecipe: (id: string) => Promise<void>;
   getRecipe: (id: string) => Recipe | undefined;
-  initialize: () => Promise<void>;
+  initialize: (userId: string) => Promise<void>;
+  clearData: () => Promise<void>;
   
   // Helper to calculate recipe totals
   calculateRecipeTotals: (ingredients: RecipeIngredient[]) => {
@@ -24,10 +26,11 @@ interface RecipeStore {
   };
 }
 
-const RECIPES_STORAGE_KEY = '@forma_recipes';
+const getStorageKey = (userId: string) => `@forma_recipes_${userId}`;
 
 export const useRecipeStore = create<RecipeStore>((set, get) => ({
   recipes: [],
+  currentUserId: null,
   
   calculateRecipeTotals: (ingredients) => {
     return ingredients.reduce(
@@ -61,10 +64,14 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
     const updatedRecipes = [...get().recipes, recipe];
     set({ recipes: updatedRecipes });
     
-    try {
-      await AsyncStorage.setItem(RECIPES_STORAGE_KEY, JSON.stringify(updatedRecipes));
-    } catch (error) {
-      console.error('Failed to save recipe:', error);
+    const userId = get().currentUserId;
+    if (userId) {
+      try {
+        const key = getStorageKey(userId);
+        await AsyncStorage.setItem(key, JSON.stringify(updatedRecipes));
+      } catch (error) {
+        console.error('Failed to save recipe:', error);
+      }
     }
   },
   
@@ -101,10 +108,14 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
     updatedRecipes[recipeIndex] = updatedRecipe;
     set({ recipes: updatedRecipes });
     
-    try {
-      await AsyncStorage.setItem(RECIPES_STORAGE_KEY, JSON.stringify(updatedRecipes));
-    } catch (error) {
-      console.error('Failed to update recipe:', error);
+    const userId = get().currentUserId;
+    if (userId) {
+      try {
+        const key = getStorageKey(userId);
+        await AsyncStorage.setItem(key, JSON.stringify(updatedRecipes));
+      } catch (error) {
+        console.error('Failed to update recipe:', error);
+      }
     }
   },
   
@@ -112,10 +123,14 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
     const updatedRecipes = get().recipes.filter(r => r.id !== id);
     set({ recipes: updatedRecipes });
     
-    try {
-      await AsyncStorage.setItem(RECIPES_STORAGE_KEY, JSON.stringify(updatedRecipes));
-    } catch (error) {
-      console.error('Failed to delete recipe:', error);
+    const userId = get().currentUserId;
+    if (userId) {
+      try {
+        const key = getStorageKey(userId);
+        await AsyncStorage.setItem(key, JSON.stringify(updatedRecipes));
+      } catch (error) {
+        console.error('Failed to delete recipe:', error);
+      }
     }
   },
   
@@ -123,16 +138,27 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
     return get().recipes.find(r => r.id === id);
   },
   
-  initialize: async () => {
+  initialize: async (userId: string) => {
     try {
-      const recipesStr = await AsyncStorage.getItem(RECIPES_STORAGE_KEY);
+      set({ currentUserId: userId });
+      const key = getStorageKey(userId);
+      const recipesStr = await AsyncStorage.getItem(key);
       if (recipesStr) {
         const recipes = JSON.parse(recipesStr);
         set({ recipes });
+      } else {
+        set({ recipes: [] });
       }
     } catch (error) {
       console.error('Failed to load recipes:', error);
     }
+  },
+  
+  clearData: async () => {
+    set({ 
+      recipes: [],
+      currentUserId: null,
+    });
   },
 }));
 
