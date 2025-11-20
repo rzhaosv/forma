@@ -6,6 +6,8 @@ import { useSubscriptionStore } from '../store/useSubscriptionStore';
 
 const PHOTO_SCANS_KEY = '@forma_photo_scans';
 const PHOTO_SCANS_DATE_KEY = '@forma_photo_scans_date';
+const BARCODE_SCANS_KEY = '@forma_barcode_scans';
+const BARCODE_SCANS_DATE_KEY = '@forma_barcode_scans_date';
 
 export interface SubscriptionLimits {
   maxPhotoScansPerDay: number;
@@ -37,7 +39,7 @@ export const getSubscriptionLimits = (): SubscriptionLimits => {
   return {
     maxPhotoScansPerDay: 5,
     maxHistoryDays: 7,
-    allowBarcodeScanning: false, // Limited in free tier
+    allowBarcodeScanning: true, // Allowed with daily limit
     allowAdvancedAnalytics: false,
     allowRecipeBuilder: true, // Recipe builder is available in free tier
     allowDataExport: false,
@@ -114,6 +116,78 @@ export const getRemainingPhotoScans = async (): Promise<number> => {
   
   const scanCount = parseInt(scanCountStr || '0', 10);
   return Math.max(0, 5 - scanCount);
+};
+
+/**
+ * Check if user can perform a barcode scan
+ */
+export const canPerformBarcodeScan = async (): Promise<boolean> => {
+  const { isPremium } = useSubscriptionStore.getState();
+  
+  if (isPremium) {
+    return true;
+  }
+  
+  // Check daily limit for free users (2 scans per day)
+  const today = new Date().toISOString().split('T')[0];
+  const lastScanDate = await AsyncStorage.getItem(BARCODE_SCANS_DATE_KEY);
+  const scanCountStr = await AsyncStorage.getItem(BARCODE_SCANS_KEY);
+  
+  if (lastScanDate !== today) {
+    // New day, reset count
+    await AsyncStorage.setItem(BARCODE_SCANS_KEY, '0');
+    await AsyncStorage.setItem(BARCODE_SCANS_DATE_KEY, today);
+    return true;
+  }
+  
+  const scanCount = parseInt(scanCountStr || '0', 10);
+  return scanCount < 2;
+};
+
+/**
+ * Record a barcode scan
+ */
+export const recordBarcodeScan = async (): Promise<void> => {
+  const { isPremium } = useSubscriptionStore.getState();
+  
+  if (isPremium) {
+    return; // No limit for premium
+  }
+  
+  const today = new Date().toISOString().split('T')[0];
+  const lastScanDate = await AsyncStorage.getItem(BARCODE_SCANS_DATE_KEY);
+  const scanCountStr = await AsyncStorage.getItem(BARCODE_SCANS_KEY);
+  
+  if (lastScanDate !== today) {
+    // New day, reset count
+    await AsyncStorage.setItem(BARCODE_SCANS_KEY, '1');
+    await AsyncStorage.setItem(BARCODE_SCANS_DATE_KEY, today);
+  } else {
+    const scanCount = parseInt(scanCountStr || '0', 10);
+    await AsyncStorage.setItem(BARCODE_SCANS_KEY, (scanCount + 1).toString());
+  }
+};
+
+/**
+ * Get remaining barcode scans for today
+ */
+export const getRemainingBarcodeScans = async (): Promise<number> => {
+  const { isPremium } = useSubscriptionStore.getState();
+  
+  if (isPremium) {
+    return Infinity;
+  }
+  
+  const today = new Date().toISOString().split('T')[0];
+  const lastScanDate = await AsyncStorage.getItem(BARCODE_SCANS_DATE_KEY);
+  const scanCountStr = await AsyncStorage.getItem(BARCODE_SCANS_KEY);
+  
+  if (lastScanDate !== today) {
+    return 2; // New day, full quota
+  }
+  
+  const scanCount = parseInt(scanCountStr || '0', 10);
+  return Math.max(0, 2 - scanCount);
 };
 
 /**
