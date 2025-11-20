@@ -108,9 +108,10 @@ export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
         await useRecipeStore.getState().clearData();
         await useOnboardingStore.getState().clearData();
         
-        // Reset subscription status and clear trial data
-        useSubscriptionStore.getState().setSubscriptionStatus('free');
-        await useSubscriptionStore.getState().clearTrialData();
+        // Reset subscription state but DON'T clear trial data
+        // Trial data is user-specific and will be validated on next login
+        // The initialize function will clear it if it belongs to a different user
+        useSubscriptionStore.getState().resetSubscriptionState();
       } catch (error) {
         console.error('Failed to clear user data on logout:', error);
       }

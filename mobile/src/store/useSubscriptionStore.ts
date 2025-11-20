@@ -53,6 +53,7 @@ interface SubscriptionState {
   restorePurchases: () => Promise<boolean>;
   getAvailablePackages: () => Promise<PurchasesPackage[] | null>;
   setSubscriptionStatus: (status: SubscriptionStatus) => void;
+  resetSubscriptionState: () => void;
   syncPurchases: () => Promise<void>;
   getSubscriptionInfo: () => {
     productIdentifier: string | null;
@@ -106,6 +107,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
       
       // If no user ID provided, can't check trial status
       if (!currentUserId) {
+        console.log('⚠️ checkTrialStatus: No user ID provided');
         return null;
       }
       
@@ -114,7 +116,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
       
       // If user ID doesn't match, clear old trial data and return null
       if (storedUserId && storedUserId !== currentUserId) {
-        console.log('User ID changed, clearing old trial data');
+        console.log('⚠️ User ID changed, clearing old trial data:', { storedUserId, currentUserId });
         await get().clearTrialData();
         return null;
       }
@@ -124,12 +126,20 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
       
       // If trial hasn't been started yet, return null
       if (!trialStartStr || !trialEndStr) {
+        console.log('⚠️ checkTrialStatus: No trial data found');
         return null;
       }
       
+      // If storedUserId doesn't exist yet, store it (first time checking for this user)
+      if (!storedUserId) {
+        console.log('📝 Storing user ID for trial check:', currentUserId);
+        await AsyncStorage.setItem(CURRENT_USER_ID_KEY, currentUserId);
+      }
+      
       // Verify this trial belongs to the current user
-      if (storedUserId !== currentUserId) {
+      if (storedUserId && storedUserId !== currentUserId) {
         // Trial data exists but doesn't belong to current user - clear it
+        console.log('⚠️ Trial data belongs to different user, clearing');
         await get().clearTrialData();
         return null;
       }
@@ -315,10 +325,23 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
       // Re-check trial status now that user ID is confirmed
       const userTrialInfo = await get().checkTrialStatus(userId);
       if (userTrialInfo) {
-        set({ trialInfo: userTrialInfo });
+        // If we have an active trial, set it before checking subscription status
+        if (userTrialInfo.isActive) {
+          console.log('✅ Restoring active trial on login:', userTrialInfo);
+          set({ 
+            subscriptionStatus: 'trial',
+            isPremium: true,
+            trialInfo: userTrialInfo,
+          });
+          await AsyncStorage.setItem(SUBSCRIPTION_STATUS_KEY, 'trial');
+        } else {
+          // Trial expired but keep the info
+          set({ trialInfo: userTrialInfo });
+        }
       }
       
       // Check subscription status (this will override trial if user has active subscription)
+      // But it should preserve an active trial if one exists
       await get().checkSubscriptionStatus();
       
       // Get available packages
@@ -349,6 +372,13 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
   
   checkSubscriptionStatus: async () => {
     try {
+      // Check if we already have an active trial in the store (from initialize)
+      const currentState = get();
+      if (currentState.subscriptionStatus === 'trial' && currentState.trialInfo && currentState.trialInfo.isActive) {
+        console.log('✅ Active trial already set in store, preserving it');
+        // Still check RevenueCat for subscription, but don't override active trial
+      }
+      
       // Check if Purchases is configured
       try {
         const customerInfo = await Purchases.getCustomerInfo();
@@ -433,10 +463,31 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
               trialInfo,
             });
             return;
-          } else {
-            // Trial expired or not found - clear it
-            console.log('⚠️ Stored trial status but trial not active - clearing');
+          } else if (trialInfo && !trialInfo.isActive) {
+            // Trial exists but expired - keep trial info but set status to free
+            console.log('⚠️ Trial expired:', trialInfo);
+            set({
+              subscriptionStatus: 'free',
+              isPremium: false,
+              customerInfo,
+              trialInfo, // Keep trial info even if expired
+            });
             await AsyncStorage.setItem(SUBSCRIPTION_STATUS_KEY, 'free');
+            return;
+          } else {
+            // Trial data not found or invalid - this might be a timing issue
+            // Don't clear immediately, let the initialize function handle it
+            console.log('⚠️ Stored trial status but trial data not found - checking if user ID matches');
+            // Check if we have a user ID mismatch
+            const storedUserId = await AsyncStorage.getItem(CURRENT_USER_ID_KEY);
+            if (storedUserId && storedUserId !== currentUserId) {
+              console.log('⚠️ User ID mismatch - trial belongs to different user, clearing');
+              await AsyncStorage.setItem(SUBSCRIPTION_STATUS_KEY, 'free');
+            } else {
+              // User ID matches but no trial data - might be a race condition
+              // Don't clear, let initialize handle it
+              console.log('⚠️ Trial data not found but user ID matches - might be timing issue, keeping status');
+            }
           }
         }
         
@@ -684,6 +735,19 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
     set({ 
       subscriptionStatus: status,
       isPremium: status === 'premium' || status === 'trial',
+    });
+  },
+  
+  resetSubscriptionState: () => {
+    // Reset subscription state on logout
+    // Note: This does NOT clear trial data from AsyncStorage
+    // Trial data will be restored on next login if it belongs to the same user
+    set({ 
+      subscriptionStatus: 'free',
+      isPremium: false,
+      currentUserId: null,
+      customerInfo: null,
+      trialInfo: null,
     });
   },
   
