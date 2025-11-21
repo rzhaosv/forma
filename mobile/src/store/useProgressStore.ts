@@ -4,6 +4,8 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useMealStore } from './useMealStore';
+import { writeWeight } from '../services/healthKitService';
+import { isHealthKitEnabled, isWeightSyncEnabled } from '../utils/healthKitSettings';
 
 export interface WeightEntry {
   id: string;
@@ -58,17 +60,17 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
       weight_kg,
       notes,
     };
-    
+
     const updatedEntries = [...get().weightEntries, entry].sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
     );
-    
+
     set({ weightEntries: updatedEntries });
-    
+
     // Update streak
     const streak = get().calculateStreak();
     set({ streak });
-    
+
     const userId = get().currentUserId;
     if (userId) {
       try {
@@ -77,6 +79,20 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
       } catch (error) {
         console.error('Failed to save weight entry:', error);
       }
+    }
+
+    // Sync to HealthKit if enabled
+    try {
+      const healthKitEnabled = await isHealthKitEnabled();
+      const weightSyncEnabled = await isWeightSyncEnabled();
+
+      if (healthKitEnabled && weightSyncEnabled) {
+        await writeWeight(weight_kg, new Date());
+        console.log('Weight synced to HealthKit');
+      }
+    } catch (error) {
+      console.error('Failed to sync weight to HealthKit:', error);
+      // Don't throw - we don't want to block the weight entry if HealthKit sync fails
     }
   },
   

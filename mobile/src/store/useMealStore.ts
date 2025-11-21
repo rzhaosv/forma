@@ -2,6 +2,8 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Meal, FoodItem, DailySummary } from '../types/meal.types';
+import { syncMealToHealthKit } from '../services/healthKitService';
+import { isHealthKitEnabled, isMealSyncEnabled } from '../utils/healthKitSettings';
 
 interface MealStore {
   meals: Meal[];
@@ -50,7 +52,7 @@ export const useMealStore = create<MealStore>((set, get) => ({
       meals: [...state.meals, meal],
     }));
     get().updateDailySummary();
-    
+
     // Persist meals
     const userId = get().currentUserId;
     if (userId) {
@@ -61,6 +63,27 @@ export const useMealStore = create<MealStore>((set, get) => ({
       } catch (error) {
         console.error('Failed to save meals:', error);
       }
+    }
+
+    // Sync to HealthKit if enabled
+    try {
+      const healthKitEnabled = await isHealthKitEnabled();
+      const mealSyncEnabled = await isMealSyncEnabled();
+
+      if (healthKitEnabled && mealSyncEnabled) {
+        const mealDate = new Date(meal.timestamp);
+        await syncMealToHealthKit(
+          meal.totalCalories,
+          meal.totalProtein,
+          meal.totalCarbs,
+          meal.totalFat,
+          mealDate
+        );
+        console.log('Meal synced to HealthKit');
+      }
+    } catch (error) {
+      console.error('Failed to sync meal to HealthKit:', error);
+      // Don't throw - we don't want to block the meal entry if HealthKit sync fails
     }
   },
   
