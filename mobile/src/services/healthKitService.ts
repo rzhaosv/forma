@@ -1,8 +1,11 @@
 // HealthKit Service
-// Handles reading and writing health data to/from Apple HealthKit using expo-health-kit
+// Handles reading and writing health data to/from Apple HealthKit using @kingstinct/react-native-healthkit
 
 import { Platform } from 'react-native';
-import * as HealthKit from 'expo-health-kit';
+import HealthKit, {
+  HKQuantityTypeIdentifier,
+  HKAuthorizationRequestStatus,
+} from '@kingstinct/react-native-healthkit';
 
 /**
  * Check if HealthKit is available on this device
@@ -12,7 +15,7 @@ export const isHealthKitAvailable = async (): Promise<boolean> => {
     return false;
   }
   try {
-    return await HealthKit.isAvailableAsync();
+    return await HealthKit.isHealthDataAvailable();
   } catch (error) {
     console.error('Error checking HealthKit availability:', error);
     return false;
@@ -30,22 +33,22 @@ export const requestHealthKitPermissions = async (): Promise<boolean> => {
     }
 
     const readPermissions = [
-      HealthKit.HealthDataType.BodyMass,
-      HealthKit.HealthDataType.Height,
-      HealthKit.HealthDataType.StepCount,
-      HealthKit.HealthDataType.ActiveEnergyBurned,
-      HealthKit.HealthDataType.DietaryEnergyConsumed,
+      HKQuantityTypeIdentifier.bodyMass,
+      HKQuantityTypeIdentifier.height,
+      HKQuantityTypeIdentifier.stepCount,
+      HKQuantityTypeIdentifier.activeEnergyBurned,
+      HKQuantityTypeIdentifier.dietaryEnergyConsumed,
     ];
 
     const writePermissions = [
-      HealthKit.HealthDataType.BodyMass,
-      HealthKit.HealthDataType.DietaryEnergyConsumed,
-      HealthKit.HealthDataType.DietaryProtein,
-      HealthKit.HealthDataType.DietaryCarbohydrates,
-      HealthKit.HealthDataType.DietaryFatTotal,
+      HKQuantityTypeIdentifier.bodyMass,
+      HKQuantityTypeIdentifier.dietaryEnergyConsumed,
+      HKQuantityTypeIdentifier.dietaryProtein,
+      HKQuantityTypeIdentifier.dietaryCarbohydrates,
+      HKQuantityTypeIdentifier.dietaryFatTotal,
     ];
 
-    await HealthKit.requestAuthorizationAsync(readPermissions, writePermissions);
+    await HealthKit.requestAuthorization(readPermissions, writePermissions);
     console.log('✅ HealthKit permissions requested');
     return true;
   } catch (error) {
@@ -67,11 +70,11 @@ export const readWeight = async (limit: number = 10): Promise<any[]> => {
     const now = new Date();
     const startDate = new Date(0); // All time
 
-    const result = await HealthKit.queryQuantitySamplesAsync(
-      HealthKit.HealthDataType.BodyMass,
+    const result = await HealthKit.querySamples(
+      HKQuantityTypeIdentifier.bodyMass,
       {
-        from: startDate,
-        to: now,
+        from: startDate.toISOString(),
+        to: now.toISOString(),
         limit,
         ascending: false,
       }
@@ -96,12 +99,12 @@ export const writeWeight = async (weightKg: number, date?: Date): Promise<boolea
 
     const weightDate = date || new Date();
 
-    await HealthKit.saveQuantitySampleAsync(
-      HealthKit.HealthDataType.BodyMass,
+    await HealthKit.saveQuantitySample(
+      HKQuantityTypeIdentifier.bodyMass,
+      weightKg,
       {
-        quantity: weightKg,
-        startDate: weightDate,
-        endDate: weightDate,
+        start: weightDate.toISOString(),
+        end: weightDate.toISOString(),
       }
     );
 
@@ -126,11 +129,11 @@ export const readDietaryEnergy = async (
       throw new Error('HealthKit is not available');
     }
 
-    const result = await HealthKit.queryQuantitySamplesAsync(
-      HealthKit.HealthDataType.DietaryEnergyConsumed,
+    const result = await HealthKit.querySamples(
+      HKQuantityTypeIdentifier.dietaryEnergyConsumed,
       {
-        from: startDate,
-        to: endDate,
+        from: startDate.toISOString(),
+        to: endDate.toISOString(),
         ascending: false,
       }
     );
@@ -155,12 +158,12 @@ export const writeDietaryEnergy = async (
       throw new Error('HealthKit is not available');
     }
 
-    await HealthKit.saveQuantitySampleAsync(
-      HealthKit.HealthDataType.DietaryEnergyConsumed,
+    await HealthKit.saveQuantitySample(
+      HKQuantityTypeIdentifier.dietaryEnergyConsumed,
+      calories,
       {
-        quantity: calories,
-        startDate: date,
-        endDate: date,
+        start: date.toISOString(),
+        end: date.toISOString(),
       }
     );
 
@@ -192,12 +195,12 @@ export const writeNutritionData = async (
     // Write protein
     if (protein > 0) {
       promises.push(
-        HealthKit.saveQuantitySampleAsync(
-          HealthKit.HealthDataType.DietaryProtein,
+        HealthKit.saveQuantitySample(
+          HKQuantityTypeIdentifier.dietaryProtein,
+          protein,
           {
-            quantity: protein,
-            startDate: date,
-            endDate: date,
+            start: date.toISOString(),
+            end: date.toISOString(),
           }
         )
       );
@@ -206,12 +209,12 @@ export const writeNutritionData = async (
     // Write carbohydrates
     if (carbs > 0) {
       promises.push(
-        HealthKit.saveQuantitySampleAsync(
-          HealthKit.HealthDataType.DietaryCarbohydrates,
+        HealthKit.saveQuantitySample(
+          HKQuantityTypeIdentifier.dietaryCarbohydrates,
+          carbs,
           {
-            quantity: carbs,
-            startDate: date,
-            endDate: date,
+            start: date.toISOString(),
+            end: date.toISOString(),
           }
         )
       );
@@ -220,12 +223,12 @@ export const writeNutritionData = async (
     // Write fat
     if (fat > 0) {
       promises.push(
-        HealthKit.saveQuantitySampleAsync(
-          HealthKit.HealthDataType.DietaryFatTotal,
+        HealthKit.saveQuantitySample(
+          HKQuantityTypeIdentifier.dietaryFatTotal,
+          fat,
           {
-            quantity: fat,
-            startDate: date,
-            endDate: date,
+            start: date.toISOString(),
+            end: date.toISOString(),
           }
         )
       );

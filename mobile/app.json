@@ -16,7 +16,13 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.raymondzhao3000.forma",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSHealthShareUsageDescription": "Forma needs access to your health data to sync weight, calories, and nutrition information with Apple Health.",
+        "NSHealthUpdateUsageDescription": "Forma needs permission to write your weight, calories, and nutrition data to Apple Health."
+      },
+      "entitlements": {
+        "com.apple.developer.healthkit": true,
+        "com.apple.developer.healthkit.access": []
       }
     },
     "android": {
@@ -42,14 +48,7 @@
           "cameraPermission": "Allow Forma to access your camera to scan food photos and barcodes."
         }
       ],
-      "expo-web-browser",
-      [
-        "expo-health-kit",
-        {
-          "healthSharePermission": "Forma needs access to your health data to sync weight, calories, and nutrition information with Apple Health.",
-          "healthUpdatePermission": "Forma needs permission to write your weight, calories, and nutrition data to Apple Health."
-        }
-      ]
+      "expo-web-browser"
     ],
     "extra": {
       "eas": {
