@@ -283,17 +283,24 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
       const platform = require('react-native').Platform.OS;
       let apiKey: string | null = null;
       
-      // In development, try Test Store key first (required for Expo Go)
-      if (typeof __DEV__ !== 'undefined' && __DEV__) {
+      // Check if we're in Expo Go (Test Store key is ONLY for Expo Go)
+      const isExpoGo = shouldUseTestStore();
+      
+      // Use Test Store key ONLY in Expo Go
+      if (isExpoGo) {
         if (!REVENUECAT_API_KEY.testStore.includes('YOUR_') && REVENUECAT_API_KEY.testStore.length > 10) {
           apiKey = REVENUECAT_API_KEY.testStore;
-          console.log('📱 Using RevenueCat Test Store API key (development mode)');
+          console.log('📱 Using RevenueCat Test Store API key (Expo Go detected)');
+        } else {
+          console.warn('⚠️ Running in Expo Go but Test Store key not configured');
         }
       }
       
-      // If no Test Store key or not in dev, use platform-specific keys
+      // For development builds and production, use platform-specific keys
       if (!apiKey) {
         apiKey = platform === 'ios' ? REVENUECAT_API_KEY.ios : REVENUECAT_API_KEY.android;
+        const keyType = platform === 'ios' ? 'iOS' : 'Android';
+        console.log(`📱 Using RevenueCat ${keyType} API key (${isExpoGo ? 'Expo Go' : 'development build/production'})`);
       }
       
       // Check if API key is configured
@@ -310,10 +317,14 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         return;
       }
       
+      console.log('🔑 Configuring RevenueCat with API key:', apiKey.substring(0, 10) + '...');
       await Purchases.configure({ apiKey });
+      console.log('✅ RevenueCat configured successfully');
       
       // Set user ID for RevenueCat
+      console.log('👤 Logging in user:', userId);
       await Purchases.logIn(userId);
+      console.log('✅ User logged in to RevenueCat');
       
       // Update customerInfo
       const customerInfo = await Purchases.getCustomerInfo();
@@ -704,29 +715,61 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
   
   getAvailablePackages: async () => {
     try {
+      console.log('🔍 Fetching available packages from RevenueCat...');
+      
       // Check if Purchases is configured
       try {
         const offerings = await Purchases.getOfferings();
         
+        console.log('📦 Offerings response:', {
+          current: offerings.current?.identifier || 'null',
+          all: Object.keys(offerings.all || {}).join(', ') || 'none',
+        });
+        
         if (offerings.current !== null) {
           const packages = offerings.current.availablePackages;
+          console.log(`✅ Found ${packages.length} packages in current offering:`, 
+            packages.map(p => `${p.identifier} (${p.product.identifier})`).join(', ')
+          );
           set({ availablePackages: packages });
           return packages;
         }
+        
+        console.warn('⚠️ No current offering found. Available offerings:', Object.keys(offerings.all || {}).join(', '));
+        
+        // If there's no current offering but there are other offerings, try the first one
+        const allOfferings = offerings.all;
+        if (allOfferings && Object.keys(allOfferings).length > 0) {
+          const firstOfferingKey = Object.keys(allOfferings)[0];
+          const firstOffering = allOfferings[firstOfferingKey];
+          console.log(`ℹ️ Using first available offering: ${firstOfferingKey}`);
+          const packages = firstOffering.availablePackages;
+          set({ availablePackages: packages });
+          return packages;
+        }
+        
+        console.error('❌ No offerings configured in RevenueCat dashboard');
+        console.log('📝 Instructions:');
+        console.log('   1. Go to https://app.revenuecat.com');
+        console.log('   2. Navigate to your project → Offerings');
+        console.log('   3. Create an offering named "default"');
+        console.log('   4. Add products to the offering');
+        console.log('   5. Set it as the "Current" offering');
         
         return null;
       } catch (purchasesError: any) {
         // If Purchases isn't configured, return null
         if (purchasesError.message?.includes('no singleton instance') ||
             purchasesError.message?.includes('not configured')) {
-          console.warn('RevenueCat not configured. Packages unavailable.');
+          console.warn('⚠️ RevenueCat not configured. Packages unavailable.');
           return null;
         } else {
+          console.error('❌ Error fetching packages:', purchasesError);
           throw purchasesError;
         }
       }
     } catch (error) {
-      console.error('Failed to get available packages:', error);
+      console.error('❌ Failed to get available packages:', error);
       return null;
     }
   },

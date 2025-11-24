@@ -598,11 +598,30 @@ export default function PaywallScreen() {
 
               {(!monthlyPackage && !annualPackage) && (
                 <View style={dynamicStyles.packageCard}>
-                  <Text style={[dynamicStyles.packageName, { textAlign: 'center', marginBottom: 16 }]}>
-                    No packages available
+                  <Text style={{ fontSize: 32, textAlign: 'center', marginBottom: 16 }}>⚙️</Text>
+                  <Text style={[dynamicStyles.packageName, { textAlign: 'center', marginBottom: 8 }]}>
+                    No Packages Available
                   </Text>
-                  <Text style={[dynamicStyles.packagePeriod, { textAlign: 'center' }]}>
-                    Please configure your RevenueCat offerings
+                  <Text style={[dynamicStyles.packagePeriod, { textAlign: 'center', marginBottom: 16 }]}>
+                    RevenueCat offerings need to be configured
+                  </Text>
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: colors.primary,
+                      paddingVertical: 12,
+                      paddingHorizontal: 24,
+                      borderRadius: 8,
+                      marginBottom: 12,
+                    }}
+                    onPress={loadPackages}
+                    disabled={loading}
+                  >
+                    <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: '600' }}>
+                      {loading ? 'Checking...' : 'Retry'}
+                    </Text>
+                  </TouchableOpacity>
+                  <Text style={[dynamicStyles.packagePeriod, { textAlign: 'center', fontSize: 12, paddingHorizontal: 16 }]}>
+                    See REVENUECAT_OFFERINGS_SETUP.md for instructions
                   </Text>
                 </View>
               )}
