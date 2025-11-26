@@ -1,0 +1,20 @@
+{
+  "name": "forma-landing-page",
+  "version": "1.0.0",
+  "description": "Forma AI-Powered Nutrition Tracking Landing Page",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 3000",
+    "dev": "python3 -m http.server 3000",
+    "serve": "python3 -m http.server 3000"
+  },
+  "keywords": [
+    "landing-page",
+    "nutrition",
+    "fitness",
+    "ai"
+  ],
+  "author": "Forma",
+  "license": "MIT"
+}
+
