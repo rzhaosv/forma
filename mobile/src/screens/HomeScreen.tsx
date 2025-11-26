@@ -12,6 +12,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { Swipeable } from 'react-native-gesture-handler';
 import Svg, { Circle } from 'react-native-svg';
+import Constants from 'expo-constants';
 import { signOut } from '../services/authService';
 import { useMealStore } from '../store/useMealStore';
 import { useTheme } from '../hooks/useTheme';
@@ -27,6 +28,10 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const [currentDate] = useState(new Date());
   const { colors, isDark } = useTheme();
+  
+  // Get app version
+  const appVersion = Constants.expoConfig?.version || 'dev';
+  const buildNumber = Constants.expoConfig?.ios?.buildNumber || Constants.expoConfig?.android?.versionCode || '-';
   
   // Get real meal data from store
   const { meals, dailySummary, calorieGoal, proteinGoal, updateDailySummary, deleteMeal } = useMealStore();
@@ -342,6 +347,16 @@ export default function HomeScreen() {
       fontSize: 64,
       marginBottom: 16,
     },
+    versionContainer: {
+      alignItems: 'center',
+      paddingVertical: 20,
+      marginTop: 20,
+    },
+    versionText: {
+      fontSize: 12,
+      color: colors.textTertiary,
+      fontFamily: 'monospace',
+    },
   });
 
   return (
@@ -603,6 +618,13 @@ export default function HomeScreen() {
             >
               <Text style={dynamicStyles.addMealText}>+ Add Snack</Text>
             </TouchableOpacity>
+
+        {/* Version Info */}
+        <View style={dynamicStyles.versionContainer}>
+          <Text style={dynamicStyles.versionText}>
+            v{appVersion} ({buildNumber})
+          </Text>
+        </View>
 
         <View style={{ height: 40 }} />
       </ScrollView>

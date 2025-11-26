@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
+import Constants from 'expo-constants';
 import {
   isHealthKitAvailable,
   requestHealthKitPermissions
@@ -297,6 +298,29 @@ export default function SettingsScreen() {
               <Text style={dynamicStyles.settingLabel}>Current Theme</Text>
               <Text style={dynamicStyles.settingDescription}>
                 {mode === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode'}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* App Version Section */}
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>About</Text>
+          
+          <View style={[dynamicStyles.settingRow, { backgroundColor: colors.surfaceSecondary }]}>
+            <View style={dynamicStyles.settingContent}>
+              <Text style={dynamicStyles.settingLabel}>App Version</Text>
+              <Text style={dynamicStyles.settingDescription}>
+                v{Constants.expoConfig?.version || '1.0.0'} {__DEV__ && '(Development)'}
+              </Text>
+            </View>
+          </View>
+
+          <View style={[dynamicStyles.settingRow, { backgroundColor: colors.surfaceSecondary }]}>
+            <View style={dynamicStyles.settingContent}>
+              <Text style={dynamicStyles.settingLabel}>Build Number</Text>
+              <Text style={dynamicStyles.settingDescription}>
+                {Constants.expoConfig?.ios?.buildNumber || Constants.expoConfig?.android?.versionCode || 'dev'}
               </Text>
             </View>
           </View>

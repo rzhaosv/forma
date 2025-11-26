@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "start": "expo start",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
-    "web": "expo start --web"
+    "start": "npm run log-version && expo start",
+    "android": "npm run log-version && expo run:android",
+    "ios": "npm run log-version && expo run:ios",
+    "web": "expo start --web",
+    "log-version": "node scripts/log-version.js",
+    "prebuild": "npm run log-version",
+    "build:ios": "npm run log-version && eas build --platform ios",
+    "build:android": "npm run log-version && eas build --platform android"
   },
   "dependencies": {
     "@expo/config-plugins": "~54.0.1",

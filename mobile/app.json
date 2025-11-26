@@ -2,7 +2,7 @@
   "expo": {
     "name": "Forma",
     "slug": "forma",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -15,6 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.raymondzhao3000.forma",
+      "buildNumber": "2",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSHealthShareUsageDescription": "Forma needs access to your health data to sync weight, calories, and nutrition information with Apple Health.",
@@ -36,7 +37,8 @@
         "android.permission.CAMERA",
         "android.permission.CAMERA"
       ],
-      "package": "com.raymondzhao3000.forma"
+      "package": "com.raymondzhao3000.forma",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
