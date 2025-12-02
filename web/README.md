@@ -9,6 +9,9 @@ A beautiful, modern landing page for the Forma AI-powered nutrition tracking app
 - **Smooth Animations**: Intersection Observer-based fade-in effects
 - **SEO Optimized**: Semantic HTML and meta tags
 - **Fast Loading**: Minimal dependencies, optimized for performance
+- **Email Capture**: Full waitlist system with backend API
+- **Analytics**: Google Analytics 4 and Mixpanel integration
+- **Event Tracking**: Comprehensive tracking for all user actions
 
 ## 🚀 Quick Start
 
@@ -43,11 +46,18 @@ Then open: http://localhost:3000
 
 ```
 web/
-├── index.html          # Main HTML file
-├── styles.css          # All styles (responsive included)
-├── script.js           # Interactive features & animations
-├── package.json        # Package configuration
-└── README.md          # This file
+├── index.html             # Main HTML file
+├── styles.css             # All styles (responsive included)
+├── script.js              # Interactive features & animations
+├── server.js              # Email capture API server
+├── analytics.js           # Analytics wrapper
+├── analytics-config.js    # Analytics configuration
+├── emails.json            # Stored emails (auto-created)
+├── package.json           # Package configuration
+├── README.md              # This file
+├── ANALYTICS_GUIDE.md     # Analytics documentation
+├── EMAIL_CAPTURE_GUIDE.md # Email capture documentation
+└── test-analytics.html    # Analytics testing page
 ```
 
 ## 🎯 Sections
@@ -89,22 +99,42 @@ The page is fully responsive with breakpoints at:
 - Tablet: 768px - 1024px
 - Mobile: < 768px
 
-## 🔗 Integration
+## 📊 Analytics Setup
 
-### Analytics
+### Quick Setup
 
-Add Google Analytics by inserting your tracking code in `<head>`:
+1. **Get your IDs**:
+   - Google Analytics: https://analytics.google.com (GA4 Measurement ID)
+   - Mixpanel: https://mixpanel.com (Project Token)
 
-```html
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'GA_MEASUREMENT_ID');
-</script>
-```
+2. **Configure** in `analytics-config.js`:
+   ```javascript
+   const ANALYTICS_CONFIG = {
+       gaId: 'G-YOUR-ACTUAL-ID',
+       mixpanelToken: 'YOUR_MIXPANEL_TOKEN',
+       debug: true,
+   };
+   ```
+
+3. **Test** at http://localhost:3001/test-analytics.html
+
+### What's Tracked
+
+✅ Automatic:
+- Page views
+- Scroll depth (25%, 50%, 75%, 90%, 100%)
+- Time on page
+- Outbound links
+
+✅ Custom Events:
+- Email captures (waitlist signups)
+- CTA button clicks
+- Pricing plan views/clicks
+- Form submissions
+- App download clicks
+- Errors
+
+See **`ANALYTICS_GUIDE.md`** for complete documentation.
 
 ### Email Collection
 

@@ -52,11 +52,33 @@ document.querySelectorAll('.feature-card, .testimonial-card, .pricing-card, .ste
 });
 
 // Track CTA clicks (for analytics)
-document.querySelectorAll('.btn-primary, .download-btn').forEach(button => {
+document.querySelectorAll('.btn-primary, .btn-secondary, .btn-outline, .download-btn').forEach(button => {
     button.addEventListener('click', function() {
         const buttonText = this.textContent.trim();
-        console.log('CTA clicked:', buttonText);
-        // Here you would send to analytics: gtag('event', 'click', { button_name: buttonText });
+        const buttonHref = this.getAttribute('href');
+        
+        // Determine location
+        let location = 'unknown';
+        if (this.closest('.hero')) location = 'hero';
+        else if (this.closest('.pricing')) location = 'pricing';
+        else if (this.closest('.download')) location = 'download';
+        else if (this.closest('.waitlist')) location = 'waitlist';
+        else if (this.closest('.nav')) location = 'navigation';
+        
+        // Track with analytics
+        if (window.analytics) {
+            window.analytics.trackCTAClick(buttonText, location);
+            
+            // Track as conversion if it's a download button
+            if (buttonHref && (buttonHref.includes('apps.apple.com') || buttonHref.includes('play.google.com'))) {
+                window.analytics.track('App Download Started', {
+                    platform: buttonHref.includes('apple') ? 'iOS' : 'Android',
+                    location: location,
+                });
+            }
+        }
+        
+        console.log('CTA clicked:', buttonText, 'Location:', location);
     });
 });
 
@@ -122,15 +144,31 @@ const handleEmailSubmit = async (e) => {
             // Update subscriber count
             updateSubscriberCount();
             
-            // Track conversion
+            // Track email capture with analytics
+            if (window.analytics) {
+                window.analytics.trackEmailCapture(email, 'waitlist');
+                window.analytics.trackFormSubmission('waitlist', true);
+            }
+            
             console.log('Email captured:', email);
-            // gtag('event', 'sign_up', { method: 'email' });
         } else {
             showMessage(message, data.error || 'Something went wrong. Please try again.', 'error');
+            
+            // Track error
+            if (window.analytics) {
+                window.analytics.trackError(data.error || 'Form submission failed', 'waitlist_form');
+                window.analytics.trackFormSubmission('waitlist', false);
+            }
         }
     } catch (error) {
         console.error('Submission error:', error);
         showMessage(message, 'Unable to connect. Please try again later.', 'error');
+        
+        // Track error
+        if (window.analytics) {
+            window.analytics.trackError(error.message, 'network_error');
+            window.analytics.trackFormSubmission('waitlist', false);
+        }
     } finally {
         // Reset loading state
         submitBtn.classList.remove('loading');
@@ -213,6 +251,15 @@ document.addEventListener('DOMContentLoaded', () => {
 document.querySelectorAll('.pricing-card').forEach(card => {
     card.addEventListener('mouseenter', function() {
         this.style.transform = 'translateY(-8px) scale(1.02)';
+        
+        // Track pricing card view
+        const planName = this.querySelector('.pricing-title')?.textContent || 'Unknown';
+        if (window.analytics) {
+            window.analytics.track('Pricing Plan Viewed', {
+                plan: planName,
+                action: 'hover',
+            });
+        }
     });
     
     card.addEventListener('mouseleave', function() {
@@ -220,6 +267,19 @@ document.querySelectorAll('.pricing-card').forEach(card => {
             this.style.transform = 'translateY(0) scale(1)';
         } else {
             this.style.transform = 'translateY(0) scale(1.05)';
+        }
+    });
+    
+    // Track clicks on pricing cards
+    card.addEventListener('click', function(e) {
+        const planName = this.querySelector('.pricing-title')?.textContent || 'Unknown';
+        const priceAmount = this.querySelector('.price-amount')?.textContent || '0';
+        
+        if (window.analytics && !e.target.closest('a')) {
+            window.analytics.track('Pricing Plan Clicked', {
+                plan: planName,
+                price: priceAmount,
+            });
         }
     });
 });

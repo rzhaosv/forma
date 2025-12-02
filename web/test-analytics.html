@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Test Page</title>
+    
+    <!-- Google Analytics (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9L6PRKEYBS"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    </script>
+    
+    <!-- Mixpanel -->
+    <script type="text/javascript">
+        (function(f,b){if(!b.__SV){var e,g,i,h;window.mixpanel=b;b._i=[];b.init=function(e,f,c){function g(a,d){var b=d.split(".");2==b.length&&(a=a[b[0]],d=b[1]);a[d]=function(){a.push([d].concat(Array.prototype.slice.call(arguments,0)))}}var a=b;"undefined"!==typeof c?a=b[c]=[]:c="mixpanel";a.people=a.people||[];a.toString=function(a){var d="mixpanel";"mixpanel"!==c&&(d+="."+c);a||(d+=" (stub)");return d};a.people.toString=function(){return a.toString(1)+".people (stub)"};i="disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_batch_senders people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user people.remove".split(" ");for(h=0;h<i.length;h++)g(a,i[h]);var j="set set_once union unset remove delete".split(" ");a.get_group=function(){function b(c){d[c]=function(){call2_args=arguments;call2=[c].concat(Array.prototype.slice.call(call2_args,0));a.push([e,call2])}}for(var d={},e=["get_group"].concat(Array.prototype.slice.call(arguments,0)),c=0;c<j.length;c++)b(j[c]);return d};b._i.push([e,f,c])};b.__SV=1.2;e=f.createElement("script");e.type="text/javascript";e.async=!0;e.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"file:"===f.location.protocol&&"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//)?"https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";g=f.getElementsByTagName("script")[0];g.parentNode.insertBefore(e,g)}})(document,window.mixpanel||[]);
+    </script>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f9fafb;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #111827;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f3f4f6;
+            border-radius: 8px;
+        }
+        .test-section h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #374151;
+        }
+        button {
+            padding: 12px 24px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #4f46e5;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        .console {
+            margin-top: 20px;
+            padding: 15px;
+            background: #1f2937;
+            color: #f9fafb;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .console-line {
+            margin: 5px 0;
+        }
+        .console-line.event {
+            color: #10b981;
+        }
+        .console-line.error {
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Analytics Test Page</h1>
+        <p class="subtitle">Test your Google Analytics and Mixpanel integration</p>
+
+        <div class="test-section">
+            <h2>1. Check Analytics Status</h2>
+            <button onclick="checkStatus()">Check Status</button>
+            <div id="status"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. Test Events</h2>
+            <button onclick="testEmailCapture()">Test Email Capture</button>
+            <button onclick="testCTAClick()">Test CTA Click</button>
+            <button onclick="testFormSubmission()">Test Form Submission</button>
+            <button onclick="testError()">Test Error</button>
+        </div>
+
+        <div class="test-section">
+            <h2>3. Test Custom Event</h2>
+            <button onclick="testCustomEvent()">Track Custom Event</button>
+        </div>
+
+        <div class="test-section">
+            <h2>Console Output</h2>
+            <div id="console" class="console">
+                <div class="console-line">📊 Analytics Test Console</div>
+                <div class="console-line">Waiting for events...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Scripts -->
+    <script src="analytics.js"></script>
+    <script src="analytics-config.js"></script>
+
+    <script>
+        // Log to custom console
+        function logToConsole(message, type = 'info') {
+            const consoleDiv = document.getElementById('console');
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleDiv.appendChild(line);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        // Override console methods to capture logs
+        const originalLog = console.log;
+        console.log = function(...args) {
+            if (args[0] && args[0].includes('Analytics')) {
+                logToConsole(args.join(' '), 'event');
+            }
+            originalLog.apply(console, args);
+        };
+
+        // Check analytics status
+        function checkStatus() {
+            const statusDiv = document.getElementById('status');
+            let html = '<div class="status ';
+            
+            if (window.analytics && window.analytics.isInitialized) {
+                html += 'success">';
+                html += '<strong>✅ Analytics Initialized!</strong><br><br>';
+                html += `GA4: ${window.analytics.gaInitialized ? '✅ Connected' : '❌ Not configured'}<br>`;
+                html += `Mixpanel: ${window.analytics.mixpanelInitialized ? '✅ Connected' : '❌ Not configured'}<br>`;
+                html += '<br>Debug Mode: ' + (window.ANALYTICS_CONFIG.debug ? '✅ Enabled' : '❌ Disabled');
+            } else {
+                html += 'error">';
+                html += '<strong>❌ Analytics Not Initialized</strong><br><br>';
+                html += 'Make sure you have configured your GA4 and Mixpanel IDs in analytics-config.js';
+            }
+            
+            html += '</div>';
+            statusDiv.innerHTML = html;
+            
+            logToConsole('Status check completed');
+        }
+
+        // Test email capture
+        function testEmailCapture() {
+            if (window.analytics) {
+                window.analytics.trackEmailCapture('test@example.com', 'test');
+                logToConsole('✅ Email capture event tracked', 'event');
+                alert('Email capture event sent!\nCheck your GA4 DebugView and Mixpanel Live View.');
+            } else {
+                logToConsole('❌ Analytics not initialized', 'error');
+            }
+        }
+
+        // Test CTA click
+        function testCTAClick() {
+            if (window.analytics) {
+                window.analytics.trackCTAClick('Test CTA Button', 'test-page');
+                logToConsole('✅ CTA click event tracked', 'event');
+                alert('CTA click event sent!\nCheck your analytics dashboards.');
+            } else {
+                logToConsole('❌ Analytics not initialized', 'error');
+            }
+        }
+
+        // Test form submission
+        function testFormSubmission() {
+            if (window.analytics) {
+                window.analytics.trackFormSubmission('test-form', true);
+                logToConsole('✅ Form submission event tracked', 'event');
+                alert('Form submission event sent!\nCheck your analytics dashboards.');
+            } else {
+                logToConsole('❌ Analytics not initialized', 'error');
+            }
+        }
+
+        // Test error
+        function testError() {
+            if (window.analytics) {
+                window.analytics.trackError('This is a test error', 'test');
+                logToConsole('✅ Error event tracked', 'event');
+                alert('Error event sent!\nCheck your analytics dashboards.');
+            } else {
+                logToConsole('❌ Analytics not initialized', 'error');
+            }
+        }
+
+        // Test custom event
+        function testCustomEvent() {
+            if (window.analytics) {
+                window.analytics.track('Custom Test Event', {
+                    test_property: 'test_value',
+                    timestamp: new Date().toISOString(),
+                });
+                logToConsole('✅ Custom event tracked', 'event');
+                alert('Custom event sent!\nCheck your analytics dashboards.');
+            } else {
+                logToConsole('❌ Analytics not initialized', 'error');
+            }
+        }
+
+        // Auto-check status on load
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(checkStatus, 1000);
+            logToConsole('Analytics test page loaded');
+        });
+    </script>
+</body>
+</html>
+

@@ -16,6 +16,8 @@ node server.js
 - ✅ **Automatic Email Storage** (emails.json)
 - ✅ **CSV Export** (Download subscriber list)
 - ✅ **Real-time Validation** (Duplicate detection, format checking)
+- ✅ **Analytics Integration** (Google Analytics 4 + Mixpanel)
+- ✅ **Event Tracking** (Email captures, CTA clicks, scroll depth, etc.)
 
 ## 📧 Test Email Capture
 
@@ -86,12 +88,40 @@ See `EMAIL_CAPTURE_GUIDE.md` for deployment instructions.
 3. **Success Message**: Edit `script.js` line 46
 4. **Initial Count**: Edit `index.html` subscriber count
 
+## 📊 Setup Analytics (Optional but Recommended)
+
+### 1. Get Your IDs
+
+- **Google Analytics**: https://analytics.google.com (Create property → Get Measurement ID)
+- **Mixpanel**: https://mixpanel.com (Create project → Get Project Token)
+
+### 2. Configure
+
+Edit `analytics-config.js`:
+
+```javascript
+const ANALYTICS_CONFIG = {
+    gaId: 'G-YOUR-ACTUAL-ID',           // ← Your GA4 ID
+    mixpanelToken: 'YOUR_MIXPANEL_TOKEN', // ← Your Mixpanel token
+    debug: true,
+};
+```
+
+### 3. Test
+
+Visit: http://localhost:3001/test-analytics.html
+
+Click buttons to test tracking, then check your dashboards!
+
+---
+
 ## 📖 Full Documentation
 
 - `README.md` - Landing page overview
 - `EMAIL_CAPTURE_GUIDE.md` - Complete email capture docs
+- `ANALYTICS_GUIDE.md` - Complete analytics documentation
 
 ## 🎉 You're All Set!
 
-The landing page is live with full email capture functionality!
+The landing page is live with full email capture and analytics!
 
