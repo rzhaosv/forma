@@ -2,17 +2,19 @@
   "name": "forma-landing-page",
   "version": "1.0.0",
   "description": "Forma AI-Powered Nutrition Tracking Landing Page",
-  "main": "index.html",
+  "main": "server.js",
   "scripts": {
-    "start": "python3 -m http.server 3000",
-    "dev": "python3 -m http.server 3000",
-    "serve": "python3 -m http.server 3000"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "static": "python3 -m http.server 3000",
+    "export": "curl http://localhost:3001/api/export -o subscribers.csv && echo '\n✅ Emails exported to subscribers.csv'"
   },
   "keywords": [
     "landing-page",
     "nutrition",
     "fitness",
-    "ai"
+    "ai",
+    "email-capture"
   ],
   "author": "Forma",
   "license": "MIT"
