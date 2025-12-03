@@ -35,9 +35,22 @@ export default function PaywallScreen() {
   const [loading, setLoading] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<PurchasesPackage | null>(null);
 
+  // Debug state to show on screen
+  const [debugInfo, setDebugInfo] = useState<string>('Loading...');
+  
   useEffect(() => {
+    const info = {
+      packages: availablePackages?.length || 0,
+      status: subscriptionStatus,
+      hasKey: !!process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY,
+      keyStart: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY?.substring(0, 10) || 'none',
+    };
+    
+    console.log('🔍 PaywallScreen Debug:', JSON.stringify(info));
+    setDebugInfo(JSON.stringify(info, null, 2));
+    
     refreshStatus();
-  }, []);
+  }, [availablePackages, subscriptionStatus]);
 
   const refreshStatus = async () => {
     setLoading(true);
@@ -425,6 +438,28 @@ export default function PaywallScreen() {
       </View>
 
       <ScrollView style={styles.scrollView} contentContainerStyle={dynamicStyles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* DEBUG PANEL - Remove after debugging */}
+        {__DEV__ && (
+          <View style={{ 
+            backgroundColor: '#1a1a2e', 
+            padding: 12, 
+            margin: 10, 
+            borderRadius: 8,
+            borderWidth: 1,
+            borderColor: '#e94560'
+          }}>
+            <Text style={{ color: '#e94560', fontWeight: 'bold', marginBottom: 8 }}>
+              🔍 DEBUG INFO (visible on device)
+            </Text>
+            <Text style={{ color: '#fff', fontSize: 12, fontFamily: 'monospace' }}>
+              {debugInfo}
+            </Text>
+            <Text style={{ color: '#888', fontSize: 11, marginTop: 8 }}>
+              Packages: {availablePackages?.length || 0} | Status: {subscriptionStatus}
+            </Text>
+          </View>
+        )}
+        
         {/* Hero Section */}
         <View style={dynamicStyles.heroSection}>
           <LinearGradient

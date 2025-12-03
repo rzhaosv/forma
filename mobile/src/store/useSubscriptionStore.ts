@@ -716,10 +716,17 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
   getAvailablePackages: async () => {
     try {
       console.log('🔍 Fetching available packages from RevenueCat...');
+      console.log('📱 Device info:', {
+        platform: require('react-native').Platform.OS,
+        isDev: __DEV__,
+        isExpoGo: shouldUseTestStore()
+      });
       
       // Check if Purchases is configured
       try {
+        console.log('⏳ Calling Purchases.getOfferings()...');
         const offerings = await Purchases.getOfferings();
+        console.log('✅ getOfferings() completed successfully');
         
         console.log('📦 Offerings response:', {
           current: offerings.current?.identifier || 'null',
