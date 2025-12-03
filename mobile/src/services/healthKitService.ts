@@ -2,20 +2,43 @@
 // Handles reading and writing health data to/from Apple HealthKit using @kingstinct/react-native-healthkit
 
 import { Platform } from 'react-native';
-import HealthKit, {
-  HKQuantityTypeIdentifier,
-  HKAuthorizationRequestStatus,
-} from '@kingstinct/react-native-healthkit';
+
+// Dynamic import to handle cases where HealthKit isn't available
+let HealthKit: any = null;
+let HKQuantityTypeIdentifier: any = null;
+
+try {
+  const healthKitModule = require('@kingstinct/react-native-healthkit');
+  HealthKit = healthKitModule.default;
+  HKQuantityTypeIdentifier = healthKitModule.HKQuantityTypeIdentifier;
+  console.log('✅ HealthKit module loaded successfully');
+} catch (error) {
+  console.warn('⚠️ HealthKit module not available:', error);
+}
+
+// Check if HealthKit is properly initialized
+const isHealthKitModuleAvailable = (): boolean => {
+  return HealthKit !== null && HKQuantityTypeIdentifier !== null;
+};
 
 /**
  * Check if HealthKit is available on this device
  */
 export const isHealthKitAvailable = async (): Promise<boolean> => {
   if (Platform.OS !== 'ios') {
+    console.log('HealthKit: Not iOS platform');
     return false;
   }
+  
+  if (!isHealthKitModuleAvailable()) {
+    console.log('HealthKit: Native module not available (development build may need rebuild)');
+    return false;
+  }
+  
   try {
-    return await HealthKit.isHealthDataAvailable();
+    const available = await HealthKit.isHealthDataAvailable();
+    console.log('HealthKit availability:', available);
+    return available;
   } catch (error) {
     console.error('Error checking HealthKit availability:', error);
     return false;
@@ -27,6 +50,10 @@ export const isHealthKitAvailable = async (): Promise<boolean> => {
  */
 export const requestHealthKitPermissions = async (): Promise<boolean> => {
   try {
+    if (!isHealthKitModuleAvailable()) {
+      throw new Error('HealthKit native module is not available. Please rebuild the app with: npx expo prebuild --clean && npx expo run:ios');
+    }
+    
     const available = await isHealthKitAvailable();
     if (!available) {
       throw new Error('HealthKit is not available on this device');

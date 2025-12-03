@@ -16,6 +16,7 @@ export interface SubscriptionLimits {
   allowAdvancedAnalytics: boolean;
   allowRecipeBuilder: boolean;
   allowDataExport: boolean;
+  allowFitnessIntegrations: boolean; // Apple Health, Fitbit, etc.
 }
 
 /**
@@ -32,6 +33,7 @@ export const getSubscriptionLimits = (): SubscriptionLimits => {
       allowAdvancedAnalytics: true,
       allowRecipeBuilder: true,
       allowDataExport: true,
+      allowFitnessIntegrations: true, // Apple Health, Fitbit sync
     };
   }
   
@@ -43,6 +45,7 @@ export const getSubscriptionLimits = (): SubscriptionLimits => {
     allowAdvancedAnalytics: false,
     allowRecipeBuilder: false, // Recipe builder is premium only
     allowDataExport: false,
+    allowFitnessIntegrations: false, // Fitness integrations are premium only
   };
 };
 

@@ -34,7 +34,6 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "permissions": [
-        "android.permission.CAMERA",
         "android.permission.CAMERA"
       ],
       "package": "com.raymondzhao3000.forma",
@@ -50,7 +49,15 @@
           "cameraPermission": "Allow Forma to access your camera to scan food photos and barcodes."
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "@kingstinct/react-native-healthkit",
+        {
+          "NSHealthShareUsageDescription": "Forma needs access to read your health data to sync weight, calories, and nutrition information.",
+          "NSHealthUpdateUsageDescription": "Forma needs permission to write your weight, calories, and nutrition data to Apple Health.",
+          "requiredBackgroundModes": []
+        }
+      ]
     ],
     "extra": {
       "eas": {

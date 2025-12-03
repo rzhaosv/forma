@@ -26,15 +26,19 @@ import {
   isMealSyncEnabled,
   setMealSyncEnabled,
 } from '../utils/healthKitSettings';
+import { useSubscriptionStore } from '../store/useSubscriptionStore';
+import PaywallModal from '../components/PaywallModal';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
   const { colors, isDark, toggleMode, mode } = useTheme();
+  const { isPremium, subscriptionStatus } = useSubscriptionStore();
 
   const [healthKitAvailable, setHealthKitAvailable] = useState(false);
   const [healthKitEnabledState, setHealthKitEnabledState] = useState(false);
   const [weightSyncEnabledState, setWeightSyncEnabledState] = useState(true);
   const [mealSyncEnabledState, setMealSyncEnabledState] = useState(true);
+  const [showPaywall, setShowPaywall] = useState(false);
 
   useEffect(() => {
     const checkHealthKit = async () => {
@@ -47,7 +51,14 @@ export default function SettingsScreen() {
           const weightSync = await isWeightSyncEnabled();
           const mealSync = await isMealSyncEnabled();
 
-          setHealthKitEnabledState(enabled);
+          // If user had HealthKit enabled but is no longer premium, disable it
+          if (enabled && !isPremium) {
+            await setHealthKitEnabled(false);
+            setHealthKitEnabledState(false);
+          } else {
+            setHealthKitEnabledState(enabled);
+          }
+          
           setWeightSyncEnabledState(weightSync);
           setMealSyncEnabledState(mealSync);
         }
@@ -55,24 +66,54 @@ export default function SettingsScreen() {
     };
 
     checkHealthKit();
-  }, []);
+  }, [isPremium]);
 
   const handleHealthKitToggle = async (value: boolean) => {
+    // Check if user has premium access for fitness integrations
+    if (value && !isPremium) {
+      setShowPaywall(true);
+      return;
+    }
+    
     if (value) {
       try {
+        console.log('🏥 Requesting HealthKit permissions...');
         await requestHealthKitPermissions();
+        console.log('✅ HealthKit permissions granted');
         await setHealthKitEnabled(true);
         setHealthKitEnabledState(true);
         Alert.alert(
           'HealthKit Enabled',
           'Your weight and nutrition data will now sync with Apple Health.'
         );
-      } catch (error) {
-        console.error('Failed to enable HealthKit:', error);
-        Alert.alert(
-          'HealthKit Error',
-          'Failed to enable HealthKit. Please check your permissions in Settings.'
-        );
+      } catch (error: any) {
+        console.error('❌ Failed to enable HealthKit:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
+        
+        // More helpful error message
+        let errorMessage = 'Failed to enable HealthKit.';
+        
+        if (error.message?.includes('not available')) {
+          errorMessage = 'HealthKit is not available on this device. This feature requires a physical iPhone with iOS 8.0 or later.';
+        } else if (error.message?.includes('authorization') || error.message?.includes('permission')) {
+          errorMessage = 'HealthKit permission was denied. Please go to Settings > Health > Forma and enable access.';
+        } else if (error.message?.includes('entitlement')) {
+          errorMessage = 'HealthKit is not configured correctly. This may be a development build issue.';
+        } else {
+          errorMessage = `Failed to enable HealthKit: ${error.message || 'Unknown error'}. Please check your permissions in Settings > Health > Forma.`;
+        }
+        
+        Alert.alert('HealthKit Error', errorMessage, [
+          { text: 'OK' },
+          { 
+            text: 'Open Settings',
+            onPress: () => {
+              // Open Health app settings
+              const { Linking } = require('react-native');
+              Linking.openURL('x-apple-health://');
+            }
+          },
+        ]);
       }
     } else {
       await setHealthKitEnabled(false);
@@ -215,16 +256,36 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Apple Health Section */}
+        {/* Apple Health Section - Premium Feature */}
         {healthKitAvailable && (
           <View style={dynamicStyles.section}>
-            <Text style={dynamicStyles.sectionTitle}>Apple Health</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+              <Text style={dynamicStyles.sectionTitle}>Fitness Integrations</Text>
+              {!isPremium && (
+                <View style={{
+                  backgroundColor: colors.primary,
+                  paddingHorizontal: 8,
+                  paddingVertical: 2,
+                  borderRadius: 10,
+                  marginLeft: 8,
+                }}>
+                  <Text style={{ color: '#fff', fontSize: 10, fontWeight: '700' }}>PREMIUM</Text>
+                </View>
+              )}
+            </View>
 
-            <View style={dynamicStyles.settingRow}>
+            <View style={[
+              dynamicStyles.settingRow,
+              !isPremium && { opacity: 0.7 }
+            ]}>
               <View style={dynamicStyles.settingContent}>
-                <Text style={dynamicStyles.settingLabel}>Apple Health Sync</Text>
+                <Text style={dynamicStyles.settingLabel}>
+                  Apple Health Sync {!isPremium && '🔒'}
+                </Text>
                 <Text style={dynamicStyles.settingDescription}>
-                  Sync weight and nutrition data with Apple Health
+                  {isPremium 
+                    ? 'Sync weight and nutrition data with Apple Health'
+                    : 'Upgrade to Premium to sync with Apple Health'}
                 </Text>
               </View>
               <Switch
@@ -232,6 +293,7 @@ export default function SettingsScreen() {
                 onValueChange={handleHealthKitToggle}
                 trackColor={{ false: colors.border, true: colors.primary }}
                 thumbColor={healthKitEnabledState ? '#FFFFFF' : '#FFFFFF'}
+                disabled={!isPremium && !healthKitEnabledState}
               />
             </View>
 
@@ -328,6 +390,14 @@ export default function SettingsScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
+
+      {/* Premium Paywall Modal for Fitness Integrations */}
+      <PaywallModal
+        visible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        title="Unlock Fitness Integrations"
+        message="Sync your nutrition and weight data with Apple Health, Fitbit, and other fitness apps. Upgrade to Premium to unlock this feature."
+      />
     </SafeAreaView>
   );
 }
