@@ -16,6 +16,7 @@ import Constants from 'expo-constants';
 import { signOut } from '../services/authService';
 import { useMealStore } from '../store/useMealStore';
 import { useTheme } from '../hooks/useTheme';
+import AdBanner from '../components/AdBanner';
 
 const MEAL_TYPE_ICONS = {
   Breakfast: '🌅',
@@ -628,6 +629,9 @@ export default function HomeScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
+      
+      {/* Banner Ad for Free Users */}
+      <AdBanner placement="home_bottom" />
     </SafeAreaView>
   );
 }

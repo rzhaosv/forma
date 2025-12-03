@@ -16,6 +16,7 @@ import { Dimensions } from 'react-native';
 import { useProgressStore } from '../store/useProgressStore';
 import { useMealStore } from '../store/useMealStore';
 import { useTheme } from '../hooks/useTheme';
+import AdBanner from '../components/AdBanner';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -601,6 +602,9 @@ export default function ProgressScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
+      
+      {/* Banner Ad for Free Users */}
+      <AdBanner placement="progress_screen" />
     </SafeAreaView>
   );
 }

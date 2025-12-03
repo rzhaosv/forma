@@ -18,6 +18,7 @@ import { FoodItem, MealType } from '../types/meal.types';
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
 import { getSubscriptionLimits } from '../utils/subscriptionLimits';
 import PaywallModal from '../components/PaywallModal';
+import AdBanner from '../components/AdBanner';
 
 export default function RecipeListScreen() {
   const navigation = useNavigation();
@@ -356,6 +357,9 @@ export default function RecipeListScreen() {
           contentContainerStyle={dynamicStyles.listContent}
         />
       )}
+      
+      {/* Banner Ad for Free Users */}
+      <AdBanner placement="recipe_list" />
     </SafeAreaView>
   );
 }
