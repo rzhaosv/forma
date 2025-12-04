@@ -6,7 +6,7 @@ import { Platform } from 'react-native';
 // AdMob App IDs (replace with your actual IDs before production)
 // These are test IDs for development
 export const ADMOB_APP_ID = Platform.select({
-  ios: 'ca-app-pub-3940256099942544~1458002511', // Test App ID
+  ios: 'ca-app-pub-5844884651380174~4273331628', // Live App ID
   android: 'ca-app-pub-3940256099942544~3347511713', // Test App ID
 });
 
@@ -14,16 +14,16 @@ export const ADMOB_APP_ID = Platform.select({
 // Using test ad unit IDs for development - replace with real ones for production
 export const AD_UNIT_IDS = {
   banner: Platform.select({
-    ios: 'ca-app-pub-3940256099942544/2934735716', // Test Banner ID
-    android: 'ca-app-pub-3940256099942544/6300978111', // Test Banner ID
+    ios: 'ca-app-pub-5844884651380174~4273331628', // Live Banner ID
+    android: 'ca-app-pub-5844884651380174~4273331628', // Live Banner ID
   }) || '',
   interstitial: Platform.select({
-    ios: 'ca-app-pub-3940256099942544/4411468910', // Test Interstitial ID
-    android: 'ca-app-pub-3940256099942544/1033173712', // Test Interstitial ID
+    ios: 'ca-app-pub-5844884651380174~4273331628', // Live Interstitial ID
+    android: 'ca-app-pub-5844884651380174/1911618518', // Test Interstitial ID
   }) || '',
   rewarded: Platform.select({
-    ios: 'ca-app-pub-3940256099942544/1712485313', // Test Rewarded ID
-    android: 'ca-app-pub-3940256099942544/5224354917', // Test Rewarded ID
+    ios: 'ca-app-pub-5844884651380174~4273331628', // Test Rewarded ID
+    android: 'ca-app-pub-5844884651380174/2955562286', // Test Rewarded ID
   }) || '',
 };
 
