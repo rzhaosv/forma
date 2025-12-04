@@ -238,6 +238,37 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* Data Section */}
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Data</Text>
+          
+          <TouchableOpacity
+            style={dynamicStyles.settingRow}
+            onPress={() => navigation.navigate('ExportData' as never)}
+          >
+            <View style={dynamicStyles.settingContent}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={dynamicStyles.settingLabel}>Export Data</Text>
+                {!isPremium && (
+                  <View style={{
+                    backgroundColor: colors.primary,
+                    paddingHorizontal: 6,
+                    paddingVertical: 2,
+                    borderRadius: 8,
+                    marginLeft: 8,
+                  }}>
+                    <Text style={{ color: '#fff', fontSize: 9, fontWeight: '700' }}>PREMIUM</Text>
+                  </View>
+                )}
+              </View>
+              <Text style={dynamicStyles.settingDescription}>
+                Download your meals, progress, and recipes
+              </Text>
+            </View>
+            <Text style={{ fontSize: 16, color: colors.textSecondary }}>→</Text>
+          </TouchableOpacity>
+        </View>
+
         {/* Goals Section */}
         <View style={dynamicStyles.section}>
           <Text style={dynamicStyles.sectionTitle}>Goals</Text>
