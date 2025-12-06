@@ -369,6 +369,12 @@ export default function HomeScreen() {
         <Text style={dynamicStyles.appName}>Forma</Text>
         <View style={{ flexDirection: 'row', gap: 12 }}>
           <TouchableOpacity
+            onPress={() => navigation.navigate('Exercise' as never)}
+            style={[dynamicStyles.signOutButton, { marginRight: 0 }]}
+          >
+            <Text style={dynamicStyles.signOutText}>🏃</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={() => navigation.navigate('MealHistory' as never)}
             style={[dynamicStyles.signOutButton, { marginRight: 0 }]}
           >

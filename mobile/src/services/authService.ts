@@ -16,6 +16,7 @@ import { useMealStore } from '../store/useMealStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { useRecipeStore } from '../store/useRecipeStore';
 import { useOnboardingStore } from '../store/useOnboardingStore';
+import { useExerciseStore } from '../store/useExerciseStore';
 
 // Complete the auth session
 WebBrowser.maybeCompleteAuthSession();
@@ -94,6 +95,9 @@ export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
         
         // Initialize subscription store (subscription, trial)
         await useSubscriptionStore.getState().initialize(userId);
+        
+        // Initialize exercise store (workouts, goals)
+        await useExerciseStore.getState().initialize(userId);
       } catch (error) {
         console.error('Failed to initialize user stores:', error);
       }
@@ -107,6 +111,7 @@ export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
         await useProgressStore.getState().clearData();
         await useRecipeStore.getState().clearData();
         await useOnboardingStore.getState().clearData();
+        await useExerciseStore.getState().clearData();
         
         // Reset subscription state but DON'T clear trial data
         // Trial data is user-specific and will be validated on next login
