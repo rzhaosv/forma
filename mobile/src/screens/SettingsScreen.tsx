@@ -30,12 +30,16 @@ import {
   setWeightSyncEnabled,
   isMealSyncEnabled,
   setMealSyncEnabled,
+  isExerciseSyncEnabled,
+  setExerciseSyncEnabled,
   isGoogleFitEnabled,
   setGoogleFitEnabled,
   isGoogleFitWeightSyncEnabled,
   setGoogleFitWeightSyncEnabled,
   isGoogleFitMealSyncEnabled,
   setGoogleFitMealSyncEnabled,
+  isGoogleFitExerciseSyncEnabled,
+  setGoogleFitExerciseSyncEnabled,
   getFitnessPlatformName,
 } from '../utils/healthKitSettings';
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
@@ -51,12 +55,14 @@ export default function SettingsScreen() {
   const [healthKitEnabledState, setHealthKitEnabledState] = useState(false);
   const [weightSyncEnabledState, setWeightSyncEnabledState] = useState(true);
   const [mealSyncEnabledState, setMealSyncEnabledState] = useState(true);
+  const [exerciseSyncEnabledState, setExerciseSyncEnabledState] = useState(true);
   
   // Android - Google Fit
   const [googleFitAvailable, setGoogleFitAvailable] = useState(false);
   const [googleFitEnabledState, setGoogleFitEnabledState] = useState(false);
   const [googleFitWeightSyncState, setGoogleFitWeightSyncState] = useState(true);
   const [googleFitMealSyncState, setGoogleFitMealSyncState] = useState(true);
+  const [googleFitExerciseSyncState, setGoogleFitExerciseSyncState] = useState(true);
   
   const [showPaywall, setShowPaywall] = useState(false);
 
@@ -71,6 +77,7 @@ export default function SettingsScreen() {
           const enabled = await isHealthKitEnabled();
           const weightSync = await isWeightSyncEnabled();
           const mealSync = await isMealSyncEnabled();
+          const exerciseSync = await isExerciseSyncEnabled();
 
           // If user had HealthKit enabled but is no longer premium, disable it
           if (enabled && !isPremium) {
@@ -82,6 +89,7 @@ export default function SettingsScreen() {
           
           setWeightSyncEnabledState(weightSync);
           setMealSyncEnabledState(mealSync);
+          setExerciseSyncEnabledState(exerciseSync);
         }
       }
       
@@ -94,6 +102,7 @@ export default function SettingsScreen() {
           const enabled = await isGoogleFitEnabled();
           const weightSync = await isGoogleFitWeightSyncEnabled();
           const mealSync = await isGoogleFitMealSyncEnabled();
+          const exerciseSync = await isGoogleFitExerciseSyncEnabled();
 
           // If user had Google Fit enabled but is no longer premium, disable it
           if (enabled && !isPremium) {
@@ -106,6 +115,7 @@ export default function SettingsScreen() {
           
           setGoogleFitWeightSyncState(weightSync);
           setGoogleFitMealSyncState(mealSync);
+          setGoogleFitExerciseSyncState(exerciseSync);
         }
       }
     };
@@ -180,6 +190,11 @@ export default function SettingsScreen() {
     setMealSyncEnabledState(value);
   };
 
+  const handleExerciseSyncToggle = async (value: boolean) => {
+    await setExerciseSyncEnabled(value);
+    setExerciseSyncEnabledState(value);
+  };
+
   // Google Fit handlers (Android)
   const handleGoogleFitToggle = async (value: boolean) => {
     // Check if user has premium access for fitness integrations
@@ -228,6 +243,11 @@ export default function SettingsScreen() {
   const handleGoogleFitMealSyncToggle = async (value: boolean) => {
     await setGoogleFitMealSyncEnabled(value);
     setGoogleFitMealSyncState(value);
+  };
+
+  const handleGoogleFitExerciseSyncToggle = async (value: boolean) => {
+    await setGoogleFitExerciseSyncEnabled(value);
+    setGoogleFitExerciseSyncState(value);
   };
 
   const dynamicStyles = StyleSheet.create({
@@ -454,6 +474,21 @@ export default function SettingsScreen() {
                     thumbColor={mealSyncEnabledState ? '#FFFFFF' : '#FFFFFF'}
                   />
                 </View>
+
+                <View style={dynamicStyles.settingRow}>
+                  <View style={dynamicStyles.settingContent}>
+                    <Text style={dynamicStyles.settingLabel}>Exercise Sync</Text>
+                    <Text style={dynamicStyles.settingDescription}>
+                      Automatically sync workout calories burned to Apple Health
+                    </Text>
+                  </View>
+                  <Switch
+                    value={exerciseSyncEnabledState}
+                    onValueChange={handleExerciseSyncToggle}
+                    trackColor={{ false: colors.border, true: colors.primary }}
+                    thumbColor={exerciseSyncEnabledState ? '#FFFFFF' : '#FFFFFF'}
+                  />
+                </View>
               </>
             )}
           </View>
@@ -529,6 +564,21 @@ export default function SettingsScreen() {
                     onValueChange={handleGoogleFitMealSyncToggle}
                     trackColor={{ false: colors.border, true: colors.primary }}
                     thumbColor={googleFitMealSyncState ? '#FFFFFF' : '#FFFFFF'}
+                  />
+                </View>
+
+                <View style={dynamicStyles.settingRow}>
+                  <View style={dynamicStyles.settingContent}>
+                    <Text style={dynamicStyles.settingLabel}>Exercise Sync</Text>
+                    <Text style={dynamicStyles.settingDescription}>
+                      Automatically sync workout calories burned to Google Fit
+                    </Text>
+                  </View>
+                  <Switch
+                    value={googleFitExerciseSyncState}
+                    onValueChange={handleGoogleFitExerciseSyncToggle}
+                    trackColor={{ false: colors.border, true: colors.primary }}
+                    thumbColor={googleFitExerciseSyncState ? '#FFFFFF' : '#FFFFFF'}
                   />
                 </View>
               </>

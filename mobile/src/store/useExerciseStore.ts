@@ -1,5 +1,6 @@
 // Exercise tracking state management
 import { create } from 'zustand';
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { 
   Workout, 
@@ -7,6 +8,14 @@ import {
   DailyExerciseSummary,
   calculateCaloriesBurned,
 } from '../types/exercise.types';
+import { syncWorkoutToHealthKit } from '../services/healthKitService';
+import { syncWorkoutToGoogleFit } from '../services/googleFitService';
+import { 
+  isHealthKitEnabled, 
+  isExerciseSyncEnabled,
+  isGoogleFitEnabled,
+  isGoogleFitExerciseSyncEnabled,
+} from '../utils/healthKitSettings';
 
 interface ExerciseStore {
   workouts: Workout[];
@@ -42,6 +51,50 @@ const getStorageKeys = (userId: string) => ({
   workouts: `@forma_workouts_${userId}`,
   weeklyGoal: `@forma_weekly_exercise_goal_${userId}`,
 });
+
+// Helper to sync workout to fitness apps
+const syncWorkoutToFitnessApps = async (workout: Workout): Promise<void> => {
+  try {
+    if (Platform.OS === 'ios') {
+      const healthKitEnabled = await isHealthKitEnabled();
+      const exerciseSyncEnabled = await isExerciseSyncEnabled();
+      
+      if (healthKitEnabled && exerciseSyncEnabled) {
+        const startTime = new Date(workout.startTime);
+        const endTime = workout.endTime ? new Date(workout.endTime) : undefined;
+        
+        await syncWorkoutToHealthKit(
+          workout.totalCaloriesBurned,
+          workout.totalDuration,
+          workout.name,
+          startTime,
+          endTime
+        );
+        console.log('✅ Workout synced to Apple Health');
+      }
+    } else if (Platform.OS === 'android') {
+      const googleFitEnabled = await isGoogleFitEnabled();
+      const exerciseSyncEnabled = await isGoogleFitExerciseSyncEnabled();
+      
+      if (googleFitEnabled && exerciseSyncEnabled) {
+        const startTime = new Date(workout.startTime);
+        const endTime = workout.endTime ? new Date(workout.endTime) : undefined;
+        
+        await syncWorkoutToGoogleFit(
+          workout.totalCaloriesBurned,
+          workout.totalDuration,
+          workout.name,
+          startTime,
+          endTime
+        );
+        console.log('✅ Workout synced to Google Fit');
+      }
+    }
+  } catch (error) {
+    console.error('Error syncing workout to fitness apps:', error);
+    // Don't throw - syncing is optional
+  }
+};
 
 export const useExerciseStore = create<ExerciseStore>((set, get) => ({
   workouts: [],
@@ -161,6 +214,9 @@ export const useExerciseStore = create<ExerciseStore>((set, get) => ({
     
     get().updateDailySummary();
     console.log('✅ Workout completed:', completedWorkout.name);
+    
+    // Sync to fitness apps (Apple Health / Google Fit)
+    await syncWorkoutToFitnessApps(completedWorkout);
   },
 
   cancelWorkout: () => {
@@ -181,6 +237,9 @@ export const useExerciseStore = create<ExerciseStore>((set, get) => ({
     set({ workouts: updatedWorkouts });
     get().updateDailySummary();
     console.log('📝 Workout logged:', workout.name);
+    
+    // Sync to fitness apps (Apple Health / Google Fit)
+    await syncWorkoutToFitnessApps(workout);
   },
 
   deleteWorkout: async (workoutId: string) => {

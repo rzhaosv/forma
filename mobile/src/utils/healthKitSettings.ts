@@ -8,12 +8,14 @@ import { Platform } from 'react-native';
 const HEALTHKIT_ENABLED_KEY = '@forma_healthkit_enabled';
 const HEALTHKIT_SYNC_WEIGHT_KEY = '@forma_healthkit_sync_weight';
 const HEALTHKIT_SYNC_MEALS_KEY = '@forma_healthkit_sync_meals';
+const HEALTHKIT_SYNC_EXERCISE_KEY = '@forma_healthkit_sync_exercise';
 
 // Google Fit keys (Android)
 const GOOGLEFIT_ENABLED_KEY = '@forma_googlefit_enabled';
 const GOOGLEFIT_SYNC_WEIGHT_KEY = '@forma_googlefit_sync_weight';
 const GOOGLEFIT_SYNC_MEALS_KEY = '@forma_googlefit_sync_meals';
 const GOOGLEFIT_SYNC_STEPS_KEY = '@forma_googlefit_sync_steps';
+const GOOGLEFIT_SYNC_EXERCISE_KEY = '@forma_googlefit_sync_exercise';
 
 /**
  * Check if HealthKit sync is enabled
@@ -84,6 +86,30 @@ export const setMealSyncEnabled = async (enabled: boolean): Promise<void> => {
     await AsyncStorage.setItem(HEALTHKIT_SYNC_MEALS_KEY, enabled.toString());
   } catch (error) {
     console.error('Error setting meal sync status:', error);
+  }
+};
+
+/**
+ * Check if exercise sync is enabled (HealthKit)
+ */
+export const isExerciseSyncEnabled = async (): Promise<boolean> => {
+  try {
+    const enabled = await AsyncStorage.getItem(HEALTHKIT_SYNC_EXERCISE_KEY);
+    return enabled !== 'false'; // Default to true if not set
+  } catch (error) {
+    console.error('Error checking exercise sync status:', error);
+    return true;
+  }
+};
+
+/**
+ * Set exercise sync enabled/disabled (HealthKit)
+ */
+export const setExerciseSyncEnabled = async (enabled: boolean): Promise<void> => {
+  try {
+    await AsyncStorage.setItem(HEALTHKIT_SYNC_EXERCISE_KEY, enabled.toString());
+  } catch (error) {
+    console.error('Error setting exercise sync status:', error);
   }
 };
 
@@ -182,6 +208,30 @@ export const setGoogleFitStepsSyncEnabled = async (enabled: boolean): Promise<vo
     await AsyncStorage.setItem(GOOGLEFIT_SYNC_STEPS_KEY, enabled.toString());
   } catch (error) {
     console.error('Error setting Google Fit steps sync status:', error);
+  }
+};
+
+/**
+ * Check if Google Fit exercise sync is enabled
+ */
+export const isGoogleFitExerciseSyncEnabled = async (): Promise<boolean> => {
+  try {
+    const enabled = await AsyncStorage.getItem(GOOGLEFIT_SYNC_EXERCISE_KEY);
+    return enabled !== 'false'; // Default to true if not set
+  } catch (error) {
+    console.error('Error checking Google Fit exercise sync status:', error);
+    return true;
+  }
+};
+
+/**
+ * Set Google Fit exercise sync enabled/disabled
+ */
+export const setGoogleFitExerciseSyncEnabled = async (enabled: boolean): Promise<void> => {
+  try {
+    await AsyncStorage.setItem(GOOGLEFIT_SYNC_EXERCISE_KEY, enabled.toString());
+  } catch (error) {
+    console.error('Error setting Google Fit exercise sync status:', error);
   }
 };
 

@@ -73,6 +73,7 @@ export const requestHealthKitPermissions = async (): Promise<boolean> => {
       HKQuantityTypeIdentifier.dietaryProtein,
       HKQuantityTypeIdentifier.dietaryCarbohydrates,
       HKQuantityTypeIdentifier.dietaryFatTotal,
+      HKQuantityTypeIdentifier.activeEnergyBurned,
     ];
 
     await HealthKit.requestAuthorization(readPermissions, writePermissions);
@@ -288,6 +289,108 @@ export const syncMealToHealthKit = async (
     return true;
   } catch (error) {
     console.error('Error syncing meal to HealthKit:', error);
+    return false;
+  }
+};
+
+/**
+ * Write active energy burned to HealthKit
+ */
+export const writeActiveEnergyBurned = async (
+  calories: number,
+  startDate: Date,
+  endDate?: Date
+): Promise<boolean> => {
+  try {
+    if (!isHealthKitModuleAvailable()) {
+      console.log('HealthKit module not available for active energy');
+      return false;
+    }
+    
+    const available = await isHealthKitAvailable();
+    if (!available) {
+      throw new Error('HealthKit is not available');
+    }
+
+    const start = startDate;
+    const end = endDate || startDate;
+
+    await HealthKit.saveQuantitySample(
+      HKQuantityTypeIdentifier.activeEnergyBurned,
+      calories,
+      {
+        start: start.toISOString(),
+        end: end.toISOString(),
+      }
+    );
+
+    console.log('✅ Active energy written to HealthKit:', calories, 'kcal');
+    return true;
+  } catch (error) {
+    console.error('Error writing active energy to HealthKit:', error);
+    throw error;
+  }
+};
+
+/**
+ * Read active energy burned from HealthKit for a date range
+ */
+export const readActiveEnergyBurned = async (
+  startDate: Date,
+  endDate: Date
+): Promise<number> => {
+  try {
+    if (!isHealthKitModuleAvailable()) {
+      return 0;
+    }
+    
+    const available = await isHealthKitAvailable();
+    if (!available) {
+      return 0;
+    }
+
+    const result = await HealthKit.querySamples(
+      HKQuantityTypeIdentifier.activeEnergyBurned,
+      {
+        from: startDate.toISOString(),
+        to: endDate.toISOString(),
+      }
+    );
+
+    // Sum up all active energy samples
+    const totalCalories = result.reduce((sum: number, sample: any) => {
+      return sum + (sample.quantity || sample.value || 0);
+    }, 0);
+
+    console.log('📊 Read active energy from HealthKit:', totalCalories, 'kcal');
+    return Math.round(totalCalories);
+  } catch (error) {
+    console.error('Error reading active energy from HealthKit:', error);
+    return 0;
+  }
+};
+
+/**
+ * Sync workout/exercise data to HealthKit
+ */
+export const syncWorkoutToHealthKit = async (
+  caloriesBurned: number,
+  durationMinutes: number,
+  workoutName: string,
+  startTime: Date,
+  endTime?: Date
+): Promise<boolean> => {
+  try {
+    const start = startTime;
+    const end = endTime || new Date(start.getTime() + durationMinutes * 60 * 1000);
+    
+    // Write active energy burned
+    await writeActiveEnergyBurned(caloriesBurned, start, end);
+    
+    console.log('✅ Workout synced to HealthKit:', workoutName, '-', caloriesBurned, 'kcal');
+    return true;
+  } catch (error) {
+    console.error('Error syncing workout to HealthKit:', error);
     return false;
   }
 };
