@@ -19,12 +19,24 @@ import {
   requestHealthKitPermissions
 } from '../services/healthKitService';
 import {
+  isGoogleFitAvailable,
+  requestGoogleFitPermissions,
+  disconnectGoogleFit,
+} from '../services/googleFitService';
+import {
   isHealthKitEnabled,
   setHealthKitEnabled,
   isWeightSyncEnabled,
   setWeightSyncEnabled,
   isMealSyncEnabled,
   setMealSyncEnabled,
+  isGoogleFitEnabled,
+  setGoogleFitEnabled,
+  isGoogleFitWeightSyncEnabled,
+  setGoogleFitWeightSyncEnabled,
+  isGoogleFitMealSyncEnabled,
+  setGoogleFitMealSyncEnabled,
+  getFitnessPlatformName,
 } from '../utils/healthKitSettings';
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
 import PaywallModal from '../components/PaywallModal';
@@ -34,14 +46,23 @@ export default function SettingsScreen() {
   const { colors, isDark, toggleMode, mode } = useTheme();
   const { isPremium, subscriptionStatus } = useSubscriptionStore();
 
+  // iOS - HealthKit
   const [healthKitAvailable, setHealthKitAvailable] = useState(false);
   const [healthKitEnabledState, setHealthKitEnabledState] = useState(false);
   const [weightSyncEnabledState, setWeightSyncEnabledState] = useState(true);
   const [mealSyncEnabledState, setMealSyncEnabledState] = useState(true);
+  
+  // Android - Google Fit
+  const [googleFitAvailable, setGoogleFitAvailable] = useState(false);
+  const [googleFitEnabledState, setGoogleFitEnabledState] = useState(false);
+  const [googleFitWeightSyncState, setGoogleFitWeightSyncState] = useState(true);
+  const [googleFitMealSyncState, setGoogleFitMealSyncState] = useState(true);
+  
   const [showPaywall, setShowPaywall] = useState(false);
 
   useEffect(() => {
-    const checkHealthKit = async () => {
+    const checkFitnessIntegrations = async () => {
+      // iOS - HealthKit
       if (Platform.OS === 'ios') {
         const available = await isHealthKitAvailable();
         setHealthKitAvailable(available);
@@ -63,9 +84,33 @@ export default function SettingsScreen() {
           setMealSyncEnabledState(mealSync);
         }
       }
+      
+      // Android - Google Fit
+      if (Platform.OS === 'android') {
+        const available = await isGoogleFitAvailable();
+        setGoogleFitAvailable(available);
+
+        if (available) {
+          const enabled = await isGoogleFitEnabled();
+          const weightSync = await isGoogleFitWeightSyncEnabled();
+          const mealSync = await isGoogleFitMealSyncEnabled();
+
+          // If user had Google Fit enabled but is no longer premium, disable it
+          if (enabled && !isPremium) {
+            await setGoogleFitEnabled(false);
+            await disconnectGoogleFit();
+            setGoogleFitEnabledState(false);
+          } else {
+            setGoogleFitEnabledState(enabled);
+          }
+          
+          setGoogleFitWeightSyncState(weightSync);
+          setGoogleFitMealSyncState(mealSync);
+        }
+      }
     };
 
-    checkHealthKit();
+    checkFitnessIntegrations();
   }, [isPremium]);
 
   const handleHealthKitToggle = async (value: boolean) => {
@@ -133,6 +178,56 @@ export default function SettingsScreen() {
   const handleMealSyncToggle = async (value: boolean) => {
     await setMealSyncEnabled(value);
     setMealSyncEnabledState(value);
+  };
+
+  // Google Fit handlers (Android)
+  const handleGoogleFitToggle = async (value: boolean) => {
+    // Check if user has premium access for fitness integrations
+    if (value && !isPremium) {
+      setShowPaywall(true);
+      return;
+    }
+    
+    if (value) {
+      try {
+        console.log('🏃 Requesting Google Fit permissions...');
+        await requestGoogleFitPermissions();
+        console.log('✅ Google Fit permissions granted');
+        await setGoogleFitEnabled(true);
+        setGoogleFitEnabledState(true);
+        Alert.alert(
+          'Google Fit Enabled',
+          'Your weight and nutrition data will now sync with Google Fit.'
+        );
+      } catch (error: any) {
+        console.error('❌ Failed to enable Google Fit:', error);
+        
+        let errorMessage = 'Failed to enable Google Fit.';
+        if (error.message) {
+          errorMessage = `Failed to enable Google Fit: ${error.message}`;
+        }
+        
+        Alert.alert('Google Fit Error', errorMessage);
+      }
+    } else {
+      await setGoogleFitEnabled(false);
+      await disconnectGoogleFit();
+      setGoogleFitEnabledState(false);
+      Alert.alert(
+        'Google Fit Disabled',
+        'Your data will no longer sync with Google Fit.'
+      );
+    }
+  };
+
+  const handleGoogleFitWeightSyncToggle = async (value: boolean) => {
+    await setGoogleFitWeightSyncEnabled(value);
+    setGoogleFitWeightSyncState(value);
+  };
+
+  const handleGoogleFitMealSyncToggle = async (value: boolean) => {
+    await setGoogleFitMealSyncEnabled(value);
+    setGoogleFitMealSyncState(value);
   };
 
   const dynamicStyles = StyleSheet.create({
@@ -357,6 +452,83 @@ export default function SettingsScreen() {
                     onValueChange={handleMealSyncToggle}
                     trackColor={{ false: colors.border, true: colors.primary }}
                     thumbColor={mealSyncEnabledState ? '#FFFFFF' : '#FFFFFF'}
+                  />
+                </View>
+              </>
+            )}
+          </View>
+        )}
+
+        {/* Google Fit Section - Premium Feature (Android only) */}
+        {googleFitAvailable && (
+          <View style={dynamicStyles.section}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+              <Text style={dynamicStyles.sectionTitle}>Fitness Integrations</Text>
+              {!isPremium && (
+                <View style={{
+                  backgroundColor: colors.primary,
+                  paddingHorizontal: 8,
+                  paddingVertical: 2,
+                  borderRadius: 10,
+                  marginLeft: 8,
+                }}>
+                  <Text style={{ color: '#fff', fontSize: 10, fontWeight: '700' }}>PREMIUM</Text>
+                </View>
+              )}
+            </View>
+
+            <View style={[
+              dynamicStyles.settingRow,
+              !isPremium && { opacity: 0.7 }
+            ]}>
+              <View style={dynamicStyles.settingContent}>
+                <Text style={dynamicStyles.settingLabel}>
+                  Google Fit Sync {!isPremium && '🔒'}
+                </Text>
+                <Text style={dynamicStyles.settingDescription}>
+                  {isPremium 
+                    ? 'Sync weight and nutrition data with Google Fit'
+                    : 'Upgrade to Premium to sync with Google Fit'}
+                </Text>
+              </View>
+              <Switch
+                value={googleFitEnabledState}
+                onValueChange={handleGoogleFitToggle}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor={googleFitEnabledState ? '#FFFFFF' : '#FFFFFF'}
+                disabled={!isPremium && !googleFitEnabledState}
+              />
+            </View>
+
+            {googleFitEnabledState && (
+              <>
+                <View style={dynamicStyles.settingRow}>
+                  <View style={dynamicStyles.settingContent}>
+                    <Text style={dynamicStyles.settingLabel}>Weight Sync</Text>
+                    <Text style={dynamicStyles.settingDescription}>
+                      Automatically sync weight entries to Google Fit
+                    </Text>
+                  </View>
+                  <Switch
+                    value={googleFitWeightSyncState}
+                    onValueChange={handleGoogleFitWeightSyncToggle}
+                    trackColor={{ false: colors.border, true: colors.primary }}
+                    thumbColor={googleFitWeightSyncState ? '#FFFFFF' : '#FFFFFF'}
+                  />
+                </View>
+
+                <View style={dynamicStyles.settingRow}>
+                  <View style={dynamicStyles.settingContent}>
+                    <Text style={dynamicStyles.settingLabel}>Meal Sync</Text>
+                    <Text style={dynamicStyles.settingDescription}>
+                      Automatically sync calories and macros to Google Fit
+                    </Text>
+                  </View>
+                  <Switch
+                    value={googleFitMealSyncState}
+                    onValueChange={handleGoogleFitMealSyncToggle}
+                    trackColor={{ false: colors.border, true: colors.primary }}
+                    thumbColor={googleFitMealSyncState ? '#FFFFFF' : '#FFFFFF'}
                   />
                 </View>
               </>
