@@ -79,9 +79,11 @@ export default function ProgressScreen() {
     const data: number[] = [];
     
     entries.forEach(entry => {
-      const date = new Date(entry.date);
-      labels.push(`${date.getMonth() + 1}/${date.getDate()}`);
-      data.push(entry.weight_kg);
+      if (entry && typeof entry.weight_kg === 'number') {
+        const date = new Date(entry.date);
+        labels.push(`${date.getMonth() + 1}/${date.getDate()}`);
+        data.push(entry.weight_kg);
+      }
     });
     
     return { labels, datasets: [{ data }] };
@@ -371,7 +373,13 @@ export default function ProgressScreen() {
           </View>
           <View style={dynamicStyles.statCard}>
             <Text style={dynamicStyles.statValue}>
-              {weightEntries.length > 0 ? weightEntries[weightEntries.length - 1].weight_kg.toFixed(1) : '--'}
+              {(() => {
+                const lastEntry = weightEntries[weightEntries.length - 1];
+                if (lastEntry && typeof lastEntry.weight_kg === 'number') {
+                  return lastEntry.weight_kg.toFixed(1);
+                }
+                return '--';
+              })()}
             </Text>
             <Text style={dynamicStyles.statLabel}>Current Weight (kg)</Text>
           </View>

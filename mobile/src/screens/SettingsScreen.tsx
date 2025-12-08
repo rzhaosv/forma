@@ -44,6 +44,7 @@ import {
 } from '../utils/healthKitSettings';
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
 import PaywallModal from '../components/PaywallModal';
+import { generateDemoData, clearDemoData } from '../utils/demoData';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
@@ -65,6 +66,7 @@ export default function SettingsScreen() {
   const [googleFitExerciseSyncState, setGoogleFitExerciseSyncState] = useState(true);
   
   const [showPaywall, setShowPaywall] = useState(false);
+  const [generatingDemo, setGeneratingDemo] = useState(false);
 
   useEffect(() => {
     const checkFitnessIntegrations = async () => {
@@ -248,6 +250,37 @@ export default function SettingsScreen() {
   const handleGoogleFitExerciseSyncToggle = async (value: boolean) => {
     await setGoogleFitExerciseSyncEnabled(value);
     setGoogleFitExerciseSyncState(value);
+  };
+
+  // Demo data handlers (development only)
+  const handleGenerateDemoData = async () => {
+    setGeneratingDemo(true);
+    try {
+      await generateDemoData();
+      Alert.alert('Demo Data Generated', 'Sample meals, workouts, and progress data have been added.');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to generate demo data.');
+    } finally {
+      setGeneratingDemo(false);
+    }
+  };
+
+  const handleClearDemoData = () => {
+    Alert.alert(
+      'Clear All Data',
+      'This will delete all your meals, workouts, progress, and recipes. Are you sure?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Clear All',
+          style: 'destructive',
+          onPress: async () => {
+            await clearDemoData();
+            Alert.alert('Data Cleared', 'All data has been removed.');
+          },
+        },
+      ]
+    );
   };
 
   const dynamicStyles = StyleSheet.create({
@@ -640,6 +673,42 @@ export default function SettingsScreen() {
             </View>
           </View>
         </View>
+
+        {/* Developer Tools (Dev builds only) */}
+        {__DEV__ && (
+          <View style={dynamicStyles.section}>
+            <Text style={dynamicStyles.sectionTitle}>Developer Tools</Text>
+            
+            <TouchableOpacity
+              style={dynamicStyles.settingRow}
+              onPress={handleGenerateDemoData}
+              disabled={generatingDemo}
+            >
+              <View style={dynamicStyles.settingContent}>
+                <Text style={dynamicStyles.settingLabel}>
+                  {generatingDemo ? '⏳ Generating...' : '🎬 Generate Demo Data'}
+                </Text>
+                <Text style={dynamicStyles.settingDescription}>
+                  Create sample meals, workouts, and progress for demo videos
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={dynamicStyles.settingRow}
+              onPress={handleClearDemoData}
+            >
+              <View style={dynamicStyles.settingContent}>
+                <Text style={[dynamicStyles.settingLabel, { color: '#EF4444' }]}>
+                  🗑️ Clear All Data
+                </Text>
+                <Text style={dynamicStyles.settingDescription}>
+                  Remove all meals, workouts, progress, and recipes
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
 
         <View style={{ height: 40 }} />
       </ScrollView>
