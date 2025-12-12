@@ -432,6 +432,51 @@ export default function ExerciseScreen() {
       color: colors.textSecondary,
       textAlign: 'center',
     },
+    historyDayCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      marginBottom: 12,
+      overflow: 'hidden',
+    },
+    historyDayHeader: {
+      backgroundColor: colors.primary + '10',
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    historyDate: {
+      fontSize: 15,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    historyDaySummary: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      marginTop: 2,
+    },
+    historyWorkoutItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    historyWorkoutInfo: {
+      flex: 1,
+    },
+    historyWorkoutName: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.text,
+    },
+    historyWorkoutDetails: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      marginTop: 2,
+    },
     caloriePreview: {
       backgroundColor: colors.primary + '10',
       padding: 12,
@@ -570,6 +615,91 @@ export default function ExerciseScreen() {
               <Text style={dynamicStyles.emptyIcon}>🏃</Text>
               <Text style={dynamicStyles.emptyText}>
                 No exercises logged today.{'\n'}Tap "Log Exercise" to get started!
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {/* Recent Workouts History */}
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Workout History</Text>
+          
+          {workouts.length > 0 ? (
+            <>
+              {(() => {
+                // Group workouts by date
+                const groupedWorkouts: { [date: string]: typeof workouts } = {};
+                const today = new Date().toDateString();
+                
+                workouts.forEach(workout => {
+                  const workoutDate = new Date(workout.timestamp).toDateString();
+                  // Skip today's workouts (already shown above)
+                  if (workoutDate === today) return;
+                  
+                  if (!groupedWorkouts[workoutDate]) {
+                    groupedWorkouts[workoutDate] = [];
+                  }
+                  groupedWorkouts[workoutDate].push(workout);
+                });
+                
+                const sortedDates = Object.keys(groupedWorkouts).sort(
+                  (a, b) => new Date(b).getTime() - new Date(a).getTime()
+                );
+                
+                if (sortedDates.length === 0) {
+                  return (
+                    <View style={dynamicStyles.emptyState}>
+                      <Text style={dynamicStyles.emptyText}>
+                        No previous workouts found.
+                      </Text>
+                    </View>
+                  );
+                }
+                
+                return sortedDates.slice(0, 7).map(dateStr => {
+                  const date = new Date(dateStr);
+                  const isYesterday = date.toDateString() === new Date(Date.now() - 86400000).toDateString();
+                  const dateLabel = isYesterday 
+                    ? 'Yesterday' 
+                    : date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                  
+                  const dayWorkouts = groupedWorkouts[dateStr];
+                  const dayCalories = dayWorkouts.reduce((sum, w) => sum + w.totalCaloriesBurned, 0);
+                  const dayDuration = dayWorkouts.reduce((sum, w) => sum + w.totalDuration, 0);
+                  
+                  return (
+                    <View key={dateStr} style={dynamicStyles.historyDayCard}>
+                      <View style={dynamicStyles.historyDayHeader}>
+                        <Text style={dynamicStyles.historyDate}>{dateLabel}</Text>
+                        <Text style={dynamicStyles.historyDaySummary}>
+                          {dayWorkouts.length} workout{dayWorkouts.length !== 1 ? 's' : ''} • {dayCalories} cal • {formatDuration(dayDuration)}
+                        </Text>
+                      </View>
+                      {dayWorkouts.map(workout => (
+                        <View key={workout.id} style={dynamicStyles.historyWorkoutItem}>
+                          <View style={dynamicStyles.historyWorkoutInfo}>
+                            <Text style={dynamicStyles.historyWorkoutName}>{workout.name}</Text>
+                            <Text style={dynamicStyles.historyWorkoutDetails}>
+                              {workout.exercises.map(e => e.exercise.icon).join(' ')} {formatDuration(workout.totalDuration)} • {workout.totalCaloriesBurned} cal
+                            </Text>
+                          </View>
+                          <TouchableOpacity 
+                            onPress={() => handleDeleteWorkout(workout.id)}
+                            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                          >
+                            <Text style={{ fontSize: 16, opacity: 0.5 }}>🗑️</Text>
+                          </TouchableOpacity>
+                        </View>
+                      ))}
+                    </View>
+                  );
+                });
+              })()}
+            </>
+          ) : (
+            <View style={dynamicStyles.emptyState}>
+              <Text style={dynamicStyles.emptyText}>
+                Start logging workouts to build your history!
               </Text>
             </View>
           )}
