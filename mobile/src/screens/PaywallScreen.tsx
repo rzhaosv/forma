@@ -37,7 +37,17 @@ export default function PaywallScreen() {
 
   // Debug state to show on screen
   const [debugInfo, setDebugInfo] = useState<string>('Loading...');
+  const [hasLoaded, setHasLoaded] = useState(false);
   
+  // Fetch data only once on mount
+  useEffect(() => {
+    if (!hasLoaded) {
+      setHasLoaded(true);
+      refreshStatus();
+    }
+  }, [hasLoaded]);
+
+  // Update debug info when data changes (no fetch)
   useEffect(() => {
     const info = {
       packages: availablePackages?.length || 0,
@@ -48,8 +58,6 @@ export default function PaywallScreen() {
     
     console.log('🔍 PaywallScreen Debug:', JSON.stringify(info));
     setDebugInfo(JSON.stringify(info, null, 2));
-    
-    refreshStatus();
   }, [availablePackages, subscriptionStatus]);
 
   const refreshStatus = async () => {

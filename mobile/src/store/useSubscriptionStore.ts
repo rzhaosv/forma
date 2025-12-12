@@ -404,7 +404,10 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
           }
         }
         
-        const hasActiveSubscription = customerInfo.entitlements.active['premium'] !== undefined;
+        // Check for 'premium' entitlement OR any active subscription
+        const hasPremiumEntitlement = customerInfo.entitlements.active['premium'] !== undefined;
+        const hasAnyActiveSubscription = customerInfo.activeSubscriptions.length > 0;
+        const hasActiveSubscription = hasPremiumEntitlement || hasAnyActiveSubscription;
         
         // If user has active subscription, use that (overrides trial)
         if (hasActiveSubscription) {
@@ -412,6 +415,13 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
                           customerInfo.entitlements.active['premium']?.willRenew === false;
           
           const status: SubscriptionStatus = isTrial ? 'trial' : 'premium';
+          
+          console.log('✅ Active subscription found:', { 
+            hasPremiumEntitlement, 
+            hasAnyActiveSubscription,
+            activeSubscriptions: customerInfo.activeSubscriptions,
+            status 
+          });
           
           set({
             subscriptionStatus: status,
@@ -581,7 +591,21 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
           }
         }
         
-        const hasRealEntitlement = customerInfo.entitlements.active['premium'] !== undefined;
+        // Debug: Log all entitlements and subscriptions
+        console.log('🔍 Purchase result - all entitlements:', Object.keys(customerInfo.entitlements.active));
+        console.log('🔍 Purchase result - all subscriptions:', customerInfo.activeSubscriptions);
+        console.log('🔍 Purchase result - entitlements object:', JSON.stringify(customerInfo.entitlements.active));
+        
+        // Check for 'premium' entitlement OR any active subscription
+        const hasPremiumEntitlement = customerInfo.entitlements.active['premium'] !== undefined;
+        const hasAnyActiveSubscription = customerInfo.activeSubscriptions.length > 0;
+        const hasRealEntitlement = hasPremiumEntitlement || hasAnyActiveSubscription;
+        
+        console.log('🔍 Entitlement check:', { 
+          hasPremiumEntitlement, 
+          hasAnyActiveSubscription, 
+          hasRealEntitlement 
+        });
         
         // Check if this is a trial period from RevenueCat (only if real entitlement exists)
         const entitlement = customerInfo.entitlements.active['premium'];
@@ -592,9 +616,10 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         let finalTrialInfo = currentTrialInfo;
         
         if (hasRealEntitlement) {
-          // Has RevenueCat entitlement - use that
+          // Has RevenueCat entitlement or active subscription - grant premium
           finalStatus = isRevenueCatTrial ? 'trial' : 'premium';
           finalIsPremium = true;
+          console.log('✅ Premium granted via RevenueCat entitlement/subscription');
         } else if (!hasUsedTrial && currentUserId) {
           // No RevenueCat entitlement but user hasn't used local trial - start local trial
           // This handles both test purchases and real purchases that don't have entitlements yet
@@ -685,8 +710,18 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
       try {
         const customerInfo = await Purchases.restorePurchases();
         
-        const isPremium = customerInfo.entitlements.active['premium'] !== undefined;
+        // Check for 'premium' entitlement OR any active subscription
+        const hasPremiumEntitlement = customerInfo.entitlements.active['premium'] !== undefined;
+        const hasAnyActiveSubscription = customerInfo.activeSubscriptions.length > 0;
+        const isPremium = hasPremiumEntitlement || hasAnyActiveSubscription;
         const status: SubscriptionStatus = isPremium ? 'premium' : 'free';
+        
+        console.log('🔄 Restore purchases result:', { 
+          hasPremiumEntitlement, 
+          hasAnyActiveSubscription,
+          activeSubscriptions: customerInfo.activeSubscriptions,
+          isPremium 
+        });
         
         set({
           subscriptionStatus: status,
