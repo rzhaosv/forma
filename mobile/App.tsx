@@ -5,6 +5,7 @@ import { StyleSheet } from 'react-native';
 import AppNavigator from './src/navigation/AppNavigator';
 import { useThemeStore } from './src/store/useThemeStore';
 import Constants from 'expo-constants';
+import { initializeNotifications } from './src/services/notificationService';
 
 export default function App() {
   const initializeTheme = useThemeStore((state) => state.initialize);
@@ -27,6 +28,9 @@ export default function App() {
     // Initialize theme store (doesn't require userId)
     // All other stores are initialized in authService when user logs in
     initializeTheme();
+    
+    // Initialize notifications
+    initializeNotifications().catch(console.error);
   }, [initializeTheme]);
 
   return (

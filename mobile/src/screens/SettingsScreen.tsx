@@ -45,6 +45,12 @@ import {
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
 import PaywallModal from '../components/PaywallModal';
 import { generateDemoData, clearDemoData } from '../utils/demoData';
+import {
+  getNotificationSettings,
+  saveNotificationSettings,
+  requestNotificationPermissions,
+  NotificationSettings,
+} from '../services/notificationService';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
@@ -67,6 +73,58 @@ export default function SettingsScreen() {
   
   const [showPaywall, setShowPaywall] = useState(false);
   const [generatingDemo, setGeneratingDemo] = useState(false);
+
+  // Notification settings
+  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
+    enabled: true,
+    mealReminders: true,
+    morningReminder: true,
+    lunchReminder: true,
+    dinnerReminder: true,
+    insightNotifications: true,
+    weeklyProgress: true,
+  });
+
+  // Load notification settings on mount
+  useEffect(() => {
+    const loadNotificationSettings = async () => {
+      const settings = await getNotificationSettings();
+      setNotificationSettings(settings);
+    };
+    loadNotificationSettings();
+  }, []);
+
+  const handleNotificationToggle = async (key: keyof NotificationSettings, value: boolean) => {
+    const newSettings = { ...notificationSettings, [key]: value };
+    
+    // If enabling notifications, request permissions
+    if (key === 'enabled' && value) {
+      const hasPermission = await requestNotificationPermissions();
+      if (!hasPermission) {
+        Alert.alert(
+          'Notifications Disabled',
+          'Please enable notifications in your device settings to receive reminders.',
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+    }
+    
+    // If disabling meal reminders, disable all individual reminders
+    if (key === 'mealReminders' && !value) {
+      newSettings.morningReminder = false;
+      newSettings.lunchReminder = false;
+      newSettings.dinnerReminder = false;
+    }
+    
+    // If enabling individual reminder, enable meal reminders
+    if ((key === 'morningReminder' || key === 'lunchReminder' || key === 'dinnerReminder') && value) {
+      newSettings.mealReminders = true;
+    }
+    
+    setNotificationSettings(newSettings);
+    await saveNotificationSettings(newSettings);
+  };
 
   useEffect(() => {
     const checkFitnessIntegrations = async () => {
@@ -649,6 +707,115 @@ export default function SettingsScreen() {
               </Text>
             </View>
           </View>
+        </View>
+
+        {/* Notifications Section */}
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Notifications & Reminders</Text>
+          
+          <View style={dynamicStyles.settingRow}>
+            <View style={dynamicStyles.settingContent}>
+              <Text style={dynamicStyles.settingLabel}>Enable Notifications</Text>
+              <Text style={dynamicStyles.settingDescription}>
+                Receive reminders and insights
+              </Text>
+            </View>
+            <Switch
+              value={notificationSettings.enabled}
+              onValueChange={(value) => handleNotificationToggle('enabled', value)}
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
+
+          {notificationSettings.enabled && (
+            <>
+              <View style={dynamicStyles.settingRow}>
+                <View style={dynamicStyles.settingContent}>
+                  <Text style={dynamicStyles.settingLabel}>AI Insights</Text>
+                  <Text style={dynamicStyles.settingDescription}>
+                    Personalized nutrition tips and suggestions
+                  </Text>
+                </View>
+                <Switch
+                  value={notificationSettings.insightNotifications}
+                  onValueChange={(value) => handleNotificationToggle('insightNotifications', value)}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor="#FFFFFF"
+                />
+              </View>
+
+              <View style={dynamicStyles.settingRow}>
+                <View style={dynamicStyles.settingContent}>
+                  <Text style={dynamicStyles.settingLabel}>Meal Reminders</Text>
+                  <Text style={dynamicStyles.settingDescription}>
+                    Get reminded to log your meals
+                  </Text>
+                </View>
+                <Switch
+                  value={notificationSettings.mealReminders}
+                  onValueChange={(value) => handleNotificationToggle('mealReminders', value)}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor="#FFFFFF"
+                />
+              </View>
+
+              {notificationSettings.mealReminders && (
+                <View style={{ paddingLeft: 16 }}>
+                  <View style={dynamicStyles.settingRow}>
+                    <View style={dynamicStyles.settingContent}>
+                      <Text style={[dynamicStyles.settingLabel, { fontSize: 14 }]}>🌅 Morning (8:30 AM)</Text>
+                    </View>
+                    <Switch
+                      value={notificationSettings.morningReminder}
+                      onValueChange={(value) => handleNotificationToggle('morningReminder', value)}
+                      trackColor={{ false: colors.border, true: colors.primary }}
+                      thumbColor="#FFFFFF"
+                    />
+                  </View>
+
+                  <View style={dynamicStyles.settingRow}>
+                    <View style={dynamicStyles.settingContent}>
+                      <Text style={[dynamicStyles.settingLabel, { fontSize: 14 }]}>☀️ Lunch (12:30 PM)</Text>
+                    </View>
+                    <Switch
+                      value={notificationSettings.lunchReminder}
+                      onValueChange={(value) => handleNotificationToggle('lunchReminder', value)}
+                      trackColor={{ false: colors.border, true: colors.primary }}
+                      thumbColor="#FFFFFF"
+                    />
+                  </View>
+
+                  <View style={dynamicStyles.settingRow}>
+                    <View style={dynamicStyles.settingContent}>
+                      <Text style={[dynamicStyles.settingLabel, { fontSize: 14 }]}>🌙 Dinner (6:30 PM)</Text>
+                    </View>
+                    <Switch
+                      value={notificationSettings.dinnerReminder}
+                      onValueChange={(value) => handleNotificationToggle('dinnerReminder', value)}
+                      trackColor={{ false: colors.border, true: colors.primary }}
+                      thumbColor="#FFFFFF"
+                    />
+                  </View>
+                </View>
+              )}
+
+              <View style={dynamicStyles.settingRow}>
+                <View style={dynamicStyles.settingContent}>
+                  <Text style={dynamicStyles.settingLabel}>Weekly Progress</Text>
+                  <Text style={dynamicStyles.settingDescription}>
+                    Sunday summary of your nutrition week
+                  </Text>
+                </View>
+                <Switch
+                  value={notificationSettings.weeklyProgress}
+                  onValueChange={(value) => handleNotificationToggle('weeklyProgress', value)}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor="#FFFFFF"
+                />
+              </View>
+            </>
+          )}
         </View>
 
         {/* App Version Section */}

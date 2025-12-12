@@ -17,6 +17,7 @@ import { signOut } from '../services/authService';
 import { useMealStore } from '../store/useMealStore';
 import { useTheme } from '../hooks/useTheme';
 import AdBanner from '../components/AdBanner';
+import InsightsCard from '../components/InsightsCard';
 
 const MEAL_TYPE_ICONS = {
   Breakfast: '🌅',
@@ -404,6 +405,9 @@ export default function HomeScreen() {
           <Text style={dynamicStyles.greeting}>{getGreeting()}! 👋</Text>
           <Text style={dynamicStyles.date}>{formatDate()}</Text>
         </View>
+
+        {/* AI Insights Card */}
+        <InsightsCard />
 
         {/* Calorie Progress Card */}
         <View style={dynamicStyles.progressCard}>
