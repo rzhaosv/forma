@@ -67,6 +67,7 @@
       ],
       "expo-web-browser",
       "expo-file-system",
+      "expo-notifications",
       [
         "@kingstinct/react-native-healthkit",
         {
