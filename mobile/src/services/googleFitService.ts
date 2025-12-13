@@ -11,6 +11,12 @@ const loadGoogleFitModule = () => {
   if (googleFitLoadAttempted) return GoogleFit;
   googleFitLoadAttempted = true;
   
+  // Google Fit module removed - feature disabled for now
+  // To re-enable, install react-native-google-fit and uncomment below
+  console.log('ℹ️ Google Fit integration is currently disabled');
+  GoogleFit = null;
+  
+  /*
   try {
     if (Platform.OS === 'android') {
       GoogleFit = require('react-native-google-fit').default;
@@ -20,6 +26,7 @@ const loadGoogleFitModule = () => {
     console.warn('⚠️ Google Fit module not available:', error);
     GoogleFit = null;
   }
+  */
   return GoogleFit;
 };
 
