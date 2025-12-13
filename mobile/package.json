@@ -2,6 +2,9 @@
   "name": "forma-mobile",
   "version": "1.0.0",
   "main": "index.ts",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "start": "npm run log-version && expo start",
     "android": "npm run log-version && expo run:android",
@@ -47,6 +50,9 @@
   "devDependencies": {
     "@types/react": "~19.1.10",
     "typescript": "~5.9.2"
+  },
+  "overrides": {
+    "@react-native-async-storage/async-storage": "^2.2.0"
   },
   "private": true
 }
