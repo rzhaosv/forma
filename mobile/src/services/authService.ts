@@ -4,10 +4,12 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
   GoogleAuthProvider,
+  OAuthProvider,
   signInWithCredential,
   User,
 } from 'firebase/auth';
 import * as Google from 'expo-auth-session/providers/google';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { makeRedirectUri } from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import { auth } from '../config/firebase';
@@ -55,6 +57,58 @@ export const useGoogleSignIn = () => {
     // Android client ID (for standalone builds) 
     androidClientId: '311242226872-71e54jta65m6l3dtg286kboeg06omdnn.apps.googleusercontent.com',
   });
+};
+
+import * as Crypto from 'expo-crypto';
+
+/**
+ * Apple Sign-In
+ */
+export const signInWithApple = async (): Promise<User> => {
+  try {
+    const rawNonce = Crypto.randomUUID();
+    const state = Crypto.randomUUID();
+
+    const result = await AppleAuthentication.signInAsync({
+      requestedScopes: [
+        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+      ],
+      state,
+      nonce: await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        rawNonce
+      ),
+    });
+
+    const { identityToken, fullName } = result;
+
+    if (!identityToken) {
+      throw new Error('No identity token provided.');
+    }
+
+    const provider = new OAuthProvider('apple.com');
+    const firebaseCredential = provider.credential({
+      idToken: identityToken,
+      rawNonce,
+    });
+
+    const signInResult = await signInWithCredential(auth, firebaseCredential);
+    const user = signInResult.user;
+
+    // TODO: Update user profile with full name if available (only available on first sign in)
+    // if (fullName && (fullName.givenName || fullName.familyName)) {
+    //   // Update user profile logic here
+    // }
+
+    return user;
+  } catch (error: any) {
+    if (error.code === 'ERR_REQUEST_CANCELED') {
+      throw new Error('Sign in canceled');
+    }
+    console.error('Apple Sign-In Error:', error);
+    throw error;
+  }
 };
 
 /**

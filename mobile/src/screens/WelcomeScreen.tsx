@@ -10,15 +10,16 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useGoogleSignIn, completeGoogleSignIn } from '../services/authService';
+import { useGoogleSignIn, completeGoogleSignIn, signInWithApple } from '../services/authService';
 
 export default function WelcomeScreen() {
   const navigation = useNavigation();
   const [loadingGoogle, setLoadingGoogle] = useState(false);
-  
+  const [loadingApple, setLoadingApple] = useState(false);
+
   // Initialize Google Sign-In
   const [request, response, promptAsync] = useGoogleSignIn();
-  
+
   // Handle Google Sign-In response
   useEffect(() => {
     if (response?.type === 'success') {
@@ -35,7 +36,7 @@ export default function WelcomeScreen() {
       Alert.alert('Sign-In Error', response.error?.message || 'Google Sign-In was unsuccessful');
     }
   }, [response]);
-  
+
   const handleGoogleSignIn = async (idToken: string) => {
     setLoadingGoogle(true);
     try {
@@ -47,10 +48,25 @@ export default function WelcomeScreen() {
       setLoadingGoogle(false);
     }
   };
+
+  const handleAppleSignIn = async () => {
+    setLoadingApple(true);
+    try {
+      await signInWithApple();
+      // Navigation handled automatically by auth listener
+    } catch (error: any) {
+      if (error.message !== 'Sign in canceled') {
+        Alert.alert('Apple Sign-In Failed', error.message || 'Failed to sign in with Apple');
+      }
+    } finally {
+      setLoadingApple(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      
+
       {/* Logo/Icon Area */}
       <View style={styles.logoContainer}>
         <View style={styles.logoCircle}>
@@ -62,14 +78,14 @@ export default function WelcomeScreen() {
 
       {/* Auth Buttons */}
       <View style={styles.authContainer}>
-            <TouchableOpacity 
-              style={styles.primaryButton}
-              onPress={() => navigation.navigate('Onboarding' as never)}
-            >
-              <Text style={styles.primaryButtonText}>Get Started</Text>
-            </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.primaryButton}
+          onPress={() => navigation.navigate('Onboarding' as never)}
+        >
+          <Text style={styles.primaryButtonText}>Get Started</Text>
+        </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.secondaryButton}
           onPress={() => navigation.navigate('SignIn' as never)}
         >
@@ -84,16 +100,20 @@ export default function WelcomeScreen() {
         </View>
 
         {/* Social Auth Buttons */}
-        <TouchableOpacity 
-          style={[styles.socialButton, styles.buttonDisabled]}
-          onPress={() => Alert.alert('Coming Soon', 'Apple Sign-In will be available in a future update!')}
-          disabled
+        <TouchableOpacity
+          style={[styles.socialButton, loadingApple && styles.buttonDisabled]}
+          onPress={handleAppleSignIn}
+          disabled={loadingApple}
         >
-          <Text style={styles.socialIcon}>🍎</Text>
+          {loadingApple ? (
+            <ActivityIndicator size="small" color="#374151" style={{ marginRight: 12 }} />
+          ) : (
+            <Text style={styles.socialIcon}>🍎</Text>
+          )}
           <Text style={styles.socialButtonText}>Continue with Apple</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.socialButton, (!request || loadingGoogle) && styles.buttonDisabled]}
           onPress={() => {
             if (request) {

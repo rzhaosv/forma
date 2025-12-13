@@ -92,6 +92,7 @@
       "expo-web-browser",
       "expo-file-system",
       "expo-notifications",
+      "expo-apple-authentication",
       [
         "@kingstinct/react-native-healthkit",
         {
