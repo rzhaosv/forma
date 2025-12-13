@@ -22,8 +22,17 @@ export default function WelcomeScreen() {
   // Handle Google Sign-In response
   useEffect(() => {
     if (response?.type === 'success') {
-      const { id_token } = response.params;
-      handleGoogleSignIn(id_token);
+      // Handle both id_token (from useIdTokenAuthRequest) and authentication (from useAuthRequest)
+      const idToken = response.params?.id_token || response.authentication?.idToken;
+      if (idToken) {
+        handleGoogleSignIn(idToken);
+      } else {
+        console.error('No ID token received from Google Sign-In');
+        Alert.alert('Sign-In Error', 'Failed to get authentication token from Google');
+      }
+    } else if (response?.type === 'error') {
+      console.error('Google Sign-In error:', response.error);
+      Alert.alert('Sign-In Error', response.error?.message || 'Google Sign-In was unsuccessful');
     }
   }, [response]);
   

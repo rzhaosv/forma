@@ -8,6 +8,7 @@ import {
   User,
 } from 'firebase/auth';
 import * as Google from 'expo-auth-session/providers/google';
+import { makeRedirectUri } from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import { auth } from '../config/firebase';
 import { useAuthStore } from '../store/useAuthStore';
@@ -40,10 +41,19 @@ export const signIn = async (email: string, password: string): Promise<User> => 
 /**
  * Google Sign-In Hook
  * Use this in your component to initialize Google auth
+ * 
+ * For Expo Go: Uses Expo's auth proxy (requires web client ID)
+ * For standalone builds: Uses native client IDs
  */
 export const useGoogleSignIn = () => {
-  return Google.useIdTokenAuthRequest({
-    clientId: '311242226872-eu8t1pqae795572hsbs6svmv0gh87sc4.apps.googleusercontent.com',
+  return Google.useAuthRequest({
+    // Web client ID (required for Expo Go proxy)
+    webClientId: '311242226872-eu8t1pqae795572hsbs6svmv0gh87sc4.apps.googleusercontent.com',
+    // iOS client ID (for standalone builds)
+    iosClientId: '311242226872-4jrv4kndh6j0s974u1h0uqbj4bvmp3af.apps.googleusercontent.com',
+
+    // Android client ID (for standalone builds) 
+    androidClientId: '311242226872-71e54jta65m6l3dtg286kboeg06omdnn.apps.googleusercontent.com',
   });
 };
 
@@ -71,31 +81,31 @@ export const signOut = async (): Promise<void> => {
 export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
   return onAuthStateChanged(auth, async (user) => {
     const store = useAuthStore.getState();
-    
+
     if (user) {
       // User is signed in
       const token = await user.getIdToken();
       store.setUser(user, token);
-      
+
       const userId = user.uid;
-      
+
       // Initialize all stores with user-specific data
       try {
         // Initialize meal store (meals, goals)
         await useMealStore.getState().initialize(userId);
-        
+
         // Initialize progress store (weight entries, streaks)
         await useProgressStore.getState().initialize(userId);
-        
+
         // Initialize recipe store
         await useRecipeStore.getState().initialize(userId);
-        
+
         // Initialize onboarding store
         await useOnboardingStore.getState().initialize(userId);
-        
+
         // Initialize subscription store (subscription, trial)
         await useSubscriptionStore.getState().initialize(userId);
-        
+
         // Initialize exercise store (workouts, goals)
         await useExerciseStore.getState().initialize(userId);
       } catch (error) {
@@ -104,7 +114,7 @@ export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
     } else {
       // User is signed out - clear all user-specific data
       store.clearUser();
-      
+
       // Clear all stores
       try {
         await useMealStore.getState().clearData();
@@ -112,7 +122,7 @@ export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
         await useRecipeStore.getState().clearData();
         await useOnboardingStore.getState().clearData();
         await useExerciseStore.getState().clearData();
-        
+
         // Reset subscription state but DON'T clear trial data
         // Trial data is user-specific and will be validated on next login
         // The initialize function will clear it if it belongs to a different user
