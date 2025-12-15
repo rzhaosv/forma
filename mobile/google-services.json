@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "311242226872",
+    "project_id": "forma-3803d",
+    "storage_bucket": "forma-3803d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:311242226872:android:d3f0468b203220a525884d",
+        "android_client_info": {
+          "package_name": "com.raymondzhao3000.forma"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "311242226872-eu8t1pqae795572hsbs6svmv0gh87sc4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCL6su_cFHvijSIuQYomXVzNvfMcsmcJTk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "311242226872-eu8t1pqae795572hsbs6svmv0gh87sc4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "311242226872-4jrv4kndh6j0s974u1h0uqbj4bvmp3af.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.raymondzhao3000.forma"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

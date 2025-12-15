@@ -77,7 +77,8 @@
         "android.permission.ACTIVITY_RECOGNITION"
       ],
       "package": "com.raymondzhao3000.forma",
-      "versionCode": 2
+      "versionCode": 2,
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
