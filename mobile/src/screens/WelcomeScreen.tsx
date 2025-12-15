@@ -10,40 +10,24 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useGoogleSignIn, completeGoogleSignIn, signInWithApple } from '../services/authService';
+import { signInWithGoogle, signInWithApple } from '../services/authService';
 
 export default function WelcomeScreen() {
   const navigation = useNavigation();
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [loadingApple, setLoadingApple] = useState(false);
 
-  // Initialize Google Sign-In
-  const [request, response, promptAsync] = useGoogleSignIn();
 
-  // Handle Google Sign-In response
-  useEffect(() => {
-    if (response?.type === 'success') {
-      // Handle both id_token (from useIdTokenAuthRequest) and authentication (from useAuthRequest)
-      const idToken = response.params?.id_token || response.authentication?.idToken;
-      if (idToken) {
-        handleGoogleSignIn(idToken);
-      } else {
-        console.error('No ID token received from Google Sign-In');
-        Alert.alert('Sign-In Error', 'Failed to get authentication token from Google');
-      }
-    } else if (response?.type === 'error') {
-      console.error('Google Sign-In error:', response.error);
-      Alert.alert('Sign-In Error', response.error?.message || 'Google Sign-In was unsuccessful');
-    }
-  }, [response]);
 
-  const handleGoogleSignIn = async (idToken: string) => {
+  const handleGoogleSignIn = async () => {
     setLoadingGoogle(true);
     try {
-      await completeGoogleSignIn(idToken);
+      await signInWithGoogle();
       // Navigation handled automatically by AppNavigator
     } catch (error: any) {
-      Alert.alert('Google Sign-In Failed', error.message || 'Failed to sign in with Google');
+      if (error.code !== 12501 && error.message !== 'Sign in canceled') { // 12501 is generic cancellation
+        Alert.alert('Google Sign-In Failed', error.message || 'Failed to sign in with Google');
+      }
     } finally {
       setLoadingGoogle(false);
     }
@@ -114,13 +98,9 @@ export default function WelcomeScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.socialButton, (!request || loadingGoogle) && styles.buttonDisabled]}
-          onPress={() => {
-            if (request) {
-              promptAsync();
-            }
-          }}
-          disabled={!request || loadingGoogle}
+          style={[styles.socialButton, loadingGoogle && styles.buttonDisabled]}
+          onPress={handleGoogleSignIn}
+          disabled={loadingGoogle}
         >
           {loadingGoogle ? (
             <ActivityIndicator size="small" color="#374151" style={{ marginRight: 12 }} />

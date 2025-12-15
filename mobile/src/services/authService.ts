@@ -8,9 +8,8 @@ import {
   signInWithCredential,
   User,
 } from 'firebase/auth';
-import * as Google from 'expo-auth-session/providers/google';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import * as AppleAuthentication from 'expo-apple-authentication';
-import { makeRedirectUri } from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import { auth } from '../config/firebase';
 import { useAuthStore } from '../store/useAuthStore';
@@ -41,22 +40,33 @@ export const signIn = async (email: string, password: string): Promise<User> => 
 };
 
 /**
- * Google Sign-In Hook
- * Use this in your component to initialize Google auth
- * 
- * For Expo Go: Uses Expo's auth proxy (requires web client ID)
- * For standalone builds: Uses native client IDs
+ * Initialize Google Sign-In
  */
-export const useGoogleSignIn = () => {
-  return Google.useAuthRequest({
-    // Web client ID (required for Expo Go proxy)
-    webClientId: '311242226872-eu8t1pqae795572hsbs6svmv0gh87sc4.apps.googleusercontent.com',
-    // iOS client ID (for standalone builds)
-    iosClientId: '311242226872-4jrv4kndh6j0s974u1h0uqbj4bvmp3af.apps.googleusercontent.com',
+GoogleSignin.configure({
+  webClientId: '311242226872-eu8t1pqae795572hsbs6svmv0gh87sc4.apps.googleusercontent.com',
+});
 
-    // Android client ID (for standalone builds) 
-    androidClientId: '311242226872-71e54jta65m6l3dtg286kboeg06omdnn.apps.googleusercontent.com',
-  });
+/**
+ * Sign In with Google (Native)
+ */
+export const signInWithGoogle = async (): Promise<User> => {
+  try {
+    await GoogleSignin.hasPlayServices();
+    const userInfo = await GoogleSignin.signIn();
+
+    // Check if idToken is present
+    const idToken = userInfo.data?.idToken;
+    if (!idToken) {
+      throw new Error('No ID token present!');
+    }
+
+    const credential = GoogleAuthProvider.credential(idToken);
+    const result = await signInWithCredential(auth, credential);
+    return result.user;
+  } catch (error: any) {
+    console.error('Google Sign-In Error:', error);
+    throw error;
+  }
 };
 
 import * as Crypto from 'expo-crypto';
@@ -111,14 +121,7 @@ export const signInWithApple = async (): Promise<User> => {
   }
 };
 
-/**
- * Complete Google Sign-In with the ID token
- */
-export const completeGoogleSignIn = async (idToken: string): Promise<User> => {
-  const credential = GoogleAuthProvider.credential(idToken);
-  const result = await signInWithCredential(auth, credential);
-  return result.user;
-};
+
 
 /**
  * Sign out the current user

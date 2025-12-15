@@ -30,39 +30,39 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const [currentDate] = useState(new Date());
   const { colors, isDark } = useTheme();
-  
+
   // Get app version
   const appVersion = Constants.expoConfig?.version || 'dev';
   const buildNumber = Constants.expoConfig?.ios?.buildNumber || Constants.expoConfig?.android?.versionCode || '-';
-  
+
   // Get real meal data from store
   const { meals, dailySummary, calorieGoal, proteinGoal, updateDailySummary, deleteMeal } = useMealStore();
-  
+
   // Update summary when screen loads or meals change
   useEffect(() => {
     updateDailySummary();
   }, [meals]);
-  
+
   // Calculate values from real data
   const caloriesConsumed = dailySummary?.totalCalories || 0;
   const caloriesLeft = calorieGoal - caloriesConsumed;
   const percentage = Math.round((caloriesConsumed / calorieGoal) * 100);
-  
+
   const macros = {
-    protein: { 
-      current: Math.round(dailySummary?.totalProtein || 0), 
-      goal: proteinGoal 
+    protein: {
+      current: Math.round(dailySummary?.totalProtein || 0),
+      goal: proteinGoal
     },
-    carbs: { 
-      current: Math.round(dailySummary?.totalCarbs || 0), 
+    carbs: {
+      current: Math.round(dailySummary?.totalCarbs || 0),
       goal: Math.round(calorieGoal * 0.5 / 4) // 50% of calories from carbs
     },
-    fat: { 
-      current: Math.round(dailySummary?.totalFat || 0), 
+    fat: {
+      current: Math.round(dailySummary?.totalFat || 0),
       goal: Math.round(calorieGoal * 0.3 / 9) // 30% of calories from fat
     },
   };
-  
+
   // Get today's meals grouped by type
   const today = new Date().toISOString().split('T')[0];
   const todayMeals = meals.filter(meal => meal.timestamp.startsWith(today));
@@ -364,7 +364,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={dynamicStyles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      
+
       {/* Header */}
       <View style={dynamicStyles.header}>
         <Text style={dynamicStyles.appName}>Forma</Text>
@@ -438,7 +438,7 @@ export default function HomeScreen() {
                 origin="90, 90"
               />
             </Svg>
-            
+
             {/* Center Text Overlay */}
             <View style={styles.centerTextContainer}>
               <Text style={dynamicStyles.calorieText}>
@@ -448,7 +448,7 @@ export default function HomeScreen() {
               <Text style={dynamicStyles.percentageText}>{percentage}%</Text>
             </View>
           </View>
-          
+
           <Text style={dynamicStyles.caloriesLeftLabel}>Calories Left</Text>
           <Text style={[dynamicStyles.caloriesLeft, { color: getProgressColor() }]}>
             {caloriesLeft}
@@ -596,53 +596,47 @@ export default function HomeScreen() {
         )}
 
         {/* Quick Add Meal Type Buttons */}
-            {!todayMeals.some(m => m.mealType === 'Breakfast') && (
-              <TouchableOpacity 
-                style={dynamicStyles.addMealButton}
-                onPress={() => handleQuickAdd('photo')}
-              >
-                <Text style={dynamicStyles.addMealText}>+ Add Breakfast</Text>
-              </TouchableOpacity>
-            )}
-            
-            {!todayMeals.some(m => m.mealType === 'Lunch') && (
-              <TouchableOpacity 
-                style={dynamicStyles.addMealButton}
-                onPress={() => handleQuickAdd('photo')}
-              >
-                <Text style={dynamicStyles.addMealText}>+ Add Lunch</Text>
-              </TouchableOpacity>
-            )}
-            
-            {!todayMeals.some(m => m.mealType === 'Dinner') && (
-              <TouchableOpacity 
-                style={dynamicStyles.addMealButton}
-                onPress={() => handleQuickAdd('photo')}
-              >
-                <Text style={dynamicStyles.addMealText}>+ Add Dinner</Text>
-              </TouchableOpacity>
-            )}
-            
-            <TouchableOpacity 
-              style={dynamicStyles.addMealButton}
-              onPress={() => handleQuickAdd('photo')}
-            >
-              <Text style={dynamicStyles.addMealText}>+ Add Snack</Text>
-            </TouchableOpacity>
+        {!todayMeals.some(m => m.mealType === 'Breakfast') && (
+          <TouchableOpacity
+            style={dynamicStyles.addMealButton}
+            onPress={() => handleQuickAdd('photo')}
+          >
+            <Text style={dynamicStyles.addMealText}>+ Add Breakfast</Text>
+          </TouchableOpacity>
+        )}
 
-        {/* Version Info */}
-        <View style={dynamicStyles.versionContainer}>
-          <Text style={dynamicStyles.versionText}>
-            v{appVersion} ({buildNumber})
-          </Text>
-        </View>
+        {!todayMeals.some(m => m.mealType === 'Lunch') && (
+          <TouchableOpacity
+            style={dynamicStyles.addMealButton}
+            onPress={() => handleQuickAdd('photo')}
+          >
+            <Text style={dynamicStyles.addMealText}>+ Add Lunch</Text>
+          </TouchableOpacity>
+        )}
+
+        {!todayMeals.some(m => m.mealType === 'Dinner') && (
+          <TouchableOpacity
+            style={dynamicStyles.addMealButton}
+            onPress={() => handleQuickAdd('photo')}
+          >
+            <Text style={dynamicStyles.addMealText}>+ Add Dinner</Text>
+          </TouchableOpacity>
+        )}
+
+        <TouchableOpacity
+          style={dynamicStyles.addMealButton}
+          onPress={() => handleQuickAdd('photo')}
+        >
+          <Text style={dynamicStyles.addMealText}>+ Add Snack</Text>
+        </TouchableOpacity>
+
 
         <View style={{ height: 40 }} />
       </ScrollView>
-      
+
       {/* Banner Ad for Free Users */}
       <AdBanner placement="home_bottom" />
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }
 

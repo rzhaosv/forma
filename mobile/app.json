@@ -3,6 +3,7 @@
     "name": "Forma",
     "slug": "forma",
     "scheme": [
+      "com.raymondzhao3000.forma",
       "forma",
       "com.googleusercontent.apps.311242226872-4jrv4kndh6j0s974u1h0uqbj4bvmp3af"
     ],
@@ -107,6 +108,12 @@
         {
           "iosAppId": "ca-app-pub-5844884651380174~4273331628",
           "androidAppId": "ca-app-pub-3940256099942544~3347511713"
+        }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.311242226872-4jrv4kndh6j0s974u1h0uqbj4bvmp3af"
         }
       ]
     ],

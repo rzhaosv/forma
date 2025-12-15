@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "311242226872-71e54jta65m6l3dtg286kboeg06omdnn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.raymondzhao3000.forma",
+            "certificate_hash": "75332097c144766abadc4fb0a9ac1d8c97abb6f6"
+          }
+        },
+        {
           "client_id": "311242226872-eu8t1pqae795572hsbs6svmv0gh87sc4.apps.googleusercontent.com",
           "client_type": 3
         }

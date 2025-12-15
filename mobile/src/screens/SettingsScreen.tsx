@@ -63,14 +63,14 @@ export default function SettingsScreen() {
   const [weightSyncEnabledState, setWeightSyncEnabledState] = useState(true);
   const [mealSyncEnabledState, setMealSyncEnabledState] = useState(true);
   const [exerciseSyncEnabledState, setExerciseSyncEnabledState] = useState(true);
-  
+
   // Android - Google Fit
   const [googleFitAvailable, setGoogleFitAvailable] = useState(false);
   const [googleFitEnabledState, setGoogleFitEnabledState] = useState(false);
   const [googleFitWeightSyncState, setGoogleFitWeightSyncState] = useState(true);
   const [googleFitMealSyncState, setGoogleFitMealSyncState] = useState(true);
   const [googleFitExerciseSyncState, setGoogleFitExerciseSyncState] = useState(true);
-  
+
   const [showPaywall, setShowPaywall] = useState(false);
   const [generatingDemo, setGeneratingDemo] = useState(false);
 
@@ -96,7 +96,7 @@ export default function SettingsScreen() {
 
   const handleNotificationToggle = async (key: keyof NotificationSettings, value: boolean) => {
     const newSettings = { ...notificationSettings, [key]: value };
-    
+
     // If enabling notifications, request permissions
     if (key === 'enabled' && value) {
       const hasPermission = await requestNotificationPermissions();
@@ -109,19 +109,19 @@ export default function SettingsScreen() {
         return;
       }
     }
-    
+
     // If disabling meal reminders, disable all individual reminders
     if (key === 'mealReminders' && !value) {
       newSettings.morningReminder = false;
       newSettings.lunchReminder = false;
       newSettings.dinnerReminder = false;
     }
-    
+
     // If enabling individual reminder, enable meal reminders
     if ((key === 'morningReminder' || key === 'lunchReminder' || key === 'dinnerReminder') && value) {
       newSettings.mealReminders = true;
     }
-    
+
     setNotificationSettings(newSettings);
     await saveNotificationSettings(newSettings);
   };
@@ -146,13 +146,13 @@ export default function SettingsScreen() {
           } else {
             setHealthKitEnabledState(enabled);
           }
-          
+
           setWeightSyncEnabledState(weightSync);
           setMealSyncEnabledState(mealSync);
           setExerciseSyncEnabledState(exerciseSync);
         }
       }
-      
+
       // Android - Google Fit
       if (Platform.OS === 'android') {
         const available = await isGoogleFitAvailable();
@@ -172,7 +172,7 @@ export default function SettingsScreen() {
           } else {
             setGoogleFitEnabledState(enabled);
           }
-          
+
           setGoogleFitWeightSyncState(weightSync);
           setGoogleFitMealSyncState(mealSync);
           setGoogleFitExerciseSyncState(exerciseSync);
@@ -189,7 +189,7 @@ export default function SettingsScreen() {
       setShowPaywall(true);
       return;
     }
-    
+
     if (value) {
       try {
         console.log('🏥 Requesting HealthKit permissions...');
@@ -204,10 +204,10 @@ export default function SettingsScreen() {
       } catch (error: any) {
         console.error('❌ Failed to enable HealthKit:', error);
         console.error('Error details:', JSON.stringify(error, null, 2));
-        
+
         // More helpful error message
         let errorMessage = 'Failed to enable HealthKit.';
-        
+
         if (error.message?.includes('not available')) {
           errorMessage = 'HealthKit is not available on this device. This feature requires a physical iPhone with iOS 8.0 or later.';
         } else if (error.message?.includes('authorization') || error.message?.includes('permission')) {
@@ -217,10 +217,10 @@ export default function SettingsScreen() {
         } else {
           errorMessage = `Failed to enable HealthKit: ${error.message || 'Unknown error'}. Please check your permissions in Settings > Health > Forma.`;
         }
-        
+
         Alert.alert('HealthKit Error', errorMessage, [
           { text: 'OK' },
-          { 
+          {
             text: 'Open Settings',
             onPress: () => {
               // Open Health app settings
@@ -262,7 +262,7 @@ export default function SettingsScreen() {
       setShowPaywall(true);
       return;
     }
-    
+
     if (value) {
       try {
         console.log('🏃 Requesting Google Fit permissions...');
@@ -276,12 +276,12 @@ export default function SettingsScreen() {
         );
       } catch (error: any) {
         console.error('❌ Failed to enable Google Fit:', error);
-        
+
         let errorMessage = 'Failed to enable Google Fit.';
         if (error.message) {
           errorMessage = `Failed to enable Google Fit: ${error.message}`;
         }
-        
+
         Alert.alert('Google Fit Error', errorMessage);
       }
     } else {
@@ -413,7 +413,7 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView style={dynamicStyles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      
+
       {/* Header */}
       <View style={dynamicStyles.header}>
         <TouchableOpacity
@@ -429,7 +429,7 @@ export default function SettingsScreen() {
         {/* Subscription Section */}
         <View style={dynamicStyles.section}>
           <Text style={dynamicStyles.sectionTitle}>Subscription</Text>
-          
+
           <TouchableOpacity
             style={dynamicStyles.settingRow}
             onPress={() => navigation.navigate('Subscription' as never)}
@@ -447,7 +447,7 @@ export default function SettingsScreen() {
         {/* Data Section */}
         <View style={dynamicStyles.section}>
           <Text style={dynamicStyles.sectionTitle}>Data</Text>
-          
+
           <TouchableOpacity
             style={dynamicStyles.settingRow}
             onPress={() => navigation.navigate('ExportData' as never)}
@@ -520,7 +520,7 @@ export default function SettingsScreen() {
                   Apple Health Sync {!isPremium && '🔒'}
                 </Text>
                 <Text style={dynamicStyles.settingDescription}>
-                  {isPremium 
+                  {isPremium
                     ? 'Sync weight and nutrition data with Apple Health'
                     : 'Upgrade to Premium to sync with Apple Health'}
                 </Text>
@@ -612,7 +612,7 @@ export default function SettingsScreen() {
                   Google Fit Sync {!isPremium && '🔒'}
                 </Text>
                 <Text style={dynamicStyles.settingDescription}>
-                  {isPremium 
+                  {isPremium
                     ? 'Sync weight and nutrition data with Google Fit'
                     : 'Upgrade to Premium to sync with Google Fit'}
                 </Text>
@@ -680,7 +680,7 @@ export default function SettingsScreen() {
         {/* Appearance Section */}
         <View style={dynamicStyles.section}>
           <Text style={dynamicStyles.sectionTitle}>Appearance</Text>
-          
+
           <View style={dynamicStyles.settingRow}>
             <View style={dynamicStyles.settingContent}>
               <Text style={dynamicStyles.settingLabel}>Dark Mode</Text>
@@ -712,7 +712,7 @@ export default function SettingsScreen() {
         {/* Notifications Section */}
         <View style={dynamicStyles.section}>
           <Text style={dynamicStyles.sectionTitle}>Notifications & Reminders</Text>
-          
+
           <View style={dynamicStyles.settingRow}>
             <View style={dynamicStyles.settingContent}>
               <Text style={dynamicStyles.settingLabel}>Enable Notifications</Text>
@@ -818,34 +818,11 @@ export default function SettingsScreen() {
           )}
         </View>
 
-        {/* App Version Section */}
-        <View style={dynamicStyles.section}>
-          <Text style={dynamicStyles.sectionTitle}>About</Text>
-          
-          <View style={[dynamicStyles.settingRow, { backgroundColor: colors.surfaceSecondary }]}>
-            <View style={dynamicStyles.settingContent}>
-              <Text style={dynamicStyles.settingLabel}>App Version</Text>
-              <Text style={dynamicStyles.settingDescription}>
-                v{Constants.expoConfig?.version || '1.0.0'} {__DEV__ && '(Development)'}
-              </Text>
-            </View>
-          </View>
-
-          <View style={[dynamicStyles.settingRow, { backgroundColor: colors.surfaceSecondary }]}>
-            <View style={dynamicStyles.settingContent}>
-              <Text style={dynamicStyles.settingLabel}>Build Number</Text>
-              <Text style={dynamicStyles.settingDescription}>
-                {Constants.expoConfig?.ios?.buildNumber || Constants.expoConfig?.android?.versionCode || 'dev'}
-              </Text>
-            </View>
-          </View>
-        </View>
-
         {/* Developer Tools (Dev builds only) */}
         {__DEV__ && (
           <View style={dynamicStyles.section}>
             <Text style={dynamicStyles.sectionTitle}>Developer Tools</Text>
-            
+
             <TouchableOpacity
               style={dynamicStyles.settingRow}
               onPress={handleGenerateDemoData}
