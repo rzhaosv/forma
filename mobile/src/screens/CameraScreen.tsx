@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, AppState, AppStateStatus } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { analyzeFoodPhoto, mockAnalyzeFoodPhoto } from '../services/foodRecognitionService';
 import { canPerformPhotoScan, recordPhotoScan, getRemainingPhotoScans } from '../utils/subscriptionLimits';
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
@@ -9,6 +9,7 @@ import PaywallModal from '../components/PaywallModal';
 
 export default function CameraScreen() {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const { isPremium } = useSubscriptionStore();
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
@@ -16,6 +17,17 @@ export default function CameraScreen() {
   const [remainingScans, setRemainingScans] = useState<number | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
   const cameraRef = useRef<CameraView>(null);
+  const [isAppActive, setIsAppActive] = useState(true);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      setIsAppActive(nextAppState === 'active');
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     loadRemainingScans();
@@ -61,19 +73,19 @@ export default function CameraScreen() {
 
         setAnalyzing(true);
         const photo = await cameraRef.current.takePictureAsync();
-        
+
         if (!photo) {
           throw new Error('No photo captured');
         }
 
         console.log('📸 Photo captured, analyzing...');
-        
+
         // Record the scan for free users
         if (!isPremium) {
           await recordPhotoScan();
           await loadRemainingScans();
         }
-        
+
         // Try real API first, fallback to mock if no API key
         let result;
         try {
@@ -116,68 +128,70 @@ export default function CameraScreen() {
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
-        {/* Header with Back Button */}
-        <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.backButton} 
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={styles.backText}>← Back</Text>
-          </TouchableOpacity>
-          <Text style={styles.title}>Take Photo</Text>
-          {!isPremium && remainingScans !== null ? (
-            <View style={styles.scanCounter}>
-              <Text style={styles.scanCounterText}>{remainingScans} left</Text>
+      {isFocused && isAppActive && (
+        <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
+          {/* Header with Back Button */}
+          <View style={styles.header}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={styles.backText}>← Back</Text>
+            </TouchableOpacity>
+            <Text style={styles.title}>Take Photo</Text>
+            {!isPremium && remainingScans !== null ? (
+              <View style={styles.scanCounter}>
+                <Text style={styles.scanCounterText}>{remainingScans} left</Text>
+              </View>
+            ) : (
+              <View style={styles.placeholder} />
+            )}
+          </View>
+
+          {/* Instructions or Analyzing Overlay */}
+          {analyzing ? (
+            <View style={styles.analyzingOverlay}>
+              <ActivityIndicator size="large" color="#FFF" />
+              <Text style={styles.analyzingText}>Analyzing food...</Text>
+              <Text style={styles.analyzingSubtext}>This may take a few seconds</Text>
             </View>
           ) : (
-            <View style={styles.placeholder} />
+            <View style={styles.instructionsContainer}>
+              <Text style={styles.instructionsText}>
+                📸 Position food in frame
+              </Text>
+              <Text style={styles.instructionsSubtext}>
+                AI will identify and calculate calories
+              </Text>
+            </View>
           )}
-        </View>
 
-        {/* Instructions or Analyzing Overlay */}
-        {analyzing ? (
-          <View style={styles.analyzingOverlay}>
-            <ActivityIndicator size="large" color="#FFF" />
-            <Text style={styles.analyzingText}>Analyzing food...</Text>
-            <Text style={styles.analyzingSubtext}>This may take a few seconds</Text>
-          </View>
-        ) : (
-          <View style={styles.instructionsContainer}>
-            <Text style={styles.instructionsText}>
-              📸 Position food in frame
-            </Text>
-            <Text style={styles.instructionsSubtext}>
-              AI will identify and calculate calories
-            </Text>
-          </View>
-        )}
+          {/* Controls */}
+          <View style={styles.controls}>
+            <TouchableOpacity
+              style={styles.flipButton}
+              onPress={toggleCameraFacing}
+              disabled={analyzing}
+            >
+              <Text style={styles.flipText}>🔄</Text>
+            </TouchableOpacity>
 
-        {/* Controls */}
-        <View style={styles.controls}>
-          <TouchableOpacity 
-            style={styles.flipButton} 
-            onPress={toggleCameraFacing}
-            disabled={analyzing}
-          >
-            <Text style={styles.flipText}>🔄</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={[styles.captureButton, analyzing && styles.buttonDisabled]} 
-            onPress={takePicture}
-            disabled={analyzing}
-          >
-            {analyzing ? (
-              <ActivityIndicator size="large" color="#6366F1" />
-            ) : (
-              <View style={styles.captureButtonInner} />
-            )}
-          </TouchableOpacity>
-          
-          <View style={styles.flipButton} />
-        </View>
-      </CameraView>
+            <TouchableOpacity
+              style={[styles.captureButton, analyzing && styles.buttonDisabled]}
+              onPress={takePicture}
+              disabled={analyzing}
+            >
+              {analyzing ? (
+                <ActivityIndicator size="large" color="#6366F1" />
+              ) : (
+                <View style={styles.captureButtonInner} />
+              )}
+            </TouchableOpacity>
+
+            <View style={styles.flipButton} />
+          </View>
+        </CameraView>
+      )}
 
       {/* Paywall Modal */}
       <PaywallModal

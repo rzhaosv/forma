@@ -42,3 +42,7 @@ build-info.json
 # generated native folders
 /ios
 /android
+
+# local binaries
+*.zip
+*.aria2

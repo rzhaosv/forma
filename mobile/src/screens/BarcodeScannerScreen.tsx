@@ -1,24 +1,26 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, AppState } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { lookupBarcode, calculateNutrition, isValidBarcode } from '../services/barcodeService';
 import { useMealStore } from '../store/useMealStore';
 import { Meal, FoodItem, MealType } from '../types/meal.types';
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
-import { 
-  canPerformBarcodeScan, 
-  recordBarcodeScan, 
-  getRemainingBarcodeScans 
+import {
+  canPerformBarcodeScan,
+  recordBarcodeScan,
+  getRemainingBarcodeScans
 } from '../utils/subscriptionLimits';
 import PaywallModal from '../components/PaywallModal';
 
 export default function BarcodeScannerScreen() {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const { isPremium } = useSubscriptionStore();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isAppActive, setIsAppActive] = useState(true);
   const [showMealSelector, setShowMealSelector] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('Snack');
   const [scannedProduct, setScannedProduct] = useState<any>(null);
@@ -96,8 +98,8 @@ export default function BarcodeScannerScreen() {
         Alert.alert(
           'Invalid Barcode',
           'Please scan a valid product barcode (UPC-A, EAN-8, or EAN-13)',
-          [{ 
-            text: 'OK', 
+          [{
+            text: 'OK',
             onPress: () => {
               setScanned(false);
               isProcessing.current = false;
@@ -117,7 +119,7 @@ export default function BarcodeScannerScreen() {
           await recordBarcodeScan();
           await loadRemainingScans();
         }
-        
+
         // Store product and show meal selector
         setScannedProduct(product);
         setShowMealSelector(true);
@@ -127,8 +129,8 @@ export default function BarcodeScannerScreen() {
         Alert.alert(
           'Product Not Found',
           'This barcode is not in our database. Try scanning another product or use manual entry.',
-          [{ 
-            text: 'OK', 
+          [{
+            text: 'OK',
             onPress: () => {
               setScanned(false);
               isProcessing.current = false;
@@ -142,8 +144,8 @@ export default function BarcodeScannerScreen() {
       Alert.alert(
         'Scan Error',
         'Something went wrong. Please try again.',
-        [{ 
-          text: 'OK', 
+        [{
+          text: 'OK',
           onPress: () => {
             setScanned(false);
             isProcessing.current = false;
@@ -223,153 +225,155 @@ export default function BarcodeScannerScreen() {
 
   return (
     <View style={styles.container}>
-      <CameraView
-        style={styles.camera}
-        facing="back"
-        barcodeScannerSettings={{
-          barcodeTypes: ['ean13', 'ean8', 'upc_a', 'upc_e'],
-        }}
-        onBarcodeScanned={scanned || showMealSelector ? undefined : handleBarCodeScanned}
-      >
-        {/* Header with Back Button */}
-        <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.backButton} 
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={styles.backText}>← Back</Text>
-          </TouchableOpacity>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>Scan Barcode</Text>
-            {!isPremium && remainingScans !== null && (
-              <Text style={styles.remainingScans}>
-                {remainingScans} scan{remainingScans !== 1 ? 's' : ''} remaining today
-              </Text>
-            )}
-          </View>
-          <View style={styles.placeholder} />
-        </View>
-
-        {/* Scanning Frame */}
-        {/* Scanning Area - Hide when meal selector is shown */}
-        {!showMealSelector && (
-          <View style={styles.scanningArea}>
-            <View style={styles.scanFrame}>
-              <View style={[styles.corner, styles.topLeft]} />
-              <View style={[styles.corner, styles.topRight]} />
-              <View style={[styles.corner, styles.bottomLeft]} />
-              <View style={[styles.corner, styles.bottomRight]} />
-              
-              {loading && (
-                <View style={styles.loadingOverlay}>
-                  <ActivityIndicator size="large" color="#6366F1" />
-                  <Text style={styles.loadingText}>Looking up product...</Text>
-                </View>
+      {isFocused && isAppActive && (
+        <CameraView
+          style={styles.camera}
+          facing="back"
+          barcodeScannerSettings={{
+            barcodeTypes: ['ean13', 'ean8', 'upc_a', 'upc_e'],
+          }}
+          onBarcodeScanned={scanned || showMealSelector ? undefined : handleBarCodeScanned}
+        >
+          {/* Header with Back Button */}
+          <View style={styles.header}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={styles.backText}>← Back</Text>
+            </TouchableOpacity>
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>Scan Barcode</Text>
+              {!isPremium && remainingScans !== null && (
+                <Text style={styles.remainingScans}>
+                  {remainingScans} scan{remainingScans !== 1 ? 's' : ''} remaining today
+                </Text>
               )}
             </View>
-            
-            <Text style={styles.instructionsText}>
-              Position barcode in frame
-            </Text>
-            <Text style={styles.instructionsSubtext}>
-              UPC, EAN-13, and EAN-8 supported
-            </Text>
+            <View style={styles.placeholder} />
           </View>
-        )}
 
-        {/* Meal Selector Overlay */}
-        {showMealSelector && scannedProduct && (
-          <View style={styles.mealSelectorOverlay}>
-            <View style={styles.mealSelectorCard}>
-              <Text style={styles.productName}>{scannedProduct.name}</Text>
-              {scannedProduct.brand && (
-                <Text style={styles.productBrand}>{scannedProduct.brand}</Text>
-              )}
-              
-              <View style={styles.nutritionSummary}>
-                <Text style={styles.caloriesBig}>
-                  {calculateNutrition(scannedProduct, parseServingSize(scannedProduct.serving_size || '100g')).calories}
-                </Text>
-                <Text style={styles.caloriesLabel}>
-                  calories per serving ({scannedProduct.serving_size || '100g'})
-                </Text>
-              </View>
+          {/* Scanning Frame */}
+          {/* Scanning Area - Hide when meal selector is shown */}
+          {!showMealSelector && (
+            <View style={styles.scanningArea}>
+              <View style={styles.scanFrame}>
+                <View style={[styles.corner, styles.topLeft]} />
+                <View style={[styles.corner, styles.topRight]} />
+                <View style={[styles.corner, styles.bottomLeft]} />
+                <View style={[styles.corner, styles.bottomRight]} />
 
-              {/* Serving Quantity Selector */}
-              <View style={styles.servingSelectorContainer}>
-                <Text style={styles.selectorTitle}>Servings:</Text>
-                <View style={styles.servingButtons}>
-                  <TouchableOpacity
-                    style={[styles.servingButton, servingQuantity <= 0.5 && styles.servingButtonDisabled]}
-                    onPress={() => setServingQuantity(Math.max(0.5, servingQuantity - 0.5))}
-                    disabled={servingQuantity <= 0.5}
-                  >
-                    <Text style={styles.servingButtonText}>−</Text>
-                  </TouchableOpacity>
-                  
-                  <View style={styles.servingDisplay}>
-                    <Text style={styles.servingQuantityText}>{servingQuantity}</Text>
+                {loading && (
+                  <View style={styles.loadingOverlay}>
+                    <ActivityIndicator size="large" color="#6366F1" />
+                    <Text style={styles.loadingText}>Looking up product...</Text>
                   </View>
-                  
+                )}
+              </View>
+
+              <Text style={styles.instructionsText}>
+                Position barcode in frame
+              </Text>
+              <Text style={styles.instructionsSubtext}>
+                UPC, EAN-13, and EAN-8 supported
+              </Text>
+            </View>
+          )}
+
+          {/* Meal Selector Overlay */}
+          {showMealSelector && scannedProduct && (
+            <View style={styles.mealSelectorOverlay}>
+              <View style={styles.mealSelectorCard}>
+                <Text style={styles.productName}>{scannedProduct.name}</Text>
+                {scannedProduct.brand && (
+                  <Text style={styles.productBrand}>{scannedProduct.brand}</Text>
+                )}
+
+                <View style={styles.nutritionSummary}>
+                  <Text style={styles.caloriesBig}>
+                    {calculateNutrition(scannedProduct, parseServingSize(scannedProduct.serving_size || '100g')).calories}
+                  </Text>
+                  <Text style={styles.caloriesLabel}>
+                    calories per serving ({scannedProduct.serving_size || '100g'})
+                  </Text>
+                </View>
+
+                {/* Serving Quantity Selector */}
+                <View style={styles.servingSelectorContainer}>
+                  <Text style={styles.selectorTitle}>Servings:</Text>
+                  <View style={styles.servingButtons}>
+                    <TouchableOpacity
+                      style={[styles.servingButton, servingQuantity <= 0.5 && styles.servingButtonDisabled]}
+                      onPress={() => setServingQuantity(Math.max(0.5, servingQuantity - 0.5))}
+                      disabled={servingQuantity <= 0.5}
+                    >
+                      <Text style={styles.servingButtonText}>−</Text>
+                    </TouchableOpacity>
+
+                    <View style={styles.servingDisplay}>
+                      <Text style={styles.servingQuantityText}>{servingQuantity}</Text>
+                    </View>
+
+                    <TouchableOpacity
+                      style={[styles.servingButton, servingQuantity >= 10 && styles.servingButtonDisabled]}
+                      onPress={() => setServingQuantity(Math.min(10, servingQuantity + 0.5))}
+                      disabled={servingQuantity >= 10}
+                    >
+                      <Text style={styles.servingButtonText}>+</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={styles.totalCaloriesText}>
+                    Total: {Math.round(calculateNutrition(scannedProduct, parseServingSize(scannedProduct.serving_size || '100g')).calories * servingQuantity)} calories
+                  </Text>
+                </View>
+
+                <Text style={styles.selectorTitle}>Add to:</Text>
+                <View style={styles.mealTypeButtons}>
+                  {(['Breakfast', 'Lunch', 'Dinner', 'Snack'] as MealType[]).map((type) => (
+                    <TouchableOpacity
+                      key={type}
+                      style={[
+                        styles.mealTypeButton,
+                        selectedMealType === type && styles.mealTypeButtonActive
+                      ]}
+                      onPress={() => setSelectedMealType(type)}
+                    >
+                      <Text style={[
+                        styles.mealTypeButtonText,
+                        selectedMealType === type && styles.mealTypeButtonTextActive
+                      ]}>
+                        {type}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+
+                <View style={styles.actionButtons}>
                   <TouchableOpacity
-                    style={[styles.servingButton, servingQuantity >= 10 && styles.servingButtonDisabled]}
-                    onPress={() => setServingQuantity(Math.min(10, servingQuantity + 0.5))}
-                    disabled={servingQuantity >= 10}
+                    style={styles.cancelButton}
+                    onPress={() => {
+                      setShowMealSelector(false);
+                      setScannedProduct(null);
+                      setScanned(false);
+                      setServingQuantity(1);
+                      isProcessing.current = false;
+                    }}
                   >
-                    <Text style={styles.servingButtonText}>+</Text>
+                    <Text style={styles.cancelButtonText}>Cancel</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={handleAddToLog}
+                  >
+                    <Text style={styles.addButtonText}>Add to Log</Text>
                   </TouchableOpacity>
                 </View>
-                <Text style={styles.totalCaloriesText}>
-                  Total: {Math.round(calculateNutrition(scannedProduct, parseServingSize(scannedProduct.serving_size || '100g')).calories * servingQuantity)} calories
-                </Text>
-              </View>
-
-              <Text style={styles.selectorTitle}>Add to:</Text>
-              <View style={styles.mealTypeButtons}>
-                {(['Breakfast', 'Lunch', 'Dinner', 'Snack'] as MealType[]).map((type) => (
-                  <TouchableOpacity
-                    key={type}
-                    style={[
-                      styles.mealTypeButton,
-                      selectedMealType === type && styles.mealTypeButtonActive
-                    ]}
-                    onPress={() => setSelectedMealType(type)}
-                  >
-                    <Text style={[
-                      styles.mealTypeButtonText,
-                      selectedMealType === type && styles.mealTypeButtonTextActive
-                    ]}>
-                      {type}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-
-              <View style={styles.actionButtons}>
-                <TouchableOpacity
-                  style={styles.cancelButton}
-                  onPress={() => {
-                    setShowMealSelector(false);
-                    setScannedProduct(null);
-                    setScanned(false);
-                    setServingQuantity(1);
-                    isProcessing.current = false;
-                  }}
-                >
-                  <Text style={styles.cancelButtonText}>Cancel</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity
-                  style={styles.addButton}
-                  onPress={handleAddToLog}
-                >
-                  <Text style={styles.addButtonText}>Add to Log</Text>
-                </TouchableOpacity>
               </View>
             </View>
-          </View>
-        )}
-      </CameraView>
+          )}
+        </CameraView>
+      )}
     </View>
   );
 }
