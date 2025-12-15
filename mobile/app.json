@@ -7,7 +7,7 @@
       "forma",
       "com.googleusercontent.apps.311242226872-4jrv4kndh6j0s974u1h0uqbj4bvmp3af"
     ],
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -20,7 +20,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.raymondzhao3000.forma",
-      "buildNumber": "3",
+      "buildNumber": "4",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSHealthShareUsageDescription": "Forma needs access to your health data to sync weight, calories, and nutrition information with Apple Health.",
@@ -78,7 +78,7 @@
         "android.permission.ACTIVITY_RECOGNITION"
       ],
       "package": "com.raymondzhao3000.forma",
-      "versionCode": 2,
+      "versionCode": 3,
       "googleServicesFile": "./google-services.json"
     },
     "web": {
@@ -107,7 +107,7 @@
         "react-native-google-mobile-ads",
         {
           "iosAppId": "ca-app-pub-5844884651380174~4273331628",
-          "androidAppId": "ca-app-pub-3940256099942544~3347511713"
+          "androidAppId": "ca-app-pub-5844884651380174~8167765982"
         }
       ],
       [

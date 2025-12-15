@@ -7,7 +7,7 @@ import { Platform } from 'react-native';
 // These are test IDs for development
 export const ADMOB_APP_ID = Platform.select({
   ios: 'ca-app-pub-5844884651380174~4273331628', // Live App ID
-  android: 'ca-app-pub-3940256099942544~3347511713', // Test App ID
+  android: 'ca-app-pub-5844884651380174~8167765982', // Live App ID
 });
 
 // Ad Unit IDs
@@ -15,7 +15,7 @@ export const ADMOB_APP_ID = Platform.select({
 export const AD_UNIT_IDS = {
   banner: Platform.select({
     ios: 'ca-app-pub-5844884651380174~4273331628', // Live Banner ID
-    android: 'ca-app-pub-5844884651380174~4273331628', // Live Banner ID
+    android: 'ca-app-pub-5844884651380174/4097299661', // Live Banner ID
   }) || '',
   interstitial: Platform.select({
     ios: 'ca-app-pub-5844884651380174~4273331628', // Live Interstitial ID
@@ -33,7 +33,7 @@ export const shouldShowAds = (isPremium: boolean): boolean => {
 };
 
 // Ad placement locations
-export type AdPlacement = 
+export type AdPlacement =
   | 'home_bottom'
   | 'camera_bottom'
   | 'meal_detail'
