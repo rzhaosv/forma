@@ -226,14 +226,16 @@ export default function BarcodeScannerScreen() {
   return (
     <View style={styles.container}>
       {isFocused && isAppActive && (
-        <CameraView
-          style={styles.camera}
-          facing="back"
-          barcodeScannerSettings={{
-            barcodeTypes: ['ean13', 'ean8', 'upc_a', 'upc_e'],
-          }}
-          onBarcodeScanned={scanned || showMealSelector ? undefined : handleBarCodeScanned}
-        >
+        <>
+          <CameraView
+            style={styles.camera}
+            facing="back"
+            barcodeScannerSettings={{
+              barcodeTypes: ['ean13', 'ean8', 'upc_a', 'upc_e'],
+            }}
+            onBarcodeScanned={scanned || showMealSelector ? undefined : handleBarCodeScanned}
+          />
+
           {/* Header with Back Button */}
           <View style={styles.header}>
             <TouchableOpacity
@@ -372,7 +374,7 @@ export default function BarcodeScannerScreen() {
               </View>
             </View>
           )}
-        </CameraView>
+        </>
       )}
     </View>
   );
@@ -397,6 +399,10 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -404,6 +410,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 16,
     backgroundColor: 'rgba(0,0,0,0.5)',
+    zIndex: 10,
   },
   backButton: {
     paddingHorizontal: 12,
@@ -433,7 +440,11 @@ const styles = StyleSheet.create({
     width: 60,
   },
   scanningArea: {
-    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },

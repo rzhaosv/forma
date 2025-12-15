@@ -72,7 +72,10 @@ export default function CameraScreen() {
         }
 
         setAnalyzing(true);
-        const photo = await cameraRef.current.takePictureAsync();
+        const photo = await cameraRef.current.takePictureAsync({
+          quality: 0.5,
+          skipProcessing: true,
+        });
 
         if (!photo) {
           throw new Error('No photo captured');
@@ -129,7 +132,9 @@ export default function CameraScreen() {
   return (
     <View style={styles.container}>
       {isFocused && isAppActive && (
-        <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
+        <>
+          <CameraView style={styles.camera} facing={facing} ref={cameraRef} />
+
           {/* Header with Back Button */}
           <View style={styles.header}>
             <TouchableOpacity
@@ -190,7 +195,7 @@ export default function CameraScreen() {
 
             <View style={styles.flipButton} />
           </View>
-        </CameraView>
+        </>
       )}
 
       {/* Paywall Modal */}
@@ -223,6 +228,10 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -230,6 +239,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 16,
     backgroundColor: 'rgba(0,0,0,0.5)',
+    zIndex: 10,
   },
   backButton: {
     paddingHorizontal: 12,

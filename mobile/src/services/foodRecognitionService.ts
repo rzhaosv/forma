@@ -26,11 +26,11 @@ export interface FoodRecognitionResult {
  */
 export async function analyzeFoodPhoto(imageUri: string): Promise<FoodRecognitionResult> {
   const startTime = Date.now();
-  
+
   try {
     // Get API key from environment
     const apiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
-    
+
     if (!apiKey) {
       throw new Error('OpenAI API key not configured');
     }
@@ -40,8 +40,17 @@ export async function analyzeFoodPhoto(imageUri: string): Promise<FoodRecognitio
     const blob = await response.blob();
     const base64 = await blobToBase64(blob);
 
+    // precision: approx 0.75 bytes per character for base64
+    const sizeInKb = (base64.length * 0.75) / 1024;
+    console.log(`📸 Image size: ${sizeInKb.toFixed(2)} KB`);
+
+    // Create AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
     // Call OpenAI Vision API
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      signal: controller.signal,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -109,6 +118,8 @@ IMPORTANT:
       }),
     });
 
+    clearTimeout(timeoutId);
+
     if (!openaiResponse.ok) {
       const error = await openaiResponse.json();
       throw new Error(error.error?.message || 'OpenAI API request failed');
@@ -125,12 +136,12 @@ IMPORTANT:
 
     // Extract JSON from the response (in case there's markdown or extra text)
     let jsonString = content.trim();
-    
+
     // Remove markdown code blocks if present
     if (jsonString.startsWith('```')) {
       jsonString = jsonString.replace(/```json\n?/g, '').replace(/```\n?/g, '');
     }
-    
+
     // Find JSON object in the response
     const jsonMatch = jsonString.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
@@ -162,8 +173,19 @@ IMPORTANT:
     };
 
   } catch (error: any) {
+    if (error.name === 'AbortError') {
+      console.error('Food recognition timeout');
+      return {
+        success: false,
+        foods: [],
+        total_calories: 0,
+        analysis_time_ms: Date.now() - startTime,
+        error: 'Analysis timed out. Please check your internet connection and try again.',
+      };
+    }
+
     console.error('Food recognition error:', error);
-    
+
     return {
       success: false,
       foods: [],
