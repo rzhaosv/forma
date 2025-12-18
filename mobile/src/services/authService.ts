@@ -44,6 +44,7 @@ export const signIn = async (email: string, password: string): Promise<User> => 
  */
 GoogleSignin.configure({
   webClientId: '311242226872-eu8t1pqae795572hsbs6svmv0gh87sc4.apps.googleusercontent.com',
+  iosClientId: '311242226872-4jrv4kndh6j0s974u1h0uqbj4bvmp3af.apps.googleusercontent.com',
 });
 
 /**
