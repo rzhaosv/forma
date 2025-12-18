@@ -51,6 +51,7 @@ import {
   requestNotificationPermissions,
   NotificationSettings,
 } from '../services/notificationService';
+import { deleteAccount, signOut } from '../services/authService';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
@@ -335,6 +336,36 @@ export default function SettingsScreen() {
         },
       ]
     );
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? This action cannot be undone and you will lose all your data.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteAccount();
+              // Navigation to login will handle automatically via auth state listener in App.tsx
+            } catch (error: any) {
+              Alert.alert('Error', error.message || 'Failed to delete account');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const dynamicStyles = StyleSheet.create({
@@ -796,6 +827,32 @@ export default function SettingsScreen() {
             </>
           )}
         </View>
+
+        {/* Account Actions */}
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Account</Text>
+
+          <TouchableOpacity
+            style={dynamicStyles.settingRow}
+            onPress={handleSignOut}
+          >
+            <View style={dynamicStyles.settingContent}>
+              <Text style={dynamicStyles.settingLabel}>Sign Out</Text>
+            </View>
+            <Text style={{ fontSize: 16, color: colors.textSecondary }}>→</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={dynamicStyles.settingRow}
+            onPress={handleDeleteAccount}
+          >
+            <View style={dynamicStyles.settingContent}>
+              <Text style={[dynamicStyles.settingLabel, { color: colors.error }]}>Delete Account</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        <View style={{ height: 40 }} />
 
         {/* Developer Tools (Dev builds only) */}
         {__DEV__ && (

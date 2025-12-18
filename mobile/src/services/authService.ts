@@ -7,6 +7,7 @@ import {
   OAuthProvider,
   signInWithCredential,
   User,
+  deleteUser,
 } from 'firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import * as AppleAuthentication from 'expo-apple-authentication';
@@ -130,6 +131,31 @@ export const signInWithApple = async (): Promise<User> => {
 export const signOut = async (): Promise<void> => {
   await firebaseSignOut(auth);
   useAuthStore.getState().clearUser();
+};
+
+/**
+ * Delete the current user account
+ * This requires recent authentication. If failed, user might need to re-login.
+ */
+export const deleteAccount = async (): Promise<void> => {
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error('No user currently signed in');
+  }
+
+  try {
+    // Delete from Firebase Auth
+    await deleteUser(user);
+
+    // Clear local state
+    useAuthStore.getState().clearUser();
+  } catch (error: any) {
+    console.error('Error deleting account:', error);
+    if (error.code === 'auth/requires-recent-login') {
+      throw new Error('Please sign out and sign in again to delete your account.');
+    }
+    throw error;
+  }
 };
 
 /**
