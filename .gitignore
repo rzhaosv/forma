@@ -80,6 +80,8 @@ coverage/
 !app.json
 !package.json
 !tsconfig.json
+!eas.json
+!mobile/eas.json
 !google-services.json
 # Block specific secret keys
 google-play-key.json
