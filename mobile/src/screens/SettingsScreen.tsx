@@ -139,13 +139,9 @@ export default function SettingsScreen() {
           const mealSync = await isMealSyncEnabled();
           const exerciseSync = await isExerciseSyncEnabled();
 
-          // If user had HealthKit enabled but is no longer premium, disable it
-          if (enabled && !isPremium) {
-            await setHealthKitEnabled(false);
-            setHealthKitEnabledState(false);
-          } else {
-            setHealthKitEnabledState(enabled);
-          }
+          // If user had HealthKit enabled, keep it enabled regardless of premium status
+          // Fixing Guideline 4.10 - HealthKit cannot be behind a paywall
+          setHealthKitEnabledState(enabled);
 
           setWeightSyncEnabledState(weightSync);
           setMealSyncEnabledState(mealSync);
@@ -184,11 +180,11 @@ export default function SettingsScreen() {
   }, [isPremium]);
 
   const handleHealthKitToggle = async (value: boolean) => {
-    // Check if user has premium access for fitness integrations
-    if (value && !isPremium) {
-      setShowPaywall(true);
-      return;
-    }
+    // Guideline 4.10 Fix: HealthKit is no longer gated behind premium
+    // if (value && !isPremium) {
+    //   setShowPaywall(true);
+    //   return;
+    // }
 
     if (value) {
       try {
@@ -498,31 +494,15 @@ export default function SettingsScreen() {
           <View style={dynamicStyles.section}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
               <Text style={dynamicStyles.sectionTitle}>Fitness Integrations</Text>
-              {!isPremium && (
-                <View style={{
-                  backgroundColor: colors.primary,
-                  paddingHorizontal: 8,
-                  paddingVertical: 2,
-                  borderRadius: 10,
-                  marginLeft: 8,
-                }}>
-                  <Text style={{ color: '#fff', fontSize: 10, fontWeight: '700' }}>PREMIUM</Text>
-                </View>
-              )}
             </View>
 
-            <View style={[
-              dynamicStyles.settingRow,
-              !isPremium && { opacity: 0.7 }
-            ]}>
+            <View style={dynamicStyles.settingRow}>
               <View style={dynamicStyles.settingContent}>
                 <Text style={dynamicStyles.settingLabel}>
-                  Apple Health Sync {!isPremium && '🔒'}
+                  Apple Health Sync
                 </Text>
                 <Text style={dynamicStyles.settingDescription}>
-                  {isPremium
-                    ? 'Sync weight and nutrition data with Apple Health'
-                    : 'Upgrade to Premium to sync with Apple Health'}
+                  Sync weight and nutrition data with Apple Health
                 </Text>
               </View>
               <Switch
@@ -530,7 +510,6 @@ export default function SettingsScreen() {
                 onValueChange={handleHealthKitToggle}
                 trackColor={{ false: colors.border, true: colors.primary }}
                 thumbColor={healthKitEnabledState ? '#FFFFFF' : '#FFFFFF'}
-                disabled={!isPremium && !healthKitEnabledState}
               />
             </View>
 

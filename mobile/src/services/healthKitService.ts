@@ -8,17 +8,24 @@ let HealthKit: any = null;
 let HKQuantityTypeIdentifier: any = null;
 
 try {
+  // Use CommonJS require to avoid static analysis issues if module is missing
   const healthKitModule = require('@kingstinct/react-native-healthkit');
-  HealthKit = healthKitModule.default;
-  HKQuantityTypeIdentifier = healthKitModule.HKQuantityTypeIdentifier;
+
+  // Handle both default export and named exports
+  HealthKit = healthKitModule.default || healthKitModule;
+  HKQuantityTypeIdentifier = healthKitModule.HKQuantityTypeIdentifier || HealthKit.HKQuantityTypeIdentifier;
+
   console.log('✅ HealthKit module loaded successfully');
+  if (!HKQuantityTypeIdentifier) {
+    console.warn('⚠️ HKQuantityTypeIdentifier is undefined even though module loaded');
+  }
 } catch (error) {
   console.warn('⚠️ HealthKit module not available:', error);
 }
 
 // Check if HealthKit is properly initialized
 const isHealthKitModuleAvailable = (): boolean => {
-  return HealthKit !== null && HKQuantityTypeIdentifier !== null;
+  return !!HealthKit && !!HKQuantityTypeIdentifier;
 };
 
 /**
@@ -29,12 +36,12 @@ export const isHealthKitAvailable = async (): Promise<boolean> => {
     console.log('HealthKit: Not iOS platform');
     return false;
   }
-  
+
   if (!isHealthKitModuleAvailable()) {
     console.log('HealthKit: Native module not available (development build may need rebuild)');
     return false;
   }
-  
+
   try {
     const available = await HealthKit.isHealthDataAvailable();
     console.log('HealthKit availability:', available);
@@ -53,7 +60,7 @@ export const requestHealthKitPermissions = async (): Promise<boolean> => {
     if (!isHealthKitModuleAvailable()) {
       throw new Error('HealthKit native module is not available. Please rebuild the app with: npx expo prebuild --clean && npx expo run:ios');
     }
-    
+
     const available = await isHealthKitAvailable();
     if (!available) {
       throw new Error('HealthKit is not available on this device');
@@ -306,7 +313,7 @@ export const writeActiveEnergyBurned = async (
       console.log('HealthKit module not available for active energy');
       return false;
     }
-    
+
     const available = await isHealthKitAvailable();
     if (!available) {
       throw new Error('HealthKit is not available');
@@ -343,7 +350,7 @@ export const readActiveEnergyBurned = async (
     if (!isHealthKitModuleAvailable()) {
       return 0;
     }
-    
+
     const available = await isHealthKitAvailable();
     if (!available) {
       return 0;
@@ -383,10 +390,10 @@ export const syncWorkoutToHealthKit = async (
   try {
     const start = startTime;
     const end = endTime || new Date(start.getTime() + durationMinutes * 60 * 1000);
-    
+
     // Write active energy burned
     await writeActiveEnergyBurned(caloriesBurned, start, end);
-    
+
     console.log('✅ Workout synced to HealthKit:', workoutName, '-', caloriesBurned, 'kcal');
     return true;
   } catch (error) {
