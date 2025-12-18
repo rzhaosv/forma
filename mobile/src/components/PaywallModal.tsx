@@ -10,6 +10,7 @@ import {
   Alert,
   Dimensions,
   Platform,
+  Linking,
 } from 'react-native';
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
 import { useTheme } from '../hooks/useTheme';
@@ -76,7 +77,7 @@ export default function PaywallModal({
       if (success) {
         // Refresh subscription status after purchase
         await checkSubscriptionStatus();
-        
+
         Alert.alert('Welcome to Premium! 🎉', 'You now have access to all premium features.', [
           {
             text: 'OK',
@@ -473,7 +474,7 @@ export default function PaywallModal({
                         style={[
                           dynamicStyles.packageCard,
                           selectedPackage?.identifier === annualPackage.identifier &&
-                            dynamicStyles.packageCardSelected,
+                          dynamicStyles.packageCardSelected,
                         ]}
                         onPress={() => setSelectedPackage(annualPackage)}
                         activeOpacity={0.8}
@@ -511,8 +512,8 @@ export default function PaywallModal({
                               {loading
                                 ? 'Processing...'
                                 : subscriptionStatus === 'trial'
-                                ? 'Subscribe Annual'
-                                : 'Start Free Trial'}
+                                  ? 'Subscribe Annual'
+                                  : 'Start Free Trial'}
                             </Text>
                           </LinearGradient>
                         </TouchableOpacity>
@@ -525,7 +526,7 @@ export default function PaywallModal({
                       style={[
                         dynamicStyles.packageCard,
                         selectedPackage?.identifier === monthlyPackage.identifier &&
-                          dynamicStyles.packageCardSelected,
+                        dynamicStyles.packageCardSelected,
                       ]}
                       onPress={() => setSelectedPackage(monthlyPackage)}
                       activeOpacity={0.8}
@@ -558,8 +559,8 @@ export default function PaywallModal({
                             {loading
                               ? 'Processing...'
                               : subscriptionStatus === 'trial'
-                              ? 'Subscribe Monthly'
-                              : 'Start Free Trial'}
+                                ? 'Subscribe Monthly'
+                                : 'Start Free Trial'}
                           </Text>
                         </LinearGradient>
                       </TouchableOpacity>
@@ -580,6 +581,14 @@ export default function PaywallModal({
             <Text style={dynamicStyles.footerText}>
               Subscriptions auto-renew unless cancelled. Cancel anytime in Settings.
             </Text>
+            <View style={{ flexDirection: 'row', marginTop: 8 }}>
+              <TouchableOpacity onPress={() => Linking.openURL('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/')}>
+                <Text style={[dynamicStyles.footerText, dynamicStyles.footerLink, { marginRight: 16 }]}>Terms of Use</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => Linking.openURL('https://example.com/privacy')}>
+                <Text style={[dynamicStyles.footerText, dynamicStyles.footerLink]}>Privacy Policy</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           {loading && (
