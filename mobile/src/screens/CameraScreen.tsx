@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, AppState, AppStateStatus } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, AppState, AppStateStatus, Linking } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { analyzeFoodPhoto, mockAnalyzeFoodPhoto } from '../services/foodRecognitionService';
@@ -48,8 +48,31 @@ export default function CameraScreen() {
     return (
       <View style={styles.container}>
         <Text style={styles.message}>We need your permission to show the camera</Text>
-        <TouchableOpacity style={styles.button} onPress={requestPermission}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={async () => {
+            if (!permission.canAskAgain) {
+              Alert.alert(
+                'Camera Permission Required',
+                'Please enable camera access in your device settings to use this feature.',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  { text: 'Open Settings', onPress: () => Linking.openSettings() }
+                ]
+              );
+            } else {
+              await requestPermission();
+            }
+          }}
+        >
           <Text style={styles.buttonText}>Grant Permission</Text>
+        </TouchableOpacity>
+        {/* Manual check button in case state doesn't update automatically */}
+        <TouchableOpacity
+          style={[styles.button, { marginTop: 12, backgroundColor: '#333' }]}
+          onPress={requestPermission}
+        >
+          <Text style={styles.buttonText}>Check Permission Again</Text>
         </TouchableOpacity>
       </View>
     );

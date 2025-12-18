@@ -46,6 +46,7 @@ export default function PaywallModal({
   } = useSubscriptionStore();
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selectedPackage, setSelectedPackage] = useState<PurchasesPackage | null>(null);
 
   useEffect(() => {
@@ -56,9 +57,12 @@ export default function PaywallModal({
 
   const refreshStatus = async () => {
     setLoading(true);
+    setError(null);
     try {
       await checkSubscriptionStatus();
       await getAvailablePackages();
+    } catch (err) {
+      setError('Failed to load products. Please check your connection.');
     } finally {
       setLoading(false);
     }
@@ -66,8 +70,14 @@ export default function PaywallModal({
 
   const loadPackages = async () => {
     setLoading(true);
-    await getAvailablePackages();
-    setLoading(false);
+    setError(null);
+    try {
+      await getAvailablePackages();
+    } catch (err) {
+      setError('Failed to load products.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handlePurchase = async (pkg: PurchasesPackage) => {
@@ -463,6 +473,21 @@ export default function PaywallModal({
             <View style={dynamicStyles.packagesSection}>
               {loading && !availablePackages ? (
                 <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 20 }} />
+              ) : error ? (
+                <View style={{ alignItems: 'center', padding: 20 }}>
+                  <Text style={{ color: colors.error, marginBottom: 12, textAlign: 'center' }}>
+                    {error}
+                  </Text>
+                  <Text style={{ color: colors.textSecondary, marginBottom: 16, textAlign: 'center', fontSize: 12 }}>
+                    No products available. Please check your internet connection or try again later.
+                  </Text>
+                  <TouchableOpacity
+                    style={[dynamicStyles.purchaseButton, { paddingHorizontal: 24, backgroundColor: colors.primary }]}
+                    onPress={refreshStatus}
+                  >
+                    <Text style={[dynamicStyles.purchaseButtonText, { paddingVertical: 12 }]}>Retry</Text>
+                  </TouchableOpacity>
+                </View>
               ) : (
                 <>
                   {annualPackage && (
