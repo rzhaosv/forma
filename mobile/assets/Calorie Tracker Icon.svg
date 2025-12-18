@@ -1,0 +1,45 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="plateGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f3f4f6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Rounded square background -->
+  <rect width="200" height="200" rx="45" fill="url(#bgGradient)"/>
+  
+  <!-- Plate -->
+  <circle cx="100" cy="105" r="55" fill="url(#plateGradient)" stroke="#e5e7eb" stroke-width="2"/>
+  
+  <!-- Food items on plate (abstract/minimalist) -->
+  <!-- Avocado slice -->
+  <ellipse cx="85" cy="100" rx="15" ry="18" fill="#84cc16" opacity="0.9"/>
+  <ellipse cx="85" cy="100" rx="8" ry="10" fill="#fef3c7"/>
+  
+  <!-- Tomato -->
+  <circle cx="115" cy="95" r="12" fill="#ef4444" opacity="0.9"/>
+  
+  <!-- Leafy green -->
+  <path d="M 95 115 Q 100 108 105 115 Q 100 122 95 115 Z" fill="#22c55e" opacity="0.9"/>
+  
+  <!-- AI sparkle/star elements -->
+  <g opacity="0.95">
+    <!-- Top right sparkle -->
+    <path d="M 145 65 L 147 70 L 152 72 L 147 74 L 145 79 L 143 74 L 138 72 L 143 70 Z" fill="#fbbf24"/>
+    <circle cx="145" cy="72" r="1.5" fill="#fff"/>
+    
+    <!-- Bottom left sparkle -->
+    <path d="M 58 125 L 60 130 L 65 132 L 60 134 L 58 139 L 56 134 L 51 132 L 56 130 Z" fill="#fbbf24"/>
+    <circle cx="58" cy="132" r="1.5" fill="#fff"/>
+  </g>
+  
+  <!-- Calorie counter display -->
+  <rect x="70" y="145" width="60" height="22" rx="11" fill="#1f2937" opacity="0.85"/>
+  <text x="100" y="161" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#10b981" text-anchor="middle">450 cal</text>
+</svg>
