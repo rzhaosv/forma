@@ -64,4 +64,38 @@
 ### Text Overlay
 *   "Stop Guessing ❌"
 *   "Start Growing 💪"
-*   "AI Precision 🎯"
+---
+
+# ⚡ Short-Form (8-Second) TikTok Scripts
+
+## Script 1: The "Visual Shock"
+**Goal:** Prove the AI works instantly with zero friction.
+
+### Visual Prompt for Gemini/Veo
+> "POV iPhone video. A hand brings a phone over a plate of sushi. The screen instantly overlays macro labels: '650 Calories', '30g Protein'. Handheld, shaky, authentic college dorm lighting."
+
+### Script (Voiceover)
+**0:00-0:02:** "Stop manually typing your food. It’s 2025."
+**0:02-0:05:** "Just snap a photo and Forma’s AI does the math for you."
+**0:05-0:08:** "Macros, calories, everything. Link in bio."
+
+### Text Overlay
+*   "Manual logging is dead 💀"
+*   "Snap 📸 -> Track ✅"
+
+---
+
+## Script 2: The "Cheat Code"
+**Goal:** Frame the app as a productivity/diet hack.
+
+### Visual Prompt for Gemini/Veo
+> "Mirror selfie video of a fit person in casual clothes, smiling at their phone. Cut to a close-up of the phone screen showing a clean nutrition dashboard. Authentic vlog style, natural room lighting."
+
+### Script (Voiceover)
+**0:00-0:03:** "Found the literal cheat code for hitting your macros."
+**0:03-0:06:** "No more scanning barcodes or guessing. Just one photo."
+**0:06-0:08:** "Download Forma and start tracking today."
+
+### Text Overlay
+*   "My secret diet hack 🤫"
+*   "Track macros in 1s ⚡"
