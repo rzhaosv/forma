@@ -16,6 +16,8 @@ import PaywallScreen from '../screens/PaywallScreen';
 import SubscriptionScreen from '../screens/SubscriptionScreen';
 import ExportDataScreen from '../screens/ExportDataScreen';
 import ExerciseScreen from '../screens/ExerciseScreen';
+import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
+import TermsOfUseScreen from '../screens/TermsOfUseScreen';
 
 const Stack = createStackNavigator();
 
@@ -42,6 +44,8 @@ export default function MainNavigator() {
       <Stack.Screen name="Subscription" component={SubscriptionScreen} />
       <Stack.Screen name="ExportData" component={ExportDataScreen} />
       <Stack.Screen name="Exercise" component={ExerciseScreen} />
+      <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
+      <Stack.Screen name="TermsOfUse" component={TermsOfUseScreen} />
       {/* Add more screens: Profile, etc. */}
     </Stack.Navigator>
   );

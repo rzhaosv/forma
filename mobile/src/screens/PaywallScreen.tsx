@@ -22,23 +22,23 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 export default function PaywallScreen() {
   const navigation = useNavigation();
   const { colors, isDark } = useTheme();
-  const { 
-    availablePackages, 
-    purchasePackage, 
+  const {
+    availablePackages,
+    purchasePackage,
     restorePurchases,
     getAvailablePackages,
     checkSubscriptionStatus,
     subscriptionStatus,
     trialInfo,
   } = useSubscriptionStore();
-  
+
   const [loading, setLoading] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<PurchasesPackage | null>(null);
 
   // Debug state to show on screen
   const [debugInfo, setDebugInfo] = useState<string>('Loading...');
   const [hasLoaded, setHasLoaded] = useState(false);
-  
+
   // Fetch data only once on mount
   useEffect(() => {
     if (!hasLoaded) {
@@ -55,7 +55,7 @@ export default function PaywallScreen() {
       hasKey: !!process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY,
       keyStart: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY?.substring(0, 10) || 'none',
     };
-    
+
     console.log('🔍 PaywallScreen Debug:', JSON.stringify(info));
     setDebugInfo(JSON.stringify(info, null, 2));
   }, [availablePackages, subscriptionStatus]);
@@ -83,7 +83,7 @@ export default function PaywallScreen() {
       if (success) {
         // Refresh subscription status after purchase
         await checkSubscriptionStatus();
-        
+
         Alert.alert(
           'Welcome to Premium! 🎉',
           'You now have access to all premium features.',
@@ -134,20 +134,20 @@ export default function PaywallScreen() {
 
   const getSavings = (monthlyPkg: PurchasesPackage | null, annualPkg: PurchasesPackage | null) => {
     if (!monthlyPkg || !annualPkg) return null;
-    
+
     const monthlyPrice = monthlyPkg.product.price;
     const annualPrice = annualPkg.product.price;
     const monthlyEquivalent = annualPrice / 12;
     const savings = ((monthlyPrice - monthlyEquivalent) / monthlyPrice) * 100;
-    
+
     return Math.round(savings);
   };
 
-  const monthlyPackage = availablePackages?.find(pkg => 
+  const monthlyPackage = availablePackages?.find(pkg =>
     pkg.identifier.toLowerCase().includes('monthly')
   );
-  const annualPackage = availablePackages?.find(pkg => 
-    pkg.identifier.toLowerCase().includes('annual') || 
+  const annualPackage = availablePackages?.find(pkg =>
+    pkg.identifier.toLowerCase().includes('annual') ||
     pkg.identifier.toLowerCase().includes('yearly')
   );
   const savings = getSavings(monthlyPackage || null, annualPackage || null);
@@ -433,7 +433,7 @@ export default function PaywallScreen() {
   return (
     <SafeAreaView style={dynamicStyles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      
+
       {/* Header */}
       <View style={dynamicStyles.header}>
         <TouchableOpacity
@@ -448,10 +448,10 @@ export default function PaywallScreen() {
       <ScrollView style={styles.scrollView} contentContainerStyle={dynamicStyles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* DEBUG PANEL - Remove after debugging */}
         {__DEV__ && (
-          <View style={{ 
-            backgroundColor: '#1a1a2e', 
-            padding: 12, 
-            margin: 10, 
+          <View style={{
+            backgroundColor: '#1a1a2e',
+            padding: 12,
+            margin: 10,
             borderRadius: 8,
             borderWidth: 1,
             borderColor: '#e94560'
@@ -467,7 +467,7 @@ export default function PaywallScreen() {
             </Text>
           </View>
         )}
-        
+
         {/* Hero Section */}
         <View style={dynamicStyles.heroSection}>
           <LinearGradient
@@ -688,8 +688,19 @@ export default function PaywallScreen() {
           </Text>
           <Text style={dynamicStyles.footerText}>
             By subscribing, you agree to our{' '}
-            <Text style={dynamicStyles.footerLink}>Terms of Service</Text> and{' '}
-            <Text style={dynamicStyles.footerLink}>Privacy Policy</Text>
+            <Text
+              style={dynamicStyles.footerLink}
+              onPress={() => navigation.navigate('TermsOfUse' as never)}
+            >
+              Terms of Service
+            </Text>{' '}
+            and{' '}
+            <Text
+              style={dynamicStyles.footerLink}
+              onPress={() => navigation.navigate('PrivacyPolicy' as never)}
+            >
+              Privacy Policy
+            </Text>
           </Text>
         </View>
       </ScrollView>

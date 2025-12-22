@@ -17,8 +17,6 @@ export default function WelcomeScreen() {
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [loadingApple, setLoadingApple] = useState(false);
 
-
-
   const handleGoogleSignIn = async () => {
     setLoadingGoogle(true);
     try {
@@ -115,8 +113,18 @@ export default function WelcomeScreen() {
       <View style={styles.footer}>
         <Text style={styles.footerText}>
           By continuing, you agree to our{' '}
-          <Text style={styles.link}>Terms</Text> and{' '}
-          <Text style={styles.link}>Privacy Policy</Text>
+          <Text
+            style={styles.link}
+            onPress={() => navigation.navigate('TermsOfUse' as never)}
+          >
+            Terms
+          </Text> and{' '}
+          <Text
+            style={styles.link}
+            onPress={() => navigation.navigate('PrivacyPolicy' as never)}
+          >
+            Privacy Policy
+          </Text>
         </Text>
       </View>
     </SafeAreaView>
@@ -244,4 +252,3 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
-

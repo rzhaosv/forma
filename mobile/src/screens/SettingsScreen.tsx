@@ -10,9 +10,11 @@ import {
   Switch,
   Platform,
   Alert,
+  Linking,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
+import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import {
   isHealthKitAvailable,
@@ -828,6 +830,41 @@ export default function SettingsScreen() {
           )}
         </View>
 
+        {/* Legal & Support */}
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Legal & Support</Text>
+
+          <TouchableOpacity
+            style={dynamicStyles.settingRow}
+            onPress={() => navigation.navigate('PrivacyPolicy' as never)}
+          >
+            <View style={dynamicStyles.settingContent}>
+              <Text style={dynamicStyles.settingLabel}>Privacy Policy</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={dynamicStyles.settingRow}
+            onPress={() => navigation.navigate('TermsOfUse' as never)}
+          >
+            <View style={dynamicStyles.settingContent}>
+              <Text style={dynamicStyles.settingLabel}>Terms of Use</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={dynamicStyles.settingRow}
+            onPress={() => Linking.openURL('mailto:support@example.com')}
+          >
+            <View style={dynamicStyles.settingContent}>
+              <Text style={dynamicStyles.settingLabel}>Contact Support</Text>
+            </View>
+            <Ionicons name="mail-outline" size={20} color={colors.textTertiary} />
+          </TouchableOpacity>
+        </View>
+
         {/* Account Actions */}
         <View style={dynamicStyles.section}>
           <Text style={dynamicStyles.sectionTitle}>Account</Text>
@@ -895,10 +932,10 @@ export default function SettingsScreen() {
 
       {/* Premium Paywall Modal for Fitness Integrations */}
       <PaywallModal
-        visible={showPaywall}
+        isVisible={showPaywall}
         onClose={() => setShowPaywall(false)}
-        title="Unlock Fitness Integrations"
-        message="Sync your nutrition and weight data with Apple Health, Fitbit, and other fitness apps. Upgrade to Premium to unlock this feature."
+        title="Premium Features"
+        message="Switch to premium to unlock all features and sync across devices."
       />
     </SafeAreaView>
   );

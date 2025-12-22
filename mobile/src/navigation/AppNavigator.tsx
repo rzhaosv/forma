@@ -10,18 +10,22 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useOnboardingStore } from '../store/useOnboardingStore';
 import { listenToAuthChanges } from '../services/authService';
 import { useTheme } from '../hooks/useTheme';
+import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
+import TermsOfUseScreen from '../screens/TermsOfUseScreen';
 
 const Stack = createStackNavigator();
 
 export default function AppNavigator() {
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, user } = useAuthStore();
   const { isComplete: isOnboardingComplete, isLoading: isOnboardingLoading, initialize: initializeOnboarding } = useOnboardingStore();
   const { colors } = useTheme();
 
   // Initialize onboarding store
   useEffect(() => {
-    initializeOnboarding();
-  }, [initializeOnboarding]);
+    if (user?.uid) {
+      initializeOnboarding(user.uid);
+    }
+  }, [user?.uid, initializeOnboarding]);
 
   // Listen to auth state changes
   useEffect(() => {
@@ -55,6 +59,8 @@ export default function AppNavigator() {
           <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
           <Stack.Screen name="SignIn" component={SignInScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
+          <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
+          <Stack.Screen name="TermsOfUse" component={TermsOfUseScreen} />
         </>
       )}
     </Stack.Navigator>

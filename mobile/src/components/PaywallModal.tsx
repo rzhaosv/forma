@@ -10,8 +10,9 @@ import {
   Alert,
   Dimensions,
   Platform,
-  Linking,
+  // Linking, // Removed as navigation is used instead
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
 import { useTheme } from '../hooks/useTheme';
 import { PurchasesPackage } from 'react-native-purchases';
@@ -20,7 +21,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 interface PaywallModalProps {
-  visible: boolean;
+  isVisible: boolean;
   onClose: () => void;
   title?: string;
   message?: string;
@@ -28,12 +29,13 @@ interface PaywallModalProps {
 }
 
 export default function PaywallModal({
-  visible,
+  isVisible,
   onClose,
   title = 'Unlock Premium',
   message,
   showFeatures = true,
 }: PaywallModalProps) {
+  const navigation = useNavigation();
   const { colors, isDark } = useTheme();
   const {
     availablePackages,
@@ -50,10 +52,10 @@ export default function PaywallModal({
   const [selectedPackage, setSelectedPackage] = useState<PurchasesPackage | null>(null);
 
   useEffect(() => {
-    if (visible) {
+    if (isVisible) {
       refreshStatus();
     }
-  }, [visible]);
+  }, [isVisible]);
 
   const refreshStatus = async () => {
     setLoading(true);
@@ -397,7 +399,7 @@ export default function PaywallModal({
 
   return (
     <Modal
-      visible={visible}
+      visible={isVisible}
       transparent
       animationType="fade"
       onRequestClose={onClose}
@@ -607,10 +609,10 @@ export default function PaywallModal({
               Subscriptions auto-renew unless cancelled. Cancel anytime in Settings.
             </Text>
             <View style={{ flexDirection: 'row', marginTop: 8 }}>
-              <TouchableOpacity onPress={() => Linking.openURL('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/')}>
+              <TouchableOpacity onPress={() => navigation.navigate('TermsOfUse' as never)}>
                 <Text style={[dynamicStyles.footerText, dynamicStyles.footerLink, { marginRight: 16 }]}>Terms of Use</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => Linking.openURL('https://example.com/privacy')}>
+              <TouchableOpacity onPress={() => navigation.navigate('PrivacyPolicy' as never)}>
                 <Text style={[dynamicStyles.footerText, dynamicStyles.footerLink]}>Privacy Policy</Text>
               </TouchableOpacity>
             </View>
