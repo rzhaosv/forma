@@ -6,26 +6,76 @@ import { Platform } from 'react-native';
 // Dynamic import to handle cases where HealthKit isn't available
 let HealthKit: any = null;
 let HKQuantityTypeIdentifier: any = null;
+let moduleLoadAttempted = false;
 
-try {
-  // Use CommonJS require to avoid static analysis issues if module is missing
-  const healthKitModule = require('@kingstinct/react-native-healthkit');
-
-  // Handle both default export and named exports
-  HealthKit = healthKitModule.default || healthKitModule;
-  HKQuantityTypeIdentifier = healthKitModule.HKQuantityTypeIdentifier || HealthKit.HKQuantityTypeIdentifier;
-
-  console.log('✅ HealthKit module loaded successfully');
-  if (!HKQuantityTypeIdentifier) {
-    console.warn('⚠️ HKQuantityTypeIdentifier is undefined even though module loaded');
+const getHealthKitModule = () => {
+  if (moduleLoadAttempted && (HealthKit || HKQuantityTypeIdentifier)) {
+    return { HealthKit, HKQuantityTypeIdentifier };
   }
-} catch (error) {
-  console.warn('⚠️ HealthKit module not available:', error);
-}
+
+  try {
+    moduleLoadAttempted = true;
+    console.log('🔍 HealthKit: Attempting to load module...');
+    const healthKitModule = require('@kingstinct/react-native-healthkit');
+
+    if (healthKitModule) {
+      console.log('📦 HealthKit: Module keys:', Object.keys(healthKitModule));
+      if (healthKitModule.default) {
+        console.log('📦 HealthKit: Default export keys:', Object.keys(healthKitModule.default));
+      }
+
+      // Handle both default export and named exports
+      HealthKit = healthKitModule.default || healthKitModule;
+
+      // Fallback for HKQuantityTypeIdentifier
+      HKQuantityTypeIdentifier = healthKitModule.HKQuantityTypeIdentifier || HealthKit?.HKQuantityTypeIdentifier || healthKitModule.default?.HKQuantityTypeIdentifier;
+
+      if (!HKQuantityTypeIdentifier) {
+        console.log('⚠️ HealthKit: HKQuantityTypeIdentifier not found, using fallback...');
+        HKQuantityTypeIdentifier = {
+          bodyMass: 'HKQuantityTypeIdentifierBodyMass',
+          height: 'HKQuantityTypeIdentifierHeight',
+          stepCount: 'HKQuantityTypeIdentifierStepCount',
+          activeEnergyBurned: 'HKQuantityTypeIdentifierActiveEnergyBurned',
+          basalEnergyBurned: 'HKQuantityTypeIdentifierBasalEnergyBurned',
+          dietaryEnergyConsumed: 'HKQuantityTypeIdentifierDietaryEnergyConsumed',
+          dietaryProtein: 'HKQuantityTypeIdentifierDietaryProtein',
+          dietaryCarbohydrates: 'HKQuantityTypeIdentifierDietaryCarbohydrates',
+          dietaryFatTotal: 'HKQuantityTypeIdentifierDietaryFatTotal',
+          bloodGlucose: 'HKQuantityTypeIdentifierBloodGlucose',
+          heartRate: 'HKQuantityTypeIdentifierHeartRate',
+          restingHeartRate: 'HKQuantityTypeIdentifierRestingHeartRate',
+          bodyMassIndex: 'HKQuantityTypeIdentifierBodyMassIndex',
+          bodyFatPercentage: 'HKQuantityTypeIdentifierBodyFatPercentage',
+          leanBodyMass: 'HKQuantityTypeIdentifierLeanBodyMass',
+          waistCircumference: 'HKQuantityTypeIdentifierWaistCircumference',
+        };
+      }
+
+      if (HealthKit) {
+        console.log('✅ HealthKit: Main object found');
+        if (HealthKit.isHealthDataAvailable) {
+          console.log('✅ HealthKit: Native bridge identified');
+        } else {
+          console.warn('❌ HealthKit: Native bridge methods missing');
+        }
+      }
+
+      if (HKQuantityTypeIdentifier) {
+        console.log('✅ HealthKit: HKQuantityTypeIdentifier ready');
+      }
+    }
+  } catch (error: any) {
+    console.warn('⚠️ HealthKit: Load error:', error?.message || error);
+  }
+
+  return { HealthKit, HKQuantityTypeIdentifier };
+};
 
 // Check if HealthKit is properly initialized
 const isHealthKitModuleAvailable = (): boolean => {
-  return !!HealthKit && !!HKQuantityTypeIdentifier;
+  const { HealthKit: hk, HKQuantityTypeIdentifier: id } = getHealthKitModule();
+  return !!hk && !!id;
 };
 
 /**
@@ -83,7 +133,7 @@ export const requestHealthKitPermissions = async (): Promise<boolean> => {
       HKQuantityTypeIdentifier.activeEnergyBurned,
     ];
 
-    await HealthKit.requestAuthorization(readPermissions, writePermissions);
+    await HealthKit.requestAuthorization({ toRead: readPermissions, toShare: writePermissions });
     console.log('✅ HealthKit permissions requested');
     return true;
   } catch (error) {
@@ -105,11 +155,16 @@ export const readWeight = async (limit: number = 10): Promise<any[]> => {
     const now = new Date();
     const startDate = new Date(0); // All time
 
-    const result = await HealthKit.querySamples(
+    const result = await HealthKit.queryQuantitySamples(
       HKQuantityTypeIdentifier.bodyMass,
       {
-        from: startDate.toISOString(),
-        to: now.toISOString(),
+        unit: 'kg',
+        filter: {
+          date: {
+            startDate,
+            endDate: now,
+          },
+        },
         limit,
         ascending: false,
       }
@@ -136,11 +191,11 @@ export const writeWeight = async (weightKg: number, date?: Date): Promise<boolea
 
     await HealthKit.saveQuantitySample(
       HKQuantityTypeIdentifier.bodyMass,
+      'kg',
       weightKg,
-      {
-        start: weightDate.toISOString(),
-        end: weightDate.toISOString(),
-      }
+      weightDate,
+      weightDate,
+      {}
     );
 
     console.log('✅ Weight written to HealthKit:', weightKg, 'kg');
@@ -164,11 +219,17 @@ export const readDietaryEnergy = async (
       throw new Error('HealthKit is not available');
     }
 
-    const result = await HealthKit.querySamples(
+    const result = await HealthKit.queryQuantitySamples(
       HKQuantityTypeIdentifier.dietaryEnergyConsumed,
       {
-        from: startDate.toISOString(),
-        to: endDate.toISOString(),
+        unit: 'kcal',
+        filter: {
+          date: {
+            startDate,
+            endDate,
+          },
+        },
+        limit: -1,
         ascending: false,
       }
     );
@@ -195,11 +256,11 @@ export const writeDietaryEnergy = async (
 
     await HealthKit.saveQuantitySample(
       HKQuantityTypeIdentifier.dietaryEnergyConsumed,
+      'kcal',
       calories,
-      {
-        start: date.toISOString(),
-        end: date.toISOString(),
-      }
+      date,
+      date,
+      {}
     );
 
     console.log('✅ Dietary energy written to HealthKit:', calories, 'kcal');
@@ -232,11 +293,11 @@ export const writeNutritionData = async (
       promises.push(
         HealthKit.saveQuantitySample(
           HKQuantityTypeIdentifier.dietaryProtein,
+          'g',
           protein,
-          {
-            start: date.toISOString(),
-            end: date.toISOString(),
-          }
+          date,
+          date,
+          {}
         )
       );
     }
@@ -246,11 +307,11 @@ export const writeNutritionData = async (
       promises.push(
         HealthKit.saveQuantitySample(
           HKQuantityTypeIdentifier.dietaryCarbohydrates,
+          'g',
           carbs,
-          {
-            start: date.toISOString(),
-            end: date.toISOString(),
-          }
+          date,
+          date,
+          {}
         )
       );
     }
@@ -260,11 +321,11 @@ export const writeNutritionData = async (
       promises.push(
         HealthKit.saveQuantitySample(
           HKQuantityTypeIdentifier.dietaryFatTotal,
+          'g',
           fat,
-          {
-            start: date.toISOString(),
-            end: date.toISOString(),
-          }
+          date,
+          date,
+          {}
         )
       );
     }
@@ -324,11 +385,11 @@ export const writeActiveEnergyBurned = async (
 
     await HealthKit.saveQuantitySample(
       HKQuantityTypeIdentifier.activeEnergyBurned,
+      'kcal',
       calories,
-      {
-        start: start.toISOString(),
-        end: end.toISOString(),
-      }
+      start,
+      end,
+      {}
     );
 
     console.log('✅ Active energy written to HealthKit:', calories, 'kcal');
@@ -356,11 +417,17 @@ export const readActiveEnergyBurned = async (
       return 0;
     }
 
-    const result = await HealthKit.querySamples(
+    const result = await HealthKit.queryQuantitySamples(
       HKQuantityTypeIdentifier.activeEnergyBurned,
       {
-        from: startDate.toISOString(),
-        to: endDate.toISOString(),
+        unit: 'kcal',
+        filter: {
+          date: {
+            startDate,
+            endDate,
+          },
+        },
+        limit: -1,
       }
     );
 

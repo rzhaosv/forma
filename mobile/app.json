@@ -107,7 +107,10 @@
         "react-native-google-mobile-ads",
         {
           "ios_app_id": "ca-app-pub-5844884651380174~4273331628",
-          "android_app_id": "ca-app-pub-5844884651380174~8167765982"
+          "android_app_id": "ca-app-pub-5844884651380174~8167765982",
+          "iosAppId": "ca-app-pub-5844884651380174~4273331628",
+          "androidAppId": "ca-app-pub-5844884651380174~8167765982",
+          "userTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you."
         }
       ],
       [
