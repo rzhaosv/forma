@@ -16,7 +16,7 @@ import PaywallModal from '../components/PaywallModal';
 export default function BarcodeScannerScreen() {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-  const { isPremium } = useSubscriptionStore();
+  const { isPremium, subscriptionStatus } = useSubscriptionStore();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -43,6 +43,7 @@ export default function BarcodeScannerScreen() {
   }, [isPremium]);
 
   const loadRemainingScans = async () => {
+    if (subscriptionStatus === 'loading') return;
     if (!isPremium) {
       const remaining = await getRemainingBarcodeScans();
       setRemainingScans(remaining);
@@ -79,7 +80,7 @@ export default function BarcodeScannerScreen() {
     if (scanned || loading || isProcessing.current) return;
 
     // Check barcode scan limit for free users
-    if (!isPremium) {
+    if (subscriptionStatus !== 'loading' && !isPremium) {
       const canScan = await canPerformBarcodeScan();
       if (!canScan) {
         setShowPaywall(true);
@@ -115,7 +116,7 @@ export default function BarcodeScannerScreen() {
 
       if (product.found) {
         // Record the scan for free users
-        if (!isPremium) {
+        if (subscriptionStatus !== 'loading' && !isPremium) {
           await recordBarcodeScan();
           await loadRemainingScans();
         }
@@ -206,13 +207,13 @@ export default function BarcodeScannerScreen() {
     return (
       <View style={styles.container}>
         <PaywallModal
-          visible={showPaywall}
+          isVisible={showPaywall}
           onClose={async () => {
             // Refresh remaining scans in case user upgraded
             await loadRemainingScans();
             setShowPaywall(false);
             // Only navigate back if still not premium
-            if (!isPremium) {
+            if (subscriptionStatus !== 'loading' && !isPremium) {
               navigation.goBack();
             }
           }}

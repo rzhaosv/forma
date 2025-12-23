@@ -522,87 +522,117 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Apple Health Section - Premium Feature */}
-        {healthKitAvailable && (
+        {/* Apple Health Section (iOS only) */}
+        {Platform.OS === 'ios' && (
           <View style={dynamicStyles.section}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
               <Text style={dynamicStyles.sectionTitle}>Fitness Integrations</Text>
             </View>
 
-            <View style={dynamicStyles.settingRow}>
-              <View style={dynamicStyles.settingContent}>
-                <Text style={dynamicStyles.settingLabel}>
-                  Apple Health Sync
-                </Text>
+            {!healthKitAvailable ? (
+              <View style={[dynamicStyles.settingRow, { flexDirection: 'column', alignItems: 'flex-start' }]}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                  <Text style={[dynamicStyles.settingLabel, { color: colors.textSecondary }]}>
+                    Apple Health (Unavailable)
+                  </Text>
+                  <Ionicons name="information-circle-outline" size={18} color={colors.textTertiary} style={{ marginLeft: 6 }} />
+                </View>
                 <Text style={dynamicStyles.settingDescription}>
-                  Sync weight and nutrition data with Apple Health
+                  HealthKit could not be detected. This feature requires a physical iPhone and a native build. If you are using Expo Go, please switch to your Development Build.
                 </Text>
+                <TouchableOpacity
+                  style={{ marginTop: 12, paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8, backgroundColor: colors.surfaceSecondary }}
+                  onPress={async () => {
+                    const available = await isHealthKitAvailable();
+                    setHealthKitAvailable(available);
+                    if (available) {
+                      Alert.alert('Success', 'HealthKit is now available!');
+                    } else {
+                      Alert.alert('Still Unavailable', 'Ensure you are running on a physical device with a native build.');
+                    }
+                  }}
+                >
+                  <Text style={{ color: colors.primary, fontWeight: '600', fontSize: 13 }}>Check Again</Text>
+                </TouchableOpacity>
               </View>
-              <Switch
-                value={healthKitEnabledState}
-                onValueChange={handleHealthKitToggle}
-                trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor={healthKitEnabledState ? '#FFFFFF' : '#FFFFFF'}
-              />
-            </View>
-
-            {healthKitEnabledState && (
+            ) : (
               <>
                 <View style={dynamicStyles.settingRow}>
                   <View style={dynamicStyles.settingContent}>
-                    <Text style={dynamicStyles.settingLabel}>Weight Sync</Text>
+                    <Text style={dynamicStyles.settingLabel}>
+                      Apple Health Sync
+                    </Text>
                     <Text style={dynamicStyles.settingDescription}>
-                      Automatically sync weight entries to Apple Health
+                      Sync weight and nutrition data with Apple Health
                     </Text>
                   </View>
                   <Switch
-                    value={weightSyncEnabledState}
-                    onValueChange={handleWeightSyncToggle}
+                    value={healthKitEnabledState}
+                    onValueChange={handleHealthKitToggle}
                     trackColor={{ false: colors.border, true: colors.primary }}
-                    thumbColor={weightSyncEnabledState ? '#FFFFFF' : '#FFFFFF'}
+                    thumbColor={healthKitEnabledState ? '#FFFFFF' : '#FFFFFF'}
                   />
                 </View>
 
-                <View style={dynamicStyles.settingRow}>
-                  <View style={dynamicStyles.settingContent}>
-                    <Text style={dynamicStyles.settingLabel}>Meal Sync</Text>
-                    <Text style={dynamicStyles.settingDescription}>
-                      Automatically sync calories and macros to Apple Health
-                    </Text>
-                  </View>
-                  <Switch
-                    value={mealSyncEnabledState}
-                    onValueChange={handleMealSyncToggle}
-                    trackColor={{ false: colors.border, true: colors.primary }}
-                    thumbColor={mealSyncEnabledState ? '#FFFFFF' : '#FFFFFF'}
-                  />
-                </View>
+                {healthKitEnabledState && (
+                  <>
+                    <View style={dynamicStyles.settingRow}>
+                      <View style={dynamicStyles.settingContent}>
+                        <Text style={dynamicStyles.settingLabel}>Weight Sync</Text>
+                        <Text style={dynamicStyles.settingDescription}>
+                          Automatically sync weight entries to Apple Health
+                        </Text>
+                      </View>
+                      <Switch
+                        value={weightSyncEnabledState}
+                        onValueChange={handleWeightSyncToggle}
+                        trackColor={{ false: colors.border, true: colors.primary }}
+                        thumbColor={weightSyncEnabledState ? '#FFFFFF' : '#FFFFFF'}
+                      />
+                    </View>
 
-                <View style={dynamicStyles.settingRow}>
-                  <View style={dynamicStyles.settingContent}>
-                    <Text style={dynamicStyles.settingLabel}>Exercise Sync</Text>
-                    <Text style={dynamicStyles.settingDescription}>
-                      Automatically sync workout calories burned to Apple Health
-                    </Text>
-                  </View>
-                  <Switch
-                    value={exerciseSyncEnabledState}
-                    onValueChange={handleExerciseSyncToggle}
-                    trackColor={{ false: colors.border, true: colors.primary }}
-                    thumbColor={exerciseSyncEnabledState ? '#FFFFFF' : '#FFFFFF'}
-                  />
-                </View>
+                    <View style={dynamicStyles.settingRow}>
+                      <View style={dynamicStyles.settingContent}>
+                        <Text style={dynamicStyles.settingLabel}>Meal Sync</Text>
+                        <Text style={dynamicStyles.settingDescription}>
+                          Automatically sync calories and macros to Apple Health
+                        </Text>
+                      </View>
+                      <Switch
+                        value={mealSyncEnabledState}
+                        onValueChange={handleMealSyncToggle}
+                        trackColor={{ false: colors.border, true: colors.primary }}
+                        thumbColor={mealSyncEnabledState ? '#FFFFFF' : '#FFFFFF'}
+                      />
+                    </View>
+
+                    <View style={dynamicStyles.settingRow}>
+                      <View style={dynamicStyles.settingContent}>
+                        <Text style={dynamicStyles.settingLabel}>Exercise Sync</Text>
+                        <Text style={dynamicStyles.settingDescription}>
+                          Automatically sync workout calories burned to Apple Health
+                        </Text>
+                      </View>
+                      <Switch
+                        value={exerciseSyncEnabledState}
+                        onValueChange={handleExerciseSyncToggle}
+                        trackColor={{ false: colors.border, true: colors.primary }}
+                        thumbColor={exerciseSyncEnabledState ? '#FFFFFF' : '#FFFFFF'}
+                      />
+                    </View>
+                  </>
+                )}
               </>
             )}
           </View>
         )}
 
-        {/* Google Fit Section - Premium Feature (Android only) */}
-        {googleFitAvailable && (
+        {/* Google Fit Section (Android only) */}
+        {Platform.OS === 'android' && (
           <View style={dynamicStyles.section}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
               <Text style={dynamicStyles.sectionTitle}>Fitness Integrations</Text>
-              {!isPremium && (
+              {!isPremium && googleFitAvailable && (
                 <View style={{
                   backgroundColor: colors.primary,
                   paddingHorizontal: 8,
@@ -615,75 +645,91 @@ export default function SettingsScreen() {
               )}
             </View>
 
-            <View style={[
-              dynamicStyles.settingRow,
-              !isPremium && { opacity: 0.7 }
-            ]}>
-              <View style={dynamicStyles.settingContent}>
-                <Text style={dynamicStyles.settingLabel}>
-                  Google Fit Sync {!isPremium && '🔒'}
-                </Text>
+            {!googleFitAvailable ? (
+              <View style={[dynamicStyles.settingRow, { flexDirection: 'column', alignItems: 'flex-start' }]}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                  <Text style={[dynamicStyles.settingLabel, { color: colors.textSecondary }]}>
+                    Google Fit (Unavailable)
+                  </Text>
+                  <Ionicons name="information-circle-outline" size={18} color={colors.textTertiary} style={{ marginLeft: 6 }} />
+                </View>
                 <Text style={dynamicStyles.settingDescription}>
-                  {isPremium
-                    ? 'Sync weight and nutrition data with Google Fit'
-                    : 'Upgrade to Premium to sync with Google Fit'}
+                  Google Fit could not be detected. This feature requires a physical Android device and a native build.
                 </Text>
               </View>
-              <Switch
-                value={googleFitEnabledState}
-                onValueChange={handleGoogleFitToggle}
-                trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor={googleFitEnabledState ? '#FFFFFF' : '#FFFFFF'}
-                disabled={!isPremium && !googleFitEnabledState}
-              />
-            </View>
-
-            {googleFitEnabledState && (
+            ) : (
               <>
-                <View style={dynamicStyles.settingRow}>
+                <View style={[
+                  dynamicStyles.settingRow,
+                  !isPremium && { opacity: 0.7 }
+                ]}>
                   <View style={dynamicStyles.settingContent}>
-                    <Text style={dynamicStyles.settingLabel}>Weight Sync</Text>
+                    <Text style={dynamicStyles.settingLabel}>
+                      Google Fit Sync {!isPremium && '🔒'}
+                    </Text>
                     <Text style={dynamicStyles.settingDescription}>
-                      Automatically sync weight entries to Google Fit
+                      {isPremium
+                        ? 'Sync weight and nutrition data with Google Fit'
+                        : 'Upgrade to Premium to sync with Google Fit'}
                     </Text>
                   </View>
                   <Switch
-                    value={googleFitWeightSyncState}
-                    onValueChange={handleGoogleFitWeightSyncToggle}
+                    value={googleFitEnabledState}
+                    onValueChange={handleGoogleFitToggle}
                     trackColor={{ false: colors.border, true: colors.primary }}
-                    thumbColor={googleFitWeightSyncState ? '#FFFFFF' : '#FFFFFF'}
+                    thumbColor={googleFitEnabledState ? '#FFFFFF' : '#FFFFFF'}
+                    disabled={!isPremium && !googleFitEnabledState}
                   />
                 </View>
 
-                <View style={dynamicStyles.settingRow}>
-                  <View style={dynamicStyles.settingContent}>
-                    <Text style={dynamicStyles.settingLabel}>Meal Sync</Text>
-                    <Text style={dynamicStyles.settingDescription}>
-                      Automatically sync calories and macros to Google Fit
-                    </Text>
-                  </View>
-                  <Switch
-                    value={googleFitMealSyncState}
-                    onValueChange={handleGoogleFitMealSyncToggle}
-                    trackColor={{ false: colors.border, true: colors.primary }}
-                    thumbColor={googleFitMealSyncState ? '#FFFFFF' : '#FFFFFF'}
-                  />
-                </View>
+                {googleFitEnabledState && (
+                  <>
+                    <View style={dynamicStyles.settingRow}>
+                      <View style={dynamicStyles.settingContent}>
+                        <Text style={dynamicStyles.settingLabel}>Weight Sync</Text>
+                        <Text style={dynamicStyles.settingDescription}>
+                          Automatically sync weight entries to Google Fit
+                        </Text>
+                      </View>
+                      <Switch
+                        value={googleFitWeightSyncState}
+                        onValueChange={handleGoogleFitWeightSyncToggle}
+                        trackColor={{ false: colors.border, true: colors.primary }}
+                        thumbColor={googleFitWeightSyncState ? '#FFFFFF' : '#FFFFFF'}
+                      />
+                    </View>
 
-                <View style={dynamicStyles.settingRow}>
-                  <View style={dynamicStyles.settingContent}>
-                    <Text style={dynamicStyles.settingLabel}>Exercise Sync</Text>
-                    <Text style={dynamicStyles.settingDescription}>
-                      Automatically sync workout calories burned to Google Fit
-                    </Text>
-                  </View>
-                  <Switch
-                    value={googleFitExerciseSyncState}
-                    onValueChange={handleGoogleFitExerciseSyncToggle}
-                    trackColor={{ false: colors.border, true: colors.primary }}
-                    thumbColor={googleFitExerciseSyncState ? '#FFFFFF' : '#FFFFFF'}
-                  />
-                </View>
+                    <View style={dynamicStyles.settingRow}>
+                      <View style={dynamicStyles.settingContent}>
+                        <Text style={dynamicStyles.settingLabel}>Meal Sync</Text>
+                        <Text style={dynamicStyles.settingDescription}>
+                          Automatically sync calories and macros to Google Fit
+                        </Text>
+                      </View>
+                      <Switch
+                        value={googleFitMealSyncState}
+                        onValueChange={handleGoogleFitMealSyncToggle}
+                        trackColor={{ false: colors.border, true: colors.primary }}
+                        thumbColor={googleFitMealSyncState ? '#FFFFFF' : '#FFFFFF'}
+                      />
+                    </View>
+
+                    <View style={dynamicStyles.settingRow}>
+                      <View style={dynamicStyles.settingContent}>
+                        <Text style={dynamicStyles.settingLabel}>Exercise Sync</Text>
+                        <Text style={dynamicStyles.settingDescription}>
+                          Automatically sync workout calories burned to Google Fit
+                        </Text>
+                      </View>
+                      <Switch
+                        value={googleFitExerciseSyncState}
+                        onValueChange={handleGoogleFitExerciseSyncToggle}
+                        trackColor={{ false: colors.border, true: colors.primary }}
+                        thumbColor={googleFitExerciseSyncState ? '#FFFFFF' : '#FFFFFF'}
+                      />
+                    </View>
+                  </>
+                )}
               </>
             )}
           </View>

@@ -57,64 +57,53 @@ export async function analyzeFoodPhoto(imageUri: string): Promise<FoodRecognitio
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini', // Latest vision model
+        model: 'gpt-5.2', // Latest "Thinking" model released Dec 2025
+        temperature: 0,
         messages: [
           {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: `You are a professional nutritionist analyzing food photos. Your task is to identify all foods and provide accurate nutrition estimates based on USDA FoodData Central standards.
+            role: 'system',
+            content: `Analyze the provided food photo using your advanced reasoning (Thinking) capabilities to provide a precise nutritionist's breakdown.
+            
+If the image contains a mixed meal (like a sandwich, salad, or bowl), use your spatial reasoning to decompose it into its primary ingredients (e.g., Bread, Main protein, specific veggies or sauces) so the user can see exactly where the calories are coming from.
 
-CRITICAL GUIDELINES:
-1. Identify ALL visible food items - don't miss side dishes, condiments, or garnishes
-2. Estimate portion sizes realistically based on visual context (compare to plates, utensils, or common serving sizes)
-3. Use USDA standard nutrition values - be precise, not approximate
-4. Confidence scores: Only use 80-100 for foods you're very certain about. Use 50-79 for likely identifications. Use 30-49 if uncertain.
+PORTION REASONING:
+- Estimate weights based on standard food servings and visual context.
+- Bread: For a sandwich, check if it's 2 slices (~80g) or a large roll (~100g+).
+- Protein: A typical protein portion (tuna, chicken) is 100-150g for a full meal.
+- Fats: Account for condiments (mayo, butter) which add significant calories.
 
-NUTRITION ACCURACY STANDARDS (per 100g unless specified):
-- Proteins: ~4 calories per gram
-- Carbs: ~4 calories per gram  
-- Fats: ~9 calories per gram
-- Common foods reference:
-  * Chicken breast (cooked): ~165 cal/100g, 31g protein, 0g carbs, 3.6g fat
-  * White rice (cooked): ~130 cal/100g, 2.7g protein, 28g carbs, 0.3g fat
-  * Broccoli (cooked): ~35 cal/100g, 2.4g protein, 7g carbs, 0.4g fat
-  * Salmon (cooked): ~206 cal/100g, 25g protein, 0g carbs, 12g fat
-  * Pasta (cooked): ~131 cal/100g, 5g protein, 25g carbs, 1.1g fat
-
-Return ONLY valid JSON (no markdown, no explanations):
+Return the result strictly in this JSON format:
 {
   "foods": [
     {
-      "name": "Specific food name (e.g., 'Grilled Chicken Breast', not just 'Chicken')",
-      "confidence": 85,
-      "serving_size": "Realistic portion like '150g' or '1 medium breast'",
-      "calories": 248,
-      "protein_g": 46.5,
-      "carbs_g": 0,
-      "fat_g": 5.5
+      "name": "Specific ingredient or item name",
+      "confidence": 99,
+      "serving_size": "Estimated portion (e.g., 90g, 2 slices)",
+      "calories": 250,
+      "protein_g": 20,
+      "carbs_g": 30,
+      "fat_g": 10
     }
   ]
-}
-
-IMPORTANT:
-- Include ALL foods visible in the image
-- Be conservative with portion estimates - it's better to underestimate than overestimate
-- If you see multiple servings of the same food, count them separately
-- Account for cooking methods (fried = more calories, grilled = fewer)
-- Return valid JSON only - no markdown code blocks`
-              },
+}`
+          },
+          {
+            role: 'user',
+            content: [
               {
                 type: 'image_url',
                 image_url: {
                   url: `data:image/jpeg;base64,${base64}`,
                 },
               },
+              {
+                type: 'text',
+                text: "Use your thinking capabilities to identify all foods and ingredients in this image. Break down complex items into their core components with calories and macros for each."
+              }
             ],
           },
         ],
-        max_tokens: 1000,
+        max_completion_tokens: 1000,
       }),
     });
 

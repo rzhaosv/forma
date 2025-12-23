@@ -10,7 +10,7 @@ import PaywallModal from '../components/PaywallModal';
 export default function CameraScreen() {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-  const { isPremium } = useSubscriptionStore();
+  const { isPremium, subscriptionStatus } = useSubscriptionStore();
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [analyzing, setAnalyzing] = useState(false);
@@ -34,6 +34,7 @@ export default function CameraScreen() {
   }, []);
 
   const loadRemainingScans = async () => {
+    if (subscriptionStatus === 'loading') return;
     if (!isPremium) {
       const remaining = await getRemainingPhotoScans();
       setRemainingScans(remaining);
@@ -86,7 +87,7 @@ export default function CameraScreen() {
     if (cameraRef.current && !analyzing) {
       try {
         // Check photo scan limit for free users
-        if (!isPremium) {
+        if (subscriptionStatus !== 'loading' && !isPremium) {
           const canScan = await canPerformPhotoScan();
           if (!canScan) {
             setShowPaywall(true);
@@ -96,8 +97,7 @@ export default function CameraScreen() {
 
         setAnalyzing(true);
         const photo = await cameraRef.current.takePictureAsync({
-          quality: 0.5,
-          skipProcessing: true,
+          quality: 1.0,
         });
 
         if (!photo) {
@@ -107,7 +107,7 @@ export default function CameraScreen() {
         console.log('📸 Photo captured, analyzing...');
 
         // Record the scan for free users
-        if (!isPremium) {
+        if (subscriptionStatus !== 'loading' && !isPremium) {
           await recordPhotoScan();
           await loadRemainingScans();
         }
@@ -223,7 +223,7 @@ export default function CameraScreen() {
 
       {/* Paywall Modal */}
       <PaywallModal
-        visible={showPaywall}
+        isVisible={showPaywall}
         onClose={() => setShowPaywall(false)}
         title="Daily Limit Reached"
         message="You've reached your daily limit of 5 photo scans. Upgrade to Premium for unlimited scans!"
