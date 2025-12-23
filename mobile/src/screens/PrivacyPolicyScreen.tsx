@@ -7,6 +7,7 @@ import {
     ScrollView,
     TouchableOpacity,
     StatusBar,
+    Linking,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
@@ -34,57 +35,80 @@ export default function PrivacyPolicyScreen() {
 
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <Text style={[styles.lastUpdated, { color: colors.textSecondary }]}>
-                    Last Updated: December 22, 2025
+                    Last Updated: December 13, 2025
                 </Text>
 
-                <Text style={[styles.sectionTitle, { color: colors.text }]}>1. Information We Collect</Text>
+                <Text style={[styles.paragraph, { color: colors.textSecondary, marginBottom: 24 }]}>
+                    Forma respects your privacy. This Privacy Policy explains how we collect, use, and protect your information.
+                </Text>
+
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>Information We Collect</Text>
                 <Text style={[styles.paragraph, { color: colors.textSecondary }]}>
-                    Forma ("we," "us," or "our") collects information to provide better services to all our users. This includes:
+                    Forma may collect the following information:
                     {"\n\n"}
-                    • Health Data: If you grant permission, we access Apple HealthKit or Google Fit data to provide personalized insights.
+                    • Photos of food that you choose to upload for nutrition analysis
                     {"\n"}
-                    • Food & Nutrition: Images and descriptions of food you analyze using our AI.
+                    • Nutrition data generated from your food photos
                     {"\n"}
-                    • Usage Data: Information about how you use the app and interact with features.
+                    • Usage data such as app interactions and feature usage
+                    {"\n"}
+                    • Optional health data if you choose to connect Apple Health or Google Fit
                 </Text>
 
-                <Text style={[styles.sectionTitle, { color: colors.text }]}>2. How We Use Information</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>How We Use Your Information</Text>
                 <Text style={[styles.paragraph, { color: colors.textSecondary }]}>
-                    We use the information we collect to:
+                    We use your information to:
                     {"\n\n"}
-                    • Provide, maintain, and improve our services.
+                    • Analyze food photos and estimate nutritional values
                     {"\n"}
-                    • Analyze food photos and provide nutritional feedback.
+                    • Provide personalized insights and recommendations
                     {"\n"}
-                    • Personalize your health and fitness dashboard.
+                    • Improve app performance and features
                     {"\n"}
-                    • Send you technical notices, updates, and support messages.
+                    • Sync data with connected health platforms when enabled
                 </Text>
 
-                <Text style={[styles.sectionTitle, { color: colors.text }]}>3. Data Sharing and Disclosure</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>Data Sharing</Text>
                 <Text style={[styles.paragraph, { color: colors.textSecondary }]}>
-                    We do not sell your personal data. We may share information with:
+                    We do not sell your personal data.
+                    {"\n"}
+                    We may share limited data with trusted service providers strictly to operate the app (for example, cloud storage or analytics).
+                </Text>
+
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>Data Storage and Security</Text>
+                <Text style={[styles.paragraph, { color: colors.textSecondary }]}>
+                    Your data is stored securely using industry-standard protections. We take reasonable measures to prevent unauthorized access.
+                </Text>
+
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>Your Choices</Text>
+                <Text style={[styles.paragraph, { color: colors.textSecondary }]}>
+                    You can:
                     {"\n\n"}
-                    • Service Providers: OpenAI for vision analysis and RevenueCat for subscription management.
+                    • Choose whether to upload food photos
                     {"\n"}
-                    • Legal Requirements: If required by law or to protect our rights.
+                    • Disconnect Apple Health or Google Fit at any time
+                    {"\n"}
+                    • Request deletion of your data by contacting us
                 </Text>
 
-                <Text style={[styles.sectionTitle, { color: colors.text }]}>4. Your Choices</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>Contact Us</Text>
                 <Text style={[styles.paragraph, { color: colors.textSecondary }]}>
-                    You can manage your data by:
-                    {"\n\n"}
-                    • Revoking camera or health permissions in system settings.
+                    If you have questions or requests related to privacy, contact us at:
                     {"\n"}
-                    • Deleting your account and all associated data in the Settings menu.
-                    {"\n"}
-                    • Contacting us at support@example.com for data requests.
+                    <Text
+                        style={{ color: colors.primary, fontWeight: '600' }}
+                        onPress={() => Linking.openURL('mailto:support@forma.app')}
+                    >
+                        support@forma.app
+                    </Text>
                 </Text>
 
-                <Text style={[styles.sectionTitle, { color: colors.text }]}>5. Security</Text>
-                <Text style={[styles.paragraph, { color: colors.textSecondary }]}>
-                    We take reasonable measures to help protect information about you from loss, theft, misuse, and unauthorized access.
-                </Text>
+                <TouchableOpacity
+                    style={[styles.linkButton, { backgroundColor: isDark ? '#333' : '#F3F4F6' }]}
+                    onPress={() => Linking.openURL('https://www.notion.so/Privacy-Policy-for-Forma-2c8bda4f1318805dbf8fc622f3382bdf?source=copy_link')}
+                >
+                    <Text style={[styles.linkButtonText, { color: colors.primary }]}>View Full Privacy Policy</Text>
+                </TouchableOpacity>
 
                 <View style={styles.footer}>
                     <Text style={[styles.footerText, { color: colors.textTertiary }]}>
@@ -142,5 +166,16 @@ const styles = StyleSheet.create({
     },
     footerText: {
         fontSize: 12,
+    },
+    linkButton: {
+        marginTop: 32,
+        paddingVertical: 14,
+        paddingHorizontal: 20,
+        borderRadius: 12,
+        alignItems: 'center',
+    },
+    linkButtonText: {
+        fontSize: 16,
+        fontWeight: '600',
     },
 });
