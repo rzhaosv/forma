@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, AppState } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, AppState, Linking } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { lookupBarcode, calculateNutrition, isValidBarcode } from '../services/barcodeService';
@@ -42,6 +42,13 @@ export default function BarcodeScannerScreen() {
     }
   }, [isPremium]);
 
+  // Auto-request permission if undetermined when screen is focused
+  useEffect(() => {
+    if (isFocused && permission && !permission.granted && permission.canAskAgain) {
+      requestPermission();
+    }
+  }, [isFocused, permission?.granted, permission?.canAskAgain]);
+
   const loadRemainingScans = async () => {
     if (subscriptionStatus === 'loading') return;
     if (!isPremium) {
@@ -65,11 +72,26 @@ export default function BarcodeScannerScreen() {
   }
 
   if (!permission.granted) {
+    // If undetermined, we are auto-requesting
+    if (permission.canAskAgain) {
+      return (
+        <View style={styles.container}>
+          <ActivityIndicator size="large" color="#6366f1" />
+        </View>
+      );
+    }
+
     return (
       <View style={styles.container}>
-        <Text style={styles.message}>We need camera permission to scan barcodes</Text>
-        <TouchableOpacity style={styles.button} onPress={requestPermission}>
-          <Text style={styles.buttonText}>Grant Permission</Text>
+        <Text style={styles.message}>Camera access is required to scan barcodes.</Text>
+        <TouchableOpacity style={styles.button} onPress={() => Linking.openSettings()}>
+          <Text style={styles.buttonText}>Continue</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, { marginTop: 12, backgroundColor: 'transparent', borderWidth: 1, borderColor: '#6366f1' }]}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={[styles.buttonText, { color: '#6366f1' }]}>Cancel</Text>
         </TouchableOpacity>
       </View>
     );

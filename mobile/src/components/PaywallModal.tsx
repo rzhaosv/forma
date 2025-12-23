@@ -140,9 +140,14 @@ export default function PaywallModal({
     return Math.round(savings);
   };
 
-  const monthlyPackage = availablePackages?.find((pkg) => pkg.identifier.toLowerCase().includes('monthly'));
+  const monthlyPackage = availablePackages?.find((pkg) =>
+    pkg.identifier.toLowerCase().includes('monthly') ||
+    pkg.packageType === 1 // Monthly package type enum
+  );
   const annualPackage = availablePackages?.find(
-    (pkg) => pkg.identifier.toLowerCase().includes('annual') || pkg.identifier.toLowerCase().includes('yearly')
+    (pkg) => pkg.identifier.toLowerCase().includes('annual') ||
+      pkg.identifier.toLowerCase().includes('yearly') ||
+      pkg.packageType === 5 // Annual package type enum
   );
   const savings = getSavings(monthlyPackage || null, annualPackage || null);
 

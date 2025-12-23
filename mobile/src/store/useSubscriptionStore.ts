@@ -35,6 +35,7 @@ const isTesterAccount = (email: string | null | undefined): boolean => {
 
   const testerEmails = [
     'tester@forma.ai',
+    'raymondzhao3000@gmail.com',
   ];
 
   return testerEmails.includes(email.toLowerCase());

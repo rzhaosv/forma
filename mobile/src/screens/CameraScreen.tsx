@@ -22,12 +22,23 @@ export default function CameraScreen() {
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       setIsAppActive(nextAppState === 'active');
+      // Re-check permissions when app comes back to foreground
+      if (nextAppState === 'active' && isFocused) {
+        loadRemainingScans();
+      }
     });
 
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [isFocused]);
+
+  // Auto-request permission if undetermined when screen is focused
+  useEffect(() => {
+    if (isFocused && permission && !permission.granted && permission.canAskAgain) {
+      requestPermission();
+    }
+  }, [isFocused, permission?.granted, permission?.canAskAgain]);
 
   useEffect(() => {
     loadRemainingScans();
@@ -46,34 +57,31 @@ export default function CameraScreen() {
   }
 
   if (!permission.granted) {
+    // If we can still ask (undetermined), we are auto-requesting in useEffect
+    // So we show a loading state or nothing to avoid the "gate" UI
+    if (permission.canAskAgain) {
+      return (
+        <View style={styles.container}>
+          <ActivityIndicator size="large" color="#6366f1" />
+        </View>
+      );
+    }
+
+    // Only show the settings instructions if they have explicitly denied it
     return (
       <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
+        <Text style={styles.message}>Camera access is required to scan food photos.</Text>
         <TouchableOpacity
           style={styles.button}
-          onPress={async () => {
-            if (!permission.canAskAgain) {
-              Alert.alert(
-                'Camera Permission Required',
-                'Please enable camera access in your device settings to use this feature.',
-                [
-                  { text: 'Cancel', style: 'cancel' },
-                  { text: 'Open Settings', onPress: () => Linking.openSettings() }
-                ]
-              );
-            } else {
-              await requestPermission();
-            }
-          }}
+          onPress={() => Linking.openSettings()}
         >
-          <Text style={styles.buttonText}>Grant Permission</Text>
+          <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
-        {/* Manual check button in case state doesn't update automatically */}
         <TouchableOpacity
-          style={[styles.button, { marginTop: 12, backgroundColor: '#333' }]}
-          onPress={requestPermission}
+          style={[styles.button, { marginTop: 12, backgroundColor: 'transparent', borderWidth: 1, borderColor: '#6366f1' }]}
+          onPress={() => navigation.goBack()}
         >
-          <Text style={styles.buttonText}>Check Permission Again</Text>
+          <Text style={[styles.buttonText, { color: '#6366f1' }]}>Cancel</Text>
         </TouchableOpacity>
       </View>
     );
