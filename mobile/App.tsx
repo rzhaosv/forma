@@ -14,7 +14,7 @@ export default function App() {
     // Log app version on startup
     const appVersion = Constants.expoConfig?.version || 'unknown';
     const buildNumber = Constants.expoConfig?.ios?.buildNumber || Constants.expoConfig?.android?.versionCode || 'dev';
-    
+
     console.log('\n' + '='.repeat(50));
     console.log('🚀 FORMA APP STARTED');
     console.log('='.repeat(50));
@@ -24,11 +24,11 @@ export default function App() {
     console.log(`🔧 Environment: ${__DEV__ ? 'Development' : 'Production'}`);
     console.log(`⏰ Started at:  ${new Date().toLocaleString()}`);
     console.log('='.repeat(50) + '\n');
-    
+
     // Initialize theme store (doesn't require userId)
     // All other stores are initialized in authService when user logs in
     initializeTheme();
-    
+
     // Initialize notifications
     initializeNotifications().catch(console.error);
   }, [initializeTheme]);

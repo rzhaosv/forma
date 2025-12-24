@@ -4,6 +4,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Meal, FoodItem, DailySummary } from '../types/meal.types';
 import { syncMealToHealthKit } from '../services/healthKitService';
 import { isHealthKitEnabled, isMealSyncEnabled } from '../utils/healthKitSettings';
+import { db } from '../config/firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { getLocalDateString } from '../utils/dateUtils';
 
 interface MealStore {
   meals: Meal[];
@@ -11,7 +14,7 @@ interface MealStore {
   calorieGoal: number;
   proteinGoal: number;
   currentUserId: string | null;
-  
+
   // Actions
   addMeal: (meal: Meal) => Promise<void>;
   addFoodToMeal: (mealId: string, food: FoodItem) => void;
@@ -46,7 +49,7 @@ export const useMealStore = create<MealStore>((set, get) => ({
   calorieGoal: 2000,
   proteinGoal: 150,
   currentUserId: null,
-  
+
   addMeal: async (meal) => {
     set((state) => ({
       meals: [...state.meals, meal],
@@ -60,8 +63,11 @@ export const useMealStore = create<MealStore>((set, get) => ({
         const keys = getStorageKeys(userId);
         const meals = get().meals;
         await AsyncStorage.setItem(keys.meals, JSON.stringify(meals));
+
+        // Sync to Firestore
+        await setDoc(doc(db, 'users', userId, 'data', 'meals'), { meals });
       } catch (error) {
-        console.error('Failed to save meals:', error);
+        console.error('Failed to save meals to Firestore:', error);
       }
     }
 
@@ -86,7 +92,7 @@ export const useMealStore = create<MealStore>((set, get) => ({
       // Don't throw - we don't want to block the meal entry if HealthKit sync fails
     }
   },
-  
+
   addFoodToMeal: async (mealId, food) => {
     set((state) => ({
       meals: state.meals.map((meal) => {
@@ -103,7 +109,7 @@ export const useMealStore = create<MealStore>((set, get) => ({
       }),
     }));
     get().updateDailySummary();
-    
+
     // Persist meals
     const userId = get().currentUserId;
     if (userId) {
@@ -111,12 +117,15 @@ export const useMealStore = create<MealStore>((set, get) => ({
         const keys = getStorageKeys(userId);
         const meals = get().meals;
         await AsyncStorage.setItem(keys.meals, JSON.stringify(meals));
+
+        // Sync to Firestore
+        await setDoc(doc(db, 'users', userId, 'data', 'meals'), { meals });
       } catch (error) {
-        console.error('Failed to save meals:', error);
+        console.error('Failed to sync food update:', error);
       }
     }
   },
-  
+
   removeFoodFromMeal: async (mealId, foodId) => {
     set((state) => ({
       meals: state.meals.map((meal) => {
@@ -133,7 +142,7 @@ export const useMealStore = create<MealStore>((set, get) => ({
       }),
     }));
     get().updateDailySummary();
-    
+
     // Persist meals
     const userId = get().currentUserId;
     if (userId) {
@@ -141,18 +150,21 @@ export const useMealStore = create<MealStore>((set, get) => ({
         const keys = getStorageKeys(userId);
         const meals = get().meals;
         await AsyncStorage.setItem(keys.meals, JSON.stringify(meals));
+
+        // Sync to Firestore
+        await setDoc(doc(db, 'users', userId, 'data', 'meals'), { meals });
       } catch (error) {
         console.error('Failed to save meals:', error);
       }
     }
   },
-  
+
   deleteMeal: async (mealId) => {
     set((state) => ({
       meals: state.meals.filter((meal) => meal.id !== mealId),
     }));
     get().updateDailySummary();
-    
+
     // Persist meals
     const userId = get().currentUserId;
     if (userId) {
@@ -160,19 +172,22 @@ export const useMealStore = create<MealStore>((set, get) => ({
         const keys = getStorageKeys(userId);
         const meals = get().meals;
         await AsyncStorage.setItem(keys.meals, JSON.stringify(meals));
+
+        // Sync to Firestore
+        await setDoc(doc(db, 'users', userId, 'data', 'meals'), { meals });
       } catch (error) {
         console.error('Failed to save meals:', error);
       }
     }
   },
-  
+
   updateDailySummary: () => {
     const state = get();
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateString();
     const todayMeals = state.meals.filter(
-      (meal) => meal.timestamp.startsWith(today)
+      (meal) => getLocalDateString(new Date(meal.timestamp)) === today
     );
-    
+
     const totals = todayMeals.reduce(
       (sum, meal) => ({
         totalCalories: sum.totalCalories + meal.totalCalories,
@@ -182,7 +197,7 @@ export const useMealStore = create<MealStore>((set, get) => ({
       }),
       { totalCalories: 0, totalProtein: 0, totalCarbs: 0, totalFat: 0 }
     );
-    
+
     set({
       dailySummary: {
         date: today,
@@ -193,54 +208,90 @@ export const useMealStore = create<MealStore>((set, get) => ({
       },
     });
   },
-  
+
   setGoals: async (calorieGoal, proteinGoal) => {
     set({ calorieGoal, proteinGoal });
     get().updateDailySummary();
-    
+
     // Persist goals to AsyncStorage
     const userId = get().currentUserId;
     if (userId) {
       try {
         const keys = getStorageKeys(userId);
-        await AsyncStorage.setItem(keys.goals, JSON.stringify({ calorieGoal, proteinGoal }));
+        const goals = { calorieGoal, proteinGoal };
+        await AsyncStorage.setItem(keys.goals, JSON.stringify(goals));
+
+        // Sync to Firestore
+        await setDoc(doc(db, 'users', userId, 'data', 'goals'), goals);
       } catch (error) {
         console.error('Failed to save goals:', error);
       }
     }
   },
-  
+
   initialize: async (userId: string) => {
     try {
       set({ currentUserId: userId });
       const keys = getStorageKeys(userId);
-      
+
       // Load meals
       const mealsStr = await AsyncStorage.getItem(keys.meals);
+      let localMeals = [];
       if (mealsStr) {
-        const meals = JSON.parse(mealsStr);
-        set({ meals });
-        get().updateDailySummary();
-      } else {
-        set({ meals: [] });
+        localMeals = JSON.parse(mealsStr);
       }
-      
+
+      // Try to sync with Firestore
+      try {
+        const mealsDoc = await getDoc(doc(db, 'users', userId, 'data', 'meals'));
+        if (mealsDoc.exists()) {
+          const remoteMeals = mealsDoc.data().meals;
+          // Merge logic: use the one with more entries or more recent (simple choice for now: remote if exists)
+          if (remoteMeals.length >= localMeals.length) {
+            localMeals = remoteMeals;
+            await AsyncStorage.setItem(keys.meals, JSON.stringify(localMeals));
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to load meals from Firestore:', error);
+      }
+
+      set({ meals: localMeals });
+      get().updateDailySummary();
+
       // Load goals
       const goalsStr = await AsyncStorage.getItem(keys.goals);
+      let localGoals = null;
       if (goalsStr) {
-        const { calorieGoal, proteinGoal } = JSON.parse(goalsStr);
+        localGoals = JSON.parse(goalsStr);
+      }
+
+      // Try to sync goals from Firestore
+      try {
+        const goalsDoc = await getDoc(doc(db, 'users', userId, 'data', 'goals'));
+        if (goalsDoc.exists()) {
+          const remoteGoals = goalsDoc.data();
+          localGoals = remoteGoals;
+          await AsyncStorage.setItem(keys.goals, JSON.stringify(localGoals));
+        }
+      } catch (error) {
+        console.warn('Failed to load goals from Firestore:', error);
+      }
+
+      if (localGoals) {
+        const { calorieGoal, proteinGoal } = localGoals;
         set({ calorieGoal, proteinGoal });
       }
     } catch (error) {
       console.error('Failed to load meal data:', error);
     }
   },
-  
+
   clearData: async () => {
-    set({ 
-      meals: [], 
-      dailySummary: null, 
-      calorieGoal: 2000, 
+    set({
+      meals: [],
+      dailySummary: null,
+      calorieGoal: 2000,
       proteinGoal: 150,
       currentUserId: null,
     });

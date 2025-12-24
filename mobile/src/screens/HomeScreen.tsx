@@ -21,6 +21,7 @@ import InsightsCard from '../components/InsightsCard';
 import { Ionicons } from '@expo/vector-icons';
 import { isHealthKitEnabled } from '../utils/healthKitSettings';
 import { Platform } from 'react-native';
+import { getLocalDateString } from '../utils/dateUtils';
 
 const MEAL_TYPE_ICONS = {
   Breakfast: '🌅',
@@ -74,8 +75,8 @@ export default function HomeScreen() {
   };
 
   // Get today's meals grouped by type
-  const today = new Date().toISOString().split('T')[0];
-  const todayMeals = meals.filter(meal => meal.timestamp.startsWith(today));
+  const today = getLocalDateString();
+  const todayMeals = meals.filter(meal => getLocalDateString(new Date(meal.timestamp)) === today);
 
   const getGreeting = () => {
     const hour = currentDate.getHours();

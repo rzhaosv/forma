@@ -1,10 +1,11 @@
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
+import { initializeFirestore, doc, setDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Firebase configuration for React Native
 const firebaseConfig = {
-  apiKey: "AIzaSyBXhrvGVlmBFP43T_fS_V4CmiNEmIw6Z14",
+  apiKey: "AIzaSyCL6su_cFHvijSIuQYomXVzNvfMcsmcJTk",
   authDomain: "forma-3803d.firebaseapp.com",
   projectId: "forma-3803d",
   storageBucket: "forma-3803d.firebasestorage.app",
@@ -20,11 +21,14 @@ if (getApps().length === 0) {
   app = getApps()[0];
 }
 
-// Initialize Auth with AsyncStorage persistence for React Native
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage)
+// Initialize Auth
+const auth = getAuth(app);
+
+// Initialize Firestore with long polling for better tunnel/proxy compatibility
+const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true,
 });
 
-export { auth };
+export { auth, db };
 export default app;
 
