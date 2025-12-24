@@ -22,44 +22,31 @@ export interface BarcodeProduct {
  */
 export async function lookupBarcode(barcode: string): Promise<BarcodeProduct> {
   try {
-    console.log('🔍 Looking up barcode:', barcode);
-
-    // Try Open Food Facts API (free, 2M+ products)
-    const response = await fetch(
-      `https://world.openfoodfacts.org/api/v2/product/${barcode}.json`
-    );
+    const response = await fetch(`https://world.openfoodfacts.org/api/v2/product/${barcode}.json`);
     const data = await response.json();
 
-    if (data.status === 1) {
-      const product = data.product;
-      
+    if (data.status === 1 && data.product) {
+      const p = data.product;
+      const nutriments = p.nutriments || {};
+
       return {
         found: true,
         barcode,
-        name: product.product_name || 'Unknown Product',
-        brand: product.brands || '',
-        image_url: product.image_url || product.image_front_url,
-        serving_size: product.serving_size || '100g',
-        calories_per_100g: product.nutriments?.['energy-kcal_100g'] || 0,
-        protein_per_100g: product.nutriments?.proteins_100g || 0,
-        carbs_per_100g: product.nutriments?.carbohydrates_100g || 0,
-        fat_per_100g: product.nutriments?.fat_100g || 0,
+        name: p.product_name || 'Unknown Product',
+        brand: p.brands ? p.brands.split(',')[0] : undefined,
+        image_url: p.image_url,
+        serving_size: p.serving_size || '100g',
+        calories_per_100g: nutriments['energy-kcal_100g'] || (nutriments['energy_100g'] ? Math.round(nutriments['energy_100g'] / 4.184) : 0),
+        protein_per_100g: nutriments.proteins_100g || 0,
+        carbs_per_100g: nutriments.carbohydrates_100g || 0,
+        fat_per_100g: nutriments.fat_100g || 0,
       };
     }
 
-    // Product not found
-    return {
-      found: false,
-      barcode,
-      error: 'Product not found in database',
-    };
-  } catch (error: any) {
-    console.error('Barcode lookup error:', error);
-    return {
-      found: false,
-      barcode,
-      error: error.message || 'Failed to lookup barcode',
-    };
+    return { found: false, barcode };
+  } catch (error) {
+    console.error('Barcode lookup failed:', error);
+    return { found: false, barcode, error: 'Network error. Please try again.' };
   }
 }
 
@@ -71,7 +58,7 @@ export async function lookupBarcode(barcode: string): Promise<BarcodeProduct> {
  */
 export function calculateNutrition(product: BarcodeProduct, servingSizeG: number) {
   const ratio = servingSizeG / 100;
-  
+
   return {
     calories: Math.round((product.calories_per_100g || 0) * ratio),
     protein_g: Math.round((product.protein_per_100g || 0) * ratio * 10) / 10,
@@ -90,4 +77,3 @@ export function isValidBarcode(barcode: string): boolean {
   const validLengths = [8, 12, 13];
   return validLengths.includes(barcode.length) && /^\d+$/.test(barcode);
 }
-

@@ -299,6 +299,7 @@ export default function BarcodeScannerScreen() {
               <Text style={styles.instructionsText}>
                 Position barcode in frame
               </Text>
+
               <Text style={styles.instructionsSubtext}>
                 UPC, EAN-13, and EAN-8 supported
               </Text>
@@ -712,4 +713,3 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
-

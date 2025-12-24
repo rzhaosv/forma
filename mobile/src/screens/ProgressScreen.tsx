@@ -570,6 +570,8 @@ export default function ProgressScreen() {
                 }}
                 width={screenWidth - 72}
                 height={220}
+                yAxisLabel=""
+                yAxisSuffix="g"
                 chartConfig={{
                   ...chartConfig,
                   color: (opacity = 1) => colors.primary + Math.floor(opacity * 255).toString(16).padStart(2, '0'),
@@ -648,4 +650,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
