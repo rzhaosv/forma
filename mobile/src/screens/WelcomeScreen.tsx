@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { signInWithGoogle, signInWithApple } from '../services/authService';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import { Platform } from 'react-native';
 
 export default function WelcomeScreen() {
   const navigation = useNavigation();
@@ -82,18 +84,15 @@ export default function WelcomeScreen() {
         </View>
 
         {/* Social Auth Buttons */}
-        <TouchableOpacity
-          style={[styles.socialButton, loadingApple && styles.buttonDisabled]}
-          onPress={handleAppleSignIn}
-          disabled={loadingApple}
-        >
-          {loadingApple ? (
-            <ActivityIndicator size="small" color="#374151" style={{ marginRight: 12 }} />
-          ) : (
-            <Text style={styles.socialIcon}>🍎</Text>
-          )}
-          <Text style={styles.socialButtonText}>Continue with Apple</Text>
-        </TouchableOpacity>
+        {Platform.OS === 'ios' && (
+          <AppleAuthentication.AppleAuthenticationButton
+            buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
+            buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE_OUTLINE}
+            cornerRadius={12}
+            style={styles.appleButton}
+            onPress={handleAppleSignIn}
+          />
+        )}
 
         <TouchableOpacity
           style={[styles.socialButton, loadingGoogle && styles.buttonDisabled]}
@@ -103,7 +102,7 @@ export default function WelcomeScreen() {
           {loadingGoogle ? (
             <ActivityIndicator size="small" color="#374151" style={{ marginRight: 12 }} />
           ) : (
-            <Text style={styles.socialIcon}>G</Text>
+            <Text style={styles.googleIcon}>G</Text>
           )}
           <Text style={styles.socialButtonText}>Continue with Google</Text>
         </TouchableOpacity>
@@ -229,10 +228,21 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginRight: 12,
   },
+  googleIcon: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#4285F4',
+    marginRight: 12,
+  },
+  appleButton: {
+    width: '100%',
+    height: 52,
+    marginBottom: 12,
+  },
   socialButtonText: {
     color: '#374151',
-    fontSize: 15,
-    fontWeight: '500',
+    fontSize: 16,
+    fontWeight: '600',
   },
   buttonDisabled: {
     opacity: 0.6,
