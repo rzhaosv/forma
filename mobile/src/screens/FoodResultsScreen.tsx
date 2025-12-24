@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, StatusBar, Alert } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { FoodRecognitionResult, IdentifiedFood } from '../services/foodRecognitionService';
@@ -6,6 +6,9 @@ import { useMealStore } from '../store/useMealStore';
 import { Meal, FoodItem, MealType } from '../types/meal.types';
 import { trackFoodAccurate, trackFoodEdit } from '../services/aiFeedbackService';
 import { useTheme } from '../hooks/useTheme';
+import { isHealthKitEnabled } from '../utils/healthKitSettings';
+import { Ionicons } from '@expo/vector-icons';
+import { Platform } from 'react-native';
 
 type RouteParams = {
   FoodResults: {
@@ -23,22 +26,29 @@ export default function FoodResultsScreen() {
   const { result } = route.params;
   const { addMeal } = useMealStore();
   const { colors, isDark } = useTheme();
+  const [healthKitEnabled, setHealthKitEnabled] = useState(false);
+
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      isHealthKitEnabled().then(setHealthKitEnabled);
+    }
+  }, []);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('Lunch');
-  
+
   // Editable food state - initialize with AI results
   const [editableFoods, setEditableFoods] = useState<EditableFood[]>(
     result.foods.map(food => ({ ...food, quantity: 1 }))
   );
 
   const updateFood = (index: number, updates: Partial<EditableFood>) => {
-    setEditableFoods(prev => prev.map((food, i) => 
+    setEditableFoods(prev => prev.map((food, i) =>
       i === index ? { ...food, ...updates } : food
     ));
   };
 
   const handleAddToLog = async () => {
     const mealId = `meal-${Date.now()}`;
-    
+
     // Create food items from editable foods (with quantity multiplier)
     const foodItems: FoodItem[] = editableFoods.map((food, index) => ({
       id: `food-${Date.now()}-${index}`,
@@ -77,8 +87,8 @@ export default function FoodResultsScreen() {
     for (let i = 0; i < editableFoods.length; i++) {
       const editedFood = editableFoods[i];
       const originalFood = result.foods[i];
-      
-      const wasEdited = 
+
+      const wasEdited =
         editedFood.name !== originalFood.name ||
         editedFood.calories !== originalFood.calories ||
         editedFood.protein_g !== originalFood.protein_g ||
@@ -297,7 +307,7 @@ export default function FoodResultsScreen() {
   return (
     <SafeAreaView style={dynamicStyles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      
+
       {/* Header */}
       <View style={dynamicStyles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -348,13 +358,13 @@ export default function FoodResultsScreen() {
         {/* Foods List */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Identified Foods</Text>
-          
+
           {editableFoods.map((food, index) => {
             const totalCalories = food.calories * food.quantity;
             const totalProtein = food.protein_g * food.quantity;
             const totalCarbs = food.carbs_g * food.quantity;
             const totalFat = food.fat_g * food.quantity;
-            
+
             return (
               <View key={index} style={dynamicStyles.foodCard}>
                 {/* Food Name - Large Editable Box */}
@@ -510,12 +520,21 @@ export default function FoodResultsScreen() {
 
       {/* Bottom Actions */}
       <View style={styles.actions}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={dynamicStyles.primaryButton}
           onPress={handleAddToLog}
         >
           <Text style={dynamicStyles.primaryButtonText}>Add to Meal Log</Text>
         </TouchableOpacity>
+
+        {healthKitEnabled && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 16 }}>
+            <Ionicons name="heart" size={14} color="#FF2D55" style={{ marginRight: 6 }} />
+            <Text style={{ fontSize: 12, color: colors.textSecondary, fontWeight: '500' }}>
+              Synced with Apple Health
+            </Text>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );

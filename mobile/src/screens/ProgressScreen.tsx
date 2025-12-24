@@ -17,26 +17,36 @@ import { useProgressStore } from '../store/useProgressStore';
 import { useMealStore } from '../store/useMealStore';
 import { useTheme } from '../hooks/useTheme';
 import AdBanner from '../components/AdBanner';
+import { Ionicons } from '@expo/vector-icons';
+import { isHealthKitEnabled } from '../utils/healthKitSettings';
+import { Platform } from 'react-native';
 
 const screenWidth = Dimensions.get('window').width;
 
 export default function ProgressScreen() {
   const navigation = useNavigation();
   const { colors, isDark } = useTheme();
-  const { 
-    weightEntries, 
-    streak, 
-    addWeightEntry, 
-    getWeightEntries, 
+  const {
+    weightEntries,
+    streak,
+    addWeightEntry,
+    getWeightEntries,
     getWeeklySummaries,
     calculateStreak,
     initialize: initializeProgress,
   } = useProgressStore();
   const { meals, calorieGoal } = useMealStore();
-  
+
   const [weightInput, setWeightInput] = useState('');
   const [showWeightForm, setShowWeightForm] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'calories' | 'weight' | 'macros'>('calories');
+  const [healthKitEnabled, setHealthKitEnabled] = useState(false);
+
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      isHealthKitEnabled().then(setHealthKitEnabled);
+    }
+  }, []);
 
   useEffect(() => {
     initializeProgress();
@@ -53,20 +63,20 @@ export default function ProgressScreen() {
     const labels: string[] = [];
     const data: number[] = [];
     const today = new Date();
-    
+
     for (let i = 6; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
       const dateStr = date.toISOString().split('T')[0];
-      
+
       const dayMeals = meals.filter(meal => meal.timestamp.startsWith(dateStr));
       const calories = dayMeals.reduce((sum, meal) => sum + meal.totalCalories, 0);
-      
+
       const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
       labels.push(dayName);
       data.push(calories);
     }
-    
+
     return { labels, datasets: [{ data }] };
   };
 
@@ -74,10 +84,10 @@ export default function ProgressScreen() {
   const getWeightChartData = () => {
     const entries = getWeightEntries(30);
     if (entries.length === 0) return null;
-    
+
     const labels: string[] = [];
     const data: number[] = [];
-    
+
     entries.forEach(entry => {
       if (entry && typeof entry.weight_kg === 'number') {
         const date = new Date(entry.date);
@@ -85,7 +95,7 @@ export default function ProgressScreen() {
         data.push(entry.weight_kg);
       }
     });
-    
+
     return { labels, datasets: [{ data }] };
   };
 
@@ -96,14 +106,14 @@ export default function ProgressScreen() {
     const proteinData: number[] = [];
     const carbsData: number[] = [];
     const fatData: number[] = [];
-    
+
     summaries.forEach((summary, index) => {
       labels.push(`W${summaries.length - index}`);
       proteinData.push(summary.totalProtein);
       carbsData.push(summary.totalCarbs);
       fatData.push(summary.totalFat);
     });
-    
+
     return { labels, proteinData, carbsData, fatData };
   };
 
@@ -113,7 +123,7 @@ export default function ProgressScreen() {
       Alert.alert('Invalid Weight', 'Please enter a weight between 30-300 kg');
       return;
     }
-    
+
     await addWeightEntry(weight);
     setWeightInput('');
     setShowWeightForm(false);
@@ -346,7 +356,7 @@ export default function ProgressScreen() {
   return (
     <SafeAreaView style={dynamicStyles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      
+
       {/* Header */}
       <View style={dynamicStyles.header}>
         <TouchableOpacity
@@ -416,7 +426,15 @@ export default function ProgressScreen() {
         {/* Calories Chart */}
         {selectedTab === 'calories' && (
           <View style={dynamicStyles.chartCard}>
-            <Text style={dynamicStyles.chartTitle}>Weekly Calories</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <Text style={dynamicStyles.chartTitle}>Weekly Calories</Text>
+              {healthKitEnabled && (
+                <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surfaceSecondary, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12 }}>
+                  <Ionicons name="heart" size={14} color="#FF2D55" style={{ marginRight: 4 }} />
+                  <Text style={{ fontSize: 10, fontWeight: '700', color: colors.textSecondary }}>APPLE HEALTH</Text>
+                </View>
+              )}
+            </View>
             <View style={dynamicStyles.chartContainer}>
               <LineChart
                 data={calorieChartData}
@@ -494,7 +512,15 @@ export default function ProgressScreen() {
 
             {weightChartData ? (
               <View style={dynamicStyles.chartCard}>
-                <Text style={dynamicStyles.chartTitle}>Weight Trend (Last 30 Days)</Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                  <Text style={dynamicStyles.chartTitle}>Weight Trend (Last 30 Days)</Text>
+                  {healthKitEnabled && (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surfaceSecondary, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12 }}>
+                      <Ionicons name="heart" size={14} color="#FF2D55" style={{ marginRight: 4 }} />
+                      <Text style={{ fontSize: 10, fontWeight: '700', color: colors.textSecondary }}>APPLE HEALTH</Text>
+                    </View>
+                  )}
+                </View>
                 <View style={dynamicStyles.chartContainer}>
                   <LineChart
                     data={weightChartData}
@@ -610,7 +636,7 @@ export default function ProgressScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
-      
+
       {/* Banner Ad for Free Users */}
       <AdBanner placement="progress_screen" />
     </SafeAreaView>

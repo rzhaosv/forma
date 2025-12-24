@@ -18,6 +18,9 @@ import { useMealStore } from '../store/useMealStore';
 import { useTheme } from '../hooks/useTheme';
 import AdBanner from '../components/AdBanner';
 import InsightsCard from '../components/InsightsCard';
+import { Ionicons } from '@expo/vector-icons';
+import { isHealthKitEnabled } from '../utils/healthKitSettings';
+import { Platform } from 'react-native';
 
 const MEAL_TYPE_ICONS = {
   Breakfast: '🌅',
@@ -30,6 +33,13 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const [currentDate] = useState(new Date());
   const { colors, isDark } = useTheme();
+  const [healthKitEnabled, setHealthKitEnabled] = useState(false);
+
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      isHealthKitEnabled().then(setHealthKitEnabled);
+    }
+  }, []);
 
   // Get app version
   const appVersion = Constants.expoConfig?.version || 'dev';
@@ -411,6 +421,23 @@ export default function HomeScreen() {
 
         {/* Calorie Progress Card */}
         <View style={dynamicStyles.progressCard}>
+          {healthKitEnabled && (
+            <View style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: colors.surfaceSecondary,
+              paddingHorizontal: 10,
+              paddingVertical: 5,
+              borderRadius: 12,
+              marginBottom: 16,
+              alignSelf: 'center'
+            }}>
+              <Ionicons name="heart" size={14} color="#FF2D55" style={{ marginRight: 6 }} />
+              <Text style={{ fontSize: 10, fontWeight: '700', color: colors.textSecondary, letterSpacing: 0.5 }}>
+                LINKED WITH APPLE HEALTH
+              </Text>
+            </View>
+          )}
           <View style={styles.calorieRing}>
             {/* SVG Circle Progress */}
             <Svg width="180" height="180" style={styles.svgContainer}>

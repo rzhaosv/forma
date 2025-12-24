@@ -197,7 +197,7 @@ export default function SettingsScreen() {
         await setHealthKitEnabled(true);
         setHealthKitEnabledState(true);
         Alert.alert(
-          'HealthKit Enabled',
+          'Apple Health Enabled',
           'Your weight and nutrition data will now sync with Apple Health.'
         );
       } catch (error: any) {
@@ -205,10 +205,10 @@ export default function SettingsScreen() {
         console.error('Error details:', JSON.stringify(error, null, 2));
 
         // More helpful error message
-        let errorMessage = 'Failed to enable HealthKit.';
+        let errorMessage = 'Failed to enable Apple Health.';
 
         if (error.message?.includes('not available')) {
-          errorMessage = 'HealthKit is not available on this device. This feature requires a physical iPhone with iOS 8.0 or later.';
+          errorMessage = 'Apple Health is not available on this device. This feature requires a physical iPhone with iOS 8.0 or later.';
         } else if (error.message?.includes('authorization') || error.message?.includes('permission')) {
           errorMessage = 'HealthKit permission was denied. Please go to Settings > Health > Forma and enable access.';
         } else if (error.message?.includes('entitlement')) {
@@ -217,7 +217,7 @@ export default function SettingsScreen() {
           errorMessage = `Failed to enable HealthKit: ${error.message || 'Unknown error'}. Please check your permissions in Settings > Health > Forma.`;
         }
 
-        Alert.alert('HealthKit Error', errorMessage, [
+        Alert.alert('Apple Health Error', errorMessage, [
           { text: 'OK' },
           {
             text: 'Open Settings',
@@ -233,7 +233,7 @@ export default function SettingsScreen() {
       await setHealthKitEnabled(false);
       setHealthKitEnabledState(false);
       Alert.alert(
-        'HealthKit Disabled',
+        'Apple Health Disabled',
         'Your data will no longer sync with Apple Health.'
       );
     }
@@ -526,8 +526,12 @@ export default function SettingsScreen() {
         {Platform.OS === 'ios' && (
           <View style={dynamicStyles.section}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-              <Text style={dynamicStyles.sectionTitle}>Fitness Integrations</Text>
+              <Ionicons name="heart" size={20} color="#FF2D55" style={{ marginRight: 8 }} />
+              <Text style={dynamicStyles.sectionTitle}>Apple Health Integration</Text>
             </View>
+            <Text style={[dynamicStyles.settingDescription, { marginBottom: 16, marginTop: -8 }]}>
+              Forma securely reads and writes data to the Apple Health app to keep your weight, meals, and activity in sync.
+            </Text>
 
             {!healthKitAvailable ? (
               <View style={[dynamicStyles.settingRow, { flexDirection: 'column', alignItems: 'flex-start' }]}>
@@ -538,7 +542,7 @@ export default function SettingsScreen() {
                   <Ionicons name="information-circle-outline" size={18} color={colors.textTertiary} style={{ marginLeft: 6 }} />
                 </View>
                 <Text style={dynamicStyles.settingDescription}>
-                  HealthKit could not be detected. This feature requires a physical iPhone and a native build. If you are using Expo Go, please switch to your Development Build.
+                  Apple Health could not be detected. This feature requires a physical iPhone and a native build. If you are using Expo Go, please switch to your Development Build.
                 </Text>
                 <TouchableOpacity
                   style={{ marginTop: 12, paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8, backgroundColor: colors.surfaceSecondary }}
@@ -546,7 +550,7 @@ export default function SettingsScreen() {
                     const available = await isHealthKitAvailable();
                     setHealthKitAvailable(available);
                     if (available) {
-                      Alert.alert('Success', 'HealthKit is now available!');
+                      Alert.alert('Success', 'Apple Health is now available!');
                     } else {
                       Alert.alert('Still Unavailable', 'Ensure you are running on a physical device with a native build.');
                     }
