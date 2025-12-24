@@ -170,8 +170,8 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
       ).size;
 
       summaries.push({
-        weekStart: weekStart.toISOString().split('T')[0],
-        weekEnd: weekEnd.toISOString().split('T')[0],
+        weekStart: getLocalDateString(weekStart),
+        weekEnd: getLocalDateString(weekEnd),
         totalCalories,
         avgDailyCalories: uniqueDays > 0 ? Math.round(totalCalories / uniqueDays) : 0,
         totalProtein: Math.round(totalProtein),
@@ -181,44 +181,39 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
       });
     }
 
-    return summaries.reverse(); // Most recent week first
+    return summaries; // Current week is at index 0
   },
 
   calculateStreak: () => {
     const meals = useMealStore.getState().meals;
     if (meals.length === 0) return 0;
 
-    // Get unique dates with meals, sorted descending
+    // Get unique dates with meals (YYYY-MM-DD), sorted descending
     const datesWithMeals = Array.from(
       new Set(meals.map(meal => getLocalDateString(new Date(meal.timestamp))))
     ).sort((a, b) => b.localeCompare(a));
 
     if (datesWithMeals.length === 0) return 0;
 
-    // Check if today or yesterday was logged
     const today = getLocalDateString();
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = getLocalDateString(yesterday);
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterday = getLocalDateString(yesterdayDate);
 
-    // If today isn't logged, check if yesterday was
-    const startDate = datesWithMeals[0] === today
-      ? today
-      : datesWithMeals[0] === yesterdayStr
-        ? yesterdayStr
-        : null;
+    // If most recent log is NOT today AND NOT yesterday, streak is broken
+    if (datesWithMeals[0] !== today && datesWithMeals[0] !== yesterday) {
+      return 0;
+    }
 
-    if (!startDate) return 0;
-
-    // Count consecutive days
+    // Count consecutive days starting from the most recent log
     let streak = 0;
-    let currentDate = new Date(startDate);
+    let checkDate = new Date(datesWithMeals[0] + 'T12:00:00');
 
     while (true) {
-      const dateStr = getLocalDateString(currentDate);
+      const dateStr = getLocalDateString(checkDate);
       if (datesWithMeals.includes(dateStr)) {
         streak++;
-        currentDate.setDate(currentDate.getDate() - 1);
+        checkDate.setDate(checkDate.getDate() - 1);
       } else {
         break;
       }
@@ -229,7 +224,7 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
 
   getDailyCalories: (date: string) => {
     const meals = useMealStore.getState().meals;
-    const dayMeals = meals.filter(meal => meal.timestamp.startsWith(date));
+    const dayMeals = meals.filter(meal => getLocalDateString(new Date(meal.timestamp)) === date);
     return dayMeals.reduce((sum, meal) => sum + meal.totalCalories, 0);
   },
 
@@ -246,6 +241,8 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
 
       // Try to sync with Firestore
       try {
+        if (!userId) return;
+
         const progressDoc = await getDoc(doc(db, 'users', userId, 'data', 'progress'));
         if (progressDoc.exists()) {
           const remoteEntries = progressDoc.data().weightEntries || [];

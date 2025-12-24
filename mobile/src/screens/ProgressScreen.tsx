@@ -15,6 +15,7 @@ import { LineChart, BarChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import { useProgressStore } from '../store/useProgressStore';
 import { useMealStore } from '../store/useMealStore';
+import { getLocalDateString } from '../utils/dateUtils';
 import { useTheme } from '../hooks/useTheme';
 import AdBanner from '../components/AdBanner';
 import { Ionicons } from '@expo/vector-icons';
@@ -48,9 +49,8 @@ export default function ProgressScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    initializeProgress();
-  }, [initializeProgress]);
+  // Streak and progress data are already initialized in authService when user logs in
+  // No need to initialize here without a userId
 
   // Recalculate streak when meals change
   useEffect(() => {
@@ -67,9 +67,9 @@ export default function ProgressScreen() {
     for (let i = 6; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
+      const dateStr = getLocalDateString(date);
 
-      const dayMeals = meals.filter(meal => meal.timestamp.startsWith(dateStr));
+      const dayMeals = meals.filter(meal => getLocalDateString(new Date(meal.timestamp)) === dateStr);
       const calories = dayMeals.reduce((sum, meal) => sum + meal.totalCalories, 0);
 
       const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });

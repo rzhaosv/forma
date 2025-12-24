@@ -243,10 +243,12 @@ export const useMealStore = create<MealStore>((set, get) => ({
 
       // Try to sync with Firestore
       try {
+        if (!userId) return;
+
         const mealsDoc = await getDoc(doc(db, 'users', userId, 'data', 'meals'));
         if (mealsDoc.exists()) {
           const remoteMeals = mealsDoc.data().meals;
-          // Merge logic: use the one with more entries or more recent (simple choice for now: remote if exists)
+          // Merge logic: remote if it has more or equal entries
           if (remoteMeals.length >= localMeals.length) {
             localMeals = remoteMeals;
             await AsyncStorage.setItem(keys.meals, JSON.stringify(localMeals));
