@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forma - AI-Powered Nutrition Tracking</title>
     <meta name="description"
-        content="Track your calories and macros effortlessly with AI. Just snap a photo or scan a barcode - Forma does the rest.">
+        content="Track your calories and macros effortlessly with AI. Just snap a photo, scan a barcode, or describe your meal. Forma does the rest.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
@@ -27,174 +27,172 @@
         (function (f, b) { if (!b.__SV) { var e, g, i, h; window.mixpanel = b; b._i = []; b.init = function (e, f, c) { function g(a, d) { var b = d.split("."); 2 == b.length && (a = a[b[0]], d = b[1]); a[d] = function () { a.push([d].concat(Array.prototype.slice.call(arguments, 0))) } } var a = b; "undefined" !== typeof c ? a = b[c] = [] : c = "mixpanel"; a.people = a.people || []; a.toString = function (a) { var d = "mixpanel"; "mixpanel" !== c && (d += "." + c); a || (d += " (stub)"); return d }; a.people.toString = function () { return a.toString(1) + ".people (stub)" }; i = "disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_batch_senders people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user people.remove".split(" "); for (h = 0; h < i.length; h++)g(a, i[h]); var j = "set set_once union unset remove delete".split(" "); a.get_group = function () { function b(c) { d[c] = function () { call2_args = arguments; call2 = [c].concat(Array.prototype.slice.call(call2_args, 0)); a.push([e, call2]) } } for (var d = {}, e = ["get_group"].concat(Array.prototype.slice.call(arguments, 0)), c = 0; c < j.length; c++)b(j[c]); return d }; b._i.push([e, f, c]) }; b.__SV = 1.2; e = f.createElement("script"); e.type = "text/javascript"; e.async = !0; e.src = "undefined" !== typeof MIXPANEL_CUSTOM_LIB_URL ? MIXPANEL_CUSTOM_LIB_URL : "file:" === f.location.protocol && "//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//) ? "https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js" : "//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js"; g = f.getElementsByTagName("script")[0]; g.parentNode.insertBefore(e, g) } })(document, window.mixpanel || []);
     </script>
 
-    Track Your Nutrition
-    <span class="gradient-text">Effortlessly</span>
-    </h1>
-    <p class="hero-subtitle">
-        AI-powered calorie and macro tracking. Just snap a photo, scan a barcode, or describe your meal.
-        Forma does the rest.
-    </p>
-    <div class="hero-cta">
-        <a href="#waitlist" class="btn-primary btn-large">
-            Get Early Access
-        </a>
-    </div>
-    </div>
-    <div class="hero-image">
-        <div class="phone-mockup">
-            <div class="phone-screen">
-                <div class="app-preview" id="app-preview">
-                    <div class="visualizer-container">
-                        <!-- Photo View -->
-                        <div class="photo-view">
-                            <img src="grilled-chicken-rice.jpg" alt="Grilled Chicken" class="food-photo">
-                            <div class="camera-ui">
-                                <div class="viewfinder">
-                                    <div class="corner tl"></div>
-                                    <div class="corner tr"></div>
-                                    <div class="corner bl"></div>
-                                    <div class="corner br"></div>
-                                </div>
-                                <div class="camera-controls">
-                                    <div class="shutter-btn"></div>
-                                </div>
-                                <div class="shutter-flash"></div>
-                            </div>
-                            <div class="ai-grid"></div>
-                            <div class="laser-line">
-                                <div class="laser-glow"></div>
-                                <div class="laser-point" style="left: 20%"></div>
-                                <div class="laser-point" style="left: 50%"></div>
-                                <div class="laser-point" style="left: 80%"></div>
-                            </div>
-                            <div class="visual-tag tag-cal">✨ 450 kcal</div>
-                            <div class="visual-tag tag-protein">🥩 35g Protein</div>
-                            <div class="ai-status">Analyzing...</div>
-                        </div>
+    <!-- Vercel Analytics -->
+    <script defer src="/_vercel/insights/script.js"></script>
+</head>
 
-                        <!-- Stats View (Premium Dashboard) -->
-                        <div class="stats-view">
-                            <div class="preview-header">
-                                <div class="preview-time">9:41</div>
-                                <div class="preview-icons">📶 🔋</div>
-                            </div>
-                            <div class="preview-content">
-                                <div class="premium-dashboard">
-                                    <div class="dashboard-card main-stats">
-                                        <div class="glass-circle">
-                                            <svg viewBox="0 0 120 120">
-                                                <circle cx="60" cy="60" r="54" fill="none" class="circle-bg" />
-                                                <circle cx="60" cy="60" r="54" fill="none" class="circle-fill" />
-                                            </svg>
-                                            <div class="circle-inner">
-                                                <span class="main-number">1,697</span>
-                                                <span class="sub-label">of 2,000 cal</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="macro-row">
-                                        <div class="macro-glass-card protein">
-                                            <div class="macro-icon">🥩</div>
-                                            <div class="macro-data">
-                                                <span class="m-label">Protein</span>
-                                                <span class="m-val">83g</span>
-                                            </div>
-                                            <div class="macro-bar">
-                                                <div class="m-fill" style="width: 70%"></div>
-                                            </div>
-                                        </div>
-                                        <div class="macro-glass-card carbs">
-                                            <div class="macro-icon">🍚</div>
-                                            <div class="macro-data">
-                                                <span class="m-label">Carbs</span>
-                                                <span class="m-val">120g</span>
-                                            </div>
-                                            <div class="macro-bar">
-                                                <div class="m-fill" style="width: 50%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="logged-items-card">
-                                        <div class="card-title-sm">Recently Logged</div>
-                                        <div class="log-item">
-                                            <div class="item-emoji">🥗</div>
-                                            <div class="item-info">
-                                                <span class="item-name">Chicken Bowl</span>
-                                                <span class="item-cal">+450 kcal</span>
-                                            </div>
-                                        </div>
-                                        <div class="log-item">
-                                            <div class="item-emoji">🍎</div>
-                                            <div class="item-info">
-                                                <span class="item-name">Apple</span>
-                                                <span class="item-cal">+95 kcal</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <a href="/" class="logo">
+                    <img src="assets/logo.png" alt="Forma Logo" class="logo-img">
+                    <span class="logo-text">Forma</span>
+                </a>
+                <button class="mobile-menu-btn" id="mobile-menu-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-links" id="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="#waitlist" class="btn-primary">Join Waitlist</a>
                 </div>
             </div>
         </div>
-        <div class="floating-card card-1">
-            <div class="card-icon">📸</div>
-            <div class="card-text">
-                <div class="card-title">Instant Recognition</div>
-                <div class="card-subtitle">AI identifies your meal</div>
-            </div>
-        </div>
-        <div class="floating-card card-2">
-            <div class="card-icon">✅</div>
-            <div class="card-text">
-                <div class="card-title">250 calories</div>
-                <div class="card-subtitle">Chicken breast logged</div>
-            </div>
-        </div>
-    </div>
-    </div>
-    </div>
-    </section>
+    </nav>
 
-    <!-- Email Capture / Waitlist Section -->
-    <section id="waitlist" class="waitlist">
+    <!-- Hero Section -->
+    <section class="hero">
         <div class="container">
-            <div class="waitlist-content">
-                <div class="waitlist-badge">🚀 Coming Soon</div>
-                <h2 class="waitlist-title">Join the Waitlist</h2>
-                <p class="waitlist-subtitle">Be the first to know when Forma launches. Get early access and exclusive
-                    benefits.</p>
-
-                <form id="waitlist-form" class="waitlist-form">
-                    <div class="form-group">
-                        <input type="email" id="email-input" name="email" placeholder="Enter your email address"
-                            class="email-input" required />
-                        <button type="submit" class="submit-btn">
-                            <span class="btn-text">Join Waitlist</span>
-                            <span class="btn-loading">
-                                <svg class="spinner" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
-                                        opacity="0.25" />
-                                    <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="4"
-                                        stroke-linecap="round" />
-                                </svg>
-                            </span>
-                        </button>
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        Track Your Nutrition
+                        <span class="gradient-text">Effortlessly</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        AI-powered calorie and macro tracking. Just snap a photo, scan a barcode, or describe your meal.
+                        Forma does the rest.
+                    </p>
+                    <div class="hero-cta">
+                        <a href="#waitlist" class="btn-primary btn-large">
+                            Get Early Access
+                        </a>
                     </div>
-                    <div id="form-message" class="form-message"></div>
-                </form>
+                </div>
+                <div class="hero-image">
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div class="app-preview" id="app-preview">
+                                <div class="visualizer-container">
+                                    <!-- Photo View -->
+                                    <div class="photo-view">
+                                        <img src="grilled-chicken-rice.jpg" alt="Grilled Chicken" class="food-photo">
+                                        <div class="camera-ui">
+                                            <div class="viewfinder">
+                                                <div class="corner tl"></div>
+                                                <div class="corner tr"></div>
+                                                <div class="corner bl"></div>
+                                                <div class="corner br"></div>
+                                            </div>
+                                            <div class="camera-controls">
+                                                <div class="shutter-btn"></div>
+                                            </div>
+                                            <div class="shutter-flash"></div>
+                                        </div>
+                                        <div class="ai-grid"></div>
+                                        <div class="laser-line">
+                                            <div class="laser-glow"></div>
+                                            <div class="laser-point" style="left: 20%"></div>
+                                            <div class="laser-point" style="left: 50%"></div>
+                                            <div class="laser-point" style="left: 80%"></div>
+                                        </div>
+                                        <div class="visual-tag tag-cal">✨ 450 kcal</div>
+                                        <div class="visual-tag tag-protein">🥩 35g Protein</div>
+                                        <div class="ai-status">Analyzing...</div>
+                                    </div>
 
-                <div class="waitlist-benefits">
-                    <div class="benefit">
-                        <span class="benefit-icon">✨</span>
-                        <span class="benefit-text">Early access</span>
+                                    <!-- Stats View (Premium Dashboard) -->
+                                    <div class="stats-view">
+                                        <div class="preview-header">
+                                            <div class="preview-time">9:41</div>
+                                            <div class="preview-icons">📶 🔋</div>
+                                        </div>
+                                        <div class="preview-content">
+                                            <div class="premium-dashboard">
+                                                <div class="dashboard-card main-stats">
+                                                    <div class="glass-circle">
+                                                        <svg viewBox="0 0 120 120">
+                                                            <circle cx="60" cy="60" r="54" fill="none"
+                                                                class="circle-bg" />
+                                                            <circle cx="60" cy="60" r="54" fill="none"
+                                                                class="circle-fill" />
+                                                        </svg>
+                                                        <div class="circle-inner">
+                                                            <span class="main-number">1,697</span>
+                                                            <span class="sub-label">of 2,000 cal</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="macro-row">
+                                                    <div class="macro-glass-card protein">
+                                                        <div class="macro-icon">🥩</div>
+                                                        <div class="macro-data">
+                                                            <span class="m-label">Protein</span>
+                                                            <span class="m-val">142g</span>
+                                                        </div>
+                                                        <div class="macro-bar">
+                                                            <div class="m-fill" style="width: 85%"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="macro-glass-card carbs">
+                                                        <div class="macro-icon">🍚</div>
+                                                        <div class="macro-data">
+                                                            <span class="m-label">Carbs</span>
+                                                            <span class="m-val">120g</span>
+                                                        </div>
+                                                        <div class="macro-bar">
+                                                            <div class="m-fill"
+                                                                style="width: 45%; background: var(--secondary)"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="logged-items-card">
+                                                    <div class="card-title-sm">Recently Logged</div>
+                                                    <div class="log-item">
+                                                        <span class="item-emoji">🥗</span>
+                                                        <div class="item-info">
+                                                            <span class="item-name">Grilled Chicken Salad</span>
+                                                            <span class="item-cal">450</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="log-item">
+                                                        <span class="item-emoji">🍌</span>
+                                                        <div class="item-info">
+                                                            <span class="item-name">Banana</span>
+                                                            <span class="item-cal">105</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="scan-overlay"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="benefit">
-                        <span class="benefit-icon">🎁</span>
-                        <span class="benefit-text">Exclusive perks</span>
+
+                    <!-- Floating Cards -->
+                    <div class="floating-card card-1">
+                        <span class="card-icon">🍎</span>
+                        <div>
+                            <div class="card-title">Food Recognized</div>
+                            <div class="card-subtitle">Red Apple • 95 kcal</div>
+                        </div>
+                    </div>
+                    <div class="floating-card card-2">
+                        <span class="card-icon">📊</span>
+                        <div>
+                            <div class="card-title">Macros Tracked</div>
+                            <div class="card-subtitle">Protein: 24g • Carbs: 32g</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -206,101 +204,113 @@
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Everything you need to reach your goals</h2>
-                <p class="section-subtitle">Powerful features that make nutrition tracking simple and enjoyable</p>
+                <p class="section-subtitle">Powerful tools to make nutrition tracking effortless and accurate.</p>
             </div>
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">📸</div>
-                    <h3 class="feature-title">Photo Recognition</h3>
-                    <p class="feature-description">Take a photo of your meal and let AI calculate calories and macros
-                        instantly. No manual entry needed.</p>
+                    <h3 class="feature-title">AI Photo Analysis</h3>
+                    <p class="feature-description">Snap a photo of your meal and let AI instantly identify foods and
+                        estimate calories.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">📊</div>
+                    <div class="feature-icon">🔍</div>
                     <h3 class="feature-title">Barcode Scanner</h3>
-                    <p class="feature-description">Scan any product barcode for instant nutritional information from our
-                        massive food database.</p>
+                    <p class="feature-description">Scan millions of food items instantly for accurate nutritional
+                        information.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon"><img src="assets/logo.png" class="logo-img" alt="Forma"></div>
-                    <h3 class="feature-title">Smart Goals</h3>
-                    <p class="feature-description">Set personalized calorie and macro goals based on your body
-                        composition and fitness objectives.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📈</div>
-                    <h3 class="feature-title">Progress Tracking</h3>
-                    <p class="feature-description">Monitor your weight, body composition, and nutrition trends over time
-                        with beautiful visualizations.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🍳</div>
-                    <h3 class="feature-title">Recipe Builder</h3>
-                    <p class="feature-description">Create custom recipes and save your favorite meals for quick logging
-                        later.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🏃</div>
-                    <h3 class="feature-title">Apple Health Sync</h3>
-                    <p class="feature-description">Seamlessly sync your nutrition data with Apple Health and other
-                        fitness apps.</p>
+                    <div class="feature-icon">🗣️</div>
+                    <h3 class="feature-title">Voice Logging</h3>
+                    <p class="feature-description">Just say "I had a grilled chicken salad" and Forma will log it for
+                        you.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- How It Works Section -->
+    <!-- How It Works -->
     <section id="how-it-works" class="how-it-works">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">How It Works</h2>
-                <p class="section-subtitle">From meal to tracking in seconds</p>
+                <h2 class="section-title">Tracking made simple</h2>
+                <p class="section-subtitle">Three simple steps to better nutrition habits.</p>
             </div>
             <div class="steps">
                 <div class="step">
                     <div class="step-number">1</div>
                     <div class="step-content">
-                        <h3 class="step-title">Snap a Photo</h3>
-                        <p class="step-description">Take a picture of your meal, scan a barcode, or type what you ate.
-                        </p>
+                        <h3 class="step-title">Capture</h3>
+                        <p class="step-description">Take a photo, scan a barcode, or describe your meal in plain
+                            English.</p>
                     </div>
                     <div class="step-visual">
-                        <div class="step-icon">📱</div>
+                        <span class="step-icon">📱</span>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3 class="step-title">AI Does the Work</h3>
-                        <p class="step-description">Our AI analyzes your meal and calculates calories, protein, carbs,
-                            and fats.</p>
+                        <h3 class="step-title">Analyze</h3>
+                        <p class="step-description">Our advanced AI identifies ingredients and calculates accurate
+                            nutritional values.</p>
                     </div>
                     <div class="step-visual">
-                        <div class="step-icon">🤖</div>
+                        <span class="step-icon">⚡</span>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3 class="step-title">Review & Confirm</h3>
-                        <p class="step-description">Check the results, adjust portions if needed, and save to your
-                            diary.</p>
+                        <h3 class="step-title">Track</h3>
+                        <p class="step-description">Get insights into your daily macros and progress toward your goals.
+                        </p>
                     </div>
                     <div class="step-visual">
-                        <div class="step-icon">✅</div>
+                        <span class="step-icon">📈</span>
                     </div>
                 </div>
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <div class="step-content">
-                        <h3 class="step-title">Track Your Progress</h3>
-                        <p class="step-description">Watch your daily progress and achieve your nutrition goals
-                            effortlessly.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Waitlist Section -->
+    <section id="waitlist" class="waitlist">
+        <div class="container">
+            <div class="waitlist-content">
+                <span class="waitlist-badge">Limited Access</span>
+                <h2 class="waitlist-title">Start your journey today</h2>
+                <p class="waitlist-subtitle">Join thousands of beta users who are transforming their nutrition habits
+                    with Forma.</p>
+
+                <div class="waitlist-benefits">
+                    <div class="benefit">
+                        <span class="benefit-icon">✓</span> Free during beta
                     </div>
-                    <div class="step-visual">
-                        <div class="step-icon">📊</div>
+                    <div class="benefit">
+                        <span class="benefit-icon">✓</span> Premium features
+                    </div>
+                    <div class="benefit">
+                        <span class="benefit-icon">✓</span> Priority support
                     </div>
                 </div>
+
+                <form class="waitlist-form" id="waitlist-form" onsubmit="return false;">
+                    <div class="form-group">
+                        <input type="email" class="email-input" placeholder="Enter your email" required>
+                        <button type="submit" class="submit-btn">
+                            <span class="btn-text">Join Waitlist</span>
+                            <div class="btn-loading">
+                                <div class="spinner"></div>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="form-message"></div>
+                </form>
+
+                <p class="waitlist-count">
+                    <span>2,342</span> people joined this week
+                </p>
             </div>
         </div>
     </section>
@@ -309,63 +319,44 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-brand">
-                    <div class="logo">
-                        <span class="logo-icon"><img src="assets/logo.png" class="logo-img" alt="Forma"></span>
+                <div class="footer-column branding-column">
+                    <a href="/" class="logo" style="color: white;">
+                        <img src="assets/logo.png" alt="Forma Logo" class="logo-img">
                         <span class="logo-text">Forma</span>
-                    </div>
-                    <p class="footer-tagline">AI-powered nutrition tracking made simple</p>
+                    </a>
+                    <p class="footer-tagline">Making nutrition tracking effortless through the power of AI.</p>
                 </div>
-                <div class="footer-links">
-                    <div class="footer-column">
-                        <h4 class="footer-heading">Product</h4>
+                <div class="footer-column">
+                    <h4 class="footer-heading">Product</h4>
+                    <div class="footer-links">
                         <a href="#features">Features</a>
-                        <a href="#how-it-works">How It Works</a>
+                        <a href="#how-it-works">How it Works</a>
+                        <a href="#pricing">Pricing</a>
                     </div>
-                    <div class="footer-column">
-                        <h4 class="footer-heading">Company</h4>
-                        <a href="mailto:support@forma.app">Contact</a>
+                </div>
+                <div class="footer-column">
+                    <h4 class="footer-heading">Company</h4>
+                    <div class="footer-links">
+                        <a href="#">About</a>
+                        <a href="#">Blog</a>
+                        <a href="#">Careers</a>
                     </div>
-                    <div class="footer-column">
-                        <h4 class="footer-heading">Legal</h4>
+                </div>
+                <div class="footer-column">
+                    <h4 class="footer-heading">Legal</h4>
+                    <div class="footer-links">
                         <a href="privacy.html">Privacy</a>
                         <a href="terms.html">Terms</a>
                     </div>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Forma. All rights reserved.</p>
+                &copy; 2025 Forma. All rights reserved.
             </div>
         </div>
     </footer>
 
-    <!-- Analytics -->
-    <script src="analytics.js"></script>
-    <script src="analytics-config.js"></script>
     <script src="script.js"></script>
-
-    <!-- Mobile Menu Script -->
-    <script>
-        const menuBtn = document.getElementById('mobile-menu-btn');
-        const navLinks = document.getElementById('nav-links');
-        const links = navLinks.querySelectorAll('a');
-
-        if (menuBtn && navLinks) {
-            menuBtn.addEventListener('click', () => {
-                menuBtn.classList.toggle('active');
-                navLinks.classList.toggle('active');
-                document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
-            });
-
-            links.forEach(link => {
-                link.addEventListener('click', () => {
-                    menuBtn.classList.remove('active');
-                    navLinks.classList.remove('active');
-                    document.body.style.overflow = '';
-                });
-            });
-        }
-    </script>
-    </body>
+</body>
 
 </html>
