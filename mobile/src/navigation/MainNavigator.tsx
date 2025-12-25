@@ -18,6 +18,7 @@ import ExportDataScreen from '../screens/ExportDataScreen';
 import ExerciseScreen from '../screens/ExerciseScreen';
 import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
 import TermsOfUseScreen from '../screens/TermsOfUseScreen';
+import VoiceLogScreen from '../screens/VoiceLogScreen';
 
 const Stack = createStackNavigator();
 
@@ -46,6 +47,7 @@ export default function MainNavigator() {
       <Stack.Screen name="Exercise" component={ExerciseScreen} />
       <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
       <Stack.Screen name="TermsOfUse" component={TermsOfUseScreen} />
+      <Stack.Screen name="VoiceLog" component={VoiceLogScreen} />
       {/* Add more screens: Profile, etc. */}
     </Stack.Navigator>
   );

@@ -43,7 +43,7 @@ Maximize downloads with a great store presence.
 ### 2. Text
 - **Title**: "Forma - Calorie & Macro AI" (Include keywords)
 - **Subtitle**: "Scan food, track macros, lose weight"
-- **Keywords (iOS)**: calorie counter, food scanner, macro tracker, diet, weight loss, ai nutritionist
+- **Keywords (iOS)**: `calorie,counter,tracker,macro,food,scanner,AI,diet,weight,loss,nutrition,log,camera,calculator,fast`
 
 ## Phase 4: Marketing (The "Get it Out" Part)
 How to get initial users.

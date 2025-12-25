@@ -116,6 +116,8 @@ export default function HomeScreen() {
     } else if (type === 'manual') {
       // Navigate directly to food search for better UX
       navigation.navigate('FoodSearch' as never);
+    } else if (type === 'voice') {
+      navigation.navigate('VoiceLog' as never);
     }
   };
 
@@ -559,6 +561,15 @@ export default function HomeScreen() {
           >
             <Text style={styles.quickAddIcon}>📊</Text>
             <Text style={dynamicStyles.quickAddText}>Barcode</Text>
+          </TouchableOpacity>
+
+
+          <TouchableOpacity
+            style={dynamicStyles.quickAddButton}
+            onPress={() => handleQuickAdd('voice')}
+          >
+            <Text style={styles.quickAddIcon}>🎙️</Text>
+            <Text style={dynamicStyles.quickAddText}>Voice Add</Text>
           </TouchableOpacity>
 
           <TouchableOpacity

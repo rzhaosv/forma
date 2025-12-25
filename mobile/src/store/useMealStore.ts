@@ -91,6 +91,10 @@ export const useMealStore = create<MealStore>((set, get) => ({
       console.error('Failed to sync meal to HealthKit:', error);
       // Don't throw - we don't want to block the meal entry if HealthKit sync fails
     }
+
+    // Attempt to prompt for review
+    const { checkAndRequestReview } = require('../services/reviewService');
+    checkAndRequestReview('meal_logged');
   },
 
   addFoodToMeal: async (mealId, food) => {

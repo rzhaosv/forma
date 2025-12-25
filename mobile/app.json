@@ -90,6 +90,12 @@
           "cameraPermission": "Allow Forma to access your camera to scan food photos and barcodes."
         }
       ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow Forma to access your microphone to record voice logs for meal tracking."
+        }
+      ],
       "expo-web-browser",
       "expo-file-system",
       "expo-notifications",
