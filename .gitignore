@@ -87,3 +87,4 @@ coverage/
 # Block specific secret keys
 google-play-key.json
 mobile/google-play-key.json
+.vercel

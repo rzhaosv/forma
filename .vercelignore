@@ -1,0 +1,7 @@
+mobile
+backend
+node_modules
+.git
+.idea
+*.log
+.DS_Store
