@@ -71,43 +71,58 @@
                 <div class="hero-image">
                     <div class="phone-mockup">
                         <div class="phone-screen">
-                            <div class="app-preview">
-                                <div class="preview-header">
-                                    <div class="preview-time">9:41</div>
-                                    <div class="preview-icons">📶 🔋</div>
-                                </div>
-                                <div class="preview-content">
-                                    <div class="preview-greeting">Good morning! 👋</div>
-                                    <div class="preview-stats">
-                                        <div class="stat-circle">
-                                            <svg viewBox="0 0 120 120">
-                                                <circle cx="60" cy="60" r="54" fill="none" stroke="#e5e7eb"
-                                                    stroke-width="8" />
-                                                <circle cx="60" cy="60" r="54" fill="none" stroke="#6366f1"
-                                                    stroke-width="8" stroke-dasharray="339.292"
-                                                    stroke-dashoffset="84.823" stroke-linecap="round"
-                                                    transform="rotate(-90 60 60)" />
-                                            </svg>
-                                            <div class="stat-center">
-                                                <div class="stat-number">1,247</div>
-                                                <div class="stat-label">/ 2,000</div>
-                                            </div>
+                            <div class="app-preview" id="app-preview">
+                                <div class="visualizer-container">
+                                    <!-- Photo View -->
+                                    <div class="photo-view">
+                                        <img src="grilled-chicken-rice.jpg" alt="Grilled Chicken" class="food-photo">
+                                        <div class="scan-overlay"></div>
+                                        <div class="visual-tag tag-cal">✨ 450 kcal</div>
+                                        <div class="visual-tag tag-protein">🥩 35g Protein</div>
+                                    </div>
+
+                                    <!-- Stats View -->
+                                    <div class="stats-view">
+                                        <div class="preview-header">
+                                            <div class="preview-time">9:41</div>
+                                            <div class="preview-icons">📶 🔋</div>
                                         </div>
-                                        <div class="stat-info">
-                                            <div class="calories-left">753 cal left</div>
-                                            <div class="macros">
-                                                <div class="macro-item">
-                                                    <span class="macro-label">Protein</span>
-                                                    <span class="macro-value">48/120g</span>
+                                        <div class="preview-content">
+                                            <div class="preview-greeting">Good morning! 👋</div>
+                                            <div class="preview-stats">
+                                                <div class="stat-circle">
+                                                    <svg viewBox="0 0 120 120">
+                                                        <circle cx="60" cy="60" r="54" fill="none" stroke="#e5e7eb"
+                                                            stroke-width="8" />
+                                                        <circle cx="60" cy="60" r="54" fill="none" stroke="#6366f1"
+                                                            stroke-width="8" stroke-dasharray="339.292"
+                                                            stroke-dashoffset="200" stroke-linecap="round"
+                                                            transform="rotate(-90 60 60)" />
+                                                    </svg>
+                                                    <div class="stat-center">
+                                                        <div class="stat-number">1,697</div>
+                                                        <div class="stat-label">/ 2,000</div>
+                                                    </div>
+                                                </div>
+                                                <div class="stat-info">
+                                                    <div class="calories-left">303 cal left</div>
+                                                    <div class="macros">
+                                                        <div class="macro-item">
+                                                            <span class="macro-label">Protein</span>
+                                                            <span class="macro-value">83/120g</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="quick-add">
-                                        <div class="quick-add-title">Quick Add</div>
-                                        <div class="quick-add-buttons">
-                                            <div class="quick-btn">📸 Photo</div>
-                                            <div class="quick-btn">📊 Barcode</div>
+                                            <div class="quick-add">
+                                                <div class="quick-add-title">Logged Today</div>
+                                                <div class="quick-add-buttons">
+                                                    <div class="quick-btn"
+                                                        style="background: var(--bg-tertiary); grid-column: span 2;">
+                                                        🥗 Chicken & Rice bowl
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -317,6 +332,13 @@
     <script src="analytics.js"></script>
     <script src="analytics-config.js"></script>
     <script src="script.js"></script>
+    <script>
+        // Hero Visualizer Animation Loop
+        const preview = document.getElementById('app-preview');
+        setInterval(() => {
+            preview.classList.toggle('active-stats');
+        }, 4000);
+    </script>
 </body>
 
 </html>
