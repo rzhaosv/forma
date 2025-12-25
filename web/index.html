@@ -40,7 +40,12 @@
                     <span class="logo-icon">🎯</span>
                     <span class="logo-text">Forma</span>
                 </div>
-                <div class="nav-links">
+                <button class="mobile-menu-btn" id="mobile-menu-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-links" id="nav-links">
                     <a href="#features">Features</a>
                     <a href="#how-it-works">How It Works</a>
                     <a href="#waitlist" class="btn-primary">Join Waitlist</a>
@@ -338,6 +343,26 @@
         setInterval(() => {
             preview.classList.toggle('active-stats');
         }, 4000);
+    </script>
+    <!-- Mobile Menu Script -->
+    <script>
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const navLinks = document.getElementById('nav-links');
+        const links = navLinks.querySelectorAll('a');
+
+        menuBtn.addEventListener('click', () => {
+            menuBtn.classList.toggle('active');
+            navLinks.classList.toggle('active');
+            document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+        });
+
+        links.forEach(link => {
+            link.addEventListener('click', () => {
+                menuBtn.classList.remove('active');
+                navLinks.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
     </script>
 </body>
 
