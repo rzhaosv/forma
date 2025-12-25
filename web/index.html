@@ -1,29 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forma - AI-Powered Nutrition Tracking</title>
-    <meta name="description" content="Track your calories and macros effortlessly with AI. Just snap a photo or scan a barcode - Forma does the rest.">
+    <meta name="description"
+        content="Track your calories and macros effortlessly with AI. Just snap a photo or scan a barcode - Forma does the rest.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    
+
     <!-- Google Analytics (GA4) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-9L6PRKEYBS"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
+        function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
         // Full configuration happens in analytics.js after init
     </script>
-    
+
     <!-- Mixpanel -->
     <script type="text/javascript">
-        (function(f,b){if(!b.__SV){var e,g,i,h;window.mixpanel=b;b._i=[];b.init=function(e,f,c){function g(a,d){var b=d.split(".");2==b.length&&(a=a[b[0]],d=b[1]);a[d]=function(){a.push([d].concat(Array.prototype.slice.call(arguments,0)))}}var a=b;"undefined"!==typeof c?a=b[c]=[]:c="mixpanel";a.people=a.people||[];a.toString=function(a){var d="mixpanel";"mixpanel"!==c&&(d+="."+c);a||(d+=" (stub)");return d};a.people.toString=function(){return a.toString(1)+".people (stub)"};i="disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_batch_senders people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user people.remove".split(" ");for(h=0;h<i.length;h++)g(a,i[h]);var j="set set_once union unset remove delete".split(" ");a.get_group=function(){function b(c){d[c]=function(){call2_args=arguments;call2=[c].concat(Array.prototype.slice.call(call2_args,0));a.push([e,call2])}}for(var d={},e=["get_group"].concat(Array.prototype.slice.call(arguments,0)),c=0;c<j.length;c++)b(j[c]);return d};b._i.push([e,f,c])};b.__SV=1.2;e=f.createElement("script");e.type="text/javascript";e.async=!0;e.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"file:"===f.location.protocol&&"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//)?"https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";g=f.getElementsByTagName("script")[0];g.parentNode.insertBefore(e,g)}})(document,window.mixpanel||[]);
+        (function (f, b) { if (!b.__SV) { var e, g, i, h; window.mixpanel = b; b._i = []; b.init = function (e, f, c) { function g(a, d) { var b = d.split("."); 2 == b.length && (a = a[b[0]], d = b[1]); a[d] = function () { a.push([d].concat(Array.prototype.slice.call(arguments, 0))) } } var a = b; "undefined" !== typeof c ? a = b[c] = [] : c = "mixpanel"; a.people = a.people || []; a.toString = function (a) { var d = "mixpanel"; "mixpanel" !== c && (d += "." + c); a || (d += " (stub)"); return d }; a.people.toString = function () { return a.toString(1) + ".people (stub)" }; i = "disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_batch_senders people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user people.remove".split(" "); for (h = 0; h < i.length; h++)g(a, i[h]); var j = "set set_once union unset remove delete".split(" "); a.get_group = function () { function b(c) { d[c] = function () { call2_args = arguments; call2 = [c].concat(Array.prototype.slice.call(call2_args, 0)); a.push([e, call2]) } } for (var d = {}, e = ["get_group"].concat(Array.prototype.slice.call(arguments, 0)), c = 0; c < j.length; c++)b(j[c]); return d }; b._i.push([e, f, c]) }; b.__SV = 1.2; e = f.createElement("script"); e.type = "text/javascript"; e.async = !0; e.src = "undefined" !== typeof MIXPANEL_CUSTOM_LIB_URL ? MIXPANEL_CUSTOM_LIB_URL : "file:" === f.location.protocol && "//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//) ? "https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js" : "//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js"; g = f.getElementsByTagName("script")[0]; g.parentNode.insertBefore(e, g) } })(document, window.mixpanel || []);
     </script>
+
+    <!-- Vercel Analytics -->
+    <script defer src="/_vercel/insights/script.js"></script>
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="nav">
@@ -52,7 +59,8 @@
                         <span class="gradient-text">Effortlessly</span>
                     </h1>
                     <p class="hero-subtitle">
-                        AI-powered calorie and macro tracking. Just snap a photo, scan a barcode, or describe your meal. Forma does the rest.
+                        AI-powered calorie and macro tracking. Just snap a photo, scan a barcode, or describe your meal.
+                        Forma does the rest.
                     </p>
                     <div class="hero-cta">
                         <a href="#waitlist" class="btn-primary btn-large">
@@ -73,10 +81,12 @@
                                     <div class="preview-stats">
                                         <div class="stat-circle">
                                             <svg viewBox="0 0 120 120">
-                                                <circle cx="60" cy="60" r="54" fill="none" stroke="#e5e7eb" stroke-width="8"/>
-                                                <circle cx="60" cy="60" r="54" fill="none" stroke="#6366f1" stroke-width="8" 
-                                                        stroke-dasharray="339.292" stroke-dashoffset="84.823" 
-                                                        stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                                                <circle cx="60" cy="60" r="54" fill="none" stroke="#e5e7eb"
+                                                    stroke-width="8" />
+                                                <circle cx="60" cy="60" r="54" fill="none" stroke="#6366f1"
+                                                    stroke-width="8" stroke-dasharray="339.292"
+                                                    stroke-dashoffset="84.823" stroke-linecap="round"
+                                                    transform="rotate(-90 60 60)" />
                                             </svg>
                                             <div class="stat-center">
                                                 <div class="stat-number">1,247</div>
@@ -129,31 +139,28 @@
             <div class="waitlist-content">
                 <div class="waitlist-badge">🚀 Coming Soon</div>
                 <h2 class="waitlist-title">Join the Waitlist</h2>
-                <p class="waitlist-subtitle">Be the first to know when Forma launches. Get early access and exclusive benefits.</p>
-                
+                <p class="waitlist-subtitle">Be the first to know when Forma launches. Get early access and exclusive
+                    benefits.</p>
+
                 <form id="waitlist-form" class="waitlist-form">
                     <div class="form-group">
-                        <input 
-                            type="email" 
-                            id="email-input" 
-                            name="email" 
-                            placeholder="Enter your email address" 
-                            class="email-input"
-                            required
-                        />
+                        <input type="email" id="email-input" name="email" placeholder="Enter your email address"
+                            class="email-input" required />
                         <button type="submit" class="submit-btn">
                             <span class="btn-text">Join Waitlist</span>
                             <span class="btn-loading">
                                 <svg class="spinner" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" opacity="0.25"/>
-                                    <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+                                        opacity="0.25" />
+                                    <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="4"
+                                        stroke-linecap="round" />
                                 </svg>
                             </span>
                         </button>
                     </div>
                     <div id="form-message" class="form-message"></div>
                 </form>
-                
+
                 <div class="waitlist-benefits">
                     <div class="benefit">
                         <span class="benefit-icon">✨</span>
@@ -179,32 +186,38 @@
                 <div class="feature-card">
                     <div class="feature-icon">📸</div>
                     <h3 class="feature-title">Photo Recognition</h3>
-                    <p class="feature-description">Take a photo of your meal and let AI calculate calories and macros instantly. No manual entry needed.</p>
+                    <p class="feature-description">Take a photo of your meal and let AI calculate calories and macros
+                        instantly. No manual entry needed.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">📊</div>
                     <h3 class="feature-title">Barcode Scanner</h3>
-                    <p class="feature-description">Scan any product barcode for instant nutritional information from our massive food database.</p>
+                    <p class="feature-description">Scan any product barcode for instant nutritional information from our
+                        massive food database.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🎯</div>
                     <h3 class="feature-title">Smart Goals</h3>
-                    <p class="feature-description">Set personalized calorie and macro goals based on your body composition and fitness objectives.</p>
+                    <p class="feature-description">Set personalized calorie and macro goals based on your body
+                        composition and fitness objectives.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">📈</div>
                     <h3 class="feature-title">Progress Tracking</h3>
-                    <p class="feature-description">Monitor your weight, body composition, and nutrition trends over time with beautiful visualizations.</p>
+                    <p class="feature-description">Monitor your weight, body composition, and nutrition trends over time
+                        with beautiful visualizations.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🍳</div>
                     <h3 class="feature-title">Recipe Builder</h3>
-                    <p class="feature-description">Create custom recipes and save your favorite meals for quick logging later.</p>
+                    <p class="feature-description">Create custom recipes and save your favorite meals for quick logging
+                        later.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🏃</div>
                     <h3 class="feature-title">Apple Health Sync</h3>
-                    <p class="feature-description">Seamlessly sync your nutrition data with Apple Health and other fitness apps.</p>
+                    <p class="feature-description">Seamlessly sync your nutrition data with Apple Health and other
+                        fitness apps.</p>
                 </div>
             </div>
         </div>
@@ -222,7 +235,8 @@
                     <div class="step-number">1</div>
                     <div class="step-content">
                         <h3 class="step-title">Snap a Photo</h3>
-                        <p class="step-description">Take a picture of your meal, scan a barcode, or type what you ate.</p>
+                        <p class="step-description">Take a picture of your meal, scan a barcode, or type what you ate.
+                        </p>
                     </div>
                     <div class="step-visual">
                         <div class="step-icon">📱</div>
@@ -232,7 +246,8 @@
                     <div class="step-number">2</div>
                     <div class="step-content">
                         <h3 class="step-title">AI Does the Work</h3>
-                        <p class="step-description">Our AI analyzes your meal and calculates calories, protein, carbs, and fats.</p>
+                        <p class="step-description">Our AI analyzes your meal and calculates calories, protein, carbs,
+                            and fats.</p>
                     </div>
                     <div class="step-visual">
                         <div class="step-icon">🤖</div>
@@ -242,7 +257,8 @@
                     <div class="step-number">3</div>
                     <div class="step-content">
                         <h3 class="step-title">Review & Confirm</h3>
-                        <p class="step-description">Check the results, adjust portions if needed, and save to your diary.</p>
+                        <p class="step-description">Check the results, adjust portions if needed, and save to your
+                            diary.</p>
                     </div>
                     <div class="step-visual">
                         <div class="step-icon">✅</div>
@@ -252,7 +268,8 @@
                     <div class="step-number">4</div>
                     <div class="step-content">
                         <h3 class="step-title">Track Your Progress</h3>
-                        <p class="step-description">Watch your daily progress and achieve your nutrition goals effortlessly.</p>
+                        <p class="step-description">Watch your daily progress and achieve your nutrition goals
+                            effortlessly.</p>
                     </div>
                     <div class="step-visual">
                         <div class="step-icon">📊</div>
@@ -301,5 +318,5 @@
     <script src="analytics-config.js"></script>
     <script src="script.js"></script>
 </body>
-</html>
 
+</html>
