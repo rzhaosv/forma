@@ -79,119 +79,123 @@
                             <div class="app-preview" id="app-preview">
                                 <div class="visualizer-container">
                                     <!-- Photo View -->
+                                    <div class="photo-view">
+                                        <img src="grilled-chicken-rice.jpg" alt="Grilled Chicken" class="food-photo">
+                                        <div class="camera-ui">
+                                            <div class="viewfinder">
+                                                <div class="corner tl"></div>
+                                                <div class="corner tr"></div>
+                                                <div class="corner bl"></div>
+                                                <div class="corner br"></div>
+                                            </div>
+                                            <div class="camera-controls">
+                                                <div class="shutter-btn"></div>
+                                            </div>
+                                            <div class="shutter-flash"></div>
+                                        </div>
+                                        <div class="ai-grid"></div>
+                                        <div class="laser-line">
+                                            <div class="laser-glow"></div>
+                                            <div class="laser-point" style="left: 20%"></div>
+                                            <div class="laser-point" style="left: 50%"></div>
+                                            <div class="laser-point" style="left: 80%"></div>
+                                        </div>
+                                        <div class="visual-tag tag-cal">✨ 450 kcal</div>
+                                        <div class="visual-tag tag-protein">🥩 35g Protein</div>
+                                        <div class="ai-status">Analyzing...</div>
+                                    </div>
 
-                                    <div class="viewfinder">
-                                        <div class="corner tl"></div>
-                                        <div class="corner tr"></div>
-                                        <div class="corner bl"></div>
-                                        <div class="corner br"></div>
+                                    <!-- Stats View (Premium Dashboard) -->
+                                    <div class="stats-view">
+                                        <div class="preview-header">
+                                            <div class="preview-time">9:41</div>
+                                            <div class="preview-icons">📶 🔋</div>
+                                        </div>
+                                        <div class="preview-content">
+                                            <div class="premium-dashboard">
+                                                <div class="dashboard-card main-stats">
+                                                    <div class="glass-circle">
+                                                        <svg viewBox="0 0 120 120">
+                                                            <circle cx="60" cy="60" r="54" fill="none"
+                                                                class="circle-bg" />
+                                                            <circle cx="60" cy="60" r="54" fill="none"
+                                                                class="circle-fill" />
+                                                        </svg>
+                                                        <div class="circle-inner">
+                                                            <span class="main-number">1,697</span>
+                                                            <span class="sub-label">of 2,000 cal</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="macro-row">
+                                                    <div class="macro-glass-card protein">
+                                                        <div class="macro-icon">🥩</div>
+                                                        <div class="macro-data">
+                                                            <span class="m-label">Protein</span>
+                                                            <span class="m-val">142g</span>
+                                                        </div>
+                                                        <div class="macro-bar">
+                                                            <div class="m-fill" style="width: 85%"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="macro-glass-card carbs">
+                                                        <div class="macro-icon">🍚</div>
+                                                        <div class="macro-data">
+                                                            <span class="m-label">Carbs</span>
+                                                            <span class="m-val">120g</span>
+                                                        </div>
+                                                        <div class="macro-bar">
+                                                            <div class="m-fill"
+                                                                style="width: 45%; background: var(--secondary)"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="logged-items-card">
+                                                    <div class="card-title-sm">Recently Logged</div>
+                                                    <div class="log-item">
+                                                        <span class="item-emoji">🥗</span>
+                                                        <div class="item-info">
+                                                            <span class="item-name">Grilled Chicken Salad</span>
+                                                            <span class="item-cal">450</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="log-item">
+                                                        <span class="item-emoji">🍌</span>
+                                                        <div class="item-info">
+                                                            <span class="item-name">Banana</span>
+                                                            <span class="item-cal">105</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="camera-controls">
-                                        <div class="shutter-btn"></div>
-                                    </div>
-                                    <div class="shutter-flash"></div>
+
+                                    <div class="scan-overlay"></div>
                                 </div>
-                                <div class="ai-grid"></div>
-                                <div class="laser-line">
-                                    <div class="laser-glow"></div>
-                                    <div class="laser-point" style="left: 20%"></div>
-                                    <div class="laser-point" style="left: 50%"></div>
-                                    <div class="laser-point" style="left: 80%"></div>
-                                </div>
-                                <div class="visual-tag tag-cal">✨ 450 kcal</div>
-                                <div class="visual-tag tag-protein">🥩 35g Protein</div>
-                                <div class="ai-status">Analyzing...</div>
                             </div>
+                        </div>
+                    </div>
 
-                            <!-- Stats View (Premium Dashboard) -->
-                            <div class="stats-view">
-                                <div class="preview-header">
-                                    <div class="preview-time">9:41</div>
-                                    <div class="preview-icons">📶 🔋</div>
-                                </div>
-                                <div class="preview-content">
-                                    <div class="premium-dashboard">
-                                        <div class="dashboard-card main-stats">
-                                            <div class="glass-circle">
-                                                <svg viewBox="0 0 120 120">
-                                                    <circle cx="60" cy="60" r="54" fill="none" class="circle-bg" />
-                                                    <circle cx="60" cy="60" r="54" fill="none" class="circle-fill" />
-                                                </svg>
-                                                <div class="circle-inner">
-                                                    <span class="main-number">1,697</span>
-                                                    <span class="sub-label">of 2,000 cal</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="macro-row">
-                                            <div class="macro-glass-card protein">
-                                                <div class="macro-icon">🥩</div>
-                                                <div class="macro-data">
-                                                    <span class="m-label">Protein</span>
-                                                    <span class="m-val">142g</span>
-                                                </div>
-                                                <div class="macro-bar">
-                                                    <div class="m-fill" style="width: 85%"></div>
-                                                </div>
-                                            </div>
-                                            <div class="macro-glass-card carbs">
-                                                <div class="macro-icon">🍚</div>
-                                                <div class="macro-data">
-                                                    <span class="m-label">Carbs</span>
-                                                    <span class="m-val">120g</span>
-                                                </div>
-                                                <div class="macro-bar">
-                                                    <div class="m-fill"
-                                                        style="width: 45%; background: var(--secondary)"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="logged-items-card">
-                                            <div class="card-title-sm">Recently Logged</div>
-                                            <div class="log-item">
-                                                <span class="item-emoji">🥗</span>
-                                                <div class="item-info">
-                                                    <span class="item-name">Grilled Chicken Salad</span>
-                                                    <span class="item-cal">450</span>
-                                                </div>
-                                            </div>
-                                            <div class="log-item">
-                                                <span class="item-emoji">🍌</span>
-                                                <div class="item-info">
-                                                    <span class="item-name">Banana</span>
-                                                    <span class="item-cal">105</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="scan-overlay"></div>
+                    <!-- Floating Cards -->
+                    <div class="floating-card card-1">
+                        <span class="card-icon">🍎</span>
+                        <div>
+                            <div class="card-title">Food Recognized</div>
+                            <div class="card-subtitle">Red Apple • 95 kcal</div>
+                        </div>
+                    </div>
+                    <div class="floating-card card-2">
+                        <span class="card-icon">📊</span>
+                        <div>
+                            <div class="card-title">Macros Tracked</div>
+                            <div class="card-subtitle">Protein: 24g • Carbs: 32g</div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Floating Cards -->
-            <div class="floating-card card-1">
-                <span class="card-icon">🍎</span>
-                <div>
-                    <div class="card-title">Food Recognized</div>
-                    <div class="card-subtitle">Red Apple • 95 kcal</div>
-                </div>
-            </div>
-            <div class="floating-card card-2">
-                <span class="card-icon">📊</span>
-                <div>
-                    <div class="card-title">Macros Tracked</div>
-                    <div class="card-subtitle">Protein: 24g • Carbs: 32g</div>
-                </div>
-            </div>
-        </div>
-        </div>
         </div>
     </section>
 
