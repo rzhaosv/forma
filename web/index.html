@@ -102,7 +102,6 @@
                                         </div>
                                         <div class="visual-tag tag-cal">✨ 450 kcal</div>
                                         <div class="visual-tag tag-protein">🥩 35g Protein</div>
-                                        <div class="visual-tag tag-texture">🔍 Texture: Lean</div>
                                         <div class="ai-status">Analyzing...</div>
                                     </div>
 
@@ -379,32 +378,28 @@
     <script src="analytics.js"></script>
     <script src="analytics-config.js"></script>
     <script src="script.js"></script>
-    <script>
-        // Hero Visualizer Animation Loop
-        const preview = document.getElementById('app-preview');
-        setInterval(() => {
-            preview.classList.toggle('active-stats');
-        }, 4000);
-    </script>
+    
     <!-- Mobile Menu Script -->
     <script>
         const menuBtn = document.getElementById('mobile-menu-btn');
         const navLinks = document.getElementById('nav-links');
         const links = navLinks.querySelectorAll('a');
 
-        menuBtn.addEventListener('click', () => {
-            menuBtn.classList.toggle('active');
-            navLinks.classList.toggle('active');
-            document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
-        });
-
-        links.forEach(link => {
-            link.addEventListener('click', () => {
-                menuBtn.classList.remove('active');
-                navLinks.classList.remove('active');
-                document.body.style.overflow = '';
+        if (menuBtn && navLinks) {
+            menuBtn.addEventListener('click', () => {
+                menuBtn.classList.toggle('active');
+                navLinks.classList.toggle('active');
+                document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
             });
-        });
+
+            links.forEach(link => {
+                link.addEventListener('click', () => {
+                    menuBtn.classList.remove('active');
+                    navLinks.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            });
+        }
     </script>
 </body>
 

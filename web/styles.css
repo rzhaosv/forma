@@ -280,6 +280,37 @@ body {
     animation: scan 3s infinite;
 }
 
+/* App Preview Animation States */
+[data-state="camera"] .camera-ui {
+    opacity: 1;
+}
+
+[data-state="scan"] .camera-ui {
+    opacity: 0;
+}
+
+[data-state="dashboard"] .camera-ui {
+    opacity: 0;
+}
+
+/* In Scan state, everything except the photo and scan lines is hidden initially */
+[data-state="scan"] .ai-grid,
+[data-state="scan"] .laser-line,
+[data-state="scan"] .ai-status {
+    opacity: 1;
+    visibility: visible;
+}
+
+[data-state="camera"] .ai-grid,
+[data-state="camera"] .laser-line,
+[data-state="camera"] .ai-status,
+[data-state="dashboard"] .ai-grid,
+[data-state="dashboard"] .laser-line,
+[data-state="dashboard"] .ai-status {
+    opacity: 0;
+    visibility: hidden;
+}
+
 .stats-view {
     position: absolute;
     top: 0;
@@ -294,16 +325,17 @@ body {
     background: white;
 }
 
-.active-stats .stats-view {
+[data-state="dashboard"] .stats-view {
     opacity: 1;
     transform: translateY(0);
     z-index: 15;
 }
 
-.active-stats .photo-view {
+[data-state="dashboard"] .photo-view {
     opacity: 0;
     transform: scale(0.9);
     transition: all 0.5s ease;
+    pointer-events: none;
 }
 
 .visual-tag {
@@ -321,10 +353,11 @@ body {
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.active-stats .visual-tag {
+[data-state="scan"] .visual-tag {
     opacity: 1;
     transform: scale(1);
 }
+
 
 .tag-cal {
     top: 30%;
@@ -1439,13 +1472,13 @@ body {
     width: 100%;
     height: 100%;
     z-index: 20;
-    opacity: 1;
-    transition: opacity 0.5s ease;
+    opacity: 0;
+    transition: opacity 0.3s ease;
     pointer-events: none;
 }
 
-.active-stats .camera-ui {
-    opacity: 0;
+[data-state="camera"] .camera-ui {
+    opacity: 1;
 }
 
 .viewfinder {
@@ -1519,21 +1552,22 @@ body {
     background: white;
     opacity: 0;
     z-index: 100;
-    animation: flash-trigger 4s infinite;
+    pointer-events: none;
 }
 
-@keyframes flash-trigger {
+[data-state="scan"] .shutter-flash {
+    animation: flash-camera 0.5s ease-out forwards;
+}
 
-    0%,
-    45% {
+@keyframes flash-camera {
+    0% {
         opacity: 0;
     }
 
-    46% {
+    10% {
         opacity: 1;
     }
 
-    50%,
     100% {
         opacity: 0;
     }
@@ -1569,14 +1603,6 @@ body {
     }
 }
 
-.tag-texture {
-    bottom: 30%;
-    left: 10%;
-    background: var(--secondary) !important;
-    animation-delay: 0.9s;
-}
-
-/* Premium Dashboard UI */
 .premium-dashboard {
     padding: 0;
     display: flex;

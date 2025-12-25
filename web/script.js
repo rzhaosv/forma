@@ -18,13 +18,13 @@ let lastScroll = 0;
 
 window.addEventListener('scroll', () => {
     const currentScroll = window.pageYOffset;
-    
+
     if (currentScroll > 50) {
         nav.style.boxShadow = '0 4px 6px -1px rgb(0 0 0 / 0.1)';
     } else {
         nav.style.boxShadow = 'none';
     }
-    
+
     lastScroll = currentScroll;
 });
 
@@ -53,10 +53,10 @@ document.querySelectorAll('.feature-card, .testimonial-card, .pricing-card, .ste
 
 // Track CTA clicks (for analytics)
 document.querySelectorAll('.btn-primary, .btn-secondary, .btn-outline, .download-btn').forEach(button => {
-    button.addEventListener('click', function() {
+    button.addEventListener('click', function () {
         const buttonText = this.textContent.trim();
         const buttonHref = this.getAttribute('href');
-        
+
         // Determine location
         let location = 'unknown';
         if (this.closest('.hero')) location = 'hero';
@@ -64,11 +64,11 @@ document.querySelectorAll('.btn-primary, .btn-secondary, .btn-outline, .download
         else if (this.closest('.download')) location = 'download';
         else if (this.closest('.waitlist')) location = 'waitlist';
         else if (this.closest('.nav')) location = 'navigation';
-        
+
         // Track with analytics
         if (window.analytics) {
             window.analytics.trackCTAClick(buttonText, location);
-            
+
             // Track as conversion if it's a download button
             if (buttonHref && (buttonHref.includes('apps.apple.com') || buttonHref.includes('play.google.com'))) {
                 window.analytics.track('App Download Started', {
@@ -77,7 +77,7 @@ document.querySelectorAll('.btn-primary, .btn-secondary, .btn-outline, .download
                 });
             }
         }
-        
+
         console.log('CTA clicked:', buttonText, 'Location:', location);
     });
 });
@@ -86,7 +86,7 @@ document.querySelectorAll('.btn-primary, .btn-secondary, .btn-outline, .download
 const initMobileMenu = () => {
     const menuButton = document.querySelector('.mobile-menu-button');
     const mobileMenu = document.querySelector('.mobile-menu');
-    
+
     if (menuButton && mobileMenu) {
         menuButton.addEventListener('click', () => {
             mobileMenu.classList.toggle('active');
@@ -97,35 +97,35 @@ const initMobileMenu = () => {
 // Email form handling
 const handleEmailSubmit = async (e) => {
     e.preventDefault();
-    
+
     const form = e.target;
     const emailInput = form.querySelector('#email-input');
     const submitBtn = form.querySelector('.submit-btn');
     const message = form.querySelector('#form-message');
     const email = emailInput.value.trim();
-    
+
     // Validation
     if (!isValidEmail(email)) {
         showMessage(message, 'Please enter a valid email address', 'error');
         emailInput.classList.add('error');
         return;
     }
-    
+
     // Reset states
     emailInput.classList.remove('error');
     message.classList.remove('success', 'error');
     message.style.display = 'none';
-    
+
     // Loading state
     submitBtn.classList.add('loading');
     submitBtn.disabled = true;
-    
+
     try {
         // Submit to backend
-        const apiUrl = window.location.hostname === 'localhost' 
+        const apiUrl = window.location.hostname === 'localhost'
             ? 'http://localhost:3001/api/subscribe'
             : '/api/subscribe';
-            
+
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
@@ -133,27 +133,27 @@ const handleEmailSubmit = async (e) => {
             },
             body: JSON.stringify({ email }),
         });
-        
+
         const data = await response.json();
-        
+
         if (response.ok) {
             showMessage(message, '🎉 Success! Check your email for confirmation.', 'success');
             emailInput.classList.add('success');
             emailInput.value = '';
-            
+
             // Update subscriber count
             updateSubscriberCount();
-            
+
             // Track email capture with analytics
             if (window.analytics) {
                 window.analytics.trackEmailCapture(email, 'waitlist');
                 window.analytics.trackFormSubmission('waitlist', true);
             }
-            
+
             console.log('Email captured:', email);
         } else {
             showMessage(message, data.error || 'Something went wrong. Please try again.', 'error');
-            
+
             // Track error
             if (window.analytics) {
                 window.analytics.trackError(data.error || 'Form submission failed', 'waitlist_form');
@@ -163,7 +163,7 @@ const handleEmailSubmit = async (e) => {
     } catch (error) {
         console.error('Submission error:', error);
         showMessage(message, 'Unable to connect. Please try again later.', 'error');
-        
+
         // Track error
         if (window.analytics) {
             window.analytics.trackError(error.message, 'network_error');
@@ -173,7 +173,7 @@ const handleEmailSubmit = async (e) => {
         // Reset loading state
         submitBtn.classList.remove('loading');
         submitBtn.disabled = false;
-        
+
         // Clear success state after 3 seconds
         setTimeout(() => {
             emailInput.classList.remove('success', 'error');
@@ -210,7 +210,7 @@ const animateCount = (element, start, end) => {
     const range = end - start;
     const increment = range / (duration / 16);
     let current = start;
-    
+
     const timer = setInterval(() => {
         current += increment;
         if (current >= end) {
@@ -221,23 +221,59 @@ const animateCount = (element, start, end) => {
     }, 16);
 };
 
+// Hero Visualizer Animation Sequence
+const initHeroAnimation = () => {
+    const preview = document.getElementById('app-preview');
+    if (!preview) return;
+
+    const states = ['camera', 'scan', 'dashboard'];
+    const timings = {
+        camera: 2000,
+        scan: 3000,
+        dashboard: 4000
+    };
+
+    let currentStateIndex = 0;
+
+    const nextState = () => {
+        const state = states[currentStateIndex];
+        preview.setAttribute('data-state', state);
+
+        // Remove old classes if they exist (for backward compatibility)
+        if (state === 'dashboard') {
+            preview.classList.add('active-stats');
+        } else {
+            preview.classList.remove('active-stats');
+        }
+
+        setTimeout(() => {
+            currentStateIndex = (currentStateIndex + 1) % states.length;
+            nextState();
+        }, timings[state]);
+    };
+
+    // Start the loop
+    nextState();
+};
+
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
     initMobileMenu();
-    
+    initHeroAnimation();
+
     // Add loading animation complete
     document.body.style.opacity = '0';
     setTimeout(() => {
         document.body.style.transition = 'opacity 0.5s ease';
         document.body.style.opacity = '1';
     }, 100);
-    
+
     // Initialize email form
     const emailForm = document.getElementById('waitlist-form');
     if (emailForm) {
         emailForm.addEventListener('submit', handleEmailSubmit);
     }
-    
+
     // Real-time email validation
     const emailInput = document.getElementById('email-input');
     if (emailInput) {
@@ -249,9 +285,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Pricing card highlight on hover
 document.querySelectorAll('.pricing-card').forEach(card => {
-    card.addEventListener('mouseenter', function() {
+    card.addEventListener('mouseenter', function () {
         this.style.transform = 'translateY(-8px) scale(1.02)';
-        
+
         // Track pricing card view
         const planName = this.querySelector('.pricing-title')?.textContent || 'Unknown';
         if (window.analytics) {
@@ -261,20 +297,20 @@ document.querySelectorAll('.pricing-card').forEach(card => {
             });
         }
     });
-    
-    card.addEventListener('mouseleave', function() {
+
+    card.addEventListener('mouseleave', function () {
         if (!this.classList.contains('pricing-featured')) {
             this.style.transform = 'translateY(0) scale(1)';
         } else {
             this.style.transform = 'translateY(0) scale(1.05)';
         }
     });
-    
+
     // Track clicks on pricing cards
-    card.addEventListener('click', function(e) {
+    card.addEventListener('click', function (e) {
         const planName = this.querySelector('.pricing-title')?.textContent || 'Unknown';
         const priceAmount = this.querySelector('.price-amount')?.textContent || '0';
-        
+
         if (window.analytics && !e.target.closest('a')) {
             window.analytics.track('Pricing Plan Clicked', {
                 plan: planName,
