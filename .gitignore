@@ -83,6 +83,7 @@ coverage/
 !eas.json
 !mobile/eas.json
 !google-services.json
+!vercel.json
 # Block specific secret keys
 google-play-key.json
 mobile/google-play-key.json
