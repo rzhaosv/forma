@@ -160,15 +160,7 @@ const handleEmailSubmit = async (e) => {
                 window.analytics.trackFormSubmission('waitlist', false);
             }
         }
-    } catch (error) {
-        console.error('Submission error:', error);
-        showMessage(message, 'Unable to connect. Please try again later.', 'error');
 
-        // Track error
-        if (window.analytics) {
-            window.analytics.trackError(error.message, 'network_error');
-            window.analytics.trackFormSubmission('waitlist', false);
-        }
     } finally {
         // Reset loading state
         submitBtn.classList.remove('loading');
