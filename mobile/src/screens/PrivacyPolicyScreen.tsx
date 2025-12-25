@@ -35,12 +35,13 @@ export default function PrivacyPolicyScreen() {
 
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <Text style={[styles.lastUpdated, { color: colors.textSecondary }]}>
-                    Last Updated: December 13, 2025
+                    Last Updated: December 22, 2025
                 </Text>
 
                 <Text style={[styles.paragraph, { color: colors.textSecondary, marginBottom: 24 }]}>
                     Forma respects your privacy. This Privacy Policy explains how we collect, use, and protect your information.
                 </Text>
+
 
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>Information We Collect</Text>
                 <Text style={[styles.paragraph, { color: colors.textSecondary }]}>
@@ -105,7 +106,7 @@ export default function PrivacyPolicyScreen() {
 
                 <TouchableOpacity
                     style={[styles.linkButton, { backgroundColor: isDark ? '#333' : '#F3F4F6' }]}
-                    onPress={() => Linking.openURL('https://www.notion.so/Privacy-Policy-for-Forma-2c8bda4f1318805dbf8fc622f3382bdf?source=copy_link')}
+                    onPress={() => Linking.openURL('https://tryforma.app/privacy.html')}
                 >
                     <Text style={[styles.linkButtonText, { color: colors.primary }]}>View Full Privacy Policy</Text>
                 </TouchableOpacity>
