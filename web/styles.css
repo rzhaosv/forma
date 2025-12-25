@@ -1053,7 +1053,7 @@ body {
 
 .footer-content {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr;
     gap: 48px;
     margin-bottom: 48px;
 }
@@ -1375,9 +1375,9 @@ body {
     }
 
     .footer-links {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
         width: 100%;
     }
 
