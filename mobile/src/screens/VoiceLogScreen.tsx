@@ -55,28 +55,30 @@ export default function VoiceLogScreen() {
             if (uri) {
                 try {
                     const result = await analyzeVoiceLog(uri);
-                    if (result.success && result.foods.length > 0) {
+                    console.log('Voice analysis result:', JSON.stringify(result));
+
+                    if (result && result.success && Array.isArray(result.foods) && result.foods.length > 0) {
                         // Navigate to results with mocked data
                         navigation.navigate('FoodResults' as never, {
-                            foods: result.foods,
-                            imageUri: null, // No image for voice log
+                            result: result
                         } as never);
                     } else {
                         Alert.alert('Error', 'Could not understand the meal. Please try again.');
                     }
                 } catch (error) {
+                    console.log('Voice analysis error:', error);
                     Alert.alert('Error', 'Voice analysis failed');
                 } finally {
                     setIsProcessing(false);
                 }
             }
         } else {
-            const newRecording = await startRecording();
-            if (newRecording) {
+            try {
+                const newRecording = await startRecording();
                 setRecording(newRecording);
                 setIsRecording(true);
-            } else {
-                Alert.alert('Permission Denied', 'Please grant microphone permissions to use voice logging.');
+            } catch (err) {
+                Alert.alert('Error', 'Could not start recording. Please check permissions.');
             }
         }
     };

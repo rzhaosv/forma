@@ -1,32 +1,21 @@
 import { Audio } from 'expo-av';
 import { FoodRecognitionResult, IdentifiedFood } from './foodRecognitionService';
 
-// Mock result for voice log analysis
-const MOCK_VOICE_RESULT: FoodRecognitionResult = {
-    success: true,
-    foods: [
-        {
-            name: 'Grilled Chicken Salad',
-            confidence: 95,
-            serving_size: '1 bowl',
-            calories: 450,
-            protein_g: 45,
-            carbs_g: 12,
-            fat_g: 22,
-        },
-    ],
-    total_calories: 450,
-    analysis_time_ms: 1500,
-};
+const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
 
 export const startRecording = async (): Promise<Audio.Recording | null> => {
     try {
         const permission = await Audio.requestPermissionsAsync();
-        if (permission.status !== 'granted') return null;
+        if (permission.status !== 'granted') {
+            throw new Error('Microphone permission not granted');
+        }
 
         await Audio.setAudioModeAsync({
             allowsRecordingIOS: true,
             playsInSilentModeIOS: true,
+            staysActiveInBackground: false,
+            shouldDuckAndroid: true,
+            playThroughEarpieceAndroid: false,
         });
 
         const { recording } = await Audio.Recording.createAsync(
@@ -36,7 +25,7 @@ export const startRecording = async (): Promise<Audio.Recording | null> => {
         return recording;
     } catch (err) {
         console.error('Failed to start recording', err);
-        return null;
+        throw err;
     }
 };
 
@@ -51,8 +40,112 @@ export const stopRecording = async (recording: Audio.Recording): Promise<string 
     }
 };
 
+const transcribeAudio = async (audioUri: string): Promise<string> => {
+    if (!OPENAI_API_KEY) throw new Error('OpenAI API Key is missing');
+
+    const formData = new FormData();
+    // @ts-ignore: React Native FormData expects explicit name/type/uri object
+    formData.append('file', {
+        uri: audioUri,
+        name: 'voice_log.m4a',
+        type: 'audio/m4a',
+    });
+    formData.append('model', 'whisper-1');
+
+    const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.error?.message || 'Transcription failed');
+    }
+
+    return data.text;
+};
+
+const extractNutritionFromText = async (text: string): Promise<FoodRecognitionResult> => {
+    if (!OPENAI_API_KEY) throw new Error('OpenAI API Key is missing');
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            model: 'gpt-4o',
+            messages: [
+                {
+                    role: 'system',
+                    content: `You are a nutritionist. Analyze the user's spoken meal description and extract food items with estimated nutritional info.
+                    Return ONLY a JSON object with this structure:
+                    {
+                        "success": true,
+                        "foods": [
+                            {
+                                "name": "Food Name",
+                                "confidence": 90,
+                                "serving_size": "e.g. 1 cup",
+                                "calories": 0,
+                                "protein_g": 0,
+                                "carbs_g": 0,
+                                "fat_g": 0
+                            }
+                        ],
+                        "total_calories": 0
+                    }
+                    If the input is not about food or unintelligible, return { "success": false }.`
+                },
+                { role: 'user', content: text }
+            ],
+            response_format: { type: 'json_object' }
+        }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.error?.message || 'Analysis failed');
+    }
+
+    const result = JSON.parse(data.choices[0].message.content);
+    return {
+        ...result,
+        analysis_time_ms: 0, // Placeholder
+    };
+};
+
 export const analyzeVoiceLog = async (audioUri: string): Promise<FoodRecognitionResult> => {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    return MOCK_VOICE_RESULT;
+    const startTime = Date.now();
+    try {
+        console.log('Transcribing audio:', audioUri);
+        const transcript = await transcribeAudio(audioUri);
+        console.log('Transcript:', transcript);
+
+        if (!transcript || transcript.trim().length === 0) {
+            return { success: false, foods: [], total_calories: 0, analysis_time_ms: Date.now() - startTime };
+        }
+
+        console.log('Analyzing text...');
+        const result = await extractNutritionFromText(transcript);
+
+        return {
+            ...result,
+            analysis_time_ms: Date.now() - startTime,
+        };
+    } catch (error) {
+        console.error('Voice analysis failed:', error);
+        return {
+            success: false,
+            foods: [],
+            total_calories: 0,
+            analysis_time_ms: Date.now() - startTime,
+            error: error instanceof Error ? error.message : 'Unknown error',
+        };
+    }
 };

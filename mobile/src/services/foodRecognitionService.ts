@@ -24,10 +24,101 @@ export interface FoodRecognitionResult {
  * @param imageUri - Local URI of the captured photo
  * @returns Identified foods with nutrition information
  */
+const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
+
+/**
+ * Analyze a food photo using OpenAI Vision API
+ * @param imageUri - Local URI of the captured photo
+ * @returns Identified foods with nutrition information
+ */
 export async function analyzeFoodPhoto(imageUri: string): Promise<FoodRecognitionResult> {
-  // Return mock for now if no API key or during development
-  // In a real app, you would call OpenAI API here
-  return mockAnalyzeFoodPhoto(imageUri);
+  const startTime = Date.now();
+
+  try {
+    if (!OPENAI_API_KEY) throw new Error('OpenAI API Key is missing');
+
+    // 1. Fetch image and convert to base64
+    const response = await fetch(imageUri);
+    const blob = await response.blob();
+    const base64Image = await blobToBase64(blob);
+
+    // 2. Call OpenAI Vision API
+    const apiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: `You are an expert nutritionist. Analyze this food image and identify the food items present.
+            Estimate the serving size and nutritional content for each item.
+            Return ONLY a valid JSON object with the following structure:
+            {
+              "success": true,
+              "foods": [
+                {
+                  "name": "Food Name",
+                  "confidence": 95,
+                  "serving_size": "e.g. 1 medium bowl",
+                  "calories": 0,
+                  "protein_g": 0,
+                  "carbs_g": 0,
+                  "fat_g": 0
+                }
+              ],
+              "total_calories": 0
+            }
+            If no food is detected, return { "success": false, "foods": [], "total_calories": 0 }.`
+          },
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: 'Analyze this meal.' },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: `data:image/jpeg;base64,${base64Image}`,
+                }
+              }
+            ]
+          }
+        ],
+        response_format: { type: 'json_object' },
+        max_tokens: 1000,
+      }),
+    });
+
+    const data = await apiResponse.json();
+
+    if (!apiResponse.ok) {
+      console.error('OpenAI API Error:', data);
+      throw new Error(data.error?.message || 'Failed to analyze image');
+    }
+
+    const content = data.choices[0].message.content;
+    const result = JSON.parse(content);
+
+    return {
+      success: result.success,
+      foods: result.foods || [],
+      total_calories: result.total_calories || 0,
+      analysis_time_ms: Date.now() - startTime,
+    };
+
+  } catch (error) {
+    console.error('Food analysis failed:', error);
+    return {
+      success: false,
+      foods: [],
+      total_calories: 0,
+      analysis_time_ms: Date.now() - startTime,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
 }
 
 /**
@@ -38,55 +129,11 @@ function blobToBase64(blob: Blob): Promise<string> {
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64 = reader.result as string;
-      // Remove data:image/jpeg;base64, prefix
-      const base64Data = base64.split(',')[1];
+      // Remove data:image/jpeg;base64, prefix if present, otherwise assume it's the whole string
+      const base64Data = base64.includes(',') ? base64.split(',')[1] : base64;
       resolve(base64Data);
     };
     reader.onerror = reject;
     reader.readAsDataURL(blob);
   });
-}
-
-/**
- * Mock food recognition for testing without API key
- * Remove this once real API is configured
- */
-export async function mockAnalyzeFoodPhoto(imageUri: string): Promise<FoodRecognitionResult> {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 2000));
-
-  return {
-    success: true,
-    foods: [
-      {
-        name: 'Grilled Chicken Breast',
-        confidence: 92,
-        serving_size: '150g',
-        calories: 248,
-        protein_g: 46.5,
-        carbs_g: 0,
-        fat_g: 5.5,
-      },
-      {
-        name: 'Brown Rice',
-        confidence: 88,
-        serving_size: '200g',
-        calories: 218,
-        protein_g: 4.5,
-        carbs_g: 45.8,
-        fat_g: 1.6,
-      },
-      {
-        name: 'Steamed Broccoli',
-        confidence: 85,
-        serving_size: '100g',
-        calories: 35,
-        protein_g: 2.4,
-        carbs_g: 7.2,
-        fat_g: 0.4,
-      },
-    ],
-    total_calories: 501,
-    analysis_time_ms: 2000,
-  };
 }
