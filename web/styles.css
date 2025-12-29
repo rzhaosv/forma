@@ -2360,3 +2360,24 @@ body {
         font-size: 1rem;
     }
 }
+
+/* CSS FIXES: Override badge colors and enlarge avatars */
+.badge-number {
+    color: #1F2937 !important;
+}
+
+.badge-label {
+    color: #6B7280 !important;
+}
+
+.author-avatar {
+    width: 80px !important;
+    height: 80px !important;
+    border: 3px solid var(--primary);
+}
+
+.author-avatar-fallback {
+    width: 80px !important;
+    height: 80px !important;
+    font-size: 40px;
+}
