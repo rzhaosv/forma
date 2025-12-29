@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You're In! - Forma Early Access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .success-hero {
+            padding-top: 120px;
+            padding-bottom: 80px;
+            text-align: center;
+        }
+
+        .success-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .success-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .download-card {
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .download-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .os-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .download-btn {
+            display: inline-block;
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: background 0.2s ease;
+        }
+
+        .download-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--background-soft);
+        }
+
+        .macro-guide {
+            background: var(--background-soft);
+            padding: 60px 0;
+            margin-top: 80px;
+        }
+
+        .guide-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: left;
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .guide-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .guide-badge {
+            background: #EEF2FF;
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Nav -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <a href="/" class="logo">
+                    <img src="assets/logo.png" alt="Forma Logo" class="logo-img">
+                    <span class="logo-text">Forma</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Success Hero -->
+    <section class="success-hero">
+        <div class="container">
+            <h1 class="success-title">You're In! Welcome to Forma.</h1>
+            <p class="success-subtitle">
+                You've successfully skipped the line. Download the beta version below and start tracking instantly.
+            </p>
+
+            <div class="download-grid">
+                <!-- iOS -->
+                <div class="download-card">
+                    <span class="os-icon">🍎</span>
+                    <h3>iOS (iPhone)</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 10px;">Requires TestFlight App</p>
+                    <a href="https://testflight.apple.com/join/YOUR_LINK_HERE" class="download-btn" target="_blank">
+                        Download on TestFlight
+                    </a>
+                </div>
+
+                <!-- Android -->
+                <div class="download-card">
+                    <span class="os-icon">🤖</span>
+                    <h3>Android</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 10px;">Google Play Open Testing</p>
+                    <a href="https://play.google.com/store/apps/details?id=com.raymondzhao3000.forma"
+                        class="download-btn btn-secondary" target="_blank">
+                        Join on Google Play
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Macro Guide -->
+    <section class="macro-guide">
+        <div class="container">
+            <div class="guide-container">
+                <div class="guide-header">
+                    <span class="guide-badge">Free Bonus Gift</span>
+                    <h2>Busy Professional's Guide to Macros</h2>
+                    <p>Stop guessing. Here is the cheat sheet to hitting your goals without spending hours in the
+                        kitchen.</p>
+                </div>
+
+                <h3>1. The 30/30/30 Rule</h3>
+                <p>For sustainable energy, aim for 30g of protein at breakfast, within 30 minutes of waking up. This
+                    stabilizes blood sugar and reduces cravings later in the day.</p>
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+
+                <h3>2. Protein is King</h3>
+                <p>If you track nothing else, track protein. Aim for 0.7g - 1g per pound of body weight. It keeps you
+                    full and builds muscle, which burns more fat at rest.</p>
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+
+                <h3>3. Don't Drink Your Calories</h3>
+                <p>Latte: 300kcal. Soda: 150kcal. Juice: 200kcal. Swap these for water, black coffee, or tea, and you
+                    can save 500+ calories a day effortlessly.</p>
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+
+                <div style="text-align: center; margin-top: 40px;">
+                    <button class="btn-primary" onclick="alert('Full PDF coming to your inbox soon!')">Download Full
+                        PDF</button>
+                    <p style="font-size: 0.875rem; color: #999; margin-top: 10px;">(We also emailed this to you!)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                &copy; 2025 Forma. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

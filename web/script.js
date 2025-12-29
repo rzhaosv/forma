@@ -1,3 +1,20 @@
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+// Firebase Config (from mobile/src/config/firebase.ts)
+const firebaseConfig = {
+    apiKey: "AIzaSyCL6su_cFHvijSIuQYomXVzNvfMcsmcJTk",
+    authDomain: "forma-3803d.firebaseapp.com",
+    projectId: "forma-3803d",
+    storageBucket: "forma-3803d.firebasestorage.app",
+    messagingSenderId: "311242226872",
+    appId: "1:311242226872:web:e3e40064d1471d8725884d",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 // Smooth scrolling for navigation links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
@@ -94,14 +111,21 @@ const initMobileMenu = () => {
     }
 };
 
-// Email form handling
+// Email form handling (Firebase Integration)
 const handleEmailSubmit = async (e) => {
     e.preventDefault();
 
     const form = e.target;
-    const emailInput = form.querySelector('#email-input');
+    // Handle both input types (some browsers/extensions might interfere)
+    const emailInput = form.querySelector('#email-input') || document.getElementById('email-input');
     const submitBtn = form.querySelector('.submit-btn');
-    const message = form.querySelector('#form-message');
+    const message = form.querySelector('#form-message') || document.getElementById('form-message');
+
+    if (!emailInput) {
+        console.error('Email input not found');
+        return;
+    }
+
     const email = emailInput.value.trim();
 
     // Validation
@@ -113,63 +137,58 @@ const handleEmailSubmit = async (e) => {
 
     // Reset states
     emailInput.classList.remove('error');
-    message.classList.remove('success', 'error');
-    message.style.display = 'none';
+    if (message) {
+        message.classList.remove('success', 'error');
+        message.style.display = 'none';
+    }
 
     // Loading state
-    submitBtn.classList.add('loading');
-    submitBtn.disabled = true;
+    if (submitBtn) {
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+    }
 
     try {
-        // Submit to backend
-        const apiUrl = window.location.hostname === 'localhost'
-            ? 'http://localhost:3001/api/subscribe'
-            : '/api/subscribe';
+        console.log('Attempting to write to Firebase...', email);
 
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email }),
+        // Write to Firestore "waitlist" collection
+        const docRef = await addDoc(collection(db, "waitlist"), {
+            email: email,
+            timestamp: serverTimestamp(),
+            source: 'landing_page_backdoor',
+            status: 'early_access_granted'
         });
 
-        const data = await response.json();
+        console.log("Document written with ID: ", docRef.id);
 
-        if (response.ok) {
-            showMessage(message, '🎉 Success! Check your email for confirmation.', 'success');
-            emailInput.classList.add('success');
-            emailInput.value = '';
+        // Success! Redirect immediately
+        window.location.href = 'success.html';
 
-            // Update subscriber count
-            updateSubscriberCount();
+        // Analytics
+        if (window.analytics) {
+            window.analytics.trackEmailCapture(email, 'waitlist');
+            window.analytics.trackFormSubmission('waitlist', true);
+        }
 
-            // Track email capture with analytics
-            if (window.analytics) {
-                window.analytics.trackEmailCapture(email, 'waitlist');
-                window.analytics.trackFormSubmission('waitlist', true);
-            }
+    } catch (error) {
+        console.error("Error adding document: ", error);
 
-            console.log('Email captured:', email);
-        } else {
-            showMessage(message, data.error || 'Something went wrong. Please try again.', 'error');
+        if (message) {
+            showMessage(message, 'Could not save email. Please try again.', 'error');
+        }
 
-            // Track error
-            if (window.analytics) {
-                window.analytics.trackError(data.error || 'Form submission failed', 'waitlist_form');
-                window.analytics.trackFormSubmission('waitlist', false);
-            }
+        // Track error
+        if (window.analytics) {
+            window.analytics.trackError(error.message || 'Firebase write failed', 'waitlist_form');
+            window.analytics.trackFormSubmission('waitlist', false);
         }
 
     } finally {
         // Reset loading state
-        submitBtn.classList.remove('loading');
-        submitBtn.disabled = false;
-
-        // Clear success state after 3 seconds
-        setTimeout(() => {
-            emailInput.classList.remove('success', 'error');
-        }, 3000);
+        if (submitBtn) {
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+        }
     }
 };
 
@@ -181,6 +200,7 @@ const isValidEmail = (email) => {
 
 // Show message
 const showMessage = (element, text, type) => {
+    if (!element) return;
     element.textContent = text;
     element.className = `form-message ${type}`;
     element.style.display = 'block';
@@ -262,7 +282,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize email form
     const emailForm = document.getElementById('waitlist-form');
+    // Important: We need to use event delegation or direct attachment
     if (emailForm) {
+        // Remove any old listeners by cloning (simple trace for single listener)
+        // or just add the new one.
         emailForm.addEventListener('submit', handleEmailSubmit);
     }
 
@@ -311,4 +334,3 @@ document.querySelectorAll('.pricing-card').forEach(card => {
         }
     });
 });
-

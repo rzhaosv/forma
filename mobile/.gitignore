@@ -46,3 +46,5 @@ build-info.json
 # local binaries
 *.zip
 *.aria2
+*.apk
+*.aab
