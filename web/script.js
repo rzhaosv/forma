@@ -283,10 +283,42 @@ const initHeroAnimations = () => {
     setTimeout(nextVoiceState, 2000);
 };
 
+// FAQ Accordion
+const initFAQAccordion = () => {
+    const faqItems = document.querySelectorAll('.faq-item');
+
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+
+        question.addEventListener('click', () => {
+            const isActive = item.classList.contains('active');
+
+            // Close all other FAQs
+            faqItems.forEach(otherItem => {
+                if (otherItem !== item) {
+                    otherItem.classList.remove('active');
+                }
+            });
+
+            // Toggle current FAQ
+            item.classList.toggle('active');
+
+            // Track analytics
+            if (!isActive && window.analytics) {
+                const questionText = question.querySelector('h3')?.textContent || 'Unknown';
+                window.analytics.track('FAQ Clicked', {
+                    question: questionText
+                });
+            }
+        });
+    });
+};
+
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
     initMobileMenu();
     initHeroAnimations();
+    initFAQAccordion();
 
     // Add loading animation complete
     document.body.style.opacity = '0';
