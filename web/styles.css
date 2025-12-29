@@ -317,6 +317,8 @@ body {
 [data-state="voice"] .ai-grid,
 [data-state="voice"] .laser-line,
 [data-state="voice"] .ai-status,
+[data-state="voice"] .visual-tag,
+[data-state="voice"] .photo-view,
 [data-state="dashboard"] .camera-ui {
     opacity: 0;
     visibility: hidden;
