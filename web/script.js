@@ -238,10 +238,11 @@ const initHeroAnimation = () => {
     const preview = document.getElementById('app-preview');
     if (!preview) return;
 
-    const states = ['camera', 'scan', 'dashboard'];
+    const states = ['camera', 'scan', 'voice', 'dashboard'];
     const timings = {
         camera: 2000,
         scan: 3000,
+        voice: 4000,
         dashboard: 4000
     };
 
@@ -250,13 +251,6 @@ const initHeroAnimation = () => {
     const nextState = () => {
         const state = states[currentStateIndex];
         preview.setAttribute('data-state', state);
-
-        // Remove old classes if they exist (for backward compatibility)
-        if (state === 'dashboard') {
-            preview.classList.add('active-stats');
-        } else {
-            preview.classList.remove('active-stats');
-        }
 
         setTimeout(() => {
             currentStateIndex = (currentStateIndex + 1) % states.length;

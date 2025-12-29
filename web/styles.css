@@ -313,6 +313,99 @@ body {
     visibility: hidden;
 }
 
+[data-state="voice"] .camera-ui,
+[data-state="voice"] .ai-grid,
+[data-state="voice"] .laser-line,
+[data-state="voice"] .ai-status,
+[data-state="dashboard"] .camera-ui {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.voice-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s ease;
+    z-index: 12;
+}
+
+[data-state="voice"] .voice-view {
+    opacity: 1;
+    visibility: visible;
+}
+
+.voice-waveform {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 60px;
+    margin-bottom: 40px;
+}
+
+.wave-bar {
+    width: 4px;
+    height: 10px;
+    background: var(--primary);
+    border-radius: 2px;
+    animation: wave 1s ease-in-out infinite;
+}
+
+@keyframes wave {
+
+    0%,
+    100% {
+        height: 10px;
+    }
+
+    50% {
+        height: 60px;
+    }
+}
+
+.voice-transcript {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px;
+    color: white;
+    font-size: 18px;
+    font-weight: 500;
+    text-align: left;
+    max-width: 90%;
+    margin-top: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.5s ease 0.3s;
+}
+
+[data-state="voice"] .voice-transcript {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.voice-ai-label {
+    display: block;
+    font-size: 12px;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
 .stats-view {
     position: absolute;
     top: 0;
