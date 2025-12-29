@@ -81,15 +81,26 @@ export default function PrivacyPolicyScreen() {
                     Your data is stored securely using industry-standard protections. We take reasonable measures to prevent unauthorized access.
                 </Text>
 
-                <Text style={[styles.sectionTitle, { color: colors.text }]}>Your Choices</Text>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>GDPR Data Protection Rights</Text>
                 <Text style={[styles.paragraph, { color: colors.textSecondary }]}>
-                    You can:
+                    If you are a resident of the EEA, you have certain data protection rights:
                     {"\n\n"}
-                    • Choose whether to upload food photos
+                    • The right to access, update or delete the information we have on you.
                     {"\n"}
-                    • Disconnect Apple Health or Google Fit at any time
+                    • The right of rectification.
                     {"\n"}
-                    • Request deletion of your data by contacting us
+                    • The right to object.
+                    {"\n"}
+                    • The right of restriction.
+                    {"\n"}
+                    • The right to data portability.
+                    {"\n"}
+                    • The right to withdraw consent.
+                </Text>
+
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>Legal Basis for Processing</Text>
+                <Text style={[styles.paragraph, { color: colors.textSecondary }]}>
+                    We process your Personal Information because we need to perform a contract with you, you have given us permission, or it is in our legitimate interests.
                 </Text>
 
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>Contact Us</Text>
