@@ -26,20 +26,12 @@
     <!-- Google Ads Conversion Helper -->
     <script>
         function gtagSendEvent(url, platform) {
-            // Use a promise-like pattern or callback to ensure tracking fires
-            // before we allow the browser to potentially deprioritize this tab
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'conversion_event_signup', {
-                    'signup_platform': platform,
-                    'method': platform,
-                    'event_callback': function () {
-                        console.log('Conversion tracked for:', platform);
-                    }
+                    'platform': platform,
+                    'method': platform
                 });
             }
-
-            // For links with target="_blank", returning true is usually safe,
-            // but we'll use a tiny delay for TestFlight specifically if it's being flaky.
             return true;
         }
     </script>
