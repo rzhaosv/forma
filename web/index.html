@@ -19,7 +19,25 @@
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
-        // Full configuration happens in analytics.js after init
+        gtag('config', 'G-9L6PRKEYBS');
+        gtag('config', 'AW-16812891338');
+    </script>
+
+    <!-- Google Ads Conversion Helper -->
+    <script>
+        function gtagSendEvent(url, platform) {
+            var callback = function () {
+                if (typeof url === 'string') {
+                    window.location = url;
+                }
+            };
+            gtag('event', 'conversion_event_signup', {
+                'event_callback': callback,
+                'event_timeout': 2000,
+                'platform': platform
+            });
+            return false;
+        }
     </script>
 
     <!-- Mixpanel -->
@@ -484,7 +502,8 @@
                         <span class="os-icon">🍎</span>
                         <h3>iOS (iPhone)</h3>
                         <p class="download-note">Requires TestFlight App</p>
-                        <a href="https://testflight.apple.com/join/SK2Xndgu" class="download-btn" target="_blank">
+                        <a href="https://testflight.apple.com/join/SK2Xndgu" class="download-btn" target="_blank"
+                            onclick="return gtagSendEvent(this.href);">
                             Download on TestFlight
                         </a>
                     </div>
@@ -495,7 +514,7 @@
                         <h3>Android</h3>
                         <p class="download-note">Google Play Open Testing</p>
                         <a href="https://play.google.com/apps/testing/com.raymondzhao3000.forma" class="download-btn"
-                            target="_blank">
+                            target="_blank" onclick="return gtagSendEvent(this.href, 'android');">
                             Join on Google Play
                         </a>
                     </div>

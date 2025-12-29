@@ -12,11 +12,14 @@ const ANALYTICS_CONFIG = {
     // Format: G-XXXXXXXXXX
     // Get from: https://analytics.google.com → Admin → Data Streams → Web → Measurement ID
     gaId: 'G-9L6PRKEYBS', // Replace with your GA4 Measurement ID
-    
+
     // Mixpanel Project Token
     // Get from: https://mixpanel.com → Project Settings → Project Token
     mixpanelToken: '40d54d40a7574faf1824539bbe5462df', // Replace with your Mixpanel token
-    
+
+    // Google Ads ID
+    adsId: 'AW-16812891338',
+
     // Enable debug mode (shows console logs)
     debug: true, // Set to false in production
 };
@@ -32,7 +35,7 @@ function initializeAnalytics() {
     // Check if IDs are configured
     const gaConfigured = ANALYTICS_CONFIG.gaId && ANALYTICS_CONFIG.gaId !== 'G-XXXXXXXXXX';
     const mixpanelConfigured = ANALYTICS_CONFIG.mixpanelToken && ANALYTICS_CONFIG.mixpanelToken !== 'YOUR_MIXPANEL_TOKEN';
-    
+
     if (!gaConfigured && !mixpanelConfigured) {
         console.warn('⚠️ Analytics not configured. Please add your GA4 and Mixpanel IDs in analytics-config.js');
         return;
@@ -45,15 +48,15 @@ function initializeAnalytics() {
     // Wait for external scripts to load
     let attempts = 0;
     const maxAttempts = 30; // 3 seconds total
-    
+
     const checkAndInit = () => {
         attempts++;
-        
+
         const gtagReady = typeof gtag !== 'undefined';
         const mixpanelReady = typeof mixpanel !== 'undefined' && typeof mixpanel.init === 'function';
-        
+
         console.log(`  Attempt ${attempts}: gtag=${gtagReady}, mixpanel=${mixpanelReady}`);
-        
+
         // Initialize if at least one service is ready, or we've hit max attempts
         if (gtagReady || mixpanelReady || attempts >= maxAttempts) {
             try {
@@ -69,7 +72,7 @@ function initializeAnalytics() {
             setTimeout(checkAndInit, 100);
         }
     };
-    
+
     // Start checking after a small delay to let scripts load
     setTimeout(checkAndInit, 200);
 }
