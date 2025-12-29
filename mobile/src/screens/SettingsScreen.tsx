@@ -906,7 +906,7 @@ export default function SettingsScreen() {
 
           <TouchableOpacity
             style={dynamicStyles.settingRow}
-            onPress={() => Linking.openURL('mailto:support@example.com')}
+            onPress={() => Linking.openURL('mailto:tryformaapp@gmail.com')}
           >
             <View style={dynamicStyles.settingContent}>
               <Text style={dynamicStyles.settingLabel}>Contact Support</Text>

@@ -83,7 +83,7 @@ Based on user feedback, added new questions to onboarding:
 ### Domain & Social
 - [ ] Check domain availability (forma.app, getforma.com, etc.)
 - [ ] Register social media handles (@forma, @formaapp)
-- [ ] Set up brand email (hello@forma.app)
+- [x] Set up brand email (tryformaapp@gmail.com)
 
 ---
 

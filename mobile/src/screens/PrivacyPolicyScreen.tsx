@@ -109,9 +109,9 @@ export default function PrivacyPolicyScreen() {
                     {"\n"}
                     <Text
                         style={{ color: colors.primary, fontWeight: '600' }}
-                        onPress={() => Linking.openURL('mailto:support@forma.app')}
+                        onPress={() => Linking.openURL('mailto:tryformaapp@gmail.com')}
                     >
-                        support@forma.app
+                        tryformaapp@gmail.com
                     </Text>
                 </Text>
 

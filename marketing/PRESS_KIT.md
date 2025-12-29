@@ -76,6 +76,6 @@ Forma is an intelligent calorie tracking app designed to eliminate the friction 
 ## 6. Social Media & Contact
 
 *   **Website:** [forma.app](https://forma.app)
-*   **Email:** support@forma.app
+*   **Email:** tryformaapp@gmail.com
 *   **Instagram/TikTok:** @forma_ai
 *   **Twitter/X:** @forma_app
