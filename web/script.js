@@ -234,38 +234,59 @@ const animateCount = (element, start, end) => {
 };
 
 // Hero Visualizer Animation Sequence
-const initHeroAnimation = () => {
-    const preview = document.getElementById('app-preview');
-    if (!preview) return;
+const initHeroAnimations = () => {
+    const photoPreview = document.getElementById('app-preview-photo');
+    const voicePreview = document.getElementById('app-preview-voice');
 
-    const states = ['camera', 'scan', 'voice', 'dashboard'];
-    const timings = {
-        camera: 2000,
-        scan: 3000,
-        voice: 4000,
-        dashboard: 4000
+    if (!photoPreview || !voicePreview) return;
+
+    // Photo Phone Sequence: Camera -> Scan -> Dashboard
+    const photoStates = ['camera', 'scan', 'dashboard'];
+    const photoTimings = {
+        camera: 3000,
+        scan: 4000,
+        dashboard: 5000
     };
 
-    let currentStateIndex = 0;
+    // Voice Phone Sequence: Voice -> Dashboard
+    const voiceStates = ['voice', 'dashboard'];
+    const voiceTimings = {
+        voice: 6000,
+        dashboard: 6000
+    };
 
-    const nextState = () => {
-        const state = states[currentStateIndex];
-        preview.setAttribute('data-state', state);
+    let photoStateIndex = 0;
+    let voiceStateIndex = 0;
+
+    const nextPhotoState = () => {
+        const state = photoStates[photoStateIndex];
+        photoPreview.setAttribute('data-state', state);
 
         setTimeout(() => {
-            currentStateIndex = (currentStateIndex + 1) % states.length;
-            nextState();
-        }, timings[state]);
+            photoStateIndex = (photoStateIndex + 1) % photoStates.length;
+            nextPhotoState();
+        }, photoTimings[state]);
     };
 
-    // Start the loop
-    nextState();
+    const nextVoiceState = () => {
+        const state = voiceStates[voiceStateIndex];
+        voicePreview.setAttribute('data-state', state);
+
+        setTimeout(() => {
+            voiceStateIndex = (voiceStateIndex + 1) % voiceStates.length;
+            nextVoiceState();
+        }, voiceTimings[state]);
+    };
+
+    // Start sequences with a slight offset for a more natural look
+    nextPhotoState();
+    setTimeout(nextVoiceState, 2000);
 };
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
     initMobileMenu();
-    initHeroAnimation();
+    initHeroAnimations();
 
     // Add loading animation complete
     document.body.style.opacity = '0';
