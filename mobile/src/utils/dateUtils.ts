@@ -35,3 +35,19 @@ export const parseLocalDate = (dateStr: string): Date => {
     const [year, month, day] = dateStr.split('-').map(Number);
     return new Date(year, month - 1, day);
 };
+
+/**
+ * Checks if a given Date object represents "today" in local time.
+ */
+export const isDateToday = (date: Date): boolean => {
+    return getLocalDateString(date) === getLocalDateString(new Date());
+};
+
+/**
+ * Checks if a given Date object represents "yesterday" in local time.
+ */
+export const isDateYesterday = (date: Date): boolean => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    return getLocalDateString(date) === getLocalDateString(yesterday);
+};

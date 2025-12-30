@@ -17,7 +17,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
 import { isDateWithinHistoryLimit } from '../utils/subscriptionLimits';
 
-import { getLocalDateString, parseLocalDate } from '../utils/dateUtils';
+import { getLocalDateString, parseLocalDate, isDateToday, isDateYesterday } from '../utils/dateUtils';
 
 const MEAL_TYPE_ICONS = {
   Breakfast: '🌅',
@@ -101,22 +101,14 @@ export default function MealHistoryScreen() {
   };
 
   const formatDate = (date: Date) => {
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    const dateStr = getLocalDateString(date);
-    const todayStr = getLocalDateString(today);
-    const yesterdayStr = getLocalDateString(yesterday);
-
-    if (dateStr === todayStr) return 'Today';
-    if (dateStr === yesterdayStr) return 'Yesterday';
+    if (isDateToday(date)) return 'Today';
+    if (isDateYesterday(date)) return 'Yesterday';
 
     return date.toLocaleDateString('en-US', {
       weekday: 'long',
       month: 'short',
       day: 'numeric',
-      year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined,
+      year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined,
     });
   };
 
@@ -414,7 +406,7 @@ export default function MealHistoryScreen() {
   });
 
   const selectedDateStr = getLocalDateString(selectedDate);
-  const isToday = selectedDateStr === getLocalDateString(new Date());
+  const isTodayActive = isDateToday(selectedDate);
   const caloriesPercentage = calorieGoal > 0 ? Math.min((dailyTotals.totalCalories / calorieGoal) * 100, 100) : 0;
   const proteinPercentage = proteinGoal > 0 ? Math.min((dailyTotals.totalProtein / proteinGoal) * 100, 100) : 0;
 
@@ -451,11 +443,11 @@ export default function MealHistoryScreen() {
           <TouchableOpacity
             style={dynamicStyles.dateNavButton}
             onPress={() => navigateDate(1)}
-            disabled={isToday}
+            disabled={isTodayActive}
           >
-            <Text style={[dynamicStyles.dateNavButtonText, isToday && { opacity: 0.3 }]}>→</Text>
+            <Text style={[dynamicStyles.dateNavButtonText, isTodayActive && { opacity: 0.3 }]}>→</Text>
           </TouchableOpacity>
-          {!isToday && (
+          {!isTodayActive && (
             <TouchableOpacity
               style={dynamicStyles.todayButton}
               onPress={goToToday}
@@ -579,7 +571,7 @@ export default function MealHistoryScreen() {
               <Text style={dynamicStyles.emptyStateIcon}>🍽️</Text>
               <Text style={dynamicStyles.emptyStateText}>No meals logged</Text>
               <Text style={dynamicStyles.emptyStateSubtext}>
-                {isToday
+                {isTodayActive
                   ? 'Start logging your meals today!'
                   : 'No meals were logged on this date'}
               </Text>
