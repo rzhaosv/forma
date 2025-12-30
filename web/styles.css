@@ -235,27 +235,14 @@ body {
     border-radius: 40px;
     padding: 10px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.phone-photo {
-    transform: rotateY(-15deg) rotateX(5deg) translateX(40px) translateZ(0);
     z-index: 2;
 }
 
-.phone-voice {
-    transform: rotateY(15deg) rotateX(5deg) translateX(-40px) translateZ(-50px);
-    z-index: 1;
-    opacity: 0.9;
-}
-
-.hero-image-container:hover .phone-photo {
-    transform: rotateY(-5deg) rotateX(2deg) translateX(20px) translateZ(30px);
-}
-
-.hero-image-container:hover .phone-voice {
-    transform: rotateY(5deg) rotateX(2deg) translateX(-20px) translateZ(0);
-    opacity: 1;
+.hero-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 32px;
 }
 
 @media (max-width: 1024px) {
@@ -298,376 +285,7 @@ body {
     position: relative;
 }
 
-.visualizer-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
-.photo-view {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 10;
-}
-
-.food-photo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.scan-overlay {
-    position: absolute;
-    top: -100%;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(180deg, transparent 0%, rgba(99, 102, 241, 0.4) 50%, transparent 100%);
-    z-index: 11;
-    animation: scan 3s infinite;
-}
-
-/* App Preview Animation States */
-[data-state="camera"] .camera-ui {
-    opacity: 1;
-}
-
-[data-state="scan"] .camera-ui {
-    opacity: 0;
-}
-
-[data-state="dashboard"] .camera-ui {
-    opacity: 0;
-}
-
-/* In Scan state, everything except the photo and scan lines is hidden initially */
-[data-state="scan"] .ai-grid,
-[data-state="scan"] .laser-line,
-[data-state="scan"] .ai-status {
-    opacity: 1;
-    visibility: visible;
-}
-
-[data-state="camera"] .ai-grid,
-[data-state="camera"] .laser-line,
-[data-state="camera"] .ai-status,
-[data-state="dashboard"] .ai-grid,
-[data-state="dashboard"] .laser-line,
-[data-state="dashboard"] .ai-status {
-    opacity: 0;
-    visibility: hidden;
-}
-
-[data-state="voice"] .camera-ui,
-[data-state="voice"] .ai-grid,
-[data-state="voice"] .laser-line,
-[data-state="voice"] .ai-status,
-[data-state="voice"] .visual-tag,
-[data-state="voice"] .photo-view,
-[data-state="dashboard"] .camera-ui {
-    opacity: 0;
-    visibility: hidden;
-}
-
-.voice-view {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 30px;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.5s ease;
-    z-index: 12;
-}
-
-[data-state="voice"] .voice-view {
-    opacity: 1;
-    visibility: visible;
-}
-
-.voice-waveform {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    height: 60px;
-    margin-bottom: 40px;
-}
-
-.wave-bar {
-    width: 6px;
-    height: 15px;
-    background: var(--primary);
-    border-radius: 3px;
-    box-shadow: 0 0 15px var(--primary);
-    animation: wave 1s ease-in-out infinite;
-}
-
-@keyframes wave {
-
-    0%,
-    100% {
-        height: 15px;
-        transform: scaleY(1);
-        opacity: 0.5;
-    }
-
-    50% {
-        height: 60px;
-        transform: scaleY(1.2);
-        opacity: 1;
-    }
-}
-
-.voice-transcript {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(12px);
-    border-radius: 24px;
-    padding: 24px;
-    color: white;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.4;
-    text-align: center;
-    max-width: 90%;
-    margin-top: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    position: relative;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) 0.4s;
-}
-
-[data-state="voice"] .voice-transcript {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.voice-ai-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    color: var(--primary);
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    margin-bottom: 24px;
-    font-weight: 800;
-}
-
-.voice-ai-label::before {
-    content: "";
-    display: block;
-    width: 8px;
-    height: 8px;
-    background: var(--primary);
-    border-radius: 50%;
-    box-shadow: 0 0 10px var(--primary);
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-        opacity: 1;
-    }
-
-    50% {
-        transform: scale(1.5);
-        opacity: 0.5;
-    }
-
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-[data-state="voice"] .visual-tag,
-[data-state="voice"] .photo-view,
-[data-state="voice"] .camera-ui,
-[data-state="voice"] .ai-grid,
-[data-state="voice"] .laser-line,
-[data-state="voice"] .ai-status {
-    opacity: 0 !important;
-    visibility: hidden !important;
-    pointer-events: none;
-}
-
-.stats-view {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    padding: 20px;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.5s ease;
-    z-index: 5;
-    background: white;
-}
-
-[data-state="dashboard"] .stats-view {
-    opacity: 1;
-    transform: translateY(0);
-    z-index: 15;
-}
-
-[data-state="dashboard"] .photo-view {
-    opacity: 0;
-    transform: scale(0.9);
-    transition: all 0.5s ease;
-    pointer-events: none;
-}
-
-.visual-tag {
-    position: absolute;
-    background: var(--primary);
-    color: white;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-weight: 700;
-    font-size: 14px;
-    box-shadow: var(--shadow-lg);
-    z-index: 20;
-    opacity: 0;
-    transform: scale(0);
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-[data-state="scan"] .visual-tag {
-    opacity: 1;
-    transform: scale(1);
-}
-
-
-.tag-cal {
-    top: 30%;
-    left: 20%;
-    animation-delay: 0.5s;
-}
-
-.tag-protein {
-    top: 45%;
-    right: 15%;
-    animation-delay: 0.7s;
-}
-
-@keyframes scan {
-    0% {
-        top: -100%;
-    }
-
-    50% {
-        top: 100%;
-    }
-
-    100% {
-        top: -100%;
-    }
-}
-
-
-.preview-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.preview-greeting {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 24px;
-}
-
-.preview-stats {
-    background: white;
-    border-radius: 20px;
-    padding: 24px;
-    box-shadow: var(--shadow-md);
-    margin-bottom: 20px;
-}
-
-.stat-circle {
-    position: relative;
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 16px;
-}
-
-.stat-center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-}
-
-.stat-number {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--primary);
-}
-
-.stat-label {
-    font-size: 14px;
-    color: var(--text-secondary);
-}
-
-.calories-left {
-    text-align: center;
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 12px;
-}
-
-.macro-item {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-}
-
-.quick-add {
-    background: white;
-    border-radius: 16px;
-    padding: 16px;
-    box-shadow: var(--shadow-md);
-}
-
-.quick-add-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 12px;
-}
-
-.quick-add-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-}
-
-.quick-btn {
-    padding: 12px;
-    background: var(--bg-secondary);
-    border-radius: 12px;
-    text-align: center;
-    font-size: 14px;
-    font-weight: 600;
-}
+/* Legacy Animation Styles Removed */
 
 /* Floating Cards */
 .floating-card {
@@ -1954,6 +1572,7 @@ body {
     font-weight: 700;
     color: var(--success);
 }
+
 /* ===========================
    CONVERSION OPTIMIZATION STYLES
    =========================== */
@@ -2193,36 +1812,36 @@ body {
     .trust-badges {
         gap: 1rem;
     }
-    
+
     .trust-badge {
         padding: 0.75rem 1rem;
     }
-    
+
     .badge-number {
         font-size: 1.1rem;
     }
-    
+
     .badge-label {
         font-size: 0.65rem;
     }
-    
+
     .results-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
-    
+
     .result-number {
         font-size: 2.5rem;
     }
-    
+
     .faq-question {
         padding: 1.25rem 1.5rem;
     }
-    
+
     .faq-question h3 {
         font-size: 1rem;
     }
-    
+
     .faq-item.active .faq-answer {
         padding: 0 1.5rem 1.25rem 1.5rem;
     }
@@ -2347,15 +1966,15 @@ body {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
-    
+
     .feedback-section {
         padding: 2rem 1.5rem;
     }
-    
+
     .feedback-title {
         font-size: 1.4rem;
     }
-    
+
     .feedback-text {
         font-size: 1rem;
     }

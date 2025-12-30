@@ -10,7 +10,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const { existsSync } = require('fs');
 
-const PORT = 3001;
+const PORT = 3000;
 const EMAILS_FILE = path.join(__dirname, 'emails.json');
 const PUBLIC_DIR = __dirname;
 

@@ -233,55 +233,7 @@ const animateCount = (element, start, end) => {
     }, 16);
 };
 
-// Hero Visualizer Animation Sequence
-const initHeroAnimations = () => {
-    const photoPreview = document.getElementById('app-preview-photo');
-    const voicePreview = document.getElementById('app-preview-voice');
-
-    if (!photoPreview || !voicePreview) return;
-
-    // Photo Phone Sequence: Camera -> Scan -> Dashboard
-    const photoStates = ['camera', 'scan', 'dashboard'];
-    const photoTimings = {
-        camera: 3000,
-        scan: 4000,
-        dashboard: 5000
-    };
-
-    // Voice Phone Sequence: Voice -> Dashboard
-    const voiceStates = ['voice', 'dashboard'];
-    const voiceTimings = {
-        voice: 6000,
-        dashboard: 6000
-    };
-
-    let photoStateIndex = 0;
-    let voiceStateIndex = 0;
-
-    const nextPhotoState = () => {
-        const state = photoStates[photoStateIndex];
-        photoPreview.setAttribute('data-state', state);
-
-        setTimeout(() => {
-            photoStateIndex = (photoStateIndex + 1) % photoStates.length;
-            nextPhotoState();
-        }, photoTimings[state]);
-    };
-
-    const nextVoiceState = () => {
-        const state = voiceStates[voiceStateIndex];
-        voicePreview.setAttribute('data-state', state);
-
-        setTimeout(() => {
-            voiceStateIndex = (voiceStateIndex + 1) % voiceStates.length;
-            nextVoiceState();
-        }, voiceTimings[state]);
-    };
-
-    // Start sequences with a slight offset for a more natural look
-    nextPhotoState();
-    setTimeout(nextVoiceState, 2000);
-};
+// Hero Visualizer Animation Sequence Removed - Using Video instead
 
 // FAQ Accordion
 const initFAQAccordion = () => {
@@ -317,7 +269,7 @@ const initFAQAccordion = () => {
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
     initMobileMenu();
-    initHeroAnimations();
+    // initHeroAnimations(); - Removed in favor of video
     initFAQAccordion();
 
     // Add loading animation complete
