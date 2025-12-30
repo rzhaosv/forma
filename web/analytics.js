@@ -51,6 +51,11 @@ class Analytics {
             this.log('Mixpanel initialized');
         }
 
+        // Initialize Vercel Analytics
+        if (typeof va !== 'undefined') {
+            this.log('Vercel Analytics initialized');
+        }
+
         this.isInitialized = true;
 
         // Process any queued events
@@ -82,6 +87,11 @@ class Analytics {
         if (this.mixpanelInitialized && typeof mixpanel !== 'undefined') {
             mixpanel.track(eventName, properties);
         }
+
+        // Vercel Analytics
+        if (typeof va !== 'undefined') {
+            va('event', { name: eventName, data: properties });
+        }
     }
 
     /**
@@ -107,6 +117,9 @@ class Analytics {
                 page_title: pageTitle,
             });
         }
+
+        // Vercel Analytics - page views are automatic by default, 
+        // but we can trigger a custom page_view if needed.
     }
 
     /**
