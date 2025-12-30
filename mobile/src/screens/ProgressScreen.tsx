@@ -40,7 +40,7 @@ export default function ProgressScreen() {
 
   const [weightInput, setWeightInput] = useState('');
   const [showWeightForm, setShowWeightForm] = useState(false);
-  const [selectedTab, setSelectedTab] = useState<'calories' | 'weight' | 'macros'>('calories');
+  const [selectedTab, setSelectedTab] = useState<'calories' | 'weight'>('calories');
   const [healthKitEnabled, setHealthKitEnabled] = useState(false);
 
   useEffect(() => {
@@ -99,23 +99,6 @@ export default function ProgressScreen() {
     return { labels, datasets: [{ data }] };
   };
 
-  // Get weekly macro data for stacked bar chart
-  const getWeeklyMacroData = () => {
-    const summaries = getWeeklySummaries(4);
-    const labels: string[] = [];
-    const proteinData: number[] = [];
-    const carbsData: number[] = [];
-    const fatData: number[] = [];
-
-    summaries.forEach((summary, index) => {
-      labels.push(`W${summaries.length - index}`);
-      proteinData.push(summary.totalProtein);
-      carbsData.push(summary.totalCarbs);
-      fatData.push(summary.totalFat);
-    });
-
-    return { labels, proteinData, carbsData, fatData };
-  };
 
   const handleAddWeight = async () => {
     const weight = parseFloat(weightInput);
@@ -132,7 +115,6 @@ export default function ProgressScreen() {
 
   const calorieChartData = getWeeklyCalorieData();
   const weightChartData = getWeightChartData();
-  const macroChartData = getWeeklyMacroData();
   const weeklySummaries = getWeeklySummaries(4);
   const currentWeek = weeklySummaries[0];
 
@@ -413,14 +395,6 @@ export default function ProgressScreen() {
               Weight
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[dynamicStyles.tab, selectedTab === 'macros' && dynamicStyles.tabActive]}
-            onPress={() => setSelectedTab('macros')}
-          >
-            <Text style={[dynamicStyles.tabText, selectedTab === 'macros' && dynamicStyles.tabTextActive]}>
-              Macros
-            </Text>
-          </TouchableOpacity>
         </View>
 
         {/* Calories Chart */}
@@ -554,56 +528,6 @@ export default function ProgressScreen() {
           </>
         )}
 
-        {/* Macros Chart */}
-        {selectedTab === 'macros' && (
-          <View style={dynamicStyles.chartCard}>
-            <Text style={dynamicStyles.chartTitle}>Weekly Macros (Last 4 Weeks)</Text>
-            <View style={dynamicStyles.chartContainer}>
-              <BarChart
-                data={{
-                  labels: macroChartData.labels,
-                  datasets: [
-                    {
-                      data: macroChartData.proteinData,
-                    },
-                  ],
-                }}
-                width={screenWidth - 72}
-                height={220}
-                yAxisLabel=""
-                yAxisSuffix="g"
-                chartConfig={{
-                  ...chartConfig,
-                  color: (opacity = 1) => colors.primary + Math.floor(opacity * 255).toString(16).padStart(2, '0'),
-                }}
-                style={{
-                  marginVertical: 8,
-                  borderRadius: 16,
-                }}
-                showValuesOnTopOfBars={true}
-                withInnerLines={false}
-                fromZero={true}
-              />
-              <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 12 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <View style={{ width: 12, height: 12, backgroundColor: colors.primary, borderRadius: 2, marginRight: 4 }} />
-                  <Text style={[dynamicStyles.statLabel, { fontSize: 12 }]}>Protein</Text>
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <View style={{ width: 12, height: 12, backgroundColor: colors.success, borderRadius: 2, marginRight: 4 }} />
-                  <Text style={[dynamicStyles.statLabel, { fontSize: 12 }]}>Carbs</Text>
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <View style={{ width: 12, height: 12, backgroundColor: colors.warning, borderRadius: 2, marginRight: 4 }} />
-                  <Text style={[dynamicStyles.statLabel, { fontSize: 12 }]}>Fat</Text>
-                </View>
-              </View>
-              <Text style={[dynamicStyles.statLabel, { fontSize: 11, textAlign: 'center', marginTop: 8, opacity: 0.7 }]}>
-                Showing Protein only. Full breakdown in summary below.
-              </Text>
-            </View>
-          </View>
-        )}
 
         {/* Weekly Summary */}
         {currentWeek && (
@@ -616,18 +540,6 @@ export default function ProgressScreen() {
             <View style={dynamicStyles.summaryRow}>
               <Text style={dynamicStyles.summaryLabel}>Average Daily</Text>
               <Text style={dynamicStyles.summaryValue}>{currentWeek.avgDailyCalories} kcal</Text>
-            </View>
-            <View style={dynamicStyles.summaryRow}>
-              <Text style={dynamicStyles.summaryLabel}>Protein</Text>
-              <Text style={dynamicStyles.summaryValue}>{currentWeek.totalProtein}g</Text>
-            </View>
-            <View style={dynamicStyles.summaryRow}>
-              <Text style={dynamicStyles.summaryLabel}>Carbs</Text>
-              <Text style={dynamicStyles.summaryValue}>{currentWeek.totalCarbs}g</Text>
-            </View>
-            <View style={[dynamicStyles.summaryRow, dynamicStyles.summaryRowLast]}>
-              <Text style={dynamicStyles.summaryLabel}>Fat</Text>
-              <Text style={dynamicStyles.summaryValue}>{currentWeek.totalFat}g</Text>
             </View>
             <View style={[dynamicStyles.summaryRow, dynamicStyles.summaryRowLast, { marginTop: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: colors.divider }]}>
               <Text style={dynamicStyles.summaryLabel}>Days Logged</Text>

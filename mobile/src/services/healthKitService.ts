@@ -445,6 +445,50 @@ export const readActiveEnergyBurned = async (
 };
 
 /**
+ * Read step count from HealthKit for a date range
+ */
+export const readStepCount = async (
+  startDate: Date,
+  endDate: Date
+): Promise<number> => {
+  try {
+    if (!isHealthKitModuleAvailable()) {
+      return 0;
+    }
+
+    const available = await isHealthKitAvailable();
+    if (!available) {
+      return 0;
+    }
+
+    const result = await HealthKit.queryQuantitySamples(
+      HKQuantityTypeIdentifier.stepCount,
+      {
+        unit: 'count',
+        filter: {
+          date: {
+            startDate,
+            endDate,
+          },
+        },
+        limit: -1,
+      }
+    );
+
+    // Sum up all step samples
+    const totalSteps = result.reduce((sum: number, sample: any) => {
+      return sum + (sample.quantity || sample.value || 0);
+    }, 0);
+
+    console.log('📊 Read steps from HealthKit:', totalSteps);
+    return Math.round(totalSteps);
+  } catch (error) {
+    console.error('Error reading steps from HealthKit:', error);
+    return 0;
+  }
+};
+
+/**
  * Sync workout/exercise data to HealthKit
  */
 export const syncWorkoutToHealthKit = async (

@@ -17,6 +17,8 @@ import { Swipeable } from 'react-native-gesture-handler';
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
 import { isDateWithinHistoryLimit } from '../utils/subscriptionLimits';
 
+import { getLocalDateString } from '../utils/dateUtils';
+
 const MEAL_TYPE_ICONS = {
   Breakfast: '🌅',
   Lunch: '☀️',
@@ -28,7 +30,7 @@ export default function MealHistoryScreen() {
   const navigation = useNavigation();
   const { colors, isDark } = useTheme();
   const { meals, calorieGoal, proteinGoal, deleteMeal } = useMealStore();
-  
+
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const { isPremium } = useSubscriptionStore();
@@ -37,9 +39,9 @@ export default function MealHistoryScreen() {
   const datesWithMeals = useMemo(() => {
     const dateSet = new Set<string>();
     meals.forEach(meal => {
-      const date = meal.timestamp.split('T')[0];
-      const mealDate = new Date(date);
-      
+      const date = getLocalDateString(new Date(meal.timestamp));
+      const mealDate = new Date(meal.timestamp);
+
       // Filter by history limit for free users
       if (isPremium || isDateWithinHistoryLimit(mealDate)) {
         dateSet.add(date);
@@ -50,9 +52,9 @@ export default function MealHistoryScreen() {
 
   // Get meals for selected date
   const selectedDateMeals = useMemo(() => {
-    const dateStr = selectedDate.toISOString().split('T')[0];
+    const dateStr = getLocalDateString(selectedDate);
     return meals
-      .filter(meal => meal.timestamp.startsWith(dateStr))
+      .filter(meal => getLocalDateString(new Date(meal.timestamp)) === dateStr)
       .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
   }, [meals, selectedDate]);
 
@@ -72,7 +74,7 @@ export default function MealHistoryScreen() {
   const navigateDate = (days: number) => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + days);
-    
+
     // Check history limit for free users
     const { isPremium } = useSubscriptionStore.getState();
     if (!isPremium && !isDateWithinHistoryLimit(newDate)) {
@@ -81,8 +83,8 @@ export default function MealHistoryScreen() {
         'Free users can only view the last 7 days of history. Upgrade to Premium for unlimited history!',
         [
           { text: 'Cancel', style: 'cancel' },
-          { 
-            text: 'Upgrade', 
+          {
+            text: 'Upgrade',
             onPress: () => navigation.navigate('Paywall' as never),
             style: 'default'
           },
@@ -90,7 +92,7 @@ export default function MealHistoryScreen() {
       );
       return;
     }
-    
+
     setSelectedDate(newDate);
   };
 
@@ -102,14 +104,14 @@ export default function MealHistoryScreen() {
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
-    
-    const dateStr = date.toISOString().split('T')[0];
-    const todayStr = today.toISOString().split('T')[0];
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
-    
+
+    const dateStr = getLocalDateString(date);
+    const todayStr = getLocalDateString(today);
+    const yesterdayStr = getLocalDateString(yesterday);
+
     if (dateStr === todayStr) return 'Today';
     if (dateStr === yesterdayStr) return 'Yesterday';
-    
+
     return date.toLocaleDateString('en-US', {
       weekday: 'long',
       month: 'short',
@@ -411,15 +413,15 @@ export default function MealHistoryScreen() {
     },
   });
 
-  const selectedDateStr = selectedDate.toISOString().split('T')[0];
-  const isToday = selectedDateStr === new Date().toISOString().split('T')[0];
+  const selectedDateStr = getLocalDateString(selectedDate);
+  const isToday = selectedDateStr === getLocalDateString(new Date());
   const caloriesPercentage = calorieGoal > 0 ? Math.min((dailyTotals.totalCalories / calorieGoal) * 100, 100) : 0;
   const proteinPercentage = proteinGoal > 0 ? Math.min((dailyTotals.totalProtein / proteinGoal) * 100, 100) : 0;
 
   return (
     <SafeAreaView style={dynamicStyles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      
+
       {/* Header */}
       <View style={dynamicStyles.header}>
         <TouchableOpacity
@@ -439,12 +441,12 @@ export default function MealHistoryScreen() {
         >
           <Text style={dynamicStyles.dateNavButtonText}>←</Text>
         </TouchableOpacity>
-        
+
         <View style={dynamicStyles.dateDisplay}>
           <Text style={dynamicStyles.dateText}>{formatDate(selectedDate)}</Text>
           <Text style={dynamicStyles.dateSubtext}>{formatDateShort(selectedDate)}</Text>
         </View>
-        
+
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity
             style={dynamicStyles.dateNavButton}
@@ -475,7 +477,7 @@ export default function MealHistoryScreen() {
               const date = new Date(dateStr);
               const isSelected = dateStr === selectedDateStr;
               const isWithinLimit = isPremium || isDateWithinHistoryLimit(date);
-              
+
               return (
                 <TouchableOpacity
                   key={dateStr}
@@ -491,8 +493,8 @@ export default function MealHistoryScreen() {
                         'Free users can only view the last 7 days of history. Upgrade to Premium for unlimited history!',
                         [
                           { text: 'Cancel', style: 'cancel' },
-                          { 
-                            text: 'Upgrade', 
+                          {
+                            text: 'Upgrade',
                             onPress: () => navigation.navigate('Paywall' as never),
                             style: 'default'
                           },
@@ -520,7 +522,7 @@ export default function MealHistoryScreen() {
         {/* Daily Summary */}
         <View style={dynamicStyles.summaryCard}>
           <Text style={dynamicStyles.summaryTitle}>Daily Summary</Text>
-          
+
           <View style={dynamicStyles.summaryRow}>
             <Text style={dynamicStyles.summaryLabel}>Calories</Text>
             <Text style={dynamicStyles.summaryValue}>
@@ -538,7 +540,7 @@ export default function MealHistoryScreen() {
               ]}
             />
           </View>
-          
+
           <View style={dynamicStyles.summaryRow}>
             <Text style={dynamicStyles.summaryLabel}>Protein</Text>
             <Text style={dynamicStyles.summaryValue}>
@@ -556,12 +558,12 @@ export default function MealHistoryScreen() {
               ]}
             />
           </View>
-          
+
           <View style={dynamicStyles.summaryRow}>
             <Text style={dynamicStyles.summaryLabel}>Carbs</Text>
             <Text style={dynamicStyles.summaryValue}>{Math.round(dailyTotals.totalCarbs)} g</Text>
           </View>
-          
+
           <View style={[dynamicStyles.summaryRow, dynamicStyles.summaryRowLast]}>
             <Text style={dynamicStyles.summaryLabel}>Fat</Text>
             <Text style={dynamicStyles.summaryValue}>{Math.round(dailyTotals.totalFat)} g</Text>
@@ -571,13 +573,13 @@ export default function MealHistoryScreen() {
         {/* Meals List */}
         <View style={dynamicStyles.mealsSection}>
           <Text style={dynamicStyles.sectionTitle}>Meals</Text>
-          
+
           {selectedDateMeals.length === 0 ? (
             <View style={dynamicStyles.emptyState}>
               <Text style={dynamicStyles.emptyStateIcon}>🍽️</Text>
               <Text style={dynamicStyles.emptyStateText}>No meals logged</Text>
               <Text style={dynamicStyles.emptyStateSubtext}>
-                {isToday 
+                {isToday
                   ? 'Start logging your meals today!'
                   : 'No meals were logged on this date'}
               </Text>

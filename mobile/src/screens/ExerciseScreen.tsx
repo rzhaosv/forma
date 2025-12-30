@@ -14,7 +14,9 @@ import {
   Alert,
   Modal,
   TextInput,
+  Platform,
 } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
 import { useExerciseStore } from '../store/useExerciseStore';
@@ -58,6 +60,9 @@ export default function ExerciseScreen() {
     deleteWorkout,
     getWeeklySummary,
     updateDailySummary,
+    steps,
+    stepGoal,
+    syncSteps,
   } = useExerciseStore();
 
   const [showExercisePicker, setShowExercisePicker] = useState(false);
@@ -69,6 +74,9 @@ export default function ExerciseScreen() {
 
   useEffect(() => {
     updateDailySummary();
+    if (Platform.OS === 'ios') {
+      syncSteps();
+    }
   }, []);
 
   const weeklySummary = getWeeklySummary();
@@ -105,7 +113,7 @@ export default function ExerciseScreen() {
     };
 
     useExerciseStore.getState().logWorkout(quickWorkout);
-    
+
     Alert.alert(
       'Exercise Logged! 💪',
       `${selectedExercise.name}\n${durationNum} minutes • ${caloriesBurned} cal burned`,
@@ -123,8 +131,8 @@ export default function ExerciseScreen() {
       'Are you sure you want to delete this workout?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Delete', 
+        {
+          text: 'Delete',
           style: 'destructive',
           onPress: () => deleteWorkout(workoutId),
         },
@@ -492,11 +500,11 @@ export default function ExerciseScreen() {
   });
 
   const renderWorkout = ({ item }: { item: typeof workouts[0] }) => {
-    const time = new Date(item.timestamp).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    const time = new Date(item.timestamp).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
     });
-    
+
     return (
       <View style={dynamicStyles.workoutCard}>
         <View style={dynamicStyles.workoutHeader}>
@@ -504,7 +512,7 @@ export default function ExerciseScreen() {
             <Text style={dynamicStyles.workoutName}>{item.name}</Text>
             <Text style={dynamicStyles.workoutTime}>{time}</Text>
           </View>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={dynamicStyles.deleteButton}
             onPress={() => handleDeleteWorkout(item.id)}
           >
@@ -531,9 +539,17 @@ export default function ExerciseScreen() {
 
   const filteredExercises = getExercisesByCategory(selectedCategory);
 
-  const previewCalories = selectedExercise 
+  const previewCalories = selectedExercise
     ? calculateCaloriesBurned(selectedExercise, parseInt(duration) || 30, 70, intensity)
     : 0;
+
+  // Step Counter Circle Constants
+  const circleSize = 140;
+  const strokeWidth = 12;
+  const radius = (circleSize - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const stepProgress = Math.min(steps / stepGoal, 1);
+  const strokeDashoffset = circumference - stepProgress * circumference;
 
   return (
     <SafeAreaView style={dynamicStyles.container}>
@@ -551,6 +567,67 @@ export default function ExerciseScreen() {
       </View>
 
       <ScrollView>
+        {/* Step Counter Section */}
+        <View style={dynamicStyles.section}>
+          <View style={[dynamicStyles.summaryCard, { alignItems: 'center', paddingVertical: 30 }]}>
+            <View style={{ width: circleSize, height: circleSize, justifyContent: 'center', alignItems: 'center' }}>
+              <Svg width={circleSize} height={circleSize} style={{ position: 'absolute' }}>
+                {/* Background Circle */}
+                <Circle
+                  cx={circleSize / 2}
+                  cy={circleSize / 2}
+                  r={radius}
+                  stroke={isDark ? '#333' : '#F0F0F0'}
+                  strokeWidth={strokeWidth}
+                  fill="none"
+                />
+                {/* Progress Circle */}
+                <Circle
+                  cx={circleSize / 2}
+                  cy={circleSize / 2}
+                  r={radius}
+                  stroke={colors.primary}
+                  strokeWidth={strokeWidth}
+                  strokeDasharray={`${circumference} ${circumference}`}
+                  strokeDashoffset={strokeDashoffset}
+                  strokeLinecap="round"
+                  fill="none"
+                  rotation="-90"
+                  origin={`${circleSize / 2}, ${circleSize / 2}`}
+                />
+              </Svg>
+              <View style={{ alignItems: 'center' }}>
+                <Text style={{ fontSize: 32, fontWeight: '800', color: colors.text }}>
+                  {steps.toLocaleString()}
+                </Text>
+                <Text style={{ fontSize: 14, color: colors.textSecondary, fontWeight: '500' }}>
+                  Steps today
+                </Text>
+              </View>
+            </View>
+
+            <View style={{ marginTop: 20, alignItems: 'center' }}>
+              <Text style={{ fontSize: 16, color: colors.text, fontWeight: '600' }}>
+                Goal: {stepGoal.toLocaleString()} steps
+              </Text>
+              <Text style={{ fontSize: 14, color: colors.primary, fontWeight: '700', marginTop: 4 }}>
+                {Math.round(stepProgress * 100)}% Complete
+              </Text>
+            </View>
+
+            {Platform.OS === 'ios' && (
+              <TouchableOpacity
+                onPress={syncSteps}
+                style={{ marginTop: 16, padding: 8 }}
+              >
+                <Text style={{ color: colors.primary, fontSize: 12, fontWeight: '600' }}>
+                  ↻ Sync with Apple Health
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+
         {/* Summary Section */}
         <View style={dynamicStyles.section}>
           <View style={dynamicStyles.summaryCard}>
@@ -580,11 +657,11 @@ export default function ExerciseScreen() {
                 Weekly Goal: {weeklySummary.totalMinutes}/{weeklyGoal} min ({Math.round(weeklyProgress)}%)
               </Text>
               <View style={dynamicStyles.progressBar}>
-                <View 
+                <View
                   style={[
-                    dynamicStyles.progressFill, 
+                    dynamicStyles.progressFill,
                     { width: `${weeklyProgress}%` }
-                  ]} 
+                  ]}
                 />
               </View>
             </View>
@@ -602,7 +679,7 @@ export default function ExerciseScreen() {
         {/* Today's Workouts */}
         <View style={dynamicStyles.section}>
           <Text style={dynamicStyles.sectionTitle}>Today's Activity</Text>
-          
+
           {dailySummary && dailySummary.workouts.length > 0 ? (
             <FlatList
               data={dailySummary.workouts}
@@ -623,29 +700,29 @@ export default function ExerciseScreen() {
         {/* Recent Workouts History */}
         <View style={dynamicStyles.section}>
           <Text style={dynamicStyles.sectionTitle}>Workout History</Text>
-          
+
           {workouts.length > 0 ? (
             <>
               {(() => {
                 // Group workouts by date
                 const groupedWorkouts: { [date: string]: typeof workouts } = {};
                 const today = new Date().toDateString();
-                
+
                 workouts.forEach(workout => {
                   const workoutDate = new Date(workout.timestamp).toDateString();
                   // Skip today's workouts (already shown above)
                   if (workoutDate === today) return;
-                  
+
                   if (!groupedWorkouts[workoutDate]) {
                     groupedWorkouts[workoutDate] = [];
                   }
                   groupedWorkouts[workoutDate].push(workout);
                 });
-                
+
                 const sortedDates = Object.keys(groupedWorkouts).sort(
                   (a, b) => new Date(b).getTime() - new Date(a).getTime()
                 );
-                
+
                 if (sortedDates.length === 0) {
                   return (
                     <View style={dynamicStyles.emptyState}>
@@ -655,18 +732,18 @@ export default function ExerciseScreen() {
                     </View>
                   );
                 }
-                
+
                 return sortedDates.slice(0, 7).map(dateStr => {
                   const date = new Date(dateStr);
                   const isYesterday = date.toDateString() === new Date(Date.now() - 86400000).toDateString();
-                  const dateLabel = isYesterday 
-                    ? 'Yesterday' 
+                  const dateLabel = isYesterday
+                    ? 'Yesterday'
                     : date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-                  
+
                   const dayWorkouts = groupedWorkouts[dateStr];
                   const dayCalories = dayWorkouts.reduce((sum, w) => sum + w.totalCaloriesBurned, 0);
                   const dayDuration = dayWorkouts.reduce((sum, w) => sum + w.totalDuration, 0);
-                  
+
                   return (
                     <View key={dateStr} style={dynamicStyles.historyDayCard}>
                       <View style={dynamicStyles.historyDayHeader}>
@@ -683,7 +760,7 @@ export default function ExerciseScreen() {
                               {workout.exercises.map(e => e.exercise.icon).join(' ')} {formatDuration(workout.totalDuration)} • {workout.totalCaloriesBurned} cal
                             </Text>
                           </View>
-                          <TouchableOpacity 
+                          <TouchableOpacity
                             onPress={() => handleDeleteWorkout(workout.id)}
                             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                           >
