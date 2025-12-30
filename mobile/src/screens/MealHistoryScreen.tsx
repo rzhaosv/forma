@@ -17,7 +17,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
 import { isDateWithinHistoryLimit } from '../utils/subscriptionLimits';
 
-import { getLocalDateString } from '../utils/dateUtils';
+import { getLocalDateString, parseLocalDate } from '../utils/dateUtils';
 
 const MEAL_TYPE_ICONS = {
   Breakfast: '🌅',
@@ -474,7 +474,7 @@ export default function MealHistoryScreen() {
               Quick Jump
             </Text>
             {datesWithMeals.slice(0, 7).map((dateStr) => {
-              const date = new Date(dateStr);
+              const date = parseLocalDate(dateStr);
               const isSelected = dateStr === selectedDateStr;
               const isWithinLimit = isPremium || isDateWithinHistoryLimit(date);
 

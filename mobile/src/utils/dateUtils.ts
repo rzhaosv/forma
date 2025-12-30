@@ -28,3 +28,10 @@ export const isToday = (timestamp: string): boolean => {
     const dateStr = getLocalDateString(new Date(timestamp));
     return today === dateStr;
 };
+/**
+ * Parses a YYYY-MM-DD string into a local Date object.
+ */
+export const parseLocalDate = (dateStr: string): Date => {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+};
