@@ -268,18 +268,22 @@ export const useExerciseStore = create<ExerciseStore>((set, get) => ({
   },
 
   updateDailySummary: () => {
-    const { workouts } = get();
+    const { workouts, steps } = get();
     const today = getLocalDateString();
 
     const todayWorkouts = workouts.filter(w =>
       getLocalDateString(new Date(w.timestamp)) === today
     );
 
+    // Calculate step-based metrics (0.04 cal/step, 1 min active/100 steps)
+    const stepCalories = Math.round(steps * 0.04);
+    const stepDuration = Math.round(steps / 100);
+
     const summary: DailyExerciseSummary = {
       date: today,
       workouts: todayWorkouts,
-      totalCaloriesBurned: todayWorkouts.reduce((sum, w) => sum + w.totalCaloriesBurned, 0),
-      totalDuration: todayWorkouts.reduce((sum, w) => sum + w.totalDuration, 0),
+      totalCaloriesBurned: todayWorkouts.reduce((sum, w) => sum + w.totalCaloriesBurned, 0) + stepCalories,
+      totalDuration: todayWorkouts.reduce((sum, w) => sum + w.totalDuration, 0) + stepDuration,
       exerciseCount: todayWorkouts.reduce((sum, w) => sum + w.exercises.length, 0),
     };
 
@@ -287,7 +291,7 @@ export const useExerciseStore = create<ExerciseStore>((set, get) => ({
   },
 
   getWeeklySummary: () => {
-    const { workouts } = get();
+    const { workouts, steps } = get();
     const now = new Date();
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
@@ -295,9 +299,13 @@ export const useExerciseStore = create<ExerciseStore>((set, get) => ({
       new Date(w.timestamp) >= weekAgo
     );
 
+    // Include today's steps in the weekly total (approximate)
+    const todayStepMinutes = Math.round(steps / 100);
+    const todayStepCalories = Math.round(steps * 0.04);
+
     return {
-      totalMinutes: weekWorkouts.reduce((sum, w) => sum + w.totalDuration, 0),
-      totalCalories: weekWorkouts.reduce((sum, w) => sum + w.totalCaloriesBurned, 0),
+      totalMinutes: weekWorkouts.reduce((sum, w) => sum + w.totalDuration, 0) + todayStepMinutes,
+      totalCalories: weekWorkouts.reduce((sum, w) => sum + w.totalCaloriesBurned, 0) + todayStepCalories,
       workoutCount: weekWorkouts.length,
     };
   },
@@ -322,6 +330,7 @@ export const useExerciseStore = create<ExerciseStore>((set, get) => ({
 
       const steps = await readStepCount(startOfToday, now);
       set({ steps });
+      get().updateDailySummary();
       console.log('👟 Steps synced:', steps);
     } catch (error) {
       console.error('Error syncing steps:', error);
