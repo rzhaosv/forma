@@ -2365,7 +2365,7 @@ body {
 
 .carousel-scroller .carousel-item {
     flex: 0 0 300px;
-    scroll-snap-align: center;
+    /* scroll-snap-align: center; <-- Removed to prevent glitching with JS scroll */
     transition: transform 0.3s ease;
 }
 

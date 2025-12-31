@@ -337,69 +337,66 @@ const initInfiniteScroll = () => {
         scroller.prepend(fragmentBefore);
         scroller.append(fragmentAfter);
 
-        // Calculate dimensions with sub-pixel precision
+        // Force a layout calculation after cloning
         const calculateDimensions = () => {
             const style = window.getComputedStyle(scroller);
             const gap = parseFloat(style.gap) || 0;
-            const itemWidth = originalItems[0].getBoundingClientRect().width + gap;
-            const totalOriginalWidth = itemWidth * originalItems.length;
-            return { itemWidth, totalOriginalWidth };
+
+            // Sum all original items for total width in case they differ slightly
+            let totalW = 0;
+            originalItems.forEach(item => {
+                totalW += item.getBoundingClientRect().width + gap;
+            });
+
+            return { totalOriginalWidth: totalW };
         };
 
-        let { totalOriginalWidth } = calculateDimensions();
+        let dimensions = calculateDimensions();
 
-        // Initial Scroll Position: Start of Original Set
-        // Using requestAnimationFrame to ensure layout is ready
-        requestAnimationFrame(() => {
-            // Recalculate just in case layout shifted
-            const dims = calculateDimensions();
-            totalOriginalWidth = dims.totalOriginalWidth;
-            scroller.scrollLeft = totalOriginalWidth;
-        });
+        // Initial setup
+        const setupScroll = () => {
+            dimensions = calculateDimensions();
+            scroller.scrollLeft = dimensions.totalOriginalWidth;
+        };
 
-        let isScrolling = false;
+        // Use ResizeObserver for more robust updates
+        if (window.ResizeObserver) {
+            const ro = new ResizeObserver(() => {
+                dimensions = calculateDimensions();
+            });
+            ro.observe(scroller);
+            originalItems.forEach(item => ro.observe(item));
+        }
 
-        // Robust Scroll Handler
+        // Wait for images/fonts and layout to stabilize
+        window.addEventListener('load', setupScroll);
+        requestAnimationFrame(setupScroll);
+
+        let isJumping = false;
+
         scroller.addEventListener('scroll', () => {
-            if (isScrolling) return;
-
-            // Recalculate on fly in case of resizes (lightweight enough)
-            // Or ideally use a ResizeObserver, but for now this is safer against layout shifts
-            // const { totalOriginalWidth } = calculateDimensions(); 
-            // ^ Optimization: Don't recalc on every scroll event unless needed. 
-            // Assuming width doesn't change during scroll.
+            if (isJumping) return;
 
             const scrollLeft = scroller.scrollLeft;
+            const totalW = dimensions.totalOriginalWidth;
 
-            // Thresholds:
-            // Center set is at [totalOriginalWidth] to [2 * totalOriginalWidth]
+            // Use a small buffer to prevent jitter
+            const buffer = 10;
 
-            // If we scroll into the Left Buffer (< totalOriginalWidth)
-            // relative error of 1px is handled by using a small epsilon if needed, 
-            // but usually strict inequality is fine for jump.
-            if (scrollLeft <= 5) { // Near absolute start
-                isScrolling = true;
-                scroller.scrollLeft += totalOriginalWidth;
-                isScrolling = false;
+            // If we've scrolled into the left clone set
+            if (scrollLeft < buffer) {
+                isJumping = true;
+                scroller.style.scrollBehavior = 'auto'; // Disable smooth scroll for jump
+                scroller.scrollLeft = totalW + scrollLeft;
+                isJumping = false;
             }
-            else if (scrollLeft < totalOriginalWidth - 5) { // Entered left buffer substantially
-                isScrolling = true;
-                scroller.scrollLeft += totalOriginalWidth;
-                isScrolling = false;
+            // If we've scrolled toward the end of the middle set
+            else if (scrollLeft >= totalW * 2 - buffer) {
+                isJumping = true;
+                scroller.style.scrollBehavior = 'auto';
+                scroller.scrollLeft = scrollLeft - totalW;
+                isJumping = false;
             }
-            // If we scroll into the Right Buffer (> 2 * totalOriginalWidth)
-            else if (scrollLeft >= (totalOriginalWidth * 2) - 5) {
-                isScrolling = true;
-                scroller.scrollLeft -= totalOriginalWidth;
-                isScrolling = false;
-            }
-        });
-
-        // Handle resize to update totalOriginalWidth
-        window.addEventListener('resize', () => {
-            const dims = calculateDimensions();
-            totalOriginalWidth = dims.totalOriginalWidth;
-            // Re-center if we're way off? Maybe just update the variable is enough for next scroll.
         });
     });
 };
