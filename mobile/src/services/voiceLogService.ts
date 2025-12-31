@@ -41,7 +41,9 @@ export const stopRecording = async (recording: Audio.Recording): Promise<string 
 };
 
 const transcribeAudio = async (audioUri: string): Promise<string> => {
-    if (!OPENAI_API_KEY) throw new Error('OpenAI API Key is missing');
+    if (!OPENAI_API_KEY || OPENAI_API_KEY.includes('YOUR_')) {
+        throw new Error('OpenAI API Key is missing or invalid. Check EAS secrets.');
+    }
 
     const formData = new FormData();
     // @ts-ignore: React Native FormData expects explicit name/type/uri object
@@ -70,7 +72,9 @@ const transcribeAudio = async (audioUri: string): Promise<string> => {
 };
 
 const extractNutritionFromText = async (text: string): Promise<FoodRecognitionResult> => {
-    if (!OPENAI_API_KEY) throw new Error('OpenAI API Key is missing');
+    if (!OPENAI_API_KEY || OPENAI_API_KEY.includes('YOUR_')) {
+        throw new Error('OpenAI API Key is missing or invalid. Check EAS secrets.');
+    }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',

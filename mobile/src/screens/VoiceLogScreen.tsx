@@ -65,9 +65,9 @@ export default function VoiceLogScreen() {
                     } else {
                         Alert.alert('Error', 'Could not understand the meal. Please try again.');
                     }
-                } catch (error) {
+                } catch (error: any) {
                     console.log('Voice analysis error:', error);
-                    Alert.alert('Error', 'Voice analysis failed');
+                    Alert.alert('Error', error.message || 'Voice analysis failed');
                 } finally {
                     setIsProcessing(false);
                 }

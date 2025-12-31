@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, AppState, AppStateStatus, Linking } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
-import { analyzeFoodPhoto, mockAnalyzeFoodPhoto } from '../services/foodRecognitionService';
+import { analyzeFoodPhoto } from '../services/foodRecognitionService';
 import { canPerformPhotoScan, recordPhotoScan, getRemainingPhotoScans } from '../utils/subscriptionLimits';
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
 import PaywallModal from '../components/PaywallModal';
@@ -125,9 +125,9 @@ export default function CameraScreen() {
         try {
           result = await analyzeFoodPhoto(photo.uri);
         } catch (apiError: any) {
-          if (apiError.message.includes('API key not configured')) {
-            console.log('⚠️ Using mock data (API key not configured)');
-            result = await mockAnalyzeFoodPhoto(photo.uri);
+          if (apiError.message.includes('API Key is missing')) {
+            console.log('⚠️ API Key missing - user needs to check EAS secrets');
+            throw apiError; // Don't fallback to mock in production builds if it's an environment issue
           } else {
             throw apiError;
           }

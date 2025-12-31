@@ -35,7 +35,9 @@ export async function analyzeFoodPhoto(imageUri: string): Promise<FoodRecognitio
   const startTime = Date.now();
 
   try {
-    if (!OPENAI_API_KEY) throw new Error('OpenAI API Key is missing');
+    if (!OPENAI_API_KEY || OPENAI_API_KEY.includes('YOUR_')) {
+      throw new Error('OpenAI API Key is missing or invalid in this build. Please check EAS secrets.');
+    }
 
     // 1. Fetch image and convert to base64
     const response = await fetch(imageUri);
