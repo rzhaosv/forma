@@ -276,11 +276,29 @@ const initFAQAccordion = () => {
     });
 };
 
+// Floating CTA Visibility
+const initFloatingCTA = () => {
+    const floatingCta = document.getElementById('floating-cta');
+    const heroSection = document.querySelector('.hero');
+
+    if (floatingCta && heroSection) {
+        window.addEventListener('scroll', () => {
+            const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
+            if (window.pageYOffset > heroBottom - 100) {
+                floatingCta.classList.add('active');
+            } else {
+                floatingCta.classList.remove('active');
+            }
+        });
+    }
+};
+
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
     initMobileMenu();
     // initHeroAnimations(); - Removed in favor of video
     initFAQAccordion();
+    initFloatingCTA();
 
     // Add loading animation complete
     document.body.style.opacity = '0';

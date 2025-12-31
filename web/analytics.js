@@ -92,6 +92,11 @@ class Analytics {
         if (typeof va !== 'undefined') {
             va('event', { name: eventName, data: properties });
         }
+
+        // TikTok Pixel
+        if (typeof ttq !== 'undefined') {
+            ttq.track(eventName, properties);
+        }
     }
 
     /**

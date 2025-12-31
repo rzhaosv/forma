@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forma - Admin Stats</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #f8fafc;
+            padding: 40px 20px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .stats-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 32px;
+            border-radius: 24px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 48px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .recent-table {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px 32px;
+            border-bottom: 1px solid #f1f5f9;
+            background: #fafafa;
+            font-weight: 700;
+        }
+
+        .table-row {
+            padding: 16px 32px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .timestamp {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .email {
+            font-weight: 500;
+            color: #334155;
+        }
+
+        .refresh-btn {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .refresh-btn:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="stats-container">
+        <div class="header">
+            <h1 style="font-size: 32px; font-weight: 900; letter-spacing: -0.02em;">Real-time Performance</h1>
+            <button class="refresh-btn" onclick="loadStats()">Refresh Data</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Signups</div>
+                <div class="stat-value" id="total-signups">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Last 24 Hours</div>
+                <div class="stat-value" id="daily-signups">--</div>
+            </div>
+        </div>
+
+        <div class="recent-table">
+            <div class="table-header">Recent Signups</div>
+            <div id="signup-list">
+                <!-- Data will be injected here -->
+                <div class="table-row">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, query, orderBy, limit, getDocs, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCL6su_cFHvijSIuQYomXVzNvfMcsmcJTk",
+            authDomain: "forma-3803d.firebaseapp.com",
+            projectId: "forma-3803d",
+            storageBucket: "forma-3803d.firebasestorage.app",
+            messagingSenderId: "311242226872",
+            appId: "1:311242226872:web:e3e40064d1471d8725884d",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadStats() {
+            try {
+                const waitlistCol = collection(db, "waitlist");
+
+                // Get Total
+                const totalSnapshot = await getDocs(waitlistCol);
+                document.getElementById('total-signups').textContent = totalSnapshot.size;
+
+                // Get Last 24h
+                const oneDayAgo = new Date();
+                oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+                const dailyQuery = query(waitlistCol, where("timestamp", ">=", oneDayAgo));
+                const dailySnapshot = await getDocs(dailyQuery);
+                document.getElementById('daily-signups').textContent = dailySnapshot.size;
+
+                // Recent List
+                const recentQuery = query(waitlistCol, orderBy("timestamp", "desc"), limit(10));
+                const recentSnapshot = await getDocs(recentQuery);
+
+                const list = document.getElementById('signup-list');
+                list.innerHTML = '';
+
+                recentSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const date = data.timestamp?.toDate() || new Date();
+                    const row = document.createElement('div');
+                    row.className = 'table-row';
+                    row.innerHTML = `
+                        <span class="email">${data.email}</span>
+                        <span class="timestamp">${date.toLocaleString()}</span>
+                    `;
+                    list.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error("Error loading stats:", error);
+                document.getElementById('signup-list').innerHTML = `<div class="table-row" style="color: red;">Error: ${error.message}</div>`;
+            }
+        }
+
+        window.loadStats = loadStats;
+        window.addEventListener('DOMContentLoaded', loadStats);
+    </script>
+</body>
+
+</html>
