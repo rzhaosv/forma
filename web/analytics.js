@@ -97,6 +97,13 @@ class Analytics {
         if (typeof ttq !== 'undefined') {
             ttq.track(eventName, properties);
         }
+
+        // Google Tag Manager (dataLayer)
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+            event: eventName,
+            ...properties
+        });
     }
 
     /**
