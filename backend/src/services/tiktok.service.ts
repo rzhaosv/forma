@@ -7,11 +7,13 @@ dotenv.config();
 const TIKTOK_API_URL = 'https://business-api.tiktok.com/open_api/v1.3/event/track/';
 const PIXEL_ID = process.env.TIKTOK_PIXEL_ID;
 const ACCESS_TOKEN = process.env.TIKTOK_ACCESS_TOKEN;
+const TEST_EVENT_CODE = process.env.TIKTOK_TEST_EVENT_CODE;
 
 export interface TikTokEventData {
     event: string;
     event_id?: string;
     event_time?: number;
+    test_event_code?: string;
     context?: {
         ad?: {
             callback?: string;
@@ -62,6 +64,7 @@ class TikTokService {
                     event: eventData.event,
                     event_id: eventData.event_id || crypto.randomUUID(),
                     event_time: eventData.event_time || Math.floor(Date.now() / 1000),
+                    test_event_code: eventData.test_event_code || TEST_EVENT_CODE,
                     context: {
                         ad: {
                             callback: eventData.context?.ad?.callback,

@@ -34,18 +34,6 @@
         gtag('config', 'AW-16812891338');
     </script>
 
-    <!-- Google Ads Conversion Helper -->
-    <script>
-        function gtagSendEvent(url, platform) {
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'conversion_event_signup', {
-                    'platform': platform,
-                    'method': platform
-                });
-            }
-            return true;
-        }
-    </script>
 
     <!-- Mixpanel -->
     <script type="text/javascript">
@@ -72,6 +60,10 @@
         }(window, document, 'ttq');
     </script>
     <!-- TikTok Pixel Code End -->
+
+    <!-- Unified Analytics -->
+    <script src="analytics-config.js"></script>
+    <script src="analytics.js"></script>
 </head>
 
 <body>
@@ -424,7 +416,7 @@
                         <h3>iOS (iPhone)</h3>
                         <p class="download-note">Requires TestFlight App</p>
                         <a href="https://testflight.apple.com/join/SK2Xndgu" class="download-btn" target="_blank"
-                            onclick="return gtagSendEvent(this.href, 'ios');">
+                            onclick="window.trackDownload('ios');">
                             Download on TestFlight
                         </a>
                     </div>
@@ -435,7 +427,7 @@
                         <h3>Android</h3>
                         <p class="download-note">Google Play Open Testing</p>
                         <a href="https://play.google.com/apps/testing/com.raymondzhao3000.forma" class="download-btn"
-                            target="_blank" onclick="return gtagSendEvent(this.href, 'android');">
+                            target="_blank" onclick="window.trackDownload('android');">
                             Join on Google Play
                         </a>
                     </div>

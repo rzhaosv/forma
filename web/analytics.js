@@ -62,7 +62,7 @@ class Analytics {
         this.processQueue();
 
         // Set up automatic tracking
-        this.setupAutoTracking();
+
     }
 
     /**
@@ -95,7 +95,28 @@ class Analytics {
 
         // TikTok Pixel
         if (typeof ttq !== 'undefined') {
-            ttq.track(eventName, properties);
+            // Map common events to TikTok standard events
+            let tiktokEvent = eventName;
+            let tiktokProps = { ...properties };
+
+            if (eventName === 'CTA Clicked' && (properties.cta_text === 'Get Early Access' || properties.cta_text === 'Get Started')) {
+                tiktokEvent = 'AddtoWishlist';
+            } else if (eventName === 'App Download Started') {
+                tiktokEvent = 'Download';
+            } else if (eventName === 'Email Captured' || (eventName === 'Form Submitted' && properties.success)) {
+                tiktokEvent = 'CompleteRegistration';
+            } else if (eventName === 'Page View') {
+                tiktokEvent = 'ViewContent';
+            }
+
+            // Add test code if present in URL or properties
+            const urlParams = new URLSearchParams(window.location.search);
+            const testCode = properties.tiktok_test_event_code || urlParams.get('tiktok_test_event_code');
+            if (testCode) {
+                tiktokProps.test_event_code = testCode;
+            }
+
+            ttq.track(tiktokEvent, tiktokProps);
         }
 
         // Google Tag Manager (dataLayer)
@@ -106,33 +127,7 @@ class Analytics {
         });
     }
 
-    /**
-     * Track page view
-     * @param {string} pagePath - Page path
-     * @param {string} pageTitle - Page title
-     */
-    pageView(pagePath, pageTitle) {
-        this.log(`Page view: ${pagePath}`);
 
-        // Google Analytics
-        if (this.gaInitialized && typeof gtag !== 'undefined') {
-            gtag('event', 'page_view', {
-                page_path: pagePath,
-                page_title: pageTitle,
-            });
-        }
-
-        // Mixpanel
-        if (this.mixpanelInitialized && typeof mixpanel !== 'undefined') {
-            mixpanel.track('Page View', {
-                page_path: pagePath,
-                page_title: pageTitle,
-            });
-        }
-
-        // Vercel Analytics - page views are automatic by default, 
-        // but we can trigger a custom page_view if needed.
-    }
 
     /**
      * Identify a user
@@ -200,41 +195,7 @@ class Analytics {
         });
     }
 
-    /**
-     * Track scroll depth
-     * @param {number} percentage - Scroll depth percentage
-     */
-    trackScrollDepth(percentage) {
-        this.track('Scroll Depth', {
-            percentage: percentage,
-            timestamp: new Date().toISOString(),
-        });
-    }
 
-    /**
-     * Track time on page
-     * @param {number} seconds - Time in seconds
-     */
-    trackTimeOnPage(seconds) {
-        this.track('Time on Page', {
-            seconds: seconds,
-            minutes: Math.round(seconds / 60),
-            timestamp: new Date().toISOString(),
-        });
-    }
-
-    /**
-     * Track external link click
-     * @param {string} url - External URL
-     * @param {string} linkText - Link text
-     */
-    trackExternalLink(url, linkText = '') {
-        this.track('External Link Clicked', {
-            url: url,
-            link_text: linkText,
-            timestamp: new Date().toISOString(),
-        });
-    }
 
     /**
      * Track error
@@ -250,87 +211,17 @@ class Analytics {
     }
 
     /**
-     * Set up automatic tracking
+     * Track app download click
+     * @param {string} platform - 'ios' or 'android'
      */
-    setupAutoTracking() {
-        // Scroll depth tracking
-        this.setupScrollTracking();
-
-        // Time on page tracking
-        this.setupTimeTracking();
-
-        // Outbound link tracking
-        this.setupOutboundLinkTracking();
-    }
-
-    /**
-     * Set up scroll depth tracking
-     */
-    setupScrollTracking() {
-        const thresholds = [25, 50, 75, 90, 100];
-        const triggered = new Set();
-
-        const checkScroll = () => {
-            const scrollPercent = Math.round(
-                (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
-            );
-
-            thresholds.forEach(threshold => {
-                if (scrollPercent >= threshold && !triggered.has(threshold)) {
-                    triggered.add(threshold);
-                    this.trackScrollDepth(threshold);
-                }
-            });
-        };
-
-        let scrollTimeout;
-        window.addEventListener('scroll', () => {
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(checkScroll, 100);
+    trackAppDownload(platform) {
+        this.track('App Download Started', {
+            platform: platform,
+            timestamp: new Date().toISOString(),
         });
     }
 
-    /**
-     * Set up time on page tracking
-     */
-    setupTimeTracking() {
-        const startTime = Date.now();
 
-        // Track every 30 seconds
-        const interval = setInterval(() => {
-            const timeOnPage = Math.round((Date.now() - startTime) / 1000);
-            if (timeOnPage % 30 === 0) {
-                this.trackTimeOnPage(timeOnPage);
-            }
-        }, 30000);
-
-        // Track on page unload
-        window.addEventListener('beforeunload', () => {
-            clearInterval(interval);
-            const totalTime = Math.round((Date.now() - startTime) / 1000);
-            this.trackTimeOnPage(totalTime);
-        });
-    }
-
-    /**
-     * Set up outbound link tracking
-     */
-    setupOutboundLinkTracking() {
-        document.addEventListener('click', (e) => {
-            const link = e.target.closest('a');
-            if (!link) return;
-
-            const href = link.getAttribute('href');
-            if (href && (href.startsWith('http://') || href.startsWith('https://'))) {
-                const currentDomain = window.location.hostname;
-                const linkDomain = new URL(href).hostname;
-
-                if (linkDomain !== currentDomain) {
-                    this.trackExternalLink(href, link.textContent.trim());
-                }
-            }
-        });
-    }
 
     /**
      * Process queued events
@@ -377,4 +268,5 @@ window.analytics = new Analytics();
 window.trackEvent = (eventName, properties) => window.analytics.track(eventName, properties);
 window.trackCTA = (text, location) => window.analytics.trackCTAClick(text, location);
 window.trackEmail = (email, source) => window.analytics.trackEmailCapture(email, source);
+window.trackDownload = (platform) => window.analytics.trackAppDownload(platform);
 

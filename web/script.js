@@ -69,7 +69,7 @@ document.querySelectorAll('.feature-card, .testimonial-card, .pricing-card, .ste
 });
 
 // Track CTA clicks (for analytics)
-document.querySelectorAll('.btn-primary, .btn-secondary, .btn-outline, .download-btn').forEach(button => {
+document.querySelectorAll('.btn-primary, .btn-secondary, .btn-outline, .download-btn, .feedback-btn, .logo').forEach(button => {
     button.addEventListener('click', function () {
         const buttonText = this.textContent.trim();
         const buttonHref = this.getAttribute('href');
@@ -87,7 +87,7 @@ document.querySelectorAll('.btn-primary, .btn-secondary, .btn-outline, .download
             window.analytics.trackCTAClick(buttonText, location);
 
             // Track as conversion if it's a download button
-            if (buttonHref && (buttonHref.includes('apps.apple.com') || buttonHref.includes('play.google.com'))) {
+            if (buttonHref && (buttonHref.includes('apple.com') || buttonHref.includes('play.google.com') || buttonHref.includes('testflight'))) {
                 window.analytics.track('App Download Started', {
                     platform: buttonHref.includes('apple') ? 'iOS' : 'Android',
                     location: location,

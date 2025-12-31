@@ -2,7 +2,6 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
-import { tiktokService } from './services/tiktok.service.js';
 
 // Load environment variables
 dotenv.config();

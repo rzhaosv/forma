@@ -104,13 +104,13 @@ body {
     font-weight: 600;
     text-decoration: none;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.3);
+    box-shadow: 0 4px 14px 0 rgba(79, 171, 125, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn-primary:hover {
     transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 6px 20px 0 rgba(79, 70, 229, 0.45);
+    box-shadow: 0 6px 20px 0 rgba(79, 171, 125, 0.45);
     background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
 }
 
@@ -841,7 +841,7 @@ body {
 
 .email-input:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 0 4px rgba(79, 171, 125, 0.1);
 }
 
 .email-input.error {
@@ -1455,8 +1455,8 @@ body {
     width: 100%;
     height: 100%;
     background-image:
-        linear-gradient(rgba(99, 102, 241, 0.1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(99, 102, 241, 0.1) 1px, transparent 1px);
+        linear-gradient(rgba(79, 171, 125, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79, 171, 125, 0.1) 1px, transparent 1px);
     background-size: 20px 20px;
     z-index: 11;
     opacity: 0.5;
@@ -1493,7 +1493,7 @@ body {
     left: 0;
     width: 100%;
     height: 100px;
-    background: linear-gradient(180deg, rgba(99, 102, 241, 0.3) 0%, transparent 100%);
+    background: linear-gradient(180deg, rgba(79, 171, 125, 0.3) 0%, transparent 100%);
     transform: translateY(-50%);
 }
 
@@ -1697,7 +1697,7 @@ body {
     stroke-linecap: round;
     transform: rotate(-90deg);
     transform-origin: center;
-    filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
+    filter: drop-shadow(0 0 8px rgba(79, 171, 125, 0.5));
 }
 
 .circle-inner {
@@ -1899,7 +1899,7 @@ body {
     align-items: center;
     justify-content: center;
     font-size: 24px;
-    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
 }
 
 .verified-badge {
@@ -1936,12 +1936,12 @@ body {
     text-align: center;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     transition: all 0.3s ease;
-    border: 1px solid rgba(79, 70, 229, 0.1);
+    border: 1px solid rgba(79, 171, 125, 0.1);
 }
 
 .result-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(79, 70, 229, 0.15);
+    box-shadow: 0 12px 40px rgba(79, 171, 125, 0.15);
 }
 
 .result-icon {
@@ -1952,7 +1952,7 @@ body {
 .result-number {
     font-size: 3rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1995,7 +1995,7 @@ body {
 
 .faq-item:hover {
     border-color: var(--primary);
-    box-shadow: 0 4px 20px rgba(79, 70, 229, 0.1);
+    box-shadow: 0 4px 20px rgba(79, 171, 125, 0.1);
 }
 
 .faq-question {
@@ -2112,7 +2112,7 @@ body {
 
 .download-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(79, 70, 229, 0.2);
+    box-shadow: 0 12px 40px rgba(79, 171, 125, 0.2);
     border-color: var(--primary);
 }
 
@@ -2139,31 +2139,31 @@ body {
     display: inline-block;
     width: 100%;
     padding: 1rem 2rem;
-    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
     color: white;
     border-radius: 12px;
     text-decoration: none;
     font-weight: 600;
     font-size: 1rem;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 4px 15px rgba(79, 171, 125, 0.3);
 }
 
 .download-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+    box-shadow: 0 8px 25px rgba(79, 171, 125, 0.4);
 }
 
 /* Feedback Section */
 .feedback-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     padding: 3rem 2.5rem;
     border-radius: 24px;
     text-align: center;
     margin: 3rem auto;
     max-width: 700px;
     color: white;
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 10px 30px rgba(79, 171, 125, 0.3);
 }
 
 .feedback-icon {
@@ -2189,7 +2189,7 @@ body {
     display: inline-block;
     padding: 1rem 2.5rem;
     background: white;
-    color: #667eea;
+    color: var(--primary);
     border-radius: 12px;
     text-decoration: none;
     font-weight: 700;

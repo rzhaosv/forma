@@ -5,7 +5,7 @@ import crypto from 'crypto';
 const TIKTOK_PIXEL_ID = process.env.TIKTOK_PIXEL_ID;
 const TIKTOK_ACCESS_TOKEN = process.env.TIKTOK_ACCESS_TOKEN;
 
-async function trackTikTokEvent(event, data, req) {
+async function trackTikTokEvent(event, data, req, testCode = null) {
     if (!TIKTOK_PIXEL_ID || !TIKTOK_ACCESS_TOKEN) return;
 
     const payload = {
@@ -15,6 +15,7 @@ async function trackTikTokEvent(event, data, req) {
             event,
             event_id: crypto.randomUUID(),
             event_time: Math.floor(Date.now() / 1000),
+            test_event_code: testCode || process.env.TIKTOK_TEST_EVENT_CODE,
             context: {
                 user: {
                     email: crypto.createHash('sha256').update(data.email.toLowerCase().trim()).digest('hex'),
@@ -66,7 +67,9 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { email } = req.body;
+        const { email, testCode } = req.body;
+        const queryTestCode = req.query?.testCode;
+        const finalTestCode = testCode || queryTestCode;
 
         // Basic validation
         if (!email || !email.includes('@')) {
@@ -104,7 +107,7 @@ export default async function handler(req, res) {
         }
 
         // 3. Track with TikTok Events API (Server-Side)
-        await trackTikTokEvent('CompleteRegistration', { email }, req);
+        await trackTikTokEvent('CompleteRegistration', { email }, req, finalTestCode);
 
         // Return success
         return res.status(200).json({

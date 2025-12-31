@@ -12,13 +12,7 @@
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true,
-      "env": {
-        "EXPO_PUBLIC_OPENAI_API_KEY": "EXPO_PUBLIC_OPENAI_API_KEY",
-        "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "EXPO_PUBLIC_REVENUECAT_IOS_KEY",
-        "EXPO_PUBLIC_REVENUECAT_ANDROID_KEY": "EXPO_PUBLIC_REVENUECAT_ANDROID_KEY",
-        "EXPO_PUBLIC_REVENUECAT_TEST_KEY": "EXPO_PUBLIC_REVENUECAT_TEST_KEY"
-      }
+      "autoIncrement": true
     }
   },
   "submit": {
