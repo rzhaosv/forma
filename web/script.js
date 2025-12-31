@@ -294,11 +294,123 @@ const initFloatingCTA = () => {
 };
 
 // Initialize on load
+
+// Infinite Scroll Carousel
+const initInfiniteScroll = () => {
+    const scrollers = document.querySelectorAll('.carousel-scroller');
+
+    scrollers.forEach(scroller => {
+        const items = Array.from(scroller.children);
+        if (items.length < 2) return;
+
+        // Clone strategy:
+        // We prepend a full set and append a full set to ensure there's always buffer.
+        // [Clone A, Clone B, Clone C] [A, B, C] [Clone A, Clone B, Clone C]
+
+        const fragmentBefore = document.createDocumentFragment();
+        const fragmentAfter = document.createDocumentFragment();
+
+        // Clear existing clones if any (e.g. if we re-init)
+        items.forEach(item => {
+            if (item.classList.contains('clone-before') || item.classList.contains('clone-after')) {
+                item.remove();
+            }
+        });
+
+        // Re-fetch items after cleanup
+        const originalItems = Array.from(scroller.children);
+
+        originalItems.forEach(item => {
+            const clone = item.cloneNode(true);
+            clone.classList.add('clone-before');
+            clone.setAttribute('aria-hidden', 'true');
+            fragmentBefore.appendChild(clone);
+        });
+
+        originalItems.forEach(item => {
+            const clone = item.cloneNode(true);
+            clone.classList.add('clone-after');
+            clone.setAttribute('aria-hidden', 'true');
+            fragmentAfter.appendChild(clone);
+        });
+
+        scroller.prepend(fragmentBefore);
+        scroller.append(fragmentAfter);
+
+        // Calculate dimensions with sub-pixel precision
+        const calculateDimensions = () => {
+            const style = window.getComputedStyle(scroller);
+            const gap = parseFloat(style.gap) || 0;
+            const itemWidth = originalItems[0].getBoundingClientRect().width + gap;
+            const totalOriginalWidth = itemWidth * originalItems.length;
+            return { itemWidth, totalOriginalWidth };
+        };
+
+        let { totalOriginalWidth } = calculateDimensions();
+
+        // Initial Scroll Position: Start of Original Set
+        // Using requestAnimationFrame to ensure layout is ready
+        requestAnimationFrame(() => {
+            // Recalculate just in case layout shifted
+            const dims = calculateDimensions();
+            totalOriginalWidth = dims.totalOriginalWidth;
+            scroller.scrollLeft = totalOriginalWidth;
+        });
+
+        let isScrolling = false;
+
+        // Robust Scroll Handler
+        scroller.addEventListener('scroll', () => {
+            if (isScrolling) return;
+
+            // Recalculate on fly in case of resizes (lightweight enough)
+            // Or ideally use a ResizeObserver, but for now this is safer against layout shifts
+            // const { totalOriginalWidth } = calculateDimensions(); 
+            // ^ Optimization: Don't recalc on every scroll event unless needed. 
+            // Assuming width doesn't change during scroll.
+
+            const scrollLeft = scroller.scrollLeft;
+
+            // Thresholds:
+            // Center set is at [totalOriginalWidth] to [2 * totalOriginalWidth]
+
+            // If we scroll into the Left Buffer (< totalOriginalWidth)
+            // relative error of 1px is handled by using a small epsilon if needed, 
+            // but usually strict inequality is fine for jump.
+            if (scrollLeft <= 5) { // Near absolute start
+                isScrolling = true;
+                scroller.scrollLeft += totalOriginalWidth;
+                isScrolling = false;
+            }
+            else if (scrollLeft < totalOriginalWidth - 5) { // Entered left buffer substantially
+                isScrolling = true;
+                scroller.scrollLeft += totalOriginalWidth;
+                isScrolling = false;
+            }
+            // If we scroll into the Right Buffer (> 2 * totalOriginalWidth)
+            else if (scrollLeft >= (totalOriginalWidth * 2) - 5) {
+                isScrolling = true;
+                scroller.scrollLeft -= totalOriginalWidth;
+                isScrolling = false;
+            }
+        });
+
+        // Handle resize to update totalOriginalWidth
+        window.addEventListener('resize', () => {
+            const dims = calculateDimensions();
+            totalOriginalWidth = dims.totalOriginalWidth;
+            // Re-center if we're way off? Maybe just update the variable is enough for next scroll.
+        });
+    });
+};
 document.addEventListener('DOMContentLoaded', () => {
     initMobileMenu();
     // initHeroAnimations(); - Removed in favor of video
     initFAQAccordion();
+    initInfiniteScroll();
     initFloatingCTA();
+
+
 
     // Add loading animation complete
     document.body.style.opacity = '0';

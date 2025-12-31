@@ -2329,3 +2329,127 @@ body {
     height: 80px !important;
     font-size: 40px;
 }
+
+/* Video Carousel Section */
+.video-carousel-section {
+    padding: 100px 0;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+}
+
+/* Carousel System */
+.carousel-wrapper {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    overflow: hidden;
+    padding: 20px 0;
+}
+
+.carousel-scroller {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    /* scroll-snap-type: x mandatory;  <-- Removed for smooth infinite scroll */
+    padding: 24px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    cursor: grab;
+    /* Ensure user can see next item */
+    padding-right: 20%;
+}
+
+.carousel-scroller::-webkit-scrollbar {
+    display: none;
+}
+
+.carousel-scroller .carousel-item {
+    flex: 0 0 300px;
+    scroll-snap-align: center;
+    transition: transform 0.3s ease;
+}
+
+.carousel-scroller .carousel-item:hover {
+    transform: translateY(-8px);
+}
+
+/* Video Card Styles */
+.video-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.video-wrapper {
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    background: black;
+    position: relative;
+}
+
+.video-wrapper video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.video-caption {
+    padding: 20px;
+    background: white;
+    color: var(--text-primary);
+    border-top: 1px solid var(--border);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.video-caption p {
+    font-size: 15px;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--text-primary);
+    text-shadow: none;
+}
+
+.video-caption .author {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Testimonials Carousel Adjustments */
+.testimonials .carousel-scroller .carousel-item {
+    flex: 0 0 350px;
+    /* Slightly wider for text cards */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .video-carousel-section {
+        padding: 60px 0;
+    }
+
+    .carousel-scroller .carousel-item {
+        flex: 0 0 260px;
+    }
+
+    .carousel-scroller {
+        padding: 24px 16px;
+        gap: 16px;
+    }
+
+    .testimonials .carousel-scroller .carousel-item {
+        flex: 0 0 300px;
+    }
+}

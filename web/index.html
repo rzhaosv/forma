@@ -334,6 +334,60 @@
         </div>
     </section>
 
+    <!-- Video Carousel Section -->
+    <section class="video-carousel-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">See It In Action</h2>
+                <p class="section-subtitle">Real people getting real results with Forma.</p>
+            </div>
+
+            <div class="carousel-wrapper">
+                <div class="carousel-scroller">
+                    <!-- Video 3 (Now first) -->
+                    <div class="carousel-item">
+                        <div class="video-card">
+                            <div class="video-wrapper">
+                                <video src="assets/testimonials/videos/sylas.mp4" controls playsinline
+                                    preload="metadata"></video>
+                            </div>
+                            <div class="video-caption">
+                                <p>"I'm leaner and my lifts went up."</p>
+                                <span class="author">- Sylas</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Video 1 -->
+                    <div class="carousel-item">
+                        <div class="video-card">
+                            <div class="video-wrapper">
+                                <video src="assets/testimonials/videos/evan.mp4" controls playsinline preload="metadata"
+                                    poster="assets/testimonials/videos/evan-poster.jpg"></video>
+                            </div>
+                            <div class="video-caption">
+                                <p>"Voice logging changed everything..."</p>
+                                <span class="author">- Evan</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Video 2 -->
+                    <div class="carousel-item">
+                        <div class="video-card">
+                            <div class="video-wrapper">
+                                <video src="assets/testimonials/videos/dietitian.mp4" controls playsinline
+                                    preload="metadata"></video>
+                            </div>
+                            <div class="video-caption">
+                                <p>"Ideally suited for busy lifestyles."</p>
+                                <span class="author">- Registered Dietitian</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Testimonials Section -->
     <section class="testimonials">
         <div class="container">
@@ -341,81 +395,67 @@
                 <h2 class="section-title">Trusted by Fast Paced Professionals</h2>
                 <p class="section-subtitle">See why people like you are finally staying consistent.</p>
             </div>
-            <div class="testimonials-grid">
-                <div class="testimonial-card video-testimonial">
-                    <div class="video-container">
-                        <video src="assets/testimonials/videos/evan.mp4" controls playsinline
-                            preload="metadata"></video>
-                    </div>
-                    <div class="testimonial-content">
-                        <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
-                        <p class="testimonial-text">"I've quit every calorie app after a week. Voice logging changed
-                            everything—I just describe what I'm eating while walking to my next meeting."</p>
-                        <div class="testimonial-author">
-                            <img src="assets/testimonials/alex.png" alt="Alex M." class="author-avatar"
-                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                            <div class="author-avatar-fallback" style="display:none;">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <div class="author-name">Alex M. <span class="verified-badge">✓</span></div>
-                                <div class="author-title">Project Manager</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card video-testimonial">
-                    <div class="video-container">
-                        <video src="assets/testimonials/videos/dietitian.mp4" controls playsinline
-                            preload="metadata"></video>
-                    </div>
-                    <div class="testimonial-content">
-                        <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
-                        <p class="testimonial-text">"As a dietitian, I recommend Forma because it focuses on consistency
-                            rather than perfection. Ideally suited for busy lifestyles."</p>
-                        <div class="testimonial-author">
-                            <img src="assets/testimonials/sarah.png" alt="Sarah L." class="author-avatar"
-                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                            <div class="author-avatar-fallback" style="display:none;">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <div class="author-name">Sarah L. <span class="verified-badge">✓</span></div>
-                                <div class="author-title">Registered Dietitian</div>
+            <div class="carousel-wrapper">
+                <div class="carousel-scroller">
+                    <div class="carousel-item">
+                        <div class="testimonial-card">
+                            <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                            <p class="testimonial-text">"I've quit every calorie app after a week because typing food
+                                between
+                                Zoom calls was impossible. Voice logging changed everything—I just describe what I'm
+                                eating
+                                while walking to my next meeting. Six weeks in and still going. First time that's ever
+                                happened."</p>
+                            <div class="testimonial-author">
+                                <img src="assets/testimonials/alex.png" alt="Alex M." class="author-avatar"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <div class="author-avatar-fallback" style="display:none;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="author-name">Alex M. <span class="verified-badge">✓</span></div>
+                                    <div class="author-title">Project Manager</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="testimonial-card video-testimonial">
-                    <div class="video-container">
-                        <video src="assets/testimonials/videos/sylas.mp4" controls playsinline
-                            preload="metadata"></video>
-                    </div>
-                    <div class="testimonial-content">
-                        <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
-                        <p class="testimonial-text">"I never knew if I was hitting my protein goals. Now I just talk to
-                            my phone. Three months in, I'm leaner and my lifts went up."</p>
-                        <div class="testimonial-author">
-                            <img src="assets/testimonials/michael.png" alt="Michael T." class="author-avatar"
-                                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                            <div class="author-avatar-fallback" style="display:none;">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                                </svg>
+                    <div class="carousel-item">
+                        <div class="testimonial-card">
+                            <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                            <p class="testimonial-text">"As a consultant living out of hotels, I eat out 90% of the
+                                time. Every
+                                other app made me guess portions or skip logging entirely. With Forma, I snap a photo or
+                                just
+                                say what I ordered. Down 12 pounds in two months without changing my travel schedule."
+                            </p>
+                            <div class="testimonial-author">
+                                <img src="assets/testimonials/sarah.png" alt="Sarah L." class="author-avatar">
+                                <div>
+                                    <div class="author-name">Sarah L. <span class="verified-badge">✓</span></div>
+                                    <div class="author-title">Management Consultant</div>
+                                </div>
                             </div>
-                            <div>
-                                <div class="author-name">Michael T. <span class="verified-badge">✓</span></div>
-                                <div class="author-title">Software Engineer</div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="testimonial-card">
+                            <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                            <p class="testimonial-text">"I work 60-hour weeks and meal prep on Sundays, but I never knew
+                                if I
+                                was actually hitting my protein goals. Now I just talk to my phone while I cook dinner.
+                                Three
+                                months in, I'm leaner and my lifts went up. Turns out consistency was the missing
+                                piece."</p>
+                            <div class="testimonial-author">
+                                <img src="assets/testimonials/michael.png" alt="Michael T." class="author-avatar">
+                                <div>
+                                    <div class="author-name">Michael T. <span class="verified-badge">✓</span></div>
+                                    <div class="author-title">Software Engineer</div>
+                                </div>
                             </div>
                         </div>
                     </div>
