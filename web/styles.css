@@ -482,7 +482,21 @@ body {
 }
 
 .card-icon {
-    font-size: 32px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(79, 171, 125, 0.1) 0%, rgba(79, 171, 125, 0.2) 100%);
+    border-radius: 12px;
+    color: var(--primary);
+    border: 1px solid rgba(79, 171, 125, 0.2);
+    box-shadow: 0 4px 12px rgba(79, 171, 125, 0.15);
+}
+
+.card-icon svg {
+    width: 28px;
+    height: 28px;
 }
 
 .card-title {
@@ -552,8 +566,22 @@ body {
 }
 
 .feature-icon {
-    font-size: 48px;
-    margin-bottom: 16px;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(79, 171, 125, 0.1) 0%, rgba(79, 171, 125, 0.2) 100%);
+    border-radius: 20px;
+    color: var(--primary);
+    box-shadow: 0 8px 24px rgba(79, 171, 125, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.feature-icon svg {
+    width: 40px;
+    height: 40px;
 }
 
 .feature-title {
@@ -598,6 +626,7 @@ body {
     justify-content: center;
     font-size: 24px;
     font-weight: 700;
+    box-shadow: 0 4px 12px rgba(79, 171, 125, 0.3);
 }
 
 .step-title {
@@ -623,7 +652,17 @@ body {
 }
 
 .step-icon {
-    font-size: 48px;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+}
+
+.step-icon svg {
+    width: 40px;
+    height: 40px;
 }
 
 /* Testimonials Section */
@@ -1855,7 +1894,19 @@ body {
 }
 
 .badge-icon {
-    font-size: 2rem;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: var(--primary-light);
+}
+
+.badge-icon svg {
+    width: 24px;
+    height: 24px;
 }
 
 .badge-text {
@@ -1945,8 +1996,21 @@ body {
 }
 
 .result-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(79, 171, 125, 0.1) 0%, rgba(79, 171, 125, 0.05) 100%);
+    border-radius: 50%;
+    color: var(--primary);
+    border: 1px solid rgba(79, 171, 125, 0.2);
+}
+
+.result-icon svg {
+    width: 40px;
+    height: 40px;
 }
 
 .result-number {
@@ -2019,6 +2083,13 @@ body {
     color: var(--primary);
     font-weight: 300;
     transition: transform 0.3s ease;
+    width: 24px;
+    height: 24px;
+}
+
+.faq-icon svg {
+    width: 24px;
+    height: 24px;
 }
 
 .faq-item.active .faq-icon {
@@ -2120,6 +2191,13 @@ body {
     font-size: 4rem;
     display: block;
     margin-bottom: 1rem;
+    color: var(--primary);
+    margin: 0 auto 1rem;
+}
+
+.os-icon svg {
+    width: 64px;
+    height: 64px;
 }
 
 .download-card h3 {
@@ -2167,8 +2245,15 @@ body {
 }
 
 .feedback-icon {
-    font-size: 3rem;
     margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+.feedback-icon svg {
+    width: 64px;
+    height: 64px;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .feedback-title {
