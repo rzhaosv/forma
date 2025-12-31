@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+import { tiktokService } from './services/tiktok.service.js';
 
 // Load environment variables
 dotenv.config();
@@ -16,7 +17,7 @@ app.use(express.json({ limit: '10mb' })); // For image uploads
 app.use(express.urlencoded({ extended: true }));
 
 // Health check endpoint
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', (_req: Request, res: Response) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -26,7 +27,7 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 // API routes (to be added)
-app.get('/api/v1', (req: Request, res: Response) => {
+app.get('/api/v1', (_req: Request, res: Response) => {
   res.json({
     message: 'Forma API v1',
     endpoints: {
@@ -48,7 +49,7 @@ app.use((req: Request, res: Response) => {
 });
 
 // Error handler
-app.use((err: Error, req: Request, res: Response, next: any) => {
+app.use((err: Error, _req: Request, res: Response, _next: any) => {
   console.error('Error:', err);
   res.status(500).json({
     error: 'Internal Server Error',

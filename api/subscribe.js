@@ -1,5 +1,46 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import crypto from 'crypto';
+
+const TIKTOK_PIXEL_ID = process.env.TIKTOK_PIXEL_ID;
+const TIKTOK_ACCESS_TOKEN = process.env.TIKTOK_ACCESS_TOKEN;
+
+async function trackTikTokEvent(event, data, req) {
+    if (!TIKTOK_PIXEL_ID || !TIKTOK_ACCESS_TOKEN) return;
+
+    const payload = {
+        event_source: 'web',
+        event_source_id: TIKTOK_PIXEL_ID,
+        data: [{
+            event,
+            event_id: crypto.randomUUID(),
+            event_time: Math.floor(Date.now() / 1000),
+            context: {
+                user: {
+                    email: crypto.createHash('sha256').update(data.email.toLowerCase().trim()).digest('hex'),
+                    user_agent: req.headers['user-agent'],
+                    ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress
+                },
+                page: {
+                    url: req.headers.referer || 'https://tryforma.app/'
+                }
+            }
+        }]
+    };
+
+    try {
+        await fetch('https://business-api.tiktok.com/open_api/v1.3/event/track/', {
+            method: 'POST',
+            headers: {
+                'Access-Token': TIKTOK_ACCESS_TOKEN,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+    } catch (error) {
+        console.error('TikTok Tracking Error:', error);
+    }
+}
 
 // Initialize Firebase Admin (only once)
 if (getApps().length === 0) {
@@ -61,6 +102,9 @@ export default async function handler(req, res) {
                 details: process.env.FIREBASE_SERVICE_ACCOUNT ? 'Env Var exists but Parse/Init failed' : 'FIREBASE_SERVICE_ACCOUNT Env Var missing'
             });
         }
+
+        // 3. Track with TikTok Events API (Server-Side)
+        await trackTikTokEvent('CompleteRegistration', { email }, req);
 
         // Return success
         return res.status(200).json({
