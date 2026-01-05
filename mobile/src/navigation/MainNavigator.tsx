@@ -12,8 +12,6 @@ import GoalsScreen from '../screens/GoalsScreen';
 import RecipeBuilderScreen from '../screens/RecipeBuilderScreen';
 import RecipeListScreen from '../screens/RecipeListScreen';
 import MealHistoryScreen from '../screens/MealHistoryScreen';
-import PaywallScreen from '../screens/PaywallScreen';
-import SubscriptionScreen from '../screens/SubscriptionScreen';
 import ExportDataScreen from '../screens/ExportDataScreen';
 import ExerciseScreen from '../screens/ExerciseScreen';
 import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
@@ -41,15 +39,11 @@ export default function MainNavigator() {
       <Stack.Screen name="RecipeBuilder" component={RecipeBuilderScreen} />
       <Stack.Screen name="RecipeList" component={RecipeListScreen} />
       <Stack.Screen name="MealHistory" component={MealHistoryScreen} />
-      <Stack.Screen name="Paywall" component={PaywallScreen} />
-      <Stack.Screen name="Subscription" component={SubscriptionScreen} />
       <Stack.Screen name="ExportData" component={ExportDataScreen} />
       <Stack.Screen name="Exercise" component={ExerciseScreen} />
       <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
       <Stack.Screen name="TermsOfUse" component={TermsOfUseScreen} />
       <Stack.Screen name="VoiceLog" component={VoiceLogScreen} />
-      {/* Add more screens: Profile, etc. */}
     </Stack.Navigator>
   );
 }
-

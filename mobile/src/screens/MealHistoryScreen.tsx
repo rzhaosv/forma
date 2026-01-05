@@ -14,8 +14,7 @@ import { useMealStore } from '../store/useMealStore';
 import { Meal, DailySummary } from '../types/meal.types';
 import { useTheme } from '../hooks/useTheme';
 import { Swipeable } from 'react-native-gesture-handler';
-import { useSubscriptionStore } from '../store/useSubscriptionStore';
-import { isDateWithinHistoryLimit } from '../utils/subscriptionLimits';
+import AdBanner from '../components/AdBanner';
 
 import { getLocalDateString, parseLocalDate, isDateToday, isDateYesterday } from '../utils/dateUtils';
 
@@ -33,22 +32,16 @@ export default function MealHistoryScreen() {
 
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  const { isPremium } = useSubscriptionStore();
 
-  // Get all unique dates with meals, sorted descending, filtered by subscription limit
+  // Get all unique dates with meals, sorted descending
   const datesWithMeals = useMemo(() => {
     const dateSet = new Set<string>();
     meals.forEach(meal => {
       const date = getLocalDateString(new Date(meal.timestamp));
-      const mealDate = new Date(meal.timestamp);
-
-      // Filter by history limit for free users
-      if (isPremium || isDateWithinHistoryLimit(mealDate)) {
-        dateSet.add(date);
-      }
+      dateSet.add(date);
     });
     return Array.from(dateSet).sort((a, b) => b.localeCompare(a));
-  }, [meals, isPremium]);
+  }, [meals]);
 
   // Get meals for selected date
   const selectedDateMeals = useMemo(() => {
@@ -74,25 +67,6 @@ export default function MealHistoryScreen() {
   const navigateDate = (days: number) => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + days);
-
-    // Check history limit for free users
-    const { isPremium } = useSubscriptionStore.getState();
-    if (!isPremium && !isDateWithinHistoryLimit(newDate)) {
-      Alert.alert(
-        'Premium Feature',
-        'Free users can only view the last 7 days of history. Upgrade to Premium for unlimited history!',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Upgrade',
-            onPress: () => navigation.navigate('Paywall' as never),
-            style: 'default'
-          },
-        ]
-      );
-      return;
-    }
-
     setSelectedDate(newDate);
   };
 
@@ -468,7 +442,6 @@ export default function MealHistoryScreen() {
             {datesWithMeals.slice(0, 7).map((dateStr) => {
               const date = parseLocalDate(dateStr);
               const isSelected = dateStr === selectedDateStr;
-              const isWithinLimit = isPremium || isDateWithinHistoryLimit(date);
 
               return (
                 <TouchableOpacity
@@ -476,25 +449,9 @@ export default function MealHistoryScreen() {
                   style={[
                     dynamicStyles.dateListItem,
                     isSelected && dynamicStyles.dateListItemActive,
-                    !isWithinLimit && { opacity: 0.5 },
                   ]}
                   onPress={() => {
-                    if (!isWithinLimit) {
-                      Alert.alert(
-                        'Premium Feature',
-                        'Free users can only view the last 7 days of history. Upgrade to Premium for unlimited history!',
-                        [
-                          { text: 'Cancel', style: 'cancel' },
-                          {
-                            text: 'Upgrade',
-                            onPress: () => navigation.navigate('Paywall' as never),
-                            style: 'default'
-                          },
-                        ]
-                      );
-                    } else {
-                      setSelectedDate(date);
-                    }
+                    setSelectedDate(date);
                   }}
                 >
                   <Text
@@ -587,6 +544,8 @@ export default function MealHistoryScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
+      {/* Banner Ad for Users */}
+      <AdBanner placement="meal_detail" />
     </SafeAreaView>
   );
 }
@@ -614,4 +573,3 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
-

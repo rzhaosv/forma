@@ -14,7 +14,7 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import * as WebBrowser from 'expo-web-browser';
 import { auth } from '../config/firebase';
 import { useAuthStore } from '../store/useAuthStore';
-import { useSubscriptionStore } from '../store/useSubscriptionStore';
+
 import { useMealStore } from '../store/useMealStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { useRecipeStore } from '../store/useRecipeStore';
@@ -187,8 +187,6 @@ export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
         // Initialize onboarding store
         await useOnboardingStore.getState().initialize(userId);
 
-        // Initialize subscription store (subscription, trial)
-        await useSubscriptionStore.getState().initialize(userId);
 
         // Initialize exercise store (workouts, goals)
         await useExerciseStore.getState().initialize(userId);
@@ -207,10 +205,7 @@ export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
         await useOnboardingStore.getState().clearData();
         await useExerciseStore.getState().clearData();
 
-        // Reset subscription state but DON'T clear trial data
-        // Trial data is user-specific and will be validated on next login
-        // The initialize function will clear it if it belongs to a different user
-        useSubscriptionStore.getState().resetSubscriptionState();
+
       } catch (error) {
         console.error('Failed to clear user data on logout:', error);
       }

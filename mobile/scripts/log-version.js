@@ -25,6 +25,18 @@ console.log(`🍎 iOS Build:         ${iosBuildNumber}`);
 console.log(`🤖 Android Build:     ${androidVersionCode}`);
 console.log(`📅 Build Time:        ${new Date().toISOString()}`);
 console.log(`🔧 Environment:       ${process.env.NODE_ENV || 'development'}`);
+
+// Check for required environment variables during build
+const openAiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
+if (!openAiKey) {
+  console.warn('\n⚠️  WARNING: EXPO_PUBLIC_OPENAI_API_KEY is missing!');
+  console.warn('│  This will cause AI features to fail in the app.');
+  console.warn('│  Make sure it is set in your .env or EAS secrets.\n');
+} else if (openAiKey.includes('YOUR_')) {
+  console.warn('\n⚠️  WARNING: EXPO_PUBLIC_OPENAI_API_KEY is still using a placeholder value!');
+} else {
+  console.log(`🔑 OpenAI Key:        ${openAiKey.substring(0, 7)}... (MATCHED)`);
+}
 console.log('─────────────────────────────────────────\n');
 
 // Also write to a build info file for reference

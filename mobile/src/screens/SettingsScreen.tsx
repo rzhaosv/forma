@@ -15,7 +15,6 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
-import Constants from 'expo-constants';
 import {
   isHealthKitAvailable,
   requestHealthKitPermissions
@@ -42,10 +41,7 @@ import {
   setGoogleFitMealSyncEnabled,
   isGoogleFitExerciseSyncEnabled,
   setGoogleFitExerciseSyncEnabled,
-  getFitnessPlatformName,
 } from '../utils/healthKitSettings';
-import { useSubscriptionStore } from '../store/useSubscriptionStore';
-import PaywallModal from '../components/PaywallModal';
 import { generateDemoData, clearDemoData } from '../utils/demoData';
 import {
   getNotificationSettings,
@@ -54,11 +50,11 @@ import {
   NotificationSettings,
 } from '../services/notificationService';
 import { deleteAccount, signOut } from '../services/authService';
+import AdBanner from '../components/AdBanner';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
   const { colors, isDark, toggleMode, mode } = useTheme();
-  const { isPremium, subscriptionStatus } = useSubscriptionStore();
 
   // iOS - HealthKit
   const [healthKitAvailable, setHealthKitAvailable] = useState(false);
@@ -74,7 +70,6 @@ export default function SettingsScreen() {
   const [googleFitMealSyncState, setGoogleFitMealSyncState] = useState(true);
   const [googleFitExerciseSyncState, setGoogleFitExerciseSyncState] = useState(true);
 
-  const [showPaywall, setShowPaywall] = useState(false);
   const [generatingDemo, setGeneratingDemo] = useState(false);
 
   // Notification settings
@@ -142,10 +137,7 @@ export default function SettingsScreen() {
           const mealSync = await isMealSyncEnabled();
           const exerciseSync = await isExerciseSyncEnabled();
 
-          // If user had HealthKit enabled, keep it enabled regardless of premium status
-          // Fixing Guideline 4.10 - HealthKit cannot be behind a paywall
           setHealthKitEnabledState(enabled);
-
           setWeightSyncEnabledState(weightSync);
           setMealSyncEnabledState(mealSync);
           setExerciseSyncEnabledState(exerciseSync);
@@ -163,15 +155,7 @@ export default function SettingsScreen() {
           const mealSync = await isGoogleFitMealSyncEnabled();
           const exerciseSync = await isGoogleFitExerciseSyncEnabled();
 
-          // If user had Google Fit enabled but is no longer premium, disable it
-          if (enabled && !isPremium) {
-            await setGoogleFitEnabled(false);
-            await disconnectGoogleFit();
-            setGoogleFitEnabledState(false);
-          } else {
-            setGoogleFitEnabledState(enabled);
-          }
-
+          setGoogleFitEnabledState(enabled);
           setGoogleFitWeightSyncState(weightSync);
           setGoogleFitMealSyncState(mealSync);
           setGoogleFitExerciseSyncState(exerciseSync);
@@ -180,20 +164,12 @@ export default function SettingsScreen() {
     };
 
     checkFitnessIntegrations();
-  }, [isPremium]);
+  }, []);
 
   const handleHealthKitToggle = async (value: boolean) => {
-    // Guideline 4.10 Fix: HealthKit is no longer gated behind premium
-    // if (value && !isPremium) {
-    //   setShowPaywall(true);
-    //   return;
-    // }
-
     if (value) {
       try {
-        console.log('🏥 Requesting HealthKit permissions...');
         await requestHealthKitPermissions();
-        console.log('✅ HealthKit permissions granted');
         await setHealthKitEnabled(true);
         setHealthKitEnabledState(true);
         Alert.alert(
@@ -202,40 +178,19 @@ export default function SettingsScreen() {
         );
       } catch (error: any) {
         console.error('❌ Failed to enable HealthKit:', error);
-        console.error('Error details:', JSON.stringify(error, null, 2));
 
-        // More helpful error message
         let errorMessage = 'Failed to enable Apple Health.';
-
         if (error.message?.includes('not available')) {
-          errorMessage = 'Apple Health is not available on this device. This feature requires a physical iPhone with iOS 8.0 or later.';
-        } else if (error.message?.includes('authorization') || error.message?.includes('permission')) {
-          errorMessage = 'HealthKit permission was denied. Please go to Settings > Health > Forma and enable access.';
-        } else if (error.message?.includes('entitlement')) {
-          errorMessage = 'HealthKit is not configured correctly. This may be a development build issue.';
-        } else {
-          errorMessage = `Failed to enable HealthKit: ${error.message || 'Unknown error'}. Please check your permissions in Settings > Health > Forma.`;
+          errorMessage = 'Apple Health is not available on this device.';
+        } else if (error.message?.includes('authorization')) {
+          errorMessage = 'HealthKit permission was denied.';
         }
 
-        Alert.alert('Apple Health Error', errorMessage, [
-          { text: 'OK' },
-          {
-            text: 'Open Settings',
-            onPress: () => {
-              // Open Health app settings
-              const { Linking } = require('react-native');
-              Linking.openURL('x-apple-health://');
-            }
-          },
-        ]);
+        Alert.alert('Apple Health Error', errorMessage);
       }
     } else {
       await setHealthKitEnabled(false);
       setHealthKitEnabledState(false);
-      Alert.alert(
-        'Apple Health Disabled',
-        'Your data will no longer sync with Apple Health.'
-      );
     }
   };
 
@@ -254,19 +209,10 @@ export default function SettingsScreen() {
     setExerciseSyncEnabledState(value);
   };
 
-  // Google Fit handlers (Android)
   const handleGoogleFitToggle = async (value: boolean) => {
-    // Check if user has premium access for fitness integrations
-    if (value && !isPremium) {
-      setShowPaywall(true);
-      return;
-    }
-
     if (value) {
       try {
-        console.log('🏃 Requesting Google Fit permissions...');
         await requestGoogleFitPermissions();
-        console.log('✅ Google Fit permissions granted');
         await setGoogleFitEnabled(true);
         setGoogleFitEnabledState(true);
         Alert.alert(
@@ -275,22 +221,12 @@ export default function SettingsScreen() {
         );
       } catch (error: any) {
         console.error('❌ Failed to enable Google Fit:', error);
-
-        let errorMessage = 'Failed to enable Google Fit.';
-        if (error.message) {
-          errorMessage = `Failed to enable Google Fit: ${error.message}`;
-        }
-
-        Alert.alert('Google Fit Error', errorMessage);
+        Alert.alert('Google Fit Error', 'Failed to enable Google Fit.');
       }
     } else {
       await setGoogleFitEnabled(false);
       await disconnectGoogleFit();
       setGoogleFitEnabledState(false);
-      Alert.alert(
-        'Google Fit Disabled',
-        'Your data will no longer sync with Google Fit.'
-      );
     }
   };
 
@@ -309,12 +245,11 @@ export default function SettingsScreen() {
     setGoogleFitExerciseSyncState(value);
   };
 
-  // Demo data handlers (development only)
   const handleGenerateDemoData = async () => {
     setGeneratingDemo(true);
     try {
       await generateDemoData();
-      Alert.alert('Demo Data Generated', 'Sample meals, workouts, and progress data have been added.');
+      Alert.alert('Demo Data Generated', 'Sample data has been added.');
     } catch (error) {
       Alert.alert('Error', 'Failed to generate demo data.');
     } finally {
@@ -325,7 +260,7 @@ export default function SettingsScreen() {
   const handleClearDemoData = () => {
     Alert.alert(
       'Clear All Data',
-      'This will delete all your meals, workouts, progress, and recipes. Are you sure?',
+      'This will delete everything. Are you sure?',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -333,7 +268,7 @@ export default function SettingsScreen() {
           style: 'destructive',
           onPress: async () => {
             await clearDemoData();
-            Alert.alert('Data Cleared', 'All data has been removed.');
+            Alert.alert('Data Cleared', 'All data removed.');
           },
         },
       ]
@@ -343,7 +278,7 @@ export default function SettingsScreen() {
   const handleDeleteAccount = () => {
     Alert.alert(
       'Delete Account',
-      'Are you sure you want to delete your account? This action cannot be undone and you will lose all your data.',
+      'Are you sure you want to delete your account?',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -352,7 +287,6 @@ export default function SettingsScreen() {
           onPress: async () => {
             try {
               await deleteAccount();
-              // Navigation to login will handle automatically via auth state listener in App.tsx
             } catch (error: any) {
               Alert.alert('Error', error.message || 'Failed to delete account');
             }
@@ -417,11 +351,6 @@ export default function SettingsScreen() {
       padding: 16,
       borderRadius: 12,
       marginBottom: 12,
-      shadowColor: colors.shadowColor,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: isDark ? 0.3 : 0.05,
-      shadowRadius: 4,
-      elevation: 2,
     },
     settingLabel: {
       fontSize: 16,
@@ -455,24 +384,6 @@ export default function SettingsScreen() {
       </View>
 
       <ScrollView style={styles.scrollView}>
-        {/* Subscription Section */}
-        <View style={dynamicStyles.section}>
-          <Text style={dynamicStyles.sectionTitle}>Subscription</Text>
-
-          <TouchableOpacity
-            style={dynamicStyles.settingRow}
-            onPress={() => navigation.navigate('Subscription' as never)}
-          >
-            <View style={dynamicStyles.settingContent}>
-              <Text style={dynamicStyles.settingLabel}>Manage Subscription</Text>
-              <Text style={dynamicStyles.settingDescription}>
-                View and manage your premium subscription
-              </Text>
-            </View>
-            <Text style={{ fontSize: 16, color: colors.textSecondary }}>→</Text>
-          </TouchableOpacity>
-        </View>
-
         {/* Data Section */}
         <View style={dynamicStyles.section}>
           <Text style={dynamicStyles.sectionTitle}>Data</Text>
@@ -482,25 +393,12 @@ export default function SettingsScreen() {
             onPress={() => navigation.navigate('ExportData' as never)}
           >
             <View style={dynamicStyles.settingContent}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={dynamicStyles.settingLabel}>Export Data</Text>
-                {!isPremium && (
-                  <View style={{
-                    backgroundColor: colors.primary,
-                    paddingHorizontal: 6,
-                    paddingVertical: 2,
-                    borderRadius: 8,
-                    marginLeft: 8,
-                  }}>
-                    <Text style={{ color: '#fff', fontSize: 9, fontWeight: '700' }}>PREMIUM</Text>
-                  </View>
-                )}
-              </View>
+              <Text style={dynamicStyles.settingLabel}>Export Data</Text>
               <Text style={dynamicStyles.settingDescription}>
                 Download your meals, progress, and recipes
               </Text>
             </View>
-            <Text style={{ fontSize: 16, color: colors.textSecondary }}>→</Text>
+            <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
           </TouchableOpacity>
         </View>
 
@@ -518,226 +416,82 @@ export default function SettingsScreen() {
                 Set your calorie and protein targets
               </Text>
             </View>
-            <Text style={{ fontSize: 16, color: colors.textSecondary }}>→</Text>
+            <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
           </TouchableOpacity>
         </View>
 
-        {/* Apple Health Section (iOS only) */}
-        {Platform.OS === 'ios' && (
-          <View style={dynamicStyles.section}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-              <Ionicons name="heart" size={20} color="#FF2D55" style={{ marginRight: 8 }} />
-              <Text style={dynamicStyles.sectionTitle}>Apple Health Integration</Text>
-            </View>
-            <Text style={[dynamicStyles.settingDescription, { marginBottom: 16, marginTop: -8 }]}>
-              Forma securely reads and writes data to the Apple Health app to keep your weight, meals, and activity in sync.
-            </Text>
+        {/* Fitness Integrations */}
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Fitness Integrations</Text>
 
-            {!healthKitAvailable ? (
-              <View style={[dynamicStyles.settingRow, { flexDirection: 'column', alignItems: 'flex-start' }]}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                  <Text style={[dynamicStyles.settingLabel, { color: colors.textSecondary }]}>
-                    Apple Health (Unavailable)
-                  </Text>
-                  <Ionicons name="information-circle-outline" size={18} color={colors.textTertiary} style={{ marginLeft: 6 }} />
+          {Platform.OS === 'ios' && healthKitAvailable && (
+            <>
+              <View style={dynamicStyles.settingRow}>
+                <View style={dynamicStyles.settingContent}>
+                  <Text style={dynamicStyles.settingLabel}>Apple Health Sync</Text>
+                  <Text style={dynamicStyles.settingDescription}>Sync your health data</Text>
                 </View>
-                <Text style={dynamicStyles.settingDescription}>
-                  Apple Health could not be detected. This feature requires a physical iPhone and a native build. If you are using Expo Go, please switch to your Development Build.
-                </Text>
-                <TouchableOpacity
-                  style={{ marginTop: 12, paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8, backgroundColor: colors.surfaceSecondary }}
-                  onPress={async () => {
-                    const available = await isHealthKitAvailable();
-                    setHealthKitAvailable(available);
-                    if (available) {
-                      Alert.alert('Success', 'Apple Health is now available!');
-                    } else {
-                      Alert.alert('Still Unavailable', 'Ensure you are running on a physical device with a native build.');
-                    }
-                  }}
-                >
-                  <Text style={{ color: colors.primary, fontWeight: '600', fontSize: 13 }}>Check Again</Text>
-                </TouchableOpacity>
+                <Switch
+                  value={healthKitEnabledState}
+                  onValueChange={handleHealthKitToggle}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor="#FFFFFF"
+                />
               </View>
-            ) : (
-              <>
-                <View style={dynamicStyles.settingRow}>
-                  <View style={dynamicStyles.settingContent}>
-                    <Text style={dynamicStyles.settingLabel}>
-                      Apple Health Sync
-                    </Text>
-                    <Text style={dynamicStyles.settingDescription}>
-                      Sync weight and nutrition data with Apple Health
-                    </Text>
+
+              {healthKitEnabledState && (
+                <View style={{ paddingLeft: 16 }}>
+                  <View style={dynamicStyles.settingRow}>
+                    <Text style={dynamicStyles.settingLabel}>Weight Sync</Text>
+                    <Switch value={weightSyncEnabledState} onValueChange={handleWeightSyncToggle} thumbColor="#FFFFFF" trackColor={{ false: colors.border, true: colors.primary }} />
                   </View>
-                  <Switch
-                    value={healthKitEnabledState}
-                    onValueChange={handleHealthKitToggle}
-                    trackColor={{ false: colors.border, true: colors.primary }}
-                    thumbColor={healthKitEnabledState ? '#FFFFFF' : '#FFFFFF'}
-                  />
-                </View>
-
-                {healthKitEnabledState && (
-                  <>
-                    <View style={dynamicStyles.settingRow}>
-                      <View style={dynamicStyles.settingContent}>
-                        <Text style={dynamicStyles.settingLabel}>Weight Sync</Text>
-                        <Text style={dynamicStyles.settingDescription}>
-                          Automatically sync weight entries to Apple Health
-                        </Text>
-                      </View>
-                      <Switch
-                        value={weightSyncEnabledState}
-                        onValueChange={handleWeightSyncToggle}
-                        trackColor={{ false: colors.border, true: colors.primary }}
-                        thumbColor={weightSyncEnabledState ? '#FFFFFF' : '#FFFFFF'}
-                      />
-                    </View>
-
-                    <View style={dynamicStyles.settingRow}>
-                      <View style={dynamicStyles.settingContent}>
-                        <Text style={dynamicStyles.settingLabel}>Meal Sync</Text>
-                        <Text style={dynamicStyles.settingDescription}>
-                          Automatically sync calories and macros to Apple Health
-                        </Text>
-                      </View>
-                      <Switch
-                        value={mealSyncEnabledState}
-                        onValueChange={handleMealSyncToggle}
-                        trackColor={{ false: colors.border, true: colors.primary }}
-                        thumbColor={mealSyncEnabledState ? '#FFFFFF' : '#FFFFFF'}
-                      />
-                    </View>
-
-                    <View style={dynamicStyles.settingRow}>
-                      <View style={dynamicStyles.settingContent}>
-                        <Text style={dynamicStyles.settingLabel}>Exercise Sync</Text>
-                        <Text style={dynamicStyles.settingDescription}>
-                          Automatically sync workout calories burned to Apple Health
-                        </Text>
-                      </View>
-                      <Switch
-                        value={exerciseSyncEnabledState}
-                        onValueChange={handleExerciseSyncToggle}
-                        trackColor={{ false: colors.border, true: colors.primary }}
-                        thumbColor={exerciseSyncEnabledState ? '#FFFFFF' : '#FFFFFF'}
-                      />
-                    </View>
-                  </>
-                )}
-              </>
-            )}
-          </View>
-        )}
-
-        {/* Google Fit Section (Android only) */}
-        {Platform.OS === 'android' && (
-          <View style={dynamicStyles.section}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-              <Text style={dynamicStyles.sectionTitle}>Fitness Integrations</Text>
-              {!isPremium && googleFitAvailable && (
-                <View style={{
-                  backgroundColor: colors.primary,
-                  paddingHorizontal: 8,
-                  paddingVertical: 2,
-                  borderRadius: 10,
-                  marginLeft: 8,
-                }}>
-                  <Text style={{ color: '#fff', fontSize: 10, fontWeight: '700' }}>PREMIUM</Text>
+                  <View style={dynamicStyles.settingRow}>
+                    <Text style={dynamicStyles.settingLabel}>Meal Sync</Text>
+                    <Switch value={mealSyncEnabledState} onValueChange={handleMealSyncToggle} thumbColor="#FFFFFF" trackColor={{ false: colors.border, true: colors.primary }} />
+                  </View>
+                  <View style={dynamicStyles.settingRow}>
+                    <Text style={dynamicStyles.settingLabel}>Exercise Sync</Text>
+                    <Switch value={exerciseSyncEnabledState} onValueChange={handleExerciseSyncToggle} thumbColor="#FFFFFF" trackColor={{ false: colors.border, true: colors.primary }} />
+                  </View>
                 </View>
               )}
-            </View>
+            </>
+          )}
 
-            {!googleFitAvailable ? (
-              <View style={[dynamicStyles.settingRow, { flexDirection: 'column', alignItems: 'flex-start' }]}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                  <Text style={[dynamicStyles.settingLabel, { color: colors.textSecondary }]}>
-                    Google Fit (Unavailable)
-                  </Text>
-                  <Ionicons name="information-circle-outline" size={18} color={colors.textTertiary} style={{ marginLeft: 6 }} />
+          {Platform.OS === 'android' && googleFitAvailable && (
+            <>
+              <View style={dynamicStyles.settingRow}>
+                <View style={dynamicStyles.settingContent}>
+                  <Text style={dynamicStyles.settingLabel}>Google Fit Sync</Text>
+                  <Text style={dynamicStyles.settingDescription}>Sync your fitness data</Text>
                 </View>
-                <Text style={dynamicStyles.settingDescription}>
-                  Google Fit could not be detected. This feature requires a physical Android device and a native build.
-                </Text>
+                <Switch
+                  value={googleFitEnabledState}
+                  onValueChange={handleGoogleFitToggle}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor="#FFFFFF"
+                />
               </View>
-            ) : (
-              <>
-                <View style={[
-                  dynamicStyles.settingRow,
-                  !isPremium && { opacity: 0.7 }
-                ]}>
-                  <View style={dynamicStyles.settingContent}>
-                    <Text style={dynamicStyles.settingLabel}>
-                      Google Fit Sync {!isPremium && '🔒'}
-                    </Text>
-                    <Text style={dynamicStyles.settingDescription}>
-                      {isPremium
-                        ? 'Sync weight and nutrition data with Google Fit'
-                        : 'Upgrade to Premium to sync with Google Fit'}
-                    </Text>
+
+              {googleFitEnabledState && (
+                <View style={{ paddingLeft: 16 }}>
+                  <View style={dynamicStyles.settingRow}>
+                    <Text style={dynamicStyles.settingLabel}>Weight Sync</Text>
+                    <Switch value={googleFitWeightSyncState} onValueChange={handleGoogleFitWeightSyncToggle} thumbColor="#FFFFFF" trackColor={{ false: colors.border, true: colors.primary }} />
                   </View>
-                  <Switch
-                    value={googleFitEnabledState}
-                    onValueChange={handleGoogleFitToggle}
-                    trackColor={{ false: colors.border, true: colors.primary }}
-                    thumbColor={googleFitEnabledState ? '#FFFFFF' : '#FFFFFF'}
-                    disabled={!isPremium && !googleFitEnabledState}
-                  />
+                  <View style={dynamicStyles.settingRow}>
+                    <Text style={dynamicStyles.settingLabel}>Meal Sync</Text>
+                    <Switch value={googleFitMealSyncState} onValueChange={handleGoogleFitMealSyncToggle} thumbColor="#FFFFFF" trackColor={{ false: colors.border, true: colors.primary }} />
+                  </View>
+                  <View style={dynamicStyles.settingRow}>
+                    <Text style={dynamicStyles.settingLabel}>Exercise Sync</Text>
+                    <Switch value={googleFitExerciseSyncState} onValueChange={handleGoogleFitExerciseSyncToggle} thumbColor="#FFFFFF" trackColor={{ false: colors.border, true: colors.primary }} />
+                  </View>
                 </View>
-
-                {googleFitEnabledState && (
-                  <>
-                    <View style={dynamicStyles.settingRow}>
-                      <View style={dynamicStyles.settingContent}>
-                        <Text style={dynamicStyles.settingLabel}>Weight Sync</Text>
-                        <Text style={dynamicStyles.settingDescription}>
-                          Automatically sync weight entries to Google Fit
-                        </Text>
-                      </View>
-                      <Switch
-                        value={googleFitWeightSyncState}
-                        onValueChange={handleGoogleFitWeightSyncToggle}
-                        trackColor={{ false: colors.border, true: colors.primary }}
-                        thumbColor={googleFitWeightSyncState ? '#FFFFFF' : '#FFFFFF'}
-                      />
-                    </View>
-
-                    <View style={dynamicStyles.settingRow}>
-                      <View style={dynamicStyles.settingContent}>
-                        <Text style={dynamicStyles.settingLabel}>Meal Sync</Text>
-                        <Text style={dynamicStyles.settingDescription}>
-                          Automatically sync calories and macros to Google Fit
-                        </Text>
-                      </View>
-                      <Switch
-                        value={googleFitMealSyncState}
-                        onValueChange={handleGoogleFitMealSyncToggle}
-                        trackColor={{ false: colors.border, true: colors.primary }}
-                        thumbColor={googleFitMealSyncState ? '#FFFFFF' : '#FFFFFF'}
-                      />
-                    </View>
-
-                    <View style={dynamicStyles.settingRow}>
-                      <View style={dynamicStyles.settingContent}>
-                        <Text style={dynamicStyles.settingLabel}>Exercise Sync</Text>
-                        <Text style={dynamicStyles.settingDescription}>
-                          Automatically sync workout calories burned to Google Fit
-                        </Text>
-                      </View>
-                      <Switch
-                        value={googleFitExerciseSyncState}
-                        onValueChange={handleGoogleFitExerciseSyncToggle}
-                        trackColor={{ false: colors.border, true: colors.primary }}
-                        thumbColor={googleFitExerciseSyncState ? '#FFFFFF' : '#FFFFFF'}
-                      />
-                    </View>
-                  </>
-                )}
-              </>
-            )}
-          </View>
-        )}
+              )}
+            </>
+          )}
+        </View>
 
         {/* Appearance Section */}
         <View style={dynamicStyles.section}>
@@ -746,41 +500,24 @@ export default function SettingsScreen() {
           <View style={dynamicStyles.settingRow}>
             <View style={dynamicStyles.settingContent}>
               <Text style={dynamicStyles.settingLabel}>Dark Mode</Text>
-              <Text style={dynamicStyles.settingDescription}>
-                Switch to dark theme for better viewing in low light
-              </Text>
+              <Text style={dynamicStyles.settingDescription}>Switch themes</Text>
             </View>
             <Switch
               value={isDark}
               onValueChange={toggleMode}
               trackColor={{ false: colors.border, true: colors.primary }}
-              thumbColor={isDark ? '#FFFFFF' : '#FFFFFF'}
+              thumbColor="#FFFFFF"
             />
-          </View>
-        </View>
-
-        {/* Theme Mode Info */}
-        <View style={dynamicStyles.section}>
-          <View style={[dynamicStyles.settingRow, { backgroundColor: colors.surfaceSecondary }]}>
-            <View style={dynamicStyles.settingContent}>
-              <Text style={dynamicStyles.settingLabel}>Current Theme</Text>
-              <Text style={dynamicStyles.settingDescription}>
-                {mode === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode'}
-              </Text>
-            </View>
           </View>
         </View>
 
         {/* Notifications Section */}
         <View style={dynamicStyles.section}>
-          <Text style={dynamicStyles.sectionTitle}>Notifications & Reminders</Text>
+          <Text style={dynamicStyles.sectionTitle}>Notifications</Text>
 
           <View style={dynamicStyles.settingRow}>
             <View style={dynamicStyles.settingContent}>
               <Text style={dynamicStyles.settingLabel}>Enable Notifications</Text>
-              <Text style={dynamicStyles.settingDescription}>
-                Receive reminders and insights
-              </Text>
             </View>
             <Switch
               value={notificationSettings.enabled}
@@ -789,120 +526,11 @@ export default function SettingsScreen() {
               thumbColor="#FFFFFF"
             />
           </View>
-
-          {notificationSettings.enabled && (
-            <>
-              <View style={dynamicStyles.settingRow}>
-                <View style={dynamicStyles.settingContent}>
-                  <Text style={dynamicStyles.settingLabel}>AI Insights</Text>
-                  <Text style={dynamicStyles.settingDescription}>
-                    Personalized nutrition tips and suggestions
-                  </Text>
-                </View>
-                <Switch
-                  value={notificationSettings.insightNotifications}
-                  onValueChange={(value) => handleNotificationToggle('insightNotifications', value)}
-                  trackColor={{ false: colors.border, true: colors.primary }}
-                  thumbColor="#FFFFFF"
-                />
-              </View>
-
-              <View style={dynamicStyles.settingRow}>
-                <View style={dynamicStyles.settingContent}>
-                  <Text style={dynamicStyles.settingLabel}>Meal Reminders</Text>
-                  <Text style={dynamicStyles.settingDescription}>
-                    Get reminded to log your meals
-                  </Text>
-                </View>
-                <Switch
-                  value={notificationSettings.mealReminders}
-                  onValueChange={(value) => handleNotificationToggle('mealReminders', value)}
-                  trackColor={{ false: colors.border, true: colors.primary }}
-                  thumbColor="#FFFFFF"
-                />
-              </View>
-
-              {notificationSettings.mealReminders && (
-                <View style={{ paddingLeft: 16 }}>
-                  <View style={dynamicStyles.settingRow}>
-                    <View style={dynamicStyles.settingContent}>
-                      <Text style={[dynamicStyles.settingLabel, { fontSize: 14 }]}>🌅 Morning (8:30 AM)</Text>
-                    </View>
-                    <Switch
-                      value={notificationSettings.morningReminder}
-                      onValueChange={(value) => handleNotificationToggle('morningReminder', value)}
-                      trackColor={{ false: colors.border, true: colors.primary }}
-                      thumbColor="#FFFFFF"
-                    />
-                  </View>
-
-                  <View style={dynamicStyles.settingRow}>
-                    <View style={dynamicStyles.settingContent}>
-                      <Text style={[dynamicStyles.settingLabel, { fontSize: 14 }]}>☀️ Lunch (12:30 PM)</Text>
-                    </View>
-                    <Switch
-                      value={notificationSettings.lunchReminder}
-                      onValueChange={(value) => handleNotificationToggle('lunchReminder', value)}
-                      trackColor={{ false: colors.border, true: colors.primary }}
-                      thumbColor="#FFFFFF"
-                    />
-                  </View>
-
-                  <View style={dynamicStyles.settingRow}>
-                    <View style={dynamicStyles.settingContent}>
-                      <Text style={[dynamicStyles.settingLabel, { fontSize: 14 }]}>🌙 Dinner (6:30 PM)</Text>
-                    </View>
-                    <Switch
-                      value={notificationSettings.dinnerReminder}
-                      onValueChange={(value) => handleNotificationToggle('dinnerReminder', value)}
-                      trackColor={{ false: colors.border, true: colors.primary }}
-                      thumbColor="#FFFFFF"
-                    />
-                  </View>
-                </View>
-              )}
-
-              <View style={dynamicStyles.settingRow}>
-                <View style={dynamicStyles.settingContent}>
-                  <Text style={dynamicStyles.settingLabel}>Weekly Progress</Text>
-                  <Text style={dynamicStyles.settingDescription}>
-                    Sunday summary of your nutrition week
-                  </Text>
-                </View>
-                <Switch
-                  value={notificationSettings.weeklyProgress}
-                  onValueChange={(value) => handleNotificationToggle('weeklyProgress', value)}
-                  trackColor={{ false: colors.border, true: colors.primary }}
-                  thumbColor="#FFFFFF"
-                />
-              </View>
-            </>
-          )}
         </View>
 
-        {/* Legal & Support */}
+        {/* Support */}
         <View style={dynamicStyles.section}>
-          <Text style={dynamicStyles.sectionTitle}>Legal & Support</Text>
-
-          <TouchableOpacity
-            style={dynamicStyles.settingRow}
-            onPress={() => navigation.navigate('PrivacyPolicy' as never)}
-          >
-            <View style={dynamicStyles.settingContent}>
-              <Text style={dynamicStyles.settingLabel}>Privacy Policy</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={dynamicStyles.settingRow}
-            onPress={() => navigation.navigate('TermsOfUse' as never)}
-          >
-            <View style={dynamicStyles.settingContent}>
-              <Text style={dynamicStyles.settingLabel}>Terms of Use</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
-          </TouchableOpacity>
+          <Text style={dynamicStyles.sectionTitle}>Support</Text>
 
           <TouchableOpacity
             style={dynamicStyles.settingRow}
@@ -926,7 +554,7 @@ export default function SettingsScreen() {
             <View style={dynamicStyles.settingContent}>
               <Text style={dynamicStyles.settingLabel}>Sign Out</Text>
             </View>
-            <Text style={{ fontSize: 16, color: colors.textSecondary }}>→</Text>
+            <Ionicons name="log-out-outline" size={20} color={colors.textTertiary} />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -939,40 +567,15 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
-        <View style={{ height: 40 }} />
-
-        {/* Developer Tools (Dev builds only) */}
+        {/* Developer Tools (__DEV__) */}
         {__DEV__ && (
           <View style={dynamicStyles.section}>
             <Text style={dynamicStyles.sectionTitle}>Developer Tools</Text>
-
-            <TouchableOpacity
-              style={dynamicStyles.settingRow}
-              onPress={handleGenerateDemoData}
-              disabled={generatingDemo}
-            >
-              <View style={dynamicStyles.settingContent}>
-                <Text style={dynamicStyles.settingLabel}>
-                  {generatingDemo ? '⏳ Generating...' : '🎬 Generate Demo Data'}
-                </Text>
-                <Text style={dynamicStyles.settingDescription}>
-                  Create sample meals, workouts, and progress for demo videos
-                </Text>
-              </View>
+            <TouchableOpacity style={dynamicStyles.settingRow} onPress={handleGenerateDemoData}>
+              <Text style={dynamicStyles.settingLabel}>Generate Demo Data</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity
-              style={dynamicStyles.settingRow}
-              onPress={handleClearDemoData}
-            >
-              <View style={dynamicStyles.settingContent}>
-                <Text style={[dynamicStyles.settingLabel, { color: '#EF4444' }]}>
-                  🗑️ Clear All Data
-                </Text>
-                <Text style={dynamicStyles.settingDescription}>
-                  Remove all meals, workouts, progress, and recipes
-                </Text>
-              </View>
+            <TouchableOpacity style={dynamicStyles.settingRow} onPress={handleClearDemoData}>
+              <Text style={[dynamicStyles.settingLabel, { color: colors.error }]}>Clear All Data</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -980,13 +583,8 @@ export default function SettingsScreen() {
         <View style={{ height: 40 }} />
       </ScrollView>
 
-      {/* Premium Paywall Modal for Fitness Integrations */}
-      <PaywallModal
-        isVisible={showPaywall}
-        onClose={() => setShowPaywall(false)}
-        title="Premium Features"
-        message="Switch to premium to unlock all features and sync across devices."
-      />
+      {/* Banner Ad for Users */}
+      <AdBanner placement="settings_bottom" />
     </SafeAreaView>
   );
 }
@@ -996,4 +594,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -15,9 +15,6 @@ import { Recipe } from '../types/meal.types';
 import { useTheme } from '../hooks/useTheme';
 import { useMealStore } from '../store/useMealStore';
 import { FoodItem, MealType } from '../types/meal.types';
-import { useSubscriptionStore } from '../store/useSubscriptionStore';
-import { getSubscriptionLimits } from '../utils/subscriptionLimits';
-import PaywallModal from '../components/PaywallModal';
 import AdBanner from '../components/AdBanner';
 
 export default function RecipeListScreen() {
@@ -25,32 +22,12 @@ export default function RecipeListScreen() {
   const { colors, isDark } = useTheme();
   const { recipes, deleteRecipe } = useRecipeStore();
   const { addMeal } = useMealStore();
-  const { isPremium } = useSubscriptionStore();
-  const [showPaywall, setShowPaywall] = useState(false);
-
-  useEffect(() => {
-    // Check if recipe builder is allowed
-    const limits = getSubscriptionLimits();
-    if (!limits.allowRecipeBuilder && !isPremium) {
-      // Don't show paywall immediately, only when they try to create
-    }
-  }, [isPremium]);
 
   const handleCreateRecipe = () => {
-    const limits = getSubscriptionLimits();
-    if (!limits.allowRecipeBuilder && !isPremium) {
-      setShowPaywall(true);
-      return;
-    }
     navigation.navigate('RecipeBuilder' as never);
   };
 
   const handleEditRecipe = (recipeId: string) => {
-    const limits = getSubscriptionLimits();
-    if (!limits.allowRecipeBuilder && !isPremium) {
-      setShowPaywall(true);
-      return;
-    }
     navigation.navigate('RecipeBuilder' as never, { recipeId } as never);
   };
 
@@ -206,11 +183,11 @@ export default function RecipeListScreen() {
             </TouchableOpacity>
           </View>
         </View>
-        
+
         {recipe.description && (
           <Text style={dynamicStyles.recipeDescription}>{recipe.description}</Text>
         )}
-        
+
         <View style={dynamicStyles.recipeStats}>
           <View style={dynamicStyles.statItem}>
             <Text style={dynamicStyles.statValue}>{recipe.caloriesPerServing}</Text>
@@ -229,7 +206,7 @@ export default function RecipeListScreen() {
             <Text style={dynamicStyles.statLabel}>Ingredients</Text>
           </View>
         </View>
-        
+
         <TouchableOpacity
           style={dynamicStyles.addButton}
           onPress={() => handleSelectMealType(recipe)}
@@ -310,14 +287,7 @@ export default function RecipeListScreen() {
   return (
     <SafeAreaView style={dynamicStyles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      
-      <PaywallModal
-        visible={showPaywall}
-        onClose={() => setShowPaywall(false)}
-        title="Recipe Builder is Premium"
-        message="Upgrade to premium to create and manage custom recipes with automatic nutrition calculation."
-      />
-      
+
       {/* Header */}
       <View style={dynamicStyles.header}>
         <TouchableOpacity
@@ -357,10 +327,9 @@ export default function RecipeListScreen() {
           contentContainerStyle={dynamicStyles.listContent}
         />
       )}
-      
-      {/* Banner Ad for Free Users */}
+
+      {/* Banner Ad for Users */}
       <AdBanner placement="recipe_list" />
     </SafeAreaView>
   );
 }
-

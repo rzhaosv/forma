@@ -1,31 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, AppState, AppStateStatus, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, AppState, Linking } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { analyzeFoodPhoto } from '../services/foodRecognitionService';
-import { canPerformPhotoScan, recordPhotoScan, getRemainingPhotoScans } from '../utils/subscriptionLimits';
-import { useSubscriptionStore } from '../store/useSubscriptionStore';
-import PaywallModal from '../components/PaywallModal';
+import AdBanner from '../components/AdBanner';
 
 export default function CameraScreen() {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-  const { isPremium, subscriptionStatus } = useSubscriptionStore();
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [analyzing, setAnalyzing] = useState(false);
-  const [remainingScans, setRemainingScans] = useState<number | null>(null);
-  const [showPaywall, setShowPaywall] = useState(false);
   const cameraRef = useRef<CameraView>(null);
   const [isAppActive, setIsAppActive] = useState(true);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       setIsAppActive(nextAppState === 'active');
-      // Re-check permissions when app comes back to foreground
-      if (nextAppState === 'active' && isFocused) {
-        loadRemainingScans();
-      }
     });
 
     return () => {
@@ -40,17 +31,6 @@ export default function CameraScreen() {
     }
   }, [isFocused, permission?.granted, permission?.canAskAgain]);
 
-  useEffect(() => {
-    loadRemainingScans();
-  }, []);
-
-  const loadRemainingScans = async () => {
-    if (subscriptionStatus === 'loading') return;
-    if (!isPremium) {
-      const remaining = await getRemainingPhotoScans();
-      setRemainingScans(remaining);
-    }
-  };
 
   if (!permission) {
     return <View style={styles.container}><Text>Loading...</Text></View>;
@@ -94,15 +74,6 @@ export default function CameraScreen() {
   const takePicture = async () => {
     if (cameraRef.current && !analyzing) {
       try {
-        // Check photo scan limit for free users
-        if (subscriptionStatus !== 'loading' && !isPremium) {
-          const canScan = await canPerformPhotoScan();
-          if (!canScan) {
-            setShowPaywall(true);
-            return;
-          }
-        }
-
         setAnalyzing(true);
         const photo = await cameraRef.current.takePictureAsync({
           quality: 1.0,
@@ -113,12 +84,6 @@ export default function CameraScreen() {
         }
 
         console.log('📸 Photo captured, analyzing...');
-
-        // Record the scan for free users
-        if (subscriptionStatus !== 'loading' && !isPremium) {
-          await recordPhotoScan();
-          await loadRemainingScans();
-        }
 
         // Try real API first, fallback to mock if no API key
         let result;
@@ -175,13 +140,7 @@ export default function CameraScreen() {
               <Text style={styles.backText}>← Back</Text>
             </TouchableOpacity>
             <Text style={styles.title}>Take Photo</Text>
-            {!isPremium && remainingScans !== null ? (
-              <View style={styles.scanCounter}>
-                <Text style={styles.scanCounterText}>{remainingScans} left</Text>
-              </View>
-            ) : (
-              <View style={styles.placeholder} />
-            )}
+            <View style={styles.placeholder} />
           </View>
 
           {/* Instructions or Analyzing Overlay */}
@@ -229,14 +188,8 @@ export default function CameraScreen() {
         </>
       )}
 
-      {/* Paywall Modal */}
-      <PaywallModal
-        isVisible={showPaywall}
-        onClose={() => setShowPaywall(false)}
-        title="Daily Limit Reached"
-        message="You've reached your daily limit of 5 photo scans. Upgrade to Premium for unlimited scans!"
-        showFeatures={true}
-      />
+      {/* Banner Ad for Users */}
+      <AdBanner placement="camera_bottom" />
     </View>
   );
 }
@@ -288,17 +241,6 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     width: 60,
-  },
-  scanCounter: {
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-  },
-  scanCounterText: {
-    color: '#FFF',
-    fontSize: 12,
-    fontWeight: '600',
   },
   instructionsContainer: {
     position: 'absolute',
@@ -354,7 +296,7 @@ const styles = StyleSheet.create({
   },
   controls: {
     position: 'absolute',
-    bottom: 40,
+    bottom: 100, // Adjusted to make room for ad
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

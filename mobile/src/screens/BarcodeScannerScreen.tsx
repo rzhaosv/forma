@@ -5,18 +5,11 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { lookupBarcode, calculateNutrition, isValidBarcode } from '../services/barcodeService';
 import { useMealStore } from '../store/useMealStore';
 import { Meal, FoodItem, MealType } from '../types/meal.types';
-import { useSubscriptionStore } from '../store/useSubscriptionStore';
-import {
-  canPerformBarcodeScan,
-  recordBarcodeScan,
-  getRemainingBarcodeScans
-} from '../utils/subscriptionLimits';
-import PaywallModal from '../components/PaywallModal';
+import AdBanner from '../components/AdBanner';
 
 export default function BarcodeScannerScreen() {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-  const { isPremium, subscriptionStatus } = useSubscriptionStore();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -25,22 +18,18 @@ export default function BarcodeScannerScreen() {
   const [selectedMealType, setSelectedMealType] = useState<MealType>('Snack');
   const [scannedProduct, setScannedProduct] = useState<any>(null);
   const [servingQuantity, setServingQuantity] = useState(1);
-  const [showPaywall, setShowPaywall] = useState(false);
-  const [remainingScans, setRemainingScans] = useState<number | null>(null);
   const { addMeal } = useMealStore();
   const isProcessing = useRef(false);
 
   useEffect(() => {
-    loadRemainingScans();
-  }, []);
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      setIsAppActive(nextAppState === 'active');
+    });
 
-  useEffect(() => {
-    // Refresh remaining scans when premium status changes
-    loadRemainingScans();
-    if (isPremium && showPaywall) {
-      setShowPaywall(false);
-    }
-  }, [isPremium]);
+    return () => {
+      subscription.remove();
+    };
+  }, [isFocused]);
 
   // Auto-request permission if undetermined when screen is focused
   useEffect(() => {
@@ -48,14 +37,6 @@ export default function BarcodeScannerScreen() {
       requestPermission();
     }
   }, [isFocused, permission?.granted, permission?.canAskAgain]);
-
-  const loadRemainingScans = async () => {
-    if (subscriptionStatus === 'loading') return;
-    if (!isPremium) {
-      const remaining = await getRemainingBarcodeScans();
-      setRemainingScans(remaining);
-    }
-  };
 
   // Helper function to parse serving size to grams
   const parseServingSize = (servingSize: string): number => {
@@ -101,15 +82,6 @@ export default function BarcodeScannerScreen() {
     // Prevent multiple rapid scans using ref (faster than state)
     if (scanned || loading || isProcessing.current) return;
 
-    // Check barcode scan limit for free users
-    if (subscriptionStatus !== 'loading' && !isPremium) {
-      const canScan = await canPerformBarcodeScan();
-      if (!canScan) {
-        setShowPaywall(true);
-        return;
-      }
-    }
-
     isProcessing.current = true;
     setScanned(true);
     setLoading(true);
@@ -137,12 +109,6 @@ export default function BarcodeScannerScreen() {
       setLoading(false);
 
       if (product.found) {
-        // Record the scan for free users
-        if (subscriptionStatus !== 'loading' && !isPremium) {
-          await recordBarcodeScan();
-          await loadRemainingScans();
-        }
-
         // Store product and show meal selector
         setScannedProduct(product);
         setShowMealSelector(true);
@@ -224,28 +190,6 @@ export default function BarcodeScannerScreen() {
     }, 500);
   };
 
-  // Show paywall if user doesn't have access
-  if (showPaywall) {
-    return (
-      <View style={styles.container}>
-        <PaywallModal
-          isVisible={showPaywall}
-          onClose={async () => {
-            // Refresh remaining scans in case user upgraded
-            await loadRemainingScans();
-            setShowPaywall(false);
-            // Only navigate back if still not premium
-            if (subscriptionStatus !== 'loading' && !isPremium) {
-              navigation.goBack();
-            }
-          }}
-          title="Daily Limit Reached"
-          message="You've used your 2 free barcode scans for today. Upgrade to premium for unlimited barcode scanning and other premium features."
-        />
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       {isFocused && isAppActive && (
@@ -269,11 +213,6 @@ export default function BarcodeScannerScreen() {
             </TouchableOpacity>
             <View style={styles.titleContainer}>
               <Text style={styles.title}>Scan Barcode</Text>
-              {!isPremium && remainingScans !== null && (
-                <Text style={styles.remainingScans}>
-                  {remainingScans} scan{remainingScans !== 1 ? 's' : ''} remaining today
-                </Text>
-              )}
             </View>
             <View style={styles.placeholder} />
           </View>
@@ -400,6 +339,8 @@ export default function BarcodeScannerScreen() {
           )}
         </>
       )}
+      {/* Banner Ad for Free Users */}
+      <AdBanner placement="camera_bottom" />
     </View>
   );
 }
@@ -453,12 +394,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: '#FFF',
-  },
-  remainingScans: {
-    fontSize: 12,
-    color: '#FFF',
-    opacity: 0.8,
-    marginTop: 2,
   },
   placeholder: {
     width: 60,

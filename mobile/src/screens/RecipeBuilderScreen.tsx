@@ -19,9 +19,7 @@ import { Recipe, RecipeIngredient } from '../types/meal.types';
 import { FoodItem, MealType } from '../types/meal.types';
 import { useTheme } from '../hooks/useTheme';
 import { searchFoods, FoodDatabaseItem } from '../services/foodDatabaseService';
-import { useSubscriptionStore } from '../store/useSubscriptionStore';
-import { getSubscriptionLimits } from '../utils/subscriptionLimits';
-import PaywallModal from '../components/PaywallModal';
+import AdBanner from '../components/AdBanner';
 
 type RouteParams = {
   RecipeBuilder: {
@@ -36,20 +34,10 @@ export default function RecipeBuilderScreen() {
   const { colors, isDark } = useTheme();
   const { recipes, addRecipe, updateRecipe, getRecipe } = useRecipeStore();
   const { addMeal } = useMealStore();
-  const { isPremium } = useSubscriptionStore();
-  const [showPaywall, setShowPaywall] = useState(false);
-  
+
   const editingRecipe = route.params?.recipeId ? getRecipe(route.params.recipeId) : null;
   const mealType = route.params?.mealType || 'Lunch';
 
-  // Check if recipe builder is allowed
-  useEffect(() => {
-    const limits = getSubscriptionLimits();
-    if (!limits.allowRecipeBuilder && !isPremium) {
-      setShowPaywall(true);
-    }
-  }, [isPremium]);
-  
   const [recipeName, setRecipeName] = useState(editingRecipe?.name || '');
   const [description, setDescription] = useState(editingRecipe?.description || '');
   const [servings, setServings] = useState(editingRecipe?.servings.toString() || '4');
@@ -165,7 +153,9 @@ export default function RecipeBuilderScreen() {
       return;
     }
 
-    const servingsNum = parseFloat(servings);
+    const servingsNumArray = servings.match(/(\d+(\.\d+)?)/);
+    const servingsNum = servingsNumArray ? parseFloat(servingsNumArray[0]) : 1;
+
     if (isNaN(servingsNum) || servingsNum <= 0) {
       Alert.alert('Invalid Servings', 'Please enter a valid number of servings');
       return;
@@ -417,33 +407,10 @@ export default function RecipeBuilderScreen() {
     },
   });
 
-  // Show paywall if user doesn't have access
-  if (showPaywall) {
-    return (
-      <SafeAreaView style={dynamicStyles.container}>
-        <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-        <PaywallModal
-          visible={showPaywall}
-          onClose={async () => {
-            // Check if user upgraded
-            const limits = getSubscriptionLimits();
-            if (limits.allowRecipeBuilder || isPremium) {
-              setShowPaywall(false);
-            } else {
-              navigation.goBack();
-            }
-          }}
-          title="Recipe Builder is Premium"
-          message="Upgrade to premium to create and manage custom recipes with automatic nutrition calculation."
-        />
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView style={dynamicStyles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
@@ -538,7 +505,7 @@ export default function RecipeBuilderScreen() {
                 placeholderTextColor={colors.placeholder}
                 autoFocus
               />
-              
+
               {searchResults.length > 0 && (
                 <ScrollView style={{ maxHeight: 200 }}>
                   {searchResults.map((food) => (
@@ -581,7 +548,7 @@ export default function RecipeBuilderScreen() {
                           borderColor: ingredientUnit === 'serving' ? colors.primary : colors.border,
                         }}
                       >
-                        <Text style={{ 
+                        <Text style={{
                           color: ingredientUnit === 'serving' ? '#FFFFFF' : colors.text,
                           fontWeight: '600',
                         }}>
@@ -599,7 +566,7 @@ export default function RecipeBuilderScreen() {
                           borderColor: ingredientUnit === 'g' ? colors.primary : colors.border,
                         }}
                       >
-                        <Text style={{ 
+                        <Text style={{
                           color: ingredientUnit === 'g' ? '#FFFFFF' : colors.text,
                           fontWeight: '600',
                         }}>
@@ -608,7 +575,7 @@ export default function RecipeBuilderScreen() {
                       </TouchableOpacity>
                     </View>
                   </View>
-                  
+
                   <View style={dynamicStyles.amountInputRow}>
                     <TouchableOpacity
                       style={[dynamicStyles.addIngredientButton, { marginTop: 8, flex: 1 }]}
@@ -636,27 +603,27 @@ export default function RecipeBuilderScreen() {
           {ingredients.length > 0 && (
             <View style={dynamicStyles.summaryCard}>
               <Text style={dynamicStyles.summaryTitle}>Nutrition Summary</Text>
-              
+
               <View style={dynamicStyles.summaryRow}>
                 <Text style={dynamicStyles.summaryLabel}>Total (Entire Recipe)</Text>
                 <Text style={dynamicStyles.summaryValue}>{totals.totalCalories} cal</Text>
               </View>
-              
+
               <View style={[dynamicStyles.summaryRow, dynamicStyles.summaryRowLast]}>
                 <Text style={dynamicStyles.summaryLabel}>Per Serving ({servingsNum} servings)</Text>
                 <Text style={dynamicStyles.summaryValue}>{caloriesPerServing} cal</Text>
               </View>
-              
+
               <View style={dynamicStyles.summaryRow}>
                 <Text style={dynamicStyles.summaryLabel}>Protein</Text>
                 <Text style={dynamicStyles.summaryValue}>{proteinPerServing}g</Text>
               </View>
-              
+
               <View style={dynamicStyles.summaryRow}>
                 <Text style={dynamicStyles.summaryLabel}>Carbs</Text>
                 <Text style={dynamicStyles.summaryValue}>{carbsPerServing}g</Text>
               </View>
-              
+
               <View style={[dynamicStyles.summaryRow, dynamicStyles.summaryRowLast]}>
                 <Text style={dynamicStyles.summaryLabel}>Fat</Text>
                 <Text style={dynamicStyles.summaryValue}>{fatPerServing}g</Text>
@@ -689,6 +656,8 @@ export default function RecipeBuilderScreen() {
           <View style={{ height: 40 }} />
         </ScrollView>
       </KeyboardAvoidingView>
+      {/* Banner Ad for Users */}
+      <AdBanner placement="recipe_builder" />
     </SafeAreaView>
   );
 }
@@ -698,4 +667,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-

@@ -1,5 +1,5 @@
 // Export Data Screen
-// Allows premium users to export their data in various formats
+// Allows users to export their data in various formats
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -15,24 +15,21 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
-import { useSubscriptionStore } from '../store/useSubscriptionStore';
-import PaywallModal from '../components/PaywallModal';
 import {
   ExportFormat,
   ExportDataType,
   generateExportFile,
   getExportSummary,
 } from '../services/exportService';
+import AdBanner from '../components/AdBanner';
 
 export default function ExportDataScreen() {
   const navigation = useNavigation();
   const { colors, isDark } = useTheme();
-  const { isPremium } = useSubscriptionStore();
-  
+
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('csv');
   const [selectedDataType, setSelectedDataType] = useState<ExportDataType>('all');
   const [exporting, setExporting] = useState(false);
-  const [showPaywall, setShowPaywall] = useState(false);
   const [summary, setSummary] = useState({
     mealsCount: 0,
     foodItemsCount: 0,
@@ -41,29 +38,19 @@ export default function ExportDataScreen() {
   });
 
   useEffect(() => {
-    // Check if user has access
-    if (!isPremium) {
-      setShowPaywall(true);
-    }
-    
     // Load export summary
     const exportSummary = getExportSummary();
     setSummary(exportSummary);
-  }, [isPremium]);
+  }, []);
 
   const handleExport = async () => {
-    if (!isPremium) {
-      setShowPaywall(true);
-      return;
-    }
-
     setExporting(true);
     try {
       const success = await generateExportFile({
         format: selectedFormat,
         dataType: selectedDataType,
       });
-      
+
       if (success) {
         Alert.alert(
           'Export Successful! 🎉',
@@ -221,22 +208,6 @@ export default function ExportDataScreen() {
       fontWeight: '700',
       color: '#FFFFFF',
     },
-    premiumBadge: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: colors.primary + '20',
-      paddingHorizontal: 12,
-      paddingVertical: 6,
-      borderRadius: 20,
-      alignSelf: 'flex-start',
-      marginBottom: 16,
-    },
-    premiumBadgeText: {
-      fontSize: 12,
-      fontWeight: '600',
-      color: colors.primary,
-      marginLeft: 4,
-    },
     infoCard: {
       backgroundColor: isDark ? '#1a2744' : '#EEF2FF',
       borderRadius: 12,
@@ -259,7 +230,7 @@ export default function ExportDataScreen() {
   return (
     <SafeAreaView style={dynamicStyles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      
+
       {/* Header */}
       <View style={dynamicStyles.header}>
         <TouchableOpacity
@@ -272,17 +243,11 @@ export default function ExportDataScreen() {
       </View>
 
       <ScrollView style={styles.scrollView}>
-        {/* Premium Badge */}
         <View style={dynamicStyles.section}>
-          <View style={dynamicStyles.premiumBadge}>
-            <Text>💎</Text>
-            <Text style={dynamicStyles.premiumBadgeText}>Premium Feature</Text>
-          </View>
-          
           <View style={dynamicStyles.infoCard}>
             <Text style={dynamicStyles.infoIcon}>📤</Text>
             <Text style={dynamicStyles.infoText}>
-              Export your nutrition data, weight progress, and custom recipes. 
+              Export your nutrition data, weight progress, and custom recipes.
               Use your data in spreadsheets, other apps, or keep it as a backup.
             </Text>
           </View>
@@ -382,19 +347,8 @@ export default function ExportDataScreen() {
           )}
         </TouchableOpacity>
       </ScrollView>
-
-      {/* Paywall Modal */}
-      <PaywallModal
-        visible={showPaywall}
-        onClose={() => {
-          setShowPaywall(false);
-          if (!isPremium) {
-            navigation.goBack();
-          }
-        }}
-        title="Export Your Data"
-        message="Data export is a premium feature. Upgrade to download your meals, weight progress, and recipes in CSV or JSON format."
-      />
+      {/* Banner Ad for Users */}
+      <AdBanner placement="export_data" />
     </SafeAreaView>
   );
 }
@@ -404,4 +358,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
