@@ -42,7 +42,8 @@ export const stopRecording = async (recording: Audio.Recording): Promise<string 
 
 const transcribeAudio = async (audioUri: string): Promise<string> => {
     if (!OPENAI_API_KEY || OPENAI_API_KEY.includes('YOUR_')) {
-        throw new Error('OpenAI API Key is missing or invalid. Check EAS secrets.');
+        const status = !OPENAI_API_KEY ? 'UNDEFINED' : `STARTS_WITH_${OPENAI_API_KEY.substring(0, 3)}`;
+        throw new Error(`OpenAI API Key is missing or invalid (${status}). Check EAS secrets.`);
     }
 
     const formData = new FormData();

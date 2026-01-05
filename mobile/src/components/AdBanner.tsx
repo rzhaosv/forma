@@ -93,14 +93,12 @@ export default function AdBanner({ placement, size = 'banner' }: AdBannerProps) 
     setAdLoaded(false);
   };
 
-  // Use test IDs in development, real IDs in production
-  const adUnitId = __DEV__ 
-    ? TestIds?.BANNER || AD_UNIT_IDS.banner
-    : AD_UNIT_IDS.banner;
+  // Always use production ad unit IDs
+  const adUnitId = AD_UNIT_IDS.banner;
 
   return (
     <View style={[
-      styles.container, 
+      styles.container,
       { backgroundColor: isDark ? '#1a1a1a' : '#f5f5f5' },
       adError && styles.hidden
     ]}>

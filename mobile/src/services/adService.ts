@@ -10,20 +10,19 @@ export const ADMOB_APP_ID = Platform.select({
   android: 'ca-app-pub-5844884651380174~8167765982', // Live App ID
 });
 
-// Ad Unit IDs
-// Using test ad unit IDs for development - replace with real ones for production
+// Ad Unit IDs - Production IDs for App Store submission
 export const AD_UNIT_IDS = {
   banner: Platform.select({
-    ios: 'ca-app-pub-3940256099942544/2934735716', // Safe Test Banner ID
-    android: 'ca-app-pub-5844884651380174/4097299661', // Live Banner ID
+    ios: 'ca-app-pub-5844884651380174/2726531003', // Production Banner ID
+    android: 'ca-app-pub-5844884651380174/4097299661', // Production Banner ID
   }) || '',
   interstitial: Platform.select({
-    ios: 'ca-app-pub-3940256099942544/4411468910', // Safe Test Interstitial ID
-    android: 'ca-app-pub-5844884651380174/1911618518', // Test Interstitial ID
+    ios: 'ca-app-pub-5844884651380174/8540849859', // Production Interstitial ID
+    android: 'ca-app-pub-5844884651380174/1911618518', // Production Interstitial ID
   }) || '',
   rewarded: Platform.select({
-    ios: 'ca-app-pub-3940256099942544/1712485313', // Safe Test Rewarded ID
-    android: 'ca-app-pub-5844884651380174/2955562286', // Test Rewarded ID
+    ios: 'ca-app-pub-5844884651380174/5355168713', // Production Rewarded ID
+    android: 'ca-app-pub-5844884651380174/2955562286', // Production Rewarded ID
   }) || '',
 };
 
