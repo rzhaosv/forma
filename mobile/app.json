@@ -78,7 +78,7 @@
         "android.permission.ACTIVITY_RECOGNITION"
       ],
       "package": "com.raymondzhao3000.forma",
-      "versionCode": 5,
+      "versionCode": 6,
       "googleServicesFile": "./google-services.json"
     },
     "web": {
