@@ -79,9 +79,9 @@ export async function compressImage(
 
 /**
  * Quick compression preset for food photos
- * Optimized for speed + accuracy tradeoff
- * Reduced to 768px for faster API processing (was 1024px)
+ * Optimized for Clarifai visual recognition accuracy
+ * Balanced settings: 1280px, 0.75 quality = good accuracy + reasonable speed
  */
 export async function compressFoodPhoto(imageUri: string): Promise<CompressionResult> {
-  return compressImage(imageUri, 768, 0.5);
+  return compressImage(imageUri, 1280, 0.75);
 }
