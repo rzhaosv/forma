@@ -3,6 +3,8 @@
 
 import { Platform } from 'react-native';
 
+import { useSubscriptionStore } from '../store/useSubscriptionStore';
+
 // AdMob App IDs
 export const ADMOB_APP_ID = Platform.select({
     ios: 'ca-app-pub-5844884651380174~4273331628', // Production App ID
@@ -25,9 +27,10 @@ export const AD_UNIT_IDS = {
     }) || '',
 };
 
-// Check if ads should be shown (always show since no premium tier)
+// Check if ads should be shown (only for free users)
 export const shouldShowAds = (): boolean => {
-    return true; // Show ads to all users
+    const { isPremium } = useSubscriptionStore.getState();
+    return !isPremium; // Only show ads to free users
 };
 
 // Ad placement locations

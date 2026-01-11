@@ -8,6 +8,13 @@ import { db } from '../config/firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { getLocalDateString } from '../utils/dateUtils';
 
+export interface DailyGoals {
+  calorieGoal: number;
+  proteinGoal: number;
+  carbsGoal: number;
+  fatGoal: number;
+}
+
 interface MealStore {
   meals: Meal[];
   dailySummary: DailySummary | null;

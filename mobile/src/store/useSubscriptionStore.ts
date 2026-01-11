@@ -634,7 +634,9 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
           if (!currentUserId || currentUserId !== customerInfo.originalAppUserId) {
             currentUserId = customerInfo.originalAppUserId;
             set({ currentUserId });
-            await AsyncStorage.setItem(CURRENT_USER_ID_KEY, currentUserId);
+            if (currentUserId) {
+              await AsyncStorage.setItem(CURRENT_USER_ID_KEY, currentUserId);
+            }
           }
         }
 
@@ -818,7 +820,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         if (offerings.current !== null) {
           const packages = offerings.current.availablePackages;
           console.log(`✅ Found ${packages.length} packages in current offering:`,
-            packages.map(p => `${p.identifier} (${p.product.identifier})`).join(', ')
+            packages.map((p: PurchasesPackage) => `${p.identifier} (${p.product.identifier})`).join(', ')
           );
           set({ availablePackages: packages });
           return packages;

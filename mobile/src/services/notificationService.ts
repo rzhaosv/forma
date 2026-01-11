@@ -14,7 +14,7 @@ const getNotifications = async () => {
   if (!Notifications) {
     try {
       Notifications = await import('expo-notifications');
-      
+
       // Configure how notifications are handled when app is in foreground
       Notifications.setNotificationHandler({
         handleNotification: async () => ({
@@ -65,20 +65,20 @@ export const requestNotificationPermissions = async (): Promise<boolean> => {
       console.warn('Notifications not available - native module not linked');
       return false;
     }
-    
+
     const { status: existingStatus } = await notifs.getPermissionsAsync();
     let finalStatus = existingStatus;
-    
+
     if (existingStatus !== 'granted') {
       const { status } = await notifs.requestPermissionsAsync();
       finalStatus = status;
     }
-    
+
     if (finalStatus !== 'granted') {
       console.log('Notification permissions not granted');
       return false;
     }
-    
+
     // Get push token (for future remote notifications)
     if (Platform.OS !== 'web') {
       try {
@@ -89,7 +89,7 @@ export const requestNotificationPermissions = async (): Promise<boolean> => {
         console.warn('Could not get push token:', tokenError);
       }
     }
-    
+
     return true;
   } catch (error) {
     console.error('Error requesting notification permissions:', error);
@@ -115,7 +115,7 @@ export const getNotificationSettings = async (): Promise<NotificationSettings> =
 export const saveNotificationSettings = async (settings: NotificationSettings): Promise<void> => {
   try {
     await AsyncStorage.setItem(NOTIFICATION_SETTINGS_KEY, JSON.stringify(settings));
-    
+
     // Reschedule notifications based on new settings
     await scheduleAllNotifications(settings);
   } catch (error) {
@@ -127,7 +127,7 @@ export const saveNotificationSettings = async (settings: NotificationSettings): 
 export const cancelAllNotifications = async (): Promise<void> => {
   const notifs = await getNotifications();
   if (!notifs) return;
-  
+
   await notifs.cancelAllScheduledNotificationsAsync();
   console.log('All notifications cancelled');
 };
@@ -142,7 +142,7 @@ export const scheduleNotification = async (
   try {
     const notifs = await getNotifications();
     if (!notifs) return null;
-    
+
     const id = await notifs.scheduleNotificationAsync({
       content: {
         title,
@@ -163,10 +163,10 @@ export const scheduleNotification = async (
 // Schedule meal reminder notifications
 export const scheduleMealReminders = async (settings: NotificationSettings): Promise<void> => {
   if (!settings.mealReminders) return;
-  
+
   const notifs = await getNotifications();
   if (!notifs) return;
-  
+
   // Cancel existing meal reminders
   const scheduled = await notifs.getAllScheduledNotificationsAsync();
   for (const notif of scheduled) {
@@ -174,7 +174,7 @@ export const scheduleMealReminders = async (settings: NotificationSettings): Pro
       await notifs.cancelScheduledNotificationAsync(notif.identifier);
     }
   }
-  
+
   // Morning reminder (8:30 AM)
   if (settings.morningReminder) {
     await scheduleNotification(
@@ -188,7 +188,7 @@ export const scheduleMealReminders = async (settings: NotificationSettings): Pro
       'meal-reminder-morning'
     );
   }
-  
+
   // Lunch reminder (12:30 PM)
   if (settings.lunchReminder) {
     await scheduleNotification(
@@ -202,7 +202,7 @@ export const scheduleMealReminders = async (settings: NotificationSettings): Pro
       'meal-reminder-lunch'
     );
   }
-  
+
   // Dinner reminder (6:30 PM)
   if (settings.dinnerReminder) {
     await scheduleNotification(
@@ -216,7 +216,7 @@ export const scheduleMealReminders = async (settings: NotificationSettings): Pro
       'meal-reminder-dinner'
     );
   }
-  
+
   console.log('Meal reminders scheduled');
 };
 
@@ -227,7 +227,7 @@ export const scheduleInsightNotification = async (
 ): Promise<void> => {
   const settings = await getNotificationSettings();
   if (!settings.insightNotifications) return;
-  
+
   const tip = getNotificationTip(todayMeals, goals);
   if (tip) {
     // Schedule for 30 seconds from now (for testing)
@@ -247,10 +247,10 @@ export const scheduleInsightNotification = async (
 // Schedule weekly progress notification (Sunday evening)
 export const scheduleWeeklyProgress = async (settings: NotificationSettings): Promise<void> => {
   if (!settings.weeklyProgress) return;
-  
+
   const notifs = await getNotifications();
   if (!notifs) return;
-  
+
   // Cancel existing weekly progress notification
   const scheduled = await notifs.getAllScheduledNotificationsAsync();
   for (const notif of scheduled) {
@@ -258,7 +258,7 @@ export const scheduleWeeklyProgress = async (settings: NotificationSettings): Pr
       await notifs.cancelScheduledNotificationAsync(notif.identifier);
     }
   }
-  
+
   await scheduleNotification(
     "Weekly Progress Report 📊",
     "Check out your nutrition summary for this week!",
@@ -270,7 +270,7 @@ export const scheduleWeeklyProgress = async (settings: NotificationSettings): Pr
     },
     'weekly-progress'
   );
-  
+
   console.log('Weekly progress notification scheduled');
 };
 
@@ -278,25 +278,25 @@ export const scheduleWeeklyProgress = async (settings: NotificationSettings): Pr
 export const scheduleAllNotifications = async (settings: NotificationSettings): Promise<void> => {
   // First cancel all existing notifications
   await cancelAllNotifications();
-  
+
   if (!settings.enabled) {
     console.log('Notifications disabled, skipping scheduling');
     return;
   }
-  
+
   // Request permissions if not already granted
   const hasPermission = await requestNotificationPermissions();
   if (!hasPermission) {
     console.log('No notification permission, skipping scheduling');
     return;
   }
-  
+
   // Schedule meal reminders
   await scheduleMealReminders(settings);
-  
+
   // Schedule weekly progress
   await scheduleWeeklyProgress(settings);
-  
+
   console.log('All notifications scheduled');
 };
 
@@ -304,7 +304,7 @@ export const scheduleAllNotifications = async (settings: NotificationSettings): 
 export const initializeNotifications = async (): Promise<void> => {
   try {
     const settings = await getNotificationSettings();
-    
+
     if (settings.enabled) {
       await scheduleAllNotifications(settings);
     }
@@ -320,7 +320,7 @@ export const sendImmediateNotification = async (
 ): Promise<void> => {
   const notifs = await getNotifications();
   if (!notifs) return;
-  
+
   await notifs.scheduleNotificationAsync({
     content: {
       title,
@@ -335,7 +335,7 @@ export const sendImmediateNotification = async (
 export const getScheduledNotifications = async () => {
   const notifs = await getNotifications();
   if (!notifs) return [];
-  
+
   return await notifs.getAllScheduledNotificationsAsync();
 };
 

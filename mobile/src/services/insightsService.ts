@@ -52,31 +52,31 @@ export const generateInsights = (
 ): Insight[] => {
   const insights: Insight[] = [];
   const timeOfDay = getTimeOfDay();
-  
+
   // Default goals if not provided
-  const safeGoals = goals || { calories: 2000, protein: 150, carbs: 250, fat: 65 };
+  const safeGoals = goals || { calorieGoal: 2000, proteinGoal: 150, carbsGoal: 250, fatGoal: 65 };
   const safeMeals = todayMeals || [];
-  
+
   // Calculate today's totals
   const summary: NutritionSummary = {
-    calories: safeMeals.reduce((sum, m) => sum + (m.calories || 0) * (m.quantity || 1), 0),
-    protein: safeMeals.reduce((sum, m) => sum + (m.protein_g || 0) * (m.quantity || 1), 0),
-    carbs: safeMeals.reduce((sum, m) => sum + (m.carbs_g || 0) * (m.quantity || 1), 0),
-    fat: safeMeals.reduce((sum, m) => sum + (m.fat_g || 0) * (m.quantity || 1), 0),
+    calories: safeMeals.reduce((sum, m) => sum + (m.totalCalories || 0), 0),
+    protein: safeMeals.reduce((sum, m) => sum + (m.totalProtein || 0), 0),
+    carbs: safeMeals.reduce((sum, m) => sum + (m.totalCarbs || 0), 0),
+    fat: safeMeals.reduce((sum, m) => sum + (m.totalFat || 0), 0),
     mealCount: safeMeals.length,
     meals: safeMeals,
   };
-  
+
   // Calculate percentages
-  const caloriePercent = safeGoals.calories > 0 ? (summary.calories / safeGoals.calories) * 100 : 0;
-  const proteinPercent = safeGoals.protein > 0 ? (summary.protein / safeGoals.protein) * 100 : 0;
-  const carbsPercent = safeGoals.carbs > 0 ? (summary.carbs / safeGoals.carbs) * 100 : 0;
-  const fatPercent = safeGoals.fat > 0 ? (summary.fat / safeGoals.fat) * 100 : 0;
-  
+  const caloriePercent = safeGoals.calorieGoal > 0 ? (summary.calories / safeGoals.calorieGoal) * 100 : 0;
+  const proteinPercent = safeGoals.proteinGoal > 0 ? (summary.protein / safeGoals.proteinGoal) * 100 : 0;
+  const carbsPercent = safeGoals.carbsGoal > 0 ? (summary.carbs / safeGoals.carbsGoal) * 100 : 0;
+  const fatPercent = safeGoals.fatGoal > 0 ? (summary.fat / safeGoals.fatGoal) * 100 : 0;
+
   // Remaining
-  const caloriesRemaining = Math.max(0, safeGoals.calories - summary.calories);
-  const proteinRemaining = Math.max(0, safeGoals.protein - summary.protein);
-  
+  const caloriesRemaining = Math.max(0, safeGoals.calorieGoal - summary.calories);
+  const proteinRemaining = Math.max(0, safeGoals.proteinGoal - summary.protein);
+
   // === MORNING INSIGHTS ===
   if (timeOfDay === 'morning') {
     if (summary.mealCount === 0) {
@@ -99,9 +99,9 @@ export const generateInsights = (
       });
     }
   }
-  
+
   // === PROGRESS INSIGHTS ===
-  
+
   // Protein progress
   if (proteinPercent >= 45 && proteinPercent < 55) {
     insights.push({
@@ -109,7 +109,7 @@ export const generateInsights = (
       type: 'success',
       icon: '💪',
       title: "Halfway to Protein Goal!",
-      message: `You've hit ${Math.round(summary.protein)}g of protein. ${Math.round(proteinRemaining)}g more to reach your ${safeGoals.protein}g goal!`,
+      message: `You've hit ${Math.round(summary.protein)}g of protein. ${Math.round(proteinRemaining)}g more to reach your ${safeGoals.proteinGoal}g goal!`,
       priority: 7,
     });
   } else if (proteinPercent >= 80 && proteinPercent < 100) {
@@ -140,7 +140,7 @@ export const generateInsights = (
       priority: 7,
     });
   }
-  
+
   // Calorie insights
   if (caloriePercent >= 45 && caloriePercent < 55) {
     insights.push({
@@ -152,7 +152,7 @@ export const generateInsights = (
       priority: 5,
     });
   }
-  
+
   // Over calorie budget
   if (caloriePercent > 100 && caloriePercent <= 115) {
     insights.push({
@@ -173,16 +173,16 @@ export const generateInsights = (
       priority: 5,
     });
   }
-  
+
   // Heavy lunch suggestion
   if (timeOfDay === 'afternoon' || timeOfDay === 'evening') {
     const lunchMeals = todayMeals.filter(m => {
       const hour = new Date(m.timestamp).getHours();
       return hour >= 11 && hour <= 14;
     });
-    const lunchCalories = lunchMeals.reduce((sum, m) => sum + (m.calories || 0) * (m.quantity || 1), 0);
-    
-    if (lunchCalories > safeGoals.calories * 0.45) {
+    const lunchCalories = lunchMeals.reduce((sum, m) => sum + (m.totalCalories || 0), 0);
+
+    if (lunchCalories > safeGoals.calorieGoal * 0.45) {
       insights.push({
         id: 'heavy-lunch',
         type: 'tip',
@@ -193,7 +193,7 @@ export const generateInsights = (
       });
     }
   }
-  
+
   // === EVENING INSIGHTS ===
   if (timeOfDay === 'evening' || timeOfDay === 'night') {
     if (caloriesRemaining > 0 && caloriesRemaining < 300) {
@@ -206,7 +206,7 @@ export const generateInsights = (
         priority: 5,
       });
     }
-    
+
     if (summary.mealCount >= 3 && caloriePercent >= 90 && caloriePercent <= 105) {
       insights.push({
         id: 'great-day',
@@ -218,7 +218,7 @@ export const generateInsights = (
       });
     }
   }
-  
+
   // === HYDRATION REMINDER ===
   const hour = new Date().getHours();
   if ((hour === 10 || hour === 14 || hour === 16) && Math.random() > 0.5) {
@@ -231,14 +231,14 @@ export const generateInsights = (
       priority: 4,
     });
   }
-  
+
   // === MEAL TIMING ===
   if (summary.mealCount > 0) {
-    const lastMeal = todayMeals.reduce((latest, meal) => 
+    const lastMeal = todayMeals.reduce((latest, meal) =>
       new Date(meal.timestamp) > new Date(latest.timestamp) ? meal : latest
     );
     const hoursSinceLastMeal = (Date.now() - new Date(lastMeal.timestamp).getTime()) / (1000 * 60 * 60);
-    
+
     if (hoursSinceLastMeal > 5 && timeOfDay !== 'night') {
       insights.push({
         id: 'meal-timing',
@@ -250,7 +250,7 @@ export const generateInsights = (
       });
     }
   }
-  
+
   // === MACRO BALANCE ===
   if (summary.mealCount >= 2) {
     const totalMacros = summary.protein + summary.carbs + summary.fat;
@@ -258,7 +258,7 @@ export const generateInsights = (
       const proteinRatio = summary.protein / totalMacros;
       const carbRatio = summary.carbs / totalMacros;
       const fatRatio = summary.fat / totalMacros;
-      
+
       if (carbRatio > 0.6) {
         insights.push({
           id: 'high-carbs',
@@ -280,24 +280,24 @@ export const generateInsights = (
       }
     }
   }
-  
+
   // === WEEKLY TRENDS ===
   if (weeklyMeals && weeklyMeals.length > 0) {
-    const weeklyCalories = weeklyMeals.reduce((sum, m) => sum + (m.calories || 0) * (m.quantity || 1), 0);
+    const weeklyCalories = weeklyMeals.reduce((sum, m) => sum + (m.totalCalories || 0), 0);
     const avgDailyCalories = weeklyCalories / 7;
-    
-    if (avgDailyCalories < safeGoals.calories * 0.8) {
+
+    if (avgDailyCalories < safeGoals.calorieGoal * 0.8) {
       insights.push({
         id: 'weekly-under',
         type: 'tip',
         icon: '📈',
         title: 'Weekly Calorie Trend',
-        message: `You're averaging ${Math.round(avgDailyCalories)} cal/day this week, below your ${safeGoals.calories} goal. Make sure you're eating enough!`,
+        message: `You're averaging ${Math.round(avgDailyCalories)} cal/day this week, below your ${safeGoals.calorieGoal} goal. Make sure you're eating enough!`,
         priority: 6,
       });
     }
   }
-  
+
   // === WEIGHT GOAL ===
   if (currentWeight && targetWeight) {
     const diff = currentWeight - targetWeight;
@@ -312,7 +312,7 @@ export const generateInsights = (
       });
     }
   }
-  
+
   // === NO MEALS YET (afternoon/evening) ===
   if (summary.mealCount === 0 && (timeOfDay === 'afternoon' || timeOfDay === 'evening')) {
     insights.push({
@@ -326,7 +326,7 @@ export const generateInsights = (
       action: 'Log a meal',
     });
   }
-  
+
   // Sort by priority (highest first) and limit to top insights
   return insights.sort((a, b) => b.priority - a.priority).slice(0, 3);
 };
@@ -337,20 +337,20 @@ export const getNotificationTip = (
   goals: DailyGoals | null | undefined
 ): { title: string; body: string } | null => {
   const hour = new Date().getHours();
-  
+
   // Default goals if not provided
-  const safeGoals = goals || { calories: 2000, protein: 150, carbs: 250, fat: 65 };
+  const safeGoals = goals || { calorieGoal: 2000, proteinGoal: 150, carbsGoal: 250, fatGoal: 65 };
   const safeMeals = todayMeals || [];
-  
+
   const summary = {
-    calories: safeMeals.reduce((sum, m) => sum + (m.calories || 0) * (m.quantity || 1), 0),
-    protein: safeMeals.reduce((sum, m) => sum + (m.protein_g || 0) * (m.quantity || 1), 0),
+    calories: safeMeals.reduce((sum, m) => sum + (m.totalCalories || 0), 0),
+    protein: safeMeals.reduce((sum, m) => sum + (m.totalProtein || 0), 0),
     mealCount: safeMeals.length,
   };
-  
-  const caloriePercent = safeGoals.calories > 0 ? (summary.calories / safeGoals.calories) * 100 : 0;
-  const proteinPercent = safeGoals.protein > 0 ? (summary.protein / safeGoals.protein) * 100 : 0;
-  
+
+  const caloriePercent = safeGoals.calorieGoal > 0 ? (summary.calories / safeGoals.calorieGoal) * 100 : 0;
+  const proteinPercent = safeGoals.proteinGoal > 0 ? (summary.protein / safeGoals.proteinGoal) * 100 : 0;
+
   // Morning reminder (8-9 AM)
   if (hour >= 8 && hour <= 9 && summary.mealCount === 0) {
     return {
@@ -358,7 +358,7 @@ export const getNotificationTip = (
       body: "Start your day with a healthy breakfast. Log your first meal to stay on track!",
     };
   }
-  
+
   // Lunch reminder (12-1 PM)
   if (hour >= 12 && hour <= 13 && caloriePercent < 30) {
     return {
@@ -366,7 +366,7 @@ export const getNotificationTip = (
       body: "You've logged less than 30% of your daily calories. Time for a nutritious lunch!",
     };
   }
-  
+
   // Afternoon protein check (3-4 PM)
   if (hour >= 15 && hour <= 16 && proteinPercent < 50) {
     return {
@@ -374,7 +374,7 @@ export const getNotificationTip = (
       body: `You're at ${Math.round(proteinPercent)}% of your protein goal. Consider a protein-rich snack!`,
     };
   }
-  
+
   // Evening summary (7-8 PM)
   if (hour >= 19 && hour <= 20) {
     if (caloriePercent >= 90 && caloriePercent <= 110) {
@@ -385,11 +385,11 @@ export const getNotificationTip = (
     } else if (caloriePercent < 70) {
       return {
         title: "Room for dinner! 🥗",
-        body: `You have ${Math.round(safeGoals.calories - summary.calories)} calories remaining. Enjoy a balanced dinner!`,
+        body: `You have ${Math.round(safeGoals.calorieGoal - summary.calories)} calories remaining. Enjoy a balanced dinner!`,
       };
     }
   }
-  
+
   return null;
 };
 
@@ -405,9 +405,9 @@ export const getMotivationalQuote = (): Insight => {
     { icon: '❤️', message: "Taking care of yourself is the best investment you can make." },
     { icon: '🌈', message: "Balance is key. Enjoy the journey to better health!" },
   ];
-  
+
   const quote = quotes[Math.floor(Math.random() * quotes.length)];
-  
+
   return {
     id: 'motivation',
     type: 'motivation',
