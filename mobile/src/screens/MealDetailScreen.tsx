@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useMealStore } from '../store/useMealStore';
 import { FoodItem } from '../types/meal.types';
+import { Ionicons } from '@expo/vector-icons';
 
 interface MealDetailScreenProps {
   navigation: any;
@@ -73,15 +74,15 @@ export default function MealDetailScreen({
   const getMealIcon = (type: string) => {
     switch (type) {
       case 'breakfast':
-        return '🌅';
+        return 'sunny';
       case 'lunch':
-        return '☀️';
+        return 'partly-sunny';
       case 'dinner':
-        return '🌙';
+        return 'moon';
       case 'snack':
-        return '🍎';
+        return 'nutrition';
       default:
-        return '🍽️';
+        return 'restaurant';
     }
   };
 
@@ -147,7 +148,7 @@ export default function MealDetailScreen({
         {/* Meal Header */}
         <View style={styles.mealHeader}>
           <View style={styles.mealTitleRow}>
-            <Text style={styles.mealIcon}>{getMealIcon(meal.type)}</Text>
+            <Ionicons name={getMealIcon(meal.type) as any} size={24} color="#6366F1" style={{ marginRight: 8 }} />
             <Text style={styles.mealType}>
               {meal.type.charAt(0).toUpperCase() + meal.type.slice(1)}
             </Text>

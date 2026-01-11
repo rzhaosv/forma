@@ -14,14 +14,15 @@ import { useMealStore } from '../store/useMealStore';
 import { Meal, DailySummary } from '../types/meal.types';
 import { useTheme } from '../hooks/useTheme';
 import { Swipeable } from 'react-native-gesture-handler';
+import { Ionicons } from '@expo/vector-icons';
 
 import { getLocalDateString, parseLocalDate, isDateToday, isDateYesterday } from '../utils/dateUtils';
 
-const MEAL_TYPE_ICONS = {
-  Breakfast: '🌅',
-  Lunch: '☀️',
-  Dinner: '🌙',
-  Snack: '🍎',
+const MEAL_TYPE_ICONS: { [key: string]: keyof typeof Ionicons.glyphMap } = {
+  Breakfast: 'sunny',
+  Lunch: 'partly-sunny',
+  Dinner: 'moon',
+  Snack: 'nutrition',
 };
 
 export default function MealHistoryScreen() {
@@ -174,9 +175,12 @@ export default function MealHistoryScreen() {
         <View style={dynamicStyles.mealCard}>
           <View style={dynamicStyles.mealHeader}>
             <View style={dynamicStyles.mealTitleRow}>
-              <Text style={dynamicStyles.mealIcon}>
-                {MEAL_TYPE_ICONS[meal.mealType as keyof typeof MEAL_TYPE_ICONS] || '🍽️'}
-              </Text>
+              <Ionicons
+                name={MEAL_TYPE_ICONS[meal.mealType as keyof typeof MEAL_TYPE_ICONS] || 'restaurant'}
+                size={20}
+                color={colors.primary}
+                style={{ marginRight: 8 }}
+              />
               <Text style={dynamicStyles.mealType}>{meal.mealType}</Text>
             </View>
             <Text style={dynamicStyles.mealCalories}>{Math.round(meal.totalCalories)} cal</Text>
@@ -524,7 +528,7 @@ export default function MealHistoryScreen() {
 
           {selectedDateMeals.length === 0 ? (
             <View style={dynamicStyles.emptyState}>
-              <Text style={dynamicStyles.emptyStateIcon}>🍽️</Text>
+              <Ionicons name="restaurant-outline" size={64} color={colors.textTertiary} style={{ marginBottom: 16 }} />
               <Text style={dynamicStyles.emptyStateText}>No meals logged</Text>
               <Text style={dynamicStyles.emptyStateSubtext}>
                 {isTodayActive

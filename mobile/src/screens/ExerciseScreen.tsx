@@ -20,6 +20,7 @@ import Svg, { Circle } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
 import { useExerciseStore } from '../store/useExerciseStore';
+import { Ionicons } from '@expo/vector-icons';
 import {
   Exercise,
   COMMON_EXERCISES,
@@ -31,11 +32,11 @@ import {
 } from '../types/exercise.types';
 
 const CATEGORIES: { key: ExerciseCategory; label: string; icon: string }[] = [
-  { key: 'cardio', label: 'Cardio', icon: '🏃' },
-  { key: 'strength', label: 'Strength', icon: '💪' },
-  { key: 'flexibility', label: 'Flexibility', icon: '🧘' },
-  { key: 'sports', label: 'Sports', icon: '⚽' },
-  { key: 'other', label: 'Other', icon: '🔥' },
+  { key: 'cardio', label: 'Cardio', icon: 'bicycle' },
+  { key: 'strength', label: 'Strength', icon: 'barbell' },
+  { key: 'flexibility', label: 'Flexibility', icon: 'body' },
+  { key: 'sports', label: 'Sports', icon: 'football' },
+  { key: 'other', label: 'Other', icon: 'flame' },
 ];
 
 const INTENSITIES: { key: IntensityLevel; label: string; color: string }[] = [
@@ -115,7 +116,7 @@ export default function ExerciseScreen() {
     useExerciseStore.getState().logWorkout(quickWorkout);
 
     Alert.alert(
-      'Exercise Logged! 💪',
+      'Exercise Logged!',
       `${selectedExercise.name}\n${durationNum} minutes • ${caloriesBurned} cal burned`,
       [{ text: 'OK' }]
     );
@@ -516,7 +517,7 @@ export default function ExerciseScreen() {
             style={dynamicStyles.deleteButton}
             onPress={() => handleDeleteWorkout(item.id)}
           >
-            <Text style={{ fontSize: 18 }}>🗑️</Text>
+            <Ionicons name="trash-outline" size={18} color={colors.error} />
           </TouchableOpacity>
         </View>
         <View style={dynamicStyles.workoutStats}>
@@ -689,7 +690,7 @@ export default function ExerciseScreen() {
             />
           ) : (
             <View style={dynamicStyles.emptyState}>
-              <Text style={dynamicStyles.emptyIcon}>🏃</Text>
+              <Ionicons name="bicycle-outline" size={64} color={colors.textTertiary} style={{ marginBottom: 16 }} />
               <Text style={dynamicStyles.emptyText}>
                 No exercises logged today.{'\n'}Tap "Log Exercise" to get started!
               </Text>
@@ -764,7 +765,7 @@ export default function ExerciseScreen() {
                             onPress={() => handleDeleteWorkout(workout.id)}
                             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                           >
-                            <Text style={{ fontSize: 16, opacity: 0.5 }}>🗑️</Text>
+                            <Ionicons name="trash-outline" size={16} color={colors.textTertiary} style={{ opacity: 0.5 }} />
                           </TouchableOpacity>
                         </View>
                       ))}
@@ -808,7 +809,11 @@ export default function ExerciseScreen() {
                     ]}
                     onPress={() => setSelectedCategory(cat.key)}
                   >
-                    <Text style={{ fontSize: 20 }}>{cat.icon}</Text>
+                    <Ionicons
+                      name={cat.icon as any}
+                      size={20}
+                      color={selectedCategory === cat.key ? colors.primary : colors.textSecondary}
+                    />
                     <Text style={[
                       dynamicStyles.categoryTabText,
                       selectedCategory === cat.key && dynamicStyles.categoryTabTextActive,

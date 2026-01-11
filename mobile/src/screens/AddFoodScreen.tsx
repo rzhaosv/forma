@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useMealStore } from '../store/useMealStore';
 import { Meal, MealType } from '../types/meal.types';
+import { Ionicons } from '@expo/vector-icons';
 
 interface AddFoodScreenProps {
   navigation: any;
@@ -102,10 +103,10 @@ export default function AddFoodScreen({ navigation }: AddFoodScreenProps) {
   };
 
   const mealTypes: { type: MealType; icon: string; label: string }[] = [
-    { type: 'breakfast', icon: '🌅', label: 'Breakfast' },
-    { type: 'lunch', icon: '☀️', label: 'Lunch' },
-    { type: 'dinner', icon: '🌙', label: 'Dinner' },
-    { type: 'snack', icon: '🍎', label: 'Snack' },
+    { type: 'breakfast', icon: 'sunny', label: 'Breakfast' },
+    { type: 'lunch', icon: 'partly-sunny', label: 'Lunch' },
+    { type: 'dinner', icon: 'moon', label: 'Dinner' },
+    { type: 'snack', icon: 'nutrition', label: 'Snack' },
   ];
 
   return (
@@ -132,7 +133,12 @@ export default function AddFoodScreen({ navigation }: AddFoodScreenProps) {
                 ]}
                 onPress={() => setSelectedMealType(meal.type)}
               >
-                <Text style={styles.mealTypeIcon}>{meal.icon}</Text>
+                <Ionicons
+                  name={meal.icon as any}
+                  size={28}
+                  color={selectedMealType === meal.type ? '#6366F1' : '#6B7280'}
+                  style={{ marginBottom: 4 }}
+                />
                 <Text
                   style={[
                     styles.mealTypeLabel,
