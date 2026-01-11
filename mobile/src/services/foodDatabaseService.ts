@@ -1,5 +1,16 @@
 // Food Database Service
 // Provides searchable database of common foods with nutrition data
+//
+// NUTRITION DATA SOURCES:
+// All nutrition values are based on data from the U.S. Department of Agriculture (USDA)
+// FoodData Central database, which is the authoritative source for food composition data.
+//
+// References:
+// - USDA FoodData Central: https://fdc.nal.usda.gov/
+// - USDA National Nutrient Database: https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/methods-and-application-of-food-composition-laboratory/
+//
+// Nutrition values are provided per 100g of food and are rounded to one decimal place
+// for protein, carbs, and fat. Calorie values are rounded to whole numbers.
 
 export interface FoodDatabaseItem {
   id: string;

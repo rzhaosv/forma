@@ -226,6 +226,12 @@ export default function GoalResultsScreen() {
         {/* Explanation */}
         <Text style={dynamicStyles.explanationText}>{goalExplanation}</Text>
 
+        {/* Citation Note */}
+        <Text style={[dynamicStyles.explanationText, { fontSize: 12, marginTop: 24, fontStyle: 'italic' }]}>
+          These goals are calculated using the Mifflin-St Jeor Equation and USDA guidelines.
+          {'\n'}View scientific references in Settings → Goals.
+        </Text>
+
         {/* Action Buttons */}
         <View style={dynamicStyles.buttonContainer}>
           <TouchableOpacity

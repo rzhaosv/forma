@@ -9,6 +9,7 @@ import {
   ScrollView,
   TextInput,
   Alert,
+  Linking,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useMealStore } from '../store/useMealStore';
@@ -21,7 +22,7 @@ export default function GoalsScreen() {
   const { colors, isDark } = useTheme();
   const { calorieGoal, proteinGoal, setGoals } = useMealStore();
   const { data: onboardingData, calculateGoals } = useOnboardingStore();
-  
+
   const [calorieInput, setCalorieInput] = useState(calorieGoal.toString());
   const [proteinInput, setProteinInput] = useState(proteinGoal.toString());
   const [isEditing, setIsEditing] = useState(false);
@@ -51,8 +52,8 @@ export default function GoalsScreen() {
   };
 
   const handleRecalculate = () => {
-    if (!onboardingData.weight_kg || !onboardingData.height_cm || !onboardingData.age || 
-        !onboardingData.gender || !onboardingData.activityLevel) {
+    if (!onboardingData.weight_kg || !onboardingData.height_cm || !onboardingData.age ||
+      !onboardingData.gender || !onboardingData.activityLevel) {
       Alert.alert(
         'Missing Information',
         'Please complete your profile information first. You can update it in Settings.'
@@ -63,7 +64,7 @@ export default function GoalsScreen() {
     // Recalculate goals based on current onboarding data
     calculateGoals();
     const { calorieGoal: newCalorieGoal, proteinGoal: newProteinGoal } = useOnboardingStore.getState().data;
-    
+
     if (newCalorieGoal && newProteinGoal) {
       setGoals(newCalorieGoal, newProteinGoal);
       Alert.alert(
@@ -243,7 +244,7 @@ export default function GoalsScreen() {
   return (
     <SafeAreaView style={dynamicStyles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      
+
       {/* Header */}
       <View style={dynamicStyles.header}>
         <TouchableOpacity
@@ -356,11 +357,70 @@ export default function GoalsScreen() {
             🔄 Recalculate Based on Profile
           </Text>
         </TouchableOpacity>
-        <Text style={dynamicStyles.infoText}>
-          Recalculate your goals based on your current weight, height, age, gender, and activity level
-        </Text>
 
-        <View style={{ height: 40 }} />
+        {/* Scientific Basis Section */}
+        <View style={[dynamicStyles.section, { marginTop: 32 }]}>
+          <Text style={dynamicStyles.sectionTitle}>Scientific Basis</Text>
+          <View style={dynamicStyles.goalCard}>
+            <Text style={[dynamicStyles.infoText, { textAlign: 'left', marginBottom: 12 }]}>
+              Forma calculates your daily targets using established nutritional science guidelines:
+            </Text>
+            <Text style={[dynamicStyles.infoText, { textAlign: 'left', marginBottom: 8 }]}>
+              • BMR & TDEE: Calculated using the Mifflin-St Jeor Equation, widely considered the most accurate for estimating metabolic rate in clinical settings.
+            </Text>
+            <Text style={[dynamicStyles.infoText, { textAlign: 'left', marginBottom: 8 }]}>
+              • Macro Splits: Based on the Acceptable Macronutrient Distribution Ranges (AMDR) established by the National Academies of Sciences, Engineering, and Medicine (NASEM).
+            </Text>
+            <Text style={[dynamicStyles.infoText, { textAlign: 'left', fontWeight: '600', marginTop: 16, marginBottom: 8 }]}>
+              References:
+            </Text>
+            <TouchableOpacity
+              onPress={() => Linking.openURL('https://pubmed.ncbi.nlm.nih.gov/2305711/')}
+              style={{ marginBottom: 6 }}
+            >
+              <Text style={[dynamicStyles.infoText, { textAlign: 'left', color: colors.primary, textDecorationLine: 'underline' }]}>
+                • Mifflin-St Jeor Equation (PubMed)
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => Linking.openURL('https://www.dietaryguidelines.gov/')}
+              style={{ marginBottom: 6 }}
+            >
+              <Text style={[dynamicStyles.infoText, { textAlign: 'left', color: colors.primary, textDecorationLine: 'underline' }]}>
+                • Dietary Guidelines for Americans (USDA)
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => Linking.openURL('https://www.who.int/health-topics/nutrition')}
+              style={{ marginBottom: 6 }}
+            >
+              <Text style={[dynamicStyles.infoText, { textAlign: 'left', color: colors.primary, textDecorationLine: 'underline' }]}>
+                • WHO Nutrition Guidelines
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => Linking.openURL('https://www.nationalacademies.org/our-work/dietary-reference-intakes-for-macronutrients')}
+            >
+              <Text style={[dynamicStyles.infoText, { textAlign: 'left', color: colors.primary, textDecorationLine: 'underline' }]}>
+                • NASEM Dietary Reference Intakes
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Medical Disclaimer */}
+        <View style={[dynamicStyles.section, { marginBottom: 40 }]}>
+          <View style={[dynamicStyles.goalCard, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border, borderWidth: 1 }]}>
+            <Text style={[dynamicStyles.infoText, { fontWeight: '700', color: colors.textSecondary }]}>
+              MEDICAL DISCLAIMER
+            </Text>
+            <Text style={[dynamicStyles.infoText, { fontSize: 12 }]}>
+              The calculations provided are estimates based on general population data. These targets are for informational purposes only and do not constitute medical advice. Please consult with a qualified healthcare professional or registered dietitian before making significant changes to your diet, especially if you have pre-existing health conditions.
+            </Text>
+          </View>
+        </View>
+
+        <View style={{ height: 20 }} />
       </ScrollView>
     </SafeAreaView>
   );

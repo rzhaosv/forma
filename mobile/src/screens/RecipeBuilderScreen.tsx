@@ -90,9 +90,9 @@ export default function RecipeBuilderScreen() {
       id: `ingredient-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       name: selectedFood.name,
       calories: Math.round((caloriesPer100g * grams) / 100),
-      protein_g: Math.round((proteinPer100g * grams) / 100),
-      carbs_g: Math.round((carbsPer100g * grams) / 100),
-      fat_g: Math.round((fatPer100g * grams) / 100),
+      protein_g: Math.round((proteinPer100g * grams) / 100 * 10) / 10,
+      carbs_g: Math.round((carbsPer100g * grams) / 100 * 10) / 10,
+      fat_g: Math.round((fatPer100g * grams) / 100 * 10) / 10,
       amount: amount,
       unit: ingredientUnit,
     };
@@ -193,9 +193,9 @@ export default function RecipeBuilderScreen() {
   const totals = useRecipeStore.getState().calculateRecipeTotals(ingredients);
   const servingsNum = parseInt(servings, 10) || 1;
   const caloriesPerServing = servingsNum > 0 ? Math.round(totals.totalCalories / servingsNum) : 0;
-  const proteinPerServing = servingsNum > 0 ? Math.round(totals.totalProtein / servingsNum) : 0;
-  const carbsPerServing = servingsNum > 0 ? Math.round(totals.totalCarbs / servingsNum) : 0;
-  const fatPerServing = servingsNum > 0 ? Math.round(totals.totalFat / servingsNum) : 0;
+  const proteinPerServing = servingsNum > 0 ? Math.round((totals.totalProtein / servingsNum) * 10) / 10 : 0;
+  const carbsPerServing = servingsNum > 0 ? Math.round((totals.totalCarbs / servingsNum) * 10) / 10 : 0;
+  const fatPerServing = servingsNum > 0 ? Math.round((totals.totalFat / servingsNum) * 10) / 10 : 0;
 
   const dynamicStyles = StyleSheet.create({
     container: {

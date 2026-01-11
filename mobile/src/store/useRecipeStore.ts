@@ -54,9 +54,9 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
       ...recipeData,
       ...totals,
       caloriesPerServing: Math.round(totals.totalCalories / recipeData.servings),
-      proteinPerServing: Math.round(totals.totalProtein / recipeData.servings),
-      carbsPerServing: Math.round(totals.totalCarbs / recipeData.servings),
-      fatPerServing: Math.round(totals.totalFat / recipeData.servings),
+      proteinPerServing: Math.round((totals.totalProtein / recipeData.servings) * 10) / 10,
+      carbsPerServing: Math.round((totals.totalCarbs / recipeData.servings) * 10) / 10,
+      fatPerServing: Math.round((totals.totalFat / recipeData.servings) * 10) / 10,
       createdAt: now,
       updatedAt: now,
     };
@@ -99,9 +99,9 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
       updatedRecipe.totalCarbs = totals.totalCarbs;
       updatedRecipe.totalFat = totals.totalFat;
       updatedRecipe.caloriesPerServing = Math.round(totals.totalCalories / servings);
-      updatedRecipe.proteinPerServing = Math.round(totals.totalProtein / servings);
-      updatedRecipe.carbsPerServing = Math.round(totals.totalCarbs / servings);
-      updatedRecipe.fatPerServing = Math.round(totals.totalFat / servings);
+      updatedRecipe.proteinPerServing = Math.round((totals.totalProtein / servings) * 10) / 10;
+      updatedRecipe.carbsPerServing = Math.round((totals.totalCarbs / servings) * 10) / 10;
+      updatedRecipe.fatPerServing = Math.round((totals.totalFat / servings) * 10) / 10;
     }
     
     const updatedRecipes = [...recipes];
