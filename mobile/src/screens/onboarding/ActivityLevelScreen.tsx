@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,36 +7,60 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
+  Animated,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useOnboardingStore, ActivityLevel } from '../../store/useOnboardingStore';
 import { useTheme } from '../../hooks/useTheme';
+import OnboardingProgress from '../../components/OnboardingProgress';
 
-const ACTIVITY_LEVELS: { value: ActivityLevel; label: string; description: string }[] = [
+const ACTIVITY_LEVELS: {
+  value: ActivityLevel;
+  label: string;
+  description: string;
+  emoji: string;
+  multiplier: string;
+  color: string;
+}[] = [
   {
     value: 'sedentary',
-    label: 'Sedentary',
-    description: 'Little to no exercise',
+    label: 'Couch Potato',
+    description: 'Little to no exercise, mostly sitting',
+    emoji: '🛋️',
+    multiplier: '× 1.2',
+    color: '#94A3B8',
   },
   {
     value: 'light',
-    label: 'Light',
-    description: 'Exercise 1-3 days per week',
+    label: 'Lightly Active',
+    description: 'Light exercise 1-3 days/week',
+    emoji: '🚶',
+    multiplier: '× 1.375',
+    color: '#3B82F6',
   },
   {
     value: 'moderate',
-    label: 'Moderate',
-    description: 'Exercise 3-5 days per week',
+    label: 'Moderately Active',
+    description: 'Moderate exercise 3-5 days/week',
+    emoji: '🏃',
+    multiplier: '× 1.55',
+    color: '#10B981',
   },
   {
     value: 'active',
-    label: 'Active',
-    description: 'Exercise 6-7 days per week',
+    label: 'Very Active',
+    description: 'Hard exercise 6-7 days/week',
+    emoji: '💪',
+    multiplier: '× 1.725',
+    color: '#F59E0B',
   },
   {
     value: 'very_active',
-    label: 'Very Active',
-    description: 'Hard exercise or physical job',
+    label: 'Super Active',
+    description: 'Very hard exercise or physical job daily',
+    emoji: '🔥',
+    multiplier: '× 1.9',
+    color: '#EF4444',
   },
 ];
 
@@ -44,12 +68,49 @@ export default function ActivityLevelScreen() {
   const navigation = useNavigation();
   const { colors, isDark } = useTheme();
   const { data, updateData, setStep } = useOnboardingStore();
-  
+
   const [selectedLevel, setSelectedLevel] = useState<ActivityLevel | undefined>(data.activityLevel);
+
+  // Animations
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const cardScales = useRef(
+    ACTIVITY_LEVELS.reduce((acc, level) => {
+      acc[level.value] = new Animated.Value(1);
+      return acc;
+    }, {} as Record<ActivityLevel, Animated.Value>)
+  ).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
+
+  const handleSelect = (level: ActivityLevel) => {
+    setSelectedLevel(level);
+
+    // Bounce animation
+    Animated.sequence([
+      Animated.spring(cardScales[level], {
+        toValue: 0.95,
+        tension: 100,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+      Animated.spring(cardScales[level], {
+        toValue: 1,
+        tension: 100,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
 
   const handleContinue = () => {
     if (!selectedLevel) return;
-    
+
     updateData({ activityLevel: selectedLevel });
     setStep(4);
     navigation.navigate('WeightGoal' as never);
@@ -61,98 +122,128 @@ export default function ActivityLevelScreen() {
       backgroundColor: colors.background,
     },
     header: {
-      flexDirection: 'row',
-      alignItems: 'center',
       paddingHorizontal: 20,
-      paddingVertical: 16,
-      backgroundColor: colors.surface,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border,
+      paddingTop: 16,
+      paddingBottom: 8,
     },
     backButton: {
-      marginRight: 16,
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 16,
     },
     backText: {
       fontSize: 16,
       color: colors.primary,
       fontWeight: '600',
+      marginLeft: 4,
     },
     scrollContent: {
       padding: 20,
     },
     title: {
-      fontSize: 28,
-      fontWeight: '700',
+      fontSize: 32,
+      fontWeight: '800',
       color: colors.text,
       marginBottom: 8,
     },
     subtitle: {
-      fontSize: 16,
+      fontSize: 17,
       color: colors.textSecondary,
       marginBottom: 32,
+      lineHeight: 24,
     },
-    progressBar: {
-      height: 4,
-      backgroundColor: colors.divider,
-      borderRadius: 2,
-      marginBottom: 24,
-    },
-    progressFill: {
-      height: '100%',
-      backgroundColor: colors.primary,
-      borderRadius: 2,
-      width: '75%', // Step 3 of 4
-    },
-    stepText: {
-      fontSize: 14,
-      color: colors.textSecondary,
-      marginBottom: 32,
-    },
-    optionCard: {
+    activityCard: {
       backgroundColor: colors.surface,
-      borderWidth: 2,
-      borderColor: colors.border,
-      borderRadius: 12,
+      borderRadius: 20,
       padding: 20,
+      marginBottom: 16,
+      borderWidth: 3,
+      borderColor: colors.border,
+      shadowColor: colors.shadowColor,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: isDark ? 0.3 : 0.1,
+      shadowRadius: 8,
+      elevation: 3,
+    },
+    activityCardSelected: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.25,
+      shadowRadius: 12,
+      elevation: 8,
+    },
+    activityHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
       marginBottom: 12,
     },
-    optionCardSelected: {
-      borderColor: colors.primary,
-      backgroundColor: colors.primary + '20',
+    activityEmoji: {
+      fontSize: 40,
+      marginRight: 16,
     },
-    optionLabel: {
-      fontSize: 18,
-      fontWeight: '600',
+    activityTitleContainer: {
+      flex: 1,
+    },
+    activityLabel: {
+      fontSize: 20,
+      fontWeight: '800',
       color: colors.text,
       marginBottom: 4,
     },
-    optionLabelSelected: {
-      color: colors.primary,
-    },
-    optionDescription: {
+    activityMultiplier: {
       fontSize: 14,
+      fontWeight: '700',
+      opacity: 0.6,
+    },
+    activityDescription: {
+      fontSize: 15,
       color: colors.textSecondary,
-      marginTop: 4,
+      lineHeight: 22,
     },
     continueButton: {
       backgroundColor: colors.primary,
-      paddingVertical: 16,
-      borderRadius: 12,
+      paddingVertical: 18,
+      borderRadius: 16,
       alignItems: 'center',
-      marginTop: 20,
-      opacity: selectedLevel ? 1 : 0.5,
+      marginTop: 8,
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.3,
+      shadowRadius: 16,
+      elevation: 8,
+    },
+    continueButtonDisabled: {
+      opacity: 0.5,
     },
     continueButtonText: {
       color: '#FFFFFF',
-      fontSize: 16,
-      fontWeight: '600',
+      fontSize: 18,
+      fontWeight: '700',
+    },
+    encouragement: {
+      fontSize: 15,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      marginBottom: 24,
+      fontStyle: 'italic',
+    },
+    tip: {
+      backgroundColor: colors.primary + '15',
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 24,
+    },
+    tipText: {
+      fontSize: 14,
+      color: colors.text,
+      lineHeight: 20,
     },
   });
 
   return (
     <SafeAreaView style={dynamicStyles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      
+
       {/* Header */}
       <View style={dynamicStyles.header}>
         <TouchableOpacity
@@ -161,50 +252,96 @@ export default function ActivityLevelScreen() {
         >
           <Text style={dynamicStyles.backText}>← Back</Text>
         </TouchableOpacity>
+
+        <OnboardingProgress
+          currentStep={3}
+          totalSteps={4}
+          stepTitles={['Physical Info', 'About You', 'Activity', 'Goals']}
+        />
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={dynamicStyles.scrollContent}>
-        <Text style={dynamicStyles.title}>Your fitness level</Text>
-        <Text style={dynamicStyles.subtitle}>
-          This helps us calculate your daily calorie needs
-        </Text>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={dynamicStyles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <Animated.View style={{ opacity: fadeAnim }}>
+          <Text style={dynamicStyles.title}>How active are you? 🏃‍♂️</Text>
+          <Text style={dynamicStyles.subtitle}>
+            This helps us calculate how many calories you burn each day. Be honest - no judgment!
+          </Text>
 
-        {/* Progress Bar */}
-        <View style={dynamicStyles.progressBar}>
-          <View style={dynamicStyles.progressFill} />
-        </View>
-        <Text style={dynamicStyles.stepText}>Step 3 of 4</Text>
-
-        {/* Activity Level Options */}
-        <Text style={[dynamicStyles.optionLabel, { marginBottom: 16 }]}>Activity Level</Text>
-        {ACTIVITY_LEVELS.map((level) => (
-          <TouchableOpacity
-            key={level.value}
-            style={[
-              dynamicStyles.optionCard,
-              selectedLevel === level.value && dynamicStyles.optionCardSelected,
-            ]}
-            onPress={() => setSelectedLevel(level.value)}
-          >
-            <Text
-              style={[
-                dynamicStyles.optionLabel,
-                selectedLevel === level.value && dynamicStyles.optionLabelSelected,
-              ]}
-            >
-              {selectedLevel === level.value ? '●' : '○'} {level.label}
+          <View style={dynamicStyles.tip}>
+            <Text style={dynamicStyles.tipText}>
+              💡 Tip: Choose based on your typical week. You can always change this later as your habits evolve!
             </Text>
-            <Text style={dynamicStyles.optionDescription}>{level.description}</Text>
-          </TouchableOpacity>
-        ))}
+          </View>
 
-        <TouchableOpacity
-          style={dynamicStyles.continueButton}
-          onPress={handleContinue}
-          disabled={!selectedLevel}
-        >
-          <Text style={dynamicStyles.continueButtonText}>Continue</Text>
-        </TouchableOpacity>
+          {ACTIVITY_LEVELS.map((level) => {
+            const isSelected = selectedLevel === level.value;
+            return (
+              <Animated.View
+                key={level.value}
+                style={{ transform: [{ scale: cardScales[level.value] }] }}
+              >
+                <TouchableOpacity
+                  style={[
+                    dynamicStyles.activityCard,
+                    isSelected && dynamicStyles.activityCardSelected,
+                    isSelected && {
+                      borderColor: level.color,
+                      backgroundColor: level.color + '10',
+                    },
+                  ]}
+                  onPress={() => handleSelect(level.value)}
+                  activeOpacity={0.7}
+                >
+                  <View style={dynamicStyles.activityHeader}>
+                    <Text style={dynamicStyles.activityEmoji}>{level.emoji}</Text>
+                    <View style={dynamicStyles.activityTitleContainer}>
+                      <Text
+                        style={[
+                          dynamicStyles.activityLabel,
+                          isSelected && { color: level.color },
+                        ]}
+                      >
+                        {level.label}
+                      </Text>
+                      <Text
+                        style={[
+                          dynamicStyles.activityMultiplier,
+                          isSelected && { color: level.color },
+                        ]}
+                      >
+                        {level.multiplier} BMR
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={dynamicStyles.activityDescription}>
+                    {level.description}
+                  </Text>
+                </TouchableOpacity>
+              </Animated.View>
+            );
+          })}
+
+          <Text style={dynamicStyles.encouragement}>
+            "Movement is a medicine for creating change in a person's physical, emotional, and mental states." 💫
+          </Text>
+
+          <TouchableOpacity
+            style={[
+              dynamicStyles.continueButton,
+              !selectedLevel && dynamicStyles.continueButtonDisabled,
+            ]}
+            onPress={handleContinue}
+            disabled={!selectedLevel}
+          >
+            <Text style={dynamicStyles.continueButtonText}>Continue →</Text>
+          </TouchableOpacity>
+
+          <View style={{ height: 40 }} />
+        </Animated.View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -215,4 +352,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-

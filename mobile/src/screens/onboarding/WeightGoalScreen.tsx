@@ -1,62 +1,132 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
   StatusBar,
   ScrollView,
+  Animated,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useOnboardingStore, WeightGoal } from '../../store/useOnboardingStore';
 import { useTheme } from '../../hooks/useTheme';
+import Slider from '@react-native-community/slider';
+import OnboardingProgress from '../../components/OnboardingProgress';
 
-const WEIGHT_GOALS: { value: WeightGoal; label: string; description?: string }[] = [
+const WEIGHT_GOALS: {
+  value: WeightGoal;
+  label: string;
+  emoji: string;
+  description: string;
+  motivationalLine: string;
+  color: string;
+}[] = [
   {
     value: 'lose',
     label: 'Lose Weight',
-    description: 'Recommended',
+    emoji: '📉',
+    description: 'Shed those extra pounds and feel amazing',
+    motivationalLine: "You're about to transform! Let's create a sustainable deficit.",
+    color: '#10B981',
   },
   {
     value: 'maintain',
     label: 'Maintain Weight',
+    emoji: '⚖️',
+    description: 'Stay at your current weight while building healthy habits',
+    motivationalLine: 'Perfect! Maintenance is all about consistency and balance.',
+    color: '#3B82F6',
   },
   {
     value: 'gain',
-    label: 'Gain Muscle',
+    label: 'Build Muscle',
+    emoji: '💪',
+    description: 'Gain muscle mass and get stronger',
+    motivationalLine: "Let's bulk up! Time to fuel those gains with a calorie surplus.",
+    color: '#F59E0B',
   },
 ];
 
 export default function WeightGoalScreen() {
   const navigation = useNavigation();
   const { colors, isDark } = useTheme();
-  const { data, updateData, setStep } = useOnboardingStore();
-  
+  const { data, updateData } = useOnboardingStore();
+
   const [selectedGoal, setSelectedGoal] = useState<WeightGoal | undefined>(data.weightGoal);
   const [targetWeight, setTargetWeight] = useState(
-    data.targetWeight_kg?.toString() || data.weight_kg?.toString() || '65'
+    data.targetWeight_kg || data.weight_kg || 70
   );
+
+  // Animations
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const goalScales = useRef({
+    lose: new Animated.Value(1),
+    maintain: new Animated.Value(1),
+    gain: new Animated.Value(1),
+  }).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
+
+  const handleGoalSelect = (goal: WeightGoal) => {
+    setSelectedGoal(goal);
+
+    // Bounce animation
+    Animated.sequence([
+      Animated.spring(goalScales[goal], {
+        toValue: 1.05,
+        tension: 100,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+      Animated.spring(goalScales[goal], {
+        toValue: 1,
+        tension: 100,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Set target weight based on goal
+    if (goal === 'maintain' && data.weight_kg) {
+      setTargetWeight(data.weight_kg);
+    }
+  };
 
   const handleCalculate = () => {
     if (!selectedGoal) return;
-    
-    const targetWeightNum = parseFloat(targetWeight);
-    if (isNaN(targetWeightNum) || targetWeightNum < 30 || targetWeightNum > 300) {
-      return;
-    }
-    
+
     updateData({
       weightGoal: selectedGoal,
-      targetWeight_kg: targetWeightNum,
+      targetWeight_kg: targetWeight,
     });
-    
-    // Calculate goals - need to get the store instance
+
+    // Calculate goals
     const store = useOnboardingStore.getState();
     store.calculateGoals();
-    
+
     navigation.navigate('GoalResults' as never);
+  };
+
+  const currentWeight = data.weight_kg || 70;
+  const weightDifference = targetWeight - currentWeight;
+  const selectedGoalData = WEIGHT_GOALS.find((g) => g.value === selectedGoal);
+
+  const getWeightChangeMessage = () => {
+    if (!selectedGoal) return '';
+    if (selectedGoal === 'maintain') return 'Maintain current weight';
+    const diff = Math.abs(weightDifference);
+    if (diff === 0) return 'Maintain current weight';
+    const direction = weightDifference > 0 ? 'Gain' : 'Lose';
+    const weeks = Math.ceil(diff / 0.5);
+    return `${direction} ${diff.toFixed(1)} kg (~${weeks} weeks at 0.5kg/week)`;
   };
 
   const dynamicStyles = StyleSheet.create({
@@ -65,126 +135,188 @@ export default function WeightGoalScreen() {
       backgroundColor: colors.background,
     },
     header: {
-      flexDirection: 'row',
-      alignItems: 'center',
       paddingHorizontal: 20,
-      paddingVertical: 16,
-      backgroundColor: colors.surface,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border,
+      paddingTop: 16,
+      paddingBottom: 8,
     },
     backButton: {
-      marginRight: 16,
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 16,
     },
     backText: {
       fontSize: 16,
       color: colors.primary,
       fontWeight: '600',
+      marginLeft: 4,
     },
     scrollContent: {
       padding: 20,
     },
     title: {
-      fontSize: 28,
-      fontWeight: '700',
+      fontSize: 32,
+      fontWeight: '800',
       color: colors.text,
       marginBottom: 8,
     },
     subtitle: {
-      fontSize: 16,
+      fontSize: 17,
       color: colors.textSecondary,
       marginBottom: 32,
+      lineHeight: 24,
     },
-    progressBar: {
-      height: 4,
-      backgroundColor: colors.divider,
-      borderRadius: 2,
-      marginBottom: 24,
-    },
-    progressFill: {
-      height: '100%',
-      backgroundColor: colors.primary,
-      borderRadius: 2,
-      width: '100%', // Step 4 of 4
-    },
-    stepText: {
-      fontSize: 14,
-      color: colors.textSecondary,
-      marginBottom: 32,
-    },
-    optionCard: {
+    goalCard: {
       backgroundColor: colors.surface,
-      borderWidth: 2,
-      borderColor: colors.border,
-      borderRadius: 12,
+      borderRadius: 20,
       padding: 20,
-      marginBottom: 12,
+      marginBottom: 16,
+      borderWidth: 3,
+      borderColor: colors.border,
+      shadowColor: colors.shadowColor,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: isDark ? 0.3 : 0.1,
+      shadowRadius: 8,
+      elevation: 3,
     },
-    optionCardSelected: {
-      borderColor: colors.primary,
-      backgroundColor: colors.primary + '20',
+    goalCardSelected: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.25,
+      shadowRadius: 12,
+      elevation: 8,
     },
-    optionLabel: {
-      fontSize: 18,
-      fontWeight: '600',
-      color: colors.text,
-    },
-    optionLabelSelected: {
-      color: colors.primary,
-    },
-    optionDescription: {
-      fontSize: 14,
-      color: colors.textSecondary,
-      marginTop: 4,
-    },
-    inputLabel: {
-      fontSize: 16,
-      fontWeight: '600',
-      color: colors.text,
-      marginBottom: 12,
-      marginTop: 8,
-    },
-    inputContainer: {
+    goalHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: colors.inputBackground,
-      borderWidth: 2,
-      borderColor: colors.inputBorder,
-      borderRadius: 12,
-      paddingHorizontal: 16,
-      marginBottom: 32,
+      marginBottom: 12,
     },
-    input: {
+    goalEmoji: {
+      fontSize: 36,
+      marginRight: 16,
+    },
+    goalTitle: {
+      fontSize: 22,
+      fontWeight: '800',
+      color: colors.text,
       flex: 1,
-      fontSize: 18,
-      fontWeight: '600',
-      color: colors.inputText,
-      paddingVertical: 16,
     },
-    unitText: {
+    goalDescription: {
+      fontSize: 15,
+      color: colors.textSecondary,
+      marginBottom: 12,
+      lineHeight: 22,
+    },
+    motivationalLine: {
+      fontSize: 14,
+      fontStyle: 'italic',
+      fontWeight: '600',
+      lineHeight: 20,
+    },
+    targetWeightCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 20,
+      padding: 24,
+      marginTop: 8,
+      marginBottom: 24,
+      shadowColor: colors.shadowColor,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: isDark ? 0.3 : 0.1,
+      shadowRadius: 12,
+      elevation: 4,
+    },
+    sectionLabel: {
+      fontSize: 15,
+      fontWeight: '600',
+      color: colors.textSecondary,
+      marginBottom: 20,
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+    },
+    weightDisplay: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'baseline',
+      marginBottom: 20,
+    },
+    currentWeightLabel: {
       fontSize: 16,
+      color: colors.textSecondary,
+      marginRight: 12,
+    },
+    currentWeightValue: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: colors.textSecondary,
+    },
+    arrow: {
+      fontSize: 20,
+      marginHorizontal: 16,
+      color: colors.textSecondary,
+    },
+    targetWeightValue: {
+      fontSize: 48,
+      fontWeight: '800',
+      color: selectedGoalData?.color || colors.primary,
+    },
+    weightUnit: {
+      fontSize: 20,
+      fontWeight: '600',
       color: colors.textSecondary,
       marginLeft: 8,
     },
+    slider: {
+      width: '100%',
+      height: 40,
+    },
+    sliderRange: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: 8,
+    },
+    rangeText: {
+      fontSize: 13,
+      color: colors.textSecondary,
+      fontWeight: '500',
+    },
+    changeMessage: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: selectedGoalData?.color || colors.primary,
+      textAlign: 'center',
+      marginTop: 16,
+    },
     calculateButton: {
       backgroundColor: colors.primary,
-      paddingVertical: 16,
-      borderRadius: 12,
+      paddingVertical: 18,
+      borderRadius: 16,
       alignItems: 'center',
-      marginTop: 20,
-      opacity: selectedGoal ? 1 : 0.5,
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.3,
+      shadowRadius: 16,
+      elevation: 8,
+    },
+    calculateButtonDisabled: {
+      opacity: 0.5,
     },
     calculateButtonText: {
       color: '#FFFFFF',
-      fontSize: 16,
-      fontWeight: '600',
+      fontSize: 18,
+      fontWeight: '700',
+    },
+    encouragement: {
+      fontSize: 15,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      marginBottom: 24,
+      fontStyle: 'italic',
     },
   });
 
   return (
     <SafeAreaView style={dynamicStyles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      
+
       {/* Header */}
       <View style={dynamicStyles.header}>
         <TouchableOpacity
@@ -193,65 +325,118 @@ export default function WeightGoalScreen() {
         >
           <Text style={dynamicStyles.backText}>← Back</Text>
         </TouchableOpacity>
+
+        <OnboardingProgress
+          currentStep={4}
+          totalSteps={4}
+          stepTitles={['Physical Info', 'About You', 'Activity', 'Goals']}
+        />
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={dynamicStyles.scrollContent}>
-        <Text style={dynamicStyles.title}>What's your goal?</Text>
-        <Text style={dynamicStyles.subtitle}>
-          We'll calculate your daily calorie target based on your goal
-        </Text>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={dynamicStyles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <Animated.View style={{ opacity: fadeAnim }}>
+          <Text style={dynamicStyles.title}>What's your goal? 🎯</Text>
+          <Text style={dynamicStyles.subtitle}>
+            Choose your main objective. We'll create a personalized plan to help you get there!
+          </Text>
 
-        {/* Progress Bar */}
-        <View style={dynamicStyles.progressBar}>
-          <View style={dynamicStyles.progressFill} />
-        </View>
-        <Text style={dynamicStyles.stepText}>Step 4 of 4</Text>
+          {/* Goal Selection */}
+          {WEIGHT_GOALS.map((goal) => {
+            const isSelected = selectedGoal === goal.value;
+            return (
+              <Animated.View
+                key={goal.value}
+                style={{ transform: [{ scale: goalScales[goal.value] }] }}
+              >
+                <TouchableOpacity
+                  style={[
+                    dynamicStyles.goalCard,
+                    isSelected && dynamicStyles.goalCardSelected,
+                    isSelected && {
+                      borderColor: goal.color,
+                      backgroundColor: goal.color + '10',
+                    },
+                  ]}
+                  onPress={() => handleGoalSelect(goal.value)}
+                  activeOpacity={0.7}
+                >
+                  <View style={dynamicStyles.goalHeader}>
+                    <Text style={dynamicStyles.goalEmoji}>{goal.emoji}</Text>
+                    <Text
+                      style={[
+                        dynamicStyles.goalTitle,
+                        isSelected && { color: goal.color },
+                      ]}
+                    >
+                      {goal.label}
+                    </Text>
+                  </View>
+                  <Text style={dynamicStyles.goalDescription}>
+                    {goal.description}
+                  </Text>
+                  {isSelected && (
+                    <Text style={[dynamicStyles.motivationalLine, { color: goal.color }]}>
+                      {goal.motivationalLine}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              </Animated.View>
+            );
+          })}
 
-        {/* Weight Goal Options */}
-        {WEIGHT_GOALS.map((goal) => (
+          {/* Target Weight Slider */}
+          {selectedGoal && selectedGoal !== 'maintain' && (
+            <View style={dynamicStyles.targetWeightCard}>
+              <Text style={dynamicStyles.sectionLabel}>Target Weight</Text>
+              <View style={dynamicStyles.weightDisplay}>
+                <Text style={dynamicStyles.currentWeightLabel}>Current:</Text>
+                <Text style={dynamicStyles.currentWeightValue}>{currentWeight} kg</Text>
+                <Text style={dynamicStyles.arrow}>→</Text>
+                <Text style={dynamicStyles.targetWeightValue}>{targetWeight}</Text>
+                <Text style={dynamicStyles.weightUnit}>kg</Text>
+              </View>
+              <Slider
+                style={dynamicStyles.slider}
+                minimumValue={30}
+                maximumValue={200}
+                value={targetWeight}
+                onValueChange={(value) => setTargetWeight(Math.round(value))}
+                minimumTrackTintColor={selectedGoalData?.color || colors.primary}
+                maximumTrackTintColor={colors.divider}
+                thumbTintColor={selectedGoalData?.color || colors.primary}
+                step={1}
+              />
+              <View style={dynamicStyles.sliderRange}>
+                <Text style={dynamicStyles.rangeText}>30 kg</Text>
+                <Text style={dynamicStyles.rangeText}>200 kg</Text>
+              </View>
+              <Text style={dynamicStyles.changeMessage}>{getWeightChangeMessage()}</Text>
+            </View>
+          )}
+
+          <Text style={dynamicStyles.encouragement}>
+            "The secret of getting ahead is getting started. You're almost there!" 🚀
+          </Text>
+
           <TouchableOpacity
-            key={goal.value}
             style={[
-              dynamicStyles.optionCard,
-              selectedGoal === goal.value && dynamicStyles.optionCardSelected,
+              dynamicStyles.calculateButton,
+              !selectedGoal && dynamicStyles.calculateButtonDisabled,
             ]}
-            onPress={() => setSelectedGoal(goal.value)}
+            onPress={handleCalculate}
+            disabled={!selectedGoal}
           >
-            <Text
-              style={[
-                dynamicStyles.optionLabel,
-                selectedGoal === goal.value && dynamicStyles.optionLabelSelected,
-              ]}
-            >
-              {selectedGoal === goal.value ? '●' : '○'} {goal.label}
+            <Text style={dynamicStyles.calculateButtonText}>
+              Calculate My Goals →
             </Text>
-            {goal.description && (
-              <Text style={dynamicStyles.optionDescription}>{goal.description}</Text>
-            )}
           </TouchableOpacity>
-        ))}
 
-        {/* Target Weight Input */}
-        <Text style={dynamicStyles.inputLabel}>Target Weight</Text>
-        <View style={dynamicStyles.inputContainer}>
-          <TextInput
-            style={dynamicStyles.input}
-            value={targetWeight}
-            onChangeText={setTargetWeight}
-            keyboardType="numeric"
-            placeholder="65"
-            placeholderTextColor={colors.placeholder}
-          />
-          <Text style={dynamicStyles.unitText}>kg</Text>
-        </View>
-
-        <TouchableOpacity
-          style={dynamicStyles.calculateButton}
-          onPress={handleCalculate}
-          disabled={!selectedGoal}
-        >
-          <Text style={dynamicStyles.calculateButtonText}>Calculate</Text>
-        </TouchableOpacity>
+          <View style={{ height: 40 }} />
+        </Animated.View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -262,4 +447,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
