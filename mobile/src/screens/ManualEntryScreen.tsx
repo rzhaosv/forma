@@ -15,6 +15,7 @@ import {
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useMealStore } from '../store/useMealStore';
 import { Meal, FoodItem, MealType } from '../types/meal.types';
+import { Ionicons } from '@expo/vector-icons';
 
 type RouteParams = {
   ManualEntry: {
@@ -99,7 +100,7 @@ export default function ManualEntryScreen() {
     // Navigate back with success message
     navigation.goBack();
     setTimeout(() => {
-      Alert.alert('Added to Log! 🎉', `${foodName} added to ${selectedMealType}`);
+      Alert.alert('Added to Log!', `${foodName} added to ${selectedMealType}`);
     }, 500);
   };
 
@@ -130,7 +131,7 @@ export default function ManualEntryScreen() {
             style={styles.searchButton}
             onPress={() => navigation.navigate('FoodSearch' as never)}
           >
-            <Text style={styles.searchButtonIcon}>🔍</Text>
+            <Ionicons name="search" size={32} color="#6366F1" style={{ marginBottom: 8 }} />
             <Text style={styles.searchButtonText}>Search Food Database</Text>
             <Text style={styles.searchButtonSubtext}>Find foods with nutrition data</Text>
           </TouchableOpacity>
@@ -406,10 +407,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#6366F1',
     borderStyle: 'dashed',
-  },
-  searchButtonIcon: {
-    fontSize: 32,
-    marginBottom: 8,
   },
   searchButtonText: {
     fontSize: 16,

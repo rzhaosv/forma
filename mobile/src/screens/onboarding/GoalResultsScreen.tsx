@@ -15,6 +15,7 @@ import { useMealStore } from '../../store/useMealStore';
 import { useTheme } from '../../hooks/useTheme';
 import { calculateAll } from '../../utils/calorieCalculator';
 import ConfettiCelebration from '../../components/ConfettiCelebration';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function GoalResultsScreen() {
   const navigation = useNavigation();
@@ -126,7 +127,6 @@ export default function GoalResultsScreen() {
       fontSize: 36,
       fontWeight: '800',
       color: colors.text,
-      marginBottom: 12,
       textAlign: 'center',
     },
     subtitle: {
@@ -204,10 +204,6 @@ export default function GoalResultsScreen() {
     macroLabelContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-    },
-    macroEmoji: {
-      fontSize: 24,
-      marginRight: 12,
     },
     macroLabel: {
       fontSize: 17,
@@ -308,7 +304,10 @@ export default function GoalResultsScreen() {
       <ConfettiCelebration active={showConfetti} />
 
       <ScrollView style={styles.scrollView} contentContainerStyle={dynamicStyles.scrollContent}>
-        <Text style={dynamicStyles.title}>🎉 You're All Set!</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+          <Ionicons name="checkmark-circle" size={36} color={colors.primary} style={{ marginRight: 8 }} />
+          <Text style={dynamicStyles.title}>You're All Set!</Text>
+        </View>
         <Text style={dynamicStyles.subtitle}>
           Here's your personalized daily goal based on your profile:
         </Text>
@@ -334,21 +333,21 @@ export default function GoalResultsScreen() {
           <View style={dynamicStyles.macroCard}>
             <View style={dynamicStyles.macroRow}>
               <View style={dynamicStyles.macroLabelContainer}>
-                <Text style={dynamicStyles.macroEmoji}>🥩</Text>
+                <Ionicons name="nutrition" size={24} color={colors.text} style={{ marginRight: 12 }} />
                 <Text style={dynamicStyles.macroLabel}>Protein</Text>
               </View>
               <Text style={dynamicStyles.macroValue}>{results.proteinGoal}g</Text>
             </View>
             <View style={dynamicStyles.macroRow}>
               <View style={dynamicStyles.macroLabelContainer}>
-                <Text style={dynamicStyles.macroEmoji}>🍞</Text>
+                <Ionicons name="pizza" size={24} color={colors.text} style={{ marginRight: 12 }} />
                 <Text style={dynamicStyles.macroLabel}>Carbs</Text>
               </View>
               <Text style={dynamicStyles.macroValue}>{results.carbsGoal}g</Text>
             </View>
             <View style={[dynamicStyles.macroRow, dynamicStyles.macroRowLast]}>
               <View style={dynamicStyles.macroLabelContainer}>
-                <Text style={dynamicStyles.macroEmoji}>🥑</Text>
+                <Ionicons name="water" size={24} color={colors.text} style={{ marginRight: 12 }} />
                 <Text style={dynamicStyles.macroLabel}>Fat</Text>
               </View>
               <Text style={dynamicStyles.macroValue}>{results.fatGoal}g</Text>

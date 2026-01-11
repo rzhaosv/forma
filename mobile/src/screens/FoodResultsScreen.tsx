@@ -127,7 +127,7 @@ export default function FoodResultsScreen() {
 
     // Show success and navigate back
     Alert.alert(
-      'Added to Log! 🎉',
+      'Added to Log!',
       `${foodItems.length} item${foodItems.length !== 1 ? 's' : ''} added to ${selectedMealType}`,
       [{ text: 'OK', onPress: () => navigation.navigate('Home' as never) }]
     );

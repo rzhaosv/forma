@@ -3,10 +3,13 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, App
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { analyzeFoodPhoto } from '../services/foodRecognitionService';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../hooks/useTheme';
 
 export default function CameraScreen() {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
+  const { colors } = useTheme();
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [analyzing, setAnalyzing] = useState(false);
@@ -151,9 +154,12 @@ export default function CameraScreen() {
             </View>
           ) : (
             <View style={styles.instructionsContainer}>
-              <Text style={styles.instructionsText}>
-                📸 Position food in frame
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                <Ionicons name="camera" size={24} color="#FFF" style={{ marginRight: 8 }} />
+                <Text style={styles.instructionsText}>
+                  Position food in frame
+                </Text>
+              </View>
               <Text style={styles.instructionsSubtext}>
                 AI will identify and calculate calories
               </Text>
@@ -167,7 +173,7 @@ export default function CameraScreen() {
               onPress={toggleCameraFacing}
               disabled={analyzing}
             >
-              <Text style={styles.flipText}>🔄</Text>
+              <Ionicons name="camera-reverse" size={28} color="#FFF" />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -250,8 +256,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#FFF',
-    textAlign: 'center',
-    marginBottom: 8,
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
@@ -306,9 +310,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.3)',
     borderRadius: 30,
-  },
-  flipText: {
-    fontSize: 28,
   },
   captureButton: {
     width: 80,

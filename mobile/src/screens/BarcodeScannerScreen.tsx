@@ -185,7 +185,7 @@ export default function BarcodeScannerScreen() {
     navigation.goBack();
     setTimeout(() => {
       const servingText = servingQuantity === 1 ? '1 serving' : `${servingQuantity} servings`;
-      Alert.alert('Added to Log! 🎉', `${scannedProduct.name} (${servingText}) added to ${selectedMealType}`);
+      Alert.alert('Added to Log!', `${scannedProduct.name} (${servingText}) added to ${selectedMealType}`);
     }, 500);
   };
 

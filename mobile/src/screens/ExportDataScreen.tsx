@@ -21,6 +21,7 @@ import {
   generateExportFile,
   getExportSummary,
 } from '../services/exportService';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function ExportDataScreen() {
   const navigation = useNavigation();
@@ -52,7 +53,7 @@ export default function ExportDataScreen() {
 
       if (success) {
         Alert.alert(
-          'Export Successful! 🎉',
+          'Export Successful',
           'Your data has been exported and is ready to share.',
           [{ text: 'OK' }]
         );
@@ -68,16 +69,16 @@ export default function ExportDataScreen() {
     }
   };
 
-  const formatOptions: { value: ExportFormat; label: string; icon: string; description: string }[] = [
-    { value: 'csv', label: 'CSV', icon: '📊', description: 'Compatible with Excel, Google Sheets' },
-    { value: 'json', label: 'JSON', icon: '🔧', description: 'For developers and data analysis' },
+  const formatOptions: { value: ExportFormat; label: string; iconName: string; description: string }[] = [
+    { value: 'csv', label: 'CSV', iconName: 'bar-chart', description: 'Compatible with Excel, Google Sheets' },
+    { value: 'json', label: 'JSON', iconName: 'settings', description: 'For developers and data analysis' },
   ];
 
-  const dataTypeOptions: { value: ExportDataType; label: string; icon: string; count: number }[] = [
-    { value: 'all', label: 'All Data', icon: '📦', count: summary.mealsCount + summary.weightEntriesCount + summary.recipesCount },
-    { value: 'meals', label: 'Meals & Nutrition', icon: '🍽️', count: summary.foodItemsCount },
-    { value: 'progress', label: 'Weight Progress', icon: '⚖️', count: summary.weightEntriesCount },
-    { value: 'recipes', label: 'Custom Recipes', icon: '📖', count: summary.recipesCount },
+  const dataTypeOptions: { value: ExportDataType; label: string; iconName: string; count: number }[] = [
+    { value: 'all', label: 'All Data', iconName: 'cube', count: summary.mealsCount + summary.weightEntriesCount + summary.recipesCount },
+    { value: 'meals', label: 'Meals & Nutrition', iconName: 'restaurant', count: summary.foodItemsCount },
+    { value: 'progress', label: 'Weight Progress', iconName: 'scale', count: summary.weightEntriesCount },
+    { value: 'recipes', label: 'Custom Recipes', iconName: 'book', count: summary.recipesCount },
   ];
 
   const dynamicStyles = StyleSheet.create({
@@ -135,10 +136,6 @@ export default function ExportDataScreen() {
       flexDirection: 'row',
       alignItems: 'center',
     },
-    optionIcon: {
-      fontSize: 24,
-      marginRight: 12,
-    },
     optionContent: {
       flex: 1,
     },
@@ -171,7 +168,6 @@ export default function ExportDataScreen() {
       fontSize: 16,
       fontWeight: '700',
       color: colors.text,
-      marginBottom: 16,
     },
     summaryRow: {
       flexDirection: 'row',
@@ -214,10 +210,6 @@ export default function ExportDataScreen() {
       flexDirection: 'row',
       alignItems: 'flex-start',
     },
-    infoIcon: {
-      fontSize: 20,
-      marginRight: 12,
-    },
     infoText: {
       flex: 1,
       fontSize: 14,
@@ -244,7 +236,7 @@ export default function ExportDataScreen() {
       <ScrollView style={styles.scrollView}>
         <View style={dynamicStyles.section}>
           <View style={dynamicStyles.infoCard}>
-            <Text style={dynamicStyles.infoIcon}>📤</Text>
+            <Ionicons name="cloud-upload" size={20} color={isDark ? '#93C5FD' : '#4F46E5'} style={{ marginRight: 12 }} />
             <Text style={dynamicStyles.infoText}>
               Export your nutrition data, weight progress, and custom recipes.
               Use your data in spreadsheets, other apps, or keep it as a backup.
@@ -256,7 +248,10 @@ export default function ExportDataScreen() {
         <View style={dynamicStyles.section}>
           <Text style={dynamicStyles.sectionTitle}>Your Data</Text>
           <View style={dynamicStyles.summaryCard}>
-            <Text style={dynamicStyles.summaryTitle}>📊 Export Summary</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+              <Ionicons name="bar-chart" size={20} color={colors.text} style={{ marginRight: 8 }} />
+              <Text style={dynamicStyles.summaryTitle}>Export Summary</Text>
+            </View>
             <View style={dynamicStyles.summaryRow}>
               <Text style={dynamicStyles.summaryLabel}>Logged Meals</Text>
               <Text style={dynamicStyles.summaryValue}>{summary.mealsCount}</Text>
@@ -289,7 +284,7 @@ export default function ExportDataScreen() {
               onPress={() => setSelectedFormat(option.value)}
             >
               <View style={dynamicStyles.optionHeader}>
-                <Text style={dynamicStyles.optionIcon}>{option.icon}</Text>
+                <Ionicons name={option.iconName as any} size={24} color={colors.text} style={{ marginRight: 12 }} />
                 <View style={dynamicStyles.optionContent}>
                   <Text style={dynamicStyles.optionLabel}>{option.label}</Text>
                   <Text style={dynamicStyles.optionDescription}>{option.description}</Text>
@@ -315,7 +310,7 @@ export default function ExportDataScreen() {
               onPress={() => setSelectedDataType(option.value)}
             >
               <View style={dynamicStyles.optionHeader}>
-                <Text style={dynamicStyles.optionIcon}>{option.icon}</Text>
+                <Ionicons name={option.iconName as any} size={24} color={colors.text} style={{ marginRight: 12 }} />
                 <View style={dynamicStyles.optionContent}>
                   <Text style={dynamicStyles.optionLabel}>{option.label}</Text>
                   <Text style={dynamicStyles.optionCount}>{option.count} items</Text>

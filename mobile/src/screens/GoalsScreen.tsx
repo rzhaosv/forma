@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useMealStore } from '../store/useMealStore';
 import { useOnboardingStore } from '../store/useOnboardingStore';
 import { useTheme } from '../hooks/useTheme';
+import { Ionicons } from '@expo/vector-icons';
 // Goals screen - no need to import calorie calculator as we use onboarding store's calculateGoals
 
 export default function GoalsScreen() {
@@ -353,9 +354,12 @@ export default function GoalsScreen() {
           style={dynamicStyles.recalculateButton}
           onPress={handleRecalculate}
         >
-          <Text style={dynamicStyles.recalculateButtonText}>
-            🔄 Recalculate Based on Profile
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+            <Ionicons name="refresh" size={18} color={colors.primary} style={{ marginRight: 8 }} />
+            <Text style={dynamicStyles.recalculateButtonText}>
+              Recalculate Based on Profile
+            </Text>
+          </View>
         </TouchableOpacity>
 
         {/* Scientific Basis Section */}

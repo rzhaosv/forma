@@ -15,6 +15,7 @@ import { Recipe } from '../types/meal.types';
 import { useTheme } from '../hooks/useTheme';
 import { useMealStore } from '../store/useMealStore';
 import { FoodItem, MealType } from '../types/meal.types';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function RecipeListScreen() {
   const navigation = useNavigation();
@@ -121,9 +122,6 @@ export default function RecipeListScreen() {
       actionButton: {
         padding: 8,
       },
-      actionButtonText: {
-        fontSize: 16,
-      },
       recipeDescription: {
         fontSize: 14,
         color: colors.textSecondary,
@@ -172,13 +170,13 @@ export default function RecipeListScreen() {
               style={dynamicStyles.actionButton}
               onPress={() => handleEditRecipe(recipe.id)}
             >
-              <Text style={[dynamicStyles.actionButtonText, { color: colors.primary }]}>✏️</Text>
+              <Ionicons name="pencil" size={18} color={colors.primary} />
             </TouchableOpacity>
             <TouchableOpacity
               style={dynamicStyles.actionButton}
               onPress={() => handleDeleteRecipe(recipe)}
             >
-              <Text style={[dynamicStyles.actionButtonText, { color: colors.error }]}>🗑️</Text>
+              <Ionicons name="trash-outline" size={18} color={colors.error} />
             </TouchableOpacity>
           </View>
         </View>
@@ -262,10 +260,6 @@ export default function RecipeListScreen() {
       alignItems: 'center',
       padding: 40,
     },
-    emptyStateIcon: {
-      fontSize: 64,
-      marginBottom: 16,
-    },
     emptyStateText: {
       fontSize: 18,
       fontWeight: '600',
@@ -306,7 +300,7 @@ export default function RecipeListScreen() {
 
       {recipes.length === 0 ? (
         <View style={dynamicStyles.emptyState}>
-          <Text style={dynamicStyles.emptyStateIcon}>🍳</Text>
+          <Ionicons name="restaurant" size={64} color={colors.textSecondary} style={{ marginBottom: 16 }} />
           <Text style={dynamicStyles.emptyStateText}>No Recipes Yet</Text>
           <Text style={dynamicStyles.emptyStateSubtext}>
             Create your first recipe to quickly log your favorite meals!
