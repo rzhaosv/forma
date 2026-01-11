@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,16 +8,80 @@ import {
   StatusBar,
   Alert,
   ActivityIndicator,
+  Animated,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { signInWithGoogle, signInWithApple } from '../services/authService';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { Platform } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function WelcomeScreen() {
   const navigation = useNavigation();
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [loadingApple, setLoadingApple] = useState(false);
+
+  // Animations
+  const logoScale = useRef(new Animated.Value(0)).current;
+  const logoRotate = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideUp = useRef(new Animated.Value(50)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    // Entrance animation sequence
+    Animated.sequence([
+      // Logo pop-in with rotation
+      Animated.parallel([
+        Animated.spring(logoScale, {
+          toValue: 1,
+          tension: 50,
+          friction: 7,
+          useNativeDriver: true,
+        }),
+        Animated.timing(logoRotate, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+      ]),
+      // Content fade and slide up
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.spring(slideUp, {
+          toValue: 0,
+          tension: 40,
+          friction: 8,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start();
+
+    // Continuous pulse animation for CTA button
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.05,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [logoScale, logoRotate, fadeAnim, slideUp, pulseAnim]);
+
+  const spin = logoRotate.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
 
   const handleGoogleSignIn = async () => {
     setLoadingGoogle(true);
@@ -48,40 +112,88 @@ export default function WelcomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <View style={styles.container}>
+      <LinearGradient
+        colors={['#6366F1', '#8B5CF6', '#EC4899']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={StyleSheet.absoluteFillObject}
+      />
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar barStyle="light-content" />
 
-      {/* Logo/Icon Area */}
-      <View style={styles.logoContainer}>
-        <View style={styles.logoCircle}>
-          <Text style={styles.logoText}>📊</Text>
+        {/* Logo/Icon Area */}
+        <View style={styles.logoContainer}>
+          <Animated.View
+            style={[
+              styles.logoCircle,
+              {
+                transform: [
+                  { scale: logoScale },
+                  { rotate: spin },
+                ],
+              },
+            ]}
+          >
+            <Text style={styles.logoText}>🎯</Text>
+          </Animated.View>
+
+          <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideUp }] }}>
+            <Text style={styles.appName}>Welcome to Forma</Text>
+            <Text style={styles.tagline}>
+              Your AI-powered nutrition coach
+            </Text>
+            <Text style={styles.subtitle}>
+              Join thousands crushing their goals 💪
+            </Text>
+          </Animated.View>
+
+          {/* Feature highlights */}
+          <Animated.View style={[styles.featuresContainer, { opacity: fadeAnim }]}>
+            <View style={styles.featureItem}>
+              <Text style={styles.featureIcon}>📸</Text>
+              <Text style={styles.featureText}>Snap & Track</Text>
+            </View>
+            <View style={styles.featureItem}>
+              <Text style={styles.featureIcon}>🧠</Text>
+              <Text style={styles.featureText}>AI Insights</Text>
+            </View>
+            <View style={styles.featureItem}>
+              <Text style={styles.featureIcon}>📈</Text>
+              <Text style={styles.featureText}>Hit Goals</Text>
+            </View>
+          </Animated.View>
         </View>
-        <Text style={styles.appName}>Forma</Text>
-        <Text style={styles.tagline}>Track your nutrition with AI</Text>
-      </View>
 
-      {/* Auth Buttons */}
-      <View style={styles.authContainer}>
-        <TouchableOpacity
-          style={styles.primaryButton}
-          onPress={() => navigation.navigate('Onboarding' as never)}
+        {/* Auth Buttons */}
+        <Animated.View
+          style={[
+            styles.authContainer,
+            { opacity: fadeAnim, transform: [{ translateY: slideUp }] },
+          ]}
         >
-          <Text style={styles.primaryButtonText}>Get Started</Text>
-        </TouchableOpacity>
+          <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={() => navigation.navigate('Onboarding' as never)}
+            >
+              <Text style={styles.primaryButtonText}>Start Your Journey →</Text>
+            </TouchableOpacity>
+          </Animated.View>
 
-        <TouchableOpacity
-          style={styles.secondaryButton}
-          onPress={() => navigation.navigate('SignIn' as never)}
-        >
-          <Text style={styles.secondaryButtonText}>Sign In</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={() => navigation.navigate('SignIn' as never)}
+          >
+            <Text style={styles.secondaryButtonText}>Already have an account?</Text>
+          </TouchableOpacity>
 
-        {/* Divider */}
-        <View style={styles.divider}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>or continue with</Text>
-          <View style={styles.dividerLine} />
-        </View>
+          {/* Divider */}
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>or continue with</Text>
+            <View style={styles.dividerLine} />
+          </View>
 
         {/* Social Auth Buttons */}
         {Platform.OS === 'ios' && (
@@ -104,125 +216,162 @@ export default function WelcomeScreen() {
           ) : (
             <Text style={styles.googleIcon}>G</Text>
           )}
-          <Text style={styles.socialButtonText}>Continue with Google</Text>
-        </TouchableOpacity>
-      </View>
+            <Text style={styles.socialButtonText}>Continue with Google</Text>
+          </TouchableOpacity>
 
-      {/* Footer */}
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          By continuing, you agree to our{' '}
-          <Text
-            style={styles.link}
-            onPress={() => navigation.navigate('TermsOfUse' as never)}
-          >
-            Terms
-          </Text> and{' '}
-          <Text
-            style={styles.link}
-            onPress={() => navigation.navigate('PrivacyPolicy' as never)}
-          >
-            Privacy Policy
-          </Text>
-        </Text>
-      </View>
-    </SafeAreaView>
+          {/* Footer */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>
+              By continuing, you agree to our{' '}
+              <Text
+                style={styles.link}
+                onPress={() => navigation.navigate('TermsOfUse' as never)}
+              >
+                Terms
+              </Text> and{' '}
+              <Text
+                style={styles.link}
+                onPress={() => navigation.navigate('PrivacyPolicy' as never)}
+              >
+                Privacy Policy
+              </Text>
+            </Text>
+          </View>
+        </Animated.View>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+  },
+  safeArea: {
+    flex: 1,
   },
   logoContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: 60,
+    paddingHorizontal: 24,
   },
   logoCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#EEF2FF',
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 32,
+    borderWidth: 3,
+    borderColor: 'rgba(255, 255, 255, 0.5)',
   },
   logoText: {
-    fontSize: 48,
+    fontSize: 64,
   },
   appName: {
-    fontSize: 40,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 8,
+    fontSize: 36,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 12,
+    textAlign: 'center',
   },
   tagline: {
-    fontSize: 16,
-    color: '#6B7280',
+    fontSize: 18,
+    color: 'rgba(255, 255, 255, 0.95)',
+    textAlign: 'center',
+    marginBottom: 8,
+    fontWeight: '500',
+  },
+  subtitle: {
+    fontSize: 15,
+    color: 'rgba(255, 255, 255, 0.85)',
+    textAlign: 'center',
+    fontWeight: '400',
+  },
+  featuresContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 40,
+    paddingHorizontal: 20,
+  },
+  featureItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  featureIcon: {
+    fontSize: 32,
+    marginBottom: 8,
+  },
+  featureText: {
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontWeight: '600',
+    textAlign: 'center',
   },
   authContainer: {
     paddingHorizontal: 24,
     paddingBottom: 20,
   },
   primaryButton: {
-    backgroundColor: '#6366F1',
-    paddingVertical: 16,
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 18,
+    borderRadius: 16,
     alignItems: 'center',
     marginBottom: 12,
-    shadowColor: '#6366F1',
-    shadowOffset: { width: 0, height: 4 },
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowRadius: 16,
+    elevation: 8,
   },
   primaryButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
+    color: '#6366F1',
+    fontSize: 18,
+    fontWeight: '700',
   },
   secondaryButton: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'transparent',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
     marginBottom: 24,
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   secondaryButtonText: {
-    color: '#374151',
-    fontSize: 16,
+    color: '#FFFFFF',
+    fontSize: 15,
     fontWeight: '600',
   },
   divider: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 16,
   },
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
   dividerText: {
     marginHorizontal: 16,
-    fontSize: 14,
-    color: '#9CA3AF',
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontWeight: '500',
   },
   socialButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     paddingVertical: 14,
     borderRadius: 12,
     marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderWidth: 0,
   },
   socialIcon: {
     fontSize: 20,
@@ -241,24 +390,24 @@ const styles = StyleSheet.create({
   },
   socialButtonText: {
     color: '#374151',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   footer: {
-    paddingHorizontal: 24,
-    paddingBottom: 32,
+    paddingTop: 16,
   },
   footerText: {
-    fontSize: 12,
-    color: '#9CA3AF',
+    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.7)',
     textAlign: 'center',
-    lineHeight: 18,
+    lineHeight: 16,
   },
   link: {
-    color: '#6366F1',
-    fontWeight: '500',
+    color: '#FFFFFF',
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
 });
