@@ -14,11 +14,12 @@ import { useOnboardingStore, WeightGoal } from '../../store/useOnboardingStore';
 import { useTheme } from '../../hooks/useTheme';
 import Slider from '@react-native-community/slider';
 import OnboardingProgress from '../../components/OnboardingProgress';
+import { Ionicons } from '@expo/vector-icons';
 
 const WEIGHT_GOALS: {
   value: WeightGoal;
   label: string;
-  emoji: string;
+  icon: string;
   description: string;
   motivationalLine: string;
   color: string;
@@ -26,7 +27,7 @@ const WEIGHT_GOALS: {
   {
     value: 'lose',
     label: 'Lose Weight',
-    emoji: '📉',
+    icon: 'trending-down',
     description: 'Shed those extra pounds and feel amazing',
     motivationalLine: "You're about to transform! Let's create a sustainable deficit.",
     color: '#10B981',
@@ -34,7 +35,7 @@ const WEIGHT_GOALS: {
   {
     value: 'maintain',
     label: 'Maintain Weight',
-    emoji: '⚖️',
+    icon: 'git-compare',
     description: 'Stay at your current weight while building healthy habits',
     motivationalLine: 'Perfect! Maintenance is all about consistency and balance.',
     color: '#3B82F6',
@@ -42,7 +43,7 @@ const WEIGHT_GOALS: {
   {
     value: 'gain',
     label: 'Build Muscle',
-    emoji: '💪',
+    icon: 'barbell',
     description: 'Gain muscle mass and get stronger',
     motivationalLine: "Let's bulk up! Time to fuel those gains with a calorie surplus.",
     color: '#F59E0B',
@@ -365,7 +366,12 @@ export default function WeightGoalScreen() {
                   activeOpacity={0.7}
                 >
                   <View style={dynamicStyles.goalHeader}>
-                    <Text style={dynamicStyles.goalEmoji}>{goal.emoji}</Text>
+                    <Ionicons
+                      name={goal.icon as any}
+                      size={36}
+                      color={isSelected ? goal.color : colors.textSecondary}
+                      style={{ marginRight: 16 }}
+                    />
                     <Text
                       style={[
                         dynamicStyles.goalTitle,

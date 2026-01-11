@@ -14,6 +14,7 @@ import { useOnboardingStore } from '../../store/useOnboardingStore';
 import { useTheme } from '../../hooks/useTheme';
 import Slider from '@react-native-community/slider';
 import OnboardingProgress from '../../components/OnboardingProgress';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function PhysicalInfoScreen() {
   const navigation = useNavigation();
@@ -95,10 +96,10 @@ export default function PhysicalInfoScreen() {
 
   const getBMICategory = () => {
     const bmi = parseFloat(calculateBMI());
-    if (bmi < 18.5) return { text: 'Underweight', emoji: '📉', color: '#3B82F6' };
-    if (bmi < 25) return { text: 'Healthy', emoji: '✨', color: '#10B981' };
-    if (bmi < 30) return { text: 'Overweight', emoji: '📈', color: '#F59E0B' };
-    return { text: 'Obese', emoji: '⚠️', color: '#EF4444' };
+    if (bmi < 18.5) return { text: 'Underweight', icon: 'trending-down', color: '#3B82F6' };
+    if (bmi < 25) return { text: 'Healthy', icon: 'sparkles', color: '#10B981' };
+    if (bmi < 30) return { text: 'Overweight', icon: 'trending-up', color: '#F59E0B' };
+    return { text: 'Obese', icon: 'warning', color: '#EF4444' };
   };
 
   const handleContinue = () => {
@@ -438,7 +439,7 @@ export default function PhysicalInfoScreen() {
             <Text style={dynamicStyles.bmiTitle}>Your BMI Preview</Text>
             <Text style={dynamicStyles.bmiValue}>{calculateBMI()}</Text>
             <View style={dynamicStyles.bmiCategory}>
-              <Text style={dynamicStyles.bmiEmoji}>{bmiCategory.emoji}</Text>
+              <Ionicons name={bmiCategory.icon as any} size={24} color={bmiCategory.color} />
               <Text style={dynamicStyles.bmiCategoryText}>{bmiCategory.text}</Text>
             </View>
             <Text style={dynamicStyles.bmiNote}>

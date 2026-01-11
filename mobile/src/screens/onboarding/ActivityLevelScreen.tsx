@@ -13,12 +13,13 @@ import { useNavigation } from '@react-navigation/native';
 import { useOnboardingStore, ActivityLevel } from '../../store/useOnboardingStore';
 import { useTheme } from '../../hooks/useTheme';
 import OnboardingProgress from '../../components/OnboardingProgress';
+import { Ionicons } from '@expo/vector-icons';
 
 const ACTIVITY_LEVELS: {
   value: ActivityLevel;
   label: string;
   description: string;
-  emoji: string;
+  icon: string;
   multiplier: string;
   color: string;
 }[] = [
@@ -26,7 +27,7 @@ const ACTIVITY_LEVELS: {
     value: 'sedentary',
     label: 'Couch Potato',
     description: 'Little to no exercise, mostly sitting',
-    emoji: '🛋️',
+    icon: 'bed',
     multiplier: '× 1.2',
     color: '#94A3B8',
   },
@@ -34,7 +35,7 @@ const ACTIVITY_LEVELS: {
     value: 'light',
     label: 'Lightly Active',
     description: 'Light exercise 1-3 days/week',
-    emoji: '🚶',
+    icon: 'walk',
     multiplier: '× 1.375',
     color: '#3B82F6',
   },
@@ -42,7 +43,7 @@ const ACTIVITY_LEVELS: {
     value: 'moderate',
     label: 'Moderately Active',
     description: 'Moderate exercise 3-5 days/week',
-    emoji: '🏃',
+    icon: 'bicycle',
     multiplier: '× 1.55',
     color: '#10B981',
   },
@@ -50,7 +51,7 @@ const ACTIVITY_LEVELS: {
     value: 'active',
     label: 'Very Active',
     description: 'Hard exercise 6-7 days/week',
-    emoji: '💪',
+    icon: 'barbell',
     multiplier: '× 1.725',
     color: '#F59E0B',
   },
@@ -58,7 +59,7 @@ const ACTIVITY_LEVELS: {
     value: 'very_active',
     label: 'Super Active',
     description: 'Very hard exercise or physical job daily',
-    emoji: '🔥',
+    icon: 'flame',
     multiplier: '× 1.9',
     color: '#EF4444',
   },
@@ -297,7 +298,11 @@ export default function ActivityLevelScreen() {
                   activeOpacity={0.7}
                 >
                   <View style={dynamicStyles.activityHeader}>
-                    <Text style={dynamicStyles.activityEmoji}>{level.emoji}</Text>
+                    <Ionicons
+                      name={level.icon as any}
+                      size={36}
+                      color={isSelected ? level.color : colors.textSecondary}
+                    />
                     <View style={dynamicStyles.activityTitleContainer}>
                       <Text
                         style={[

@@ -14,6 +14,7 @@ import { useOnboardingStore, Gender } from '../../store/useOnboardingStore';
 import { useTheme } from '../../hooks/useTheme';
 import Slider from '@react-native-community/slider';
 import OnboardingProgress from '../../components/OnboardingProgress';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function DemographicsScreen() {
   const navigation = useNavigation();
@@ -73,13 +74,13 @@ export default function DemographicsScreen() {
     navigation.navigate('ActivityLevel' as never);
   };
 
-  const getAgeEmoji = () => {
-    if (age < 20) return '🧒';
-    if (age < 30) return '💪';
-    if (age < 40) return '🏃';
-    if (age < 50) return '🧑';
-    if (age < 60) return '👨';
-    return '👴';
+  const getAgeIcon = () => {
+    if (age < 20) return 'happy';
+    if (age < 30) return 'barbell';
+    if (age < 40) return 'walk';
+    if (age < 50) return 'person';
+    if (age < 60) return 'person-circle';
+    return 'glasses';
   };
 
   const getAgeMessage = () => {
@@ -91,10 +92,10 @@ export default function DemographicsScreen() {
     return 'Wisdom meets wellness!';
   };
 
-  const genderOptions: { value: Gender; emoji: string; label: string; color: string }[] = [
-    { value: 'male', emoji: '👨', label: 'Male', color: '#3B82F6' },
-    { value: 'female', emoji: '👩', label: 'Female', color: '#EC4899' },
-    { value: 'other', emoji: '⭐', label: 'Other', color: '#8B5CF6' },
+  const genderOptions: { value: Gender; icon: string; label: string; color: string }[] = [
+    { value: 'male', icon: 'male', label: 'Male', color: '#3B82F6' },
+    { value: 'female', icon: 'female', label: 'Female', color: '#EC4899' },
+    { value: 'other', icon: 'person', label: 'Other', color: '#8B5CF6' },
   ];
 
   const dynamicStyles = StyleSheet.create({
@@ -280,7 +281,7 @@ export default function DemographicsScreen() {
           <View style={dynamicStyles.card}>
             <Text style={dynamicStyles.sectionLabel}>Your Age</Text>
             <View style={dynamicStyles.ageDisplay}>
-              <Text style={dynamicStyles.ageEmoji}>{getAgeEmoji()}</Text>
+              <Ionicons name={getAgeIcon() as any} size={48} color={colors.primary} />
               <Text style={dynamicStyles.ageNumber}>{age}</Text>
               <Text style={dynamicStyles.ageMessage}>{getAgeMessage()}</Text>
             </View>
@@ -321,7 +322,11 @@ export default function DemographicsScreen() {
                     ]}
                     onPress={() => handleGenderSelect(option.value)}
                   >
-                    <Text style={dynamicStyles.genderEmoji}>{option.emoji}</Text>
+                    <Ionicons
+                      name={option.icon as any}
+                      size={48}
+                      color={selectedGender === option.value ? option.color : colors.textSecondary}
+                    />
                     <Text
                       style={[
                         dynamicStyles.genderLabel,
