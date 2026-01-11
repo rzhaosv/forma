@@ -20,8 +20,24 @@ export default function PhysicalInfoScreen() {
   const { colors, isDark } = useTheme();
   const { data, updateData, setStep } = useOnboardingStore();
 
+  const [unitSystem, setUnitSystem] = useState(data.unitSystem || 'metric');
   const [weight, setWeight] = useState(data.weight_kg || 70);
   const [height, setHeight] = useState(data.height_cm || 175);
+
+  // Unit conversion helpers
+  const kgToLbs = (kg: number) => Math.round(kg * 2.20462);
+  const lbsToKg = (lbs: number) => lbs / 2.20462;
+  const cmToInches = (cm: number) => Math.round(cm / 2.54);
+  const inchesToCm = (inches: number) => inches * 2.54;
+
+  const displayWeight = unitSystem === 'imperial' ? kgToLbs(weight) : weight;
+  const displayHeight = unitSystem === 'imperial' ? cmToInches(height) : height;
+
+  const handleUnitToggle = () => {
+    const newUnit = unitSystem === 'metric' ? 'imperial' : 'metric';
+    setUnitSystem(newUnit);
+    updateData({ unitSystem: newUnit });
+  };
 
   // Animations
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -36,12 +52,22 @@ export default function PhysicalInfoScreen() {
   }, [fadeAnim]);
 
   const handleWeightChange = (value: number) => {
-    setWeight(Math.round(value));
+    const roundedValue = Math.round(value);
+    if (unitSystem === 'imperial') {
+      setWeight(lbsToKg(roundedValue));
+    } else {
+      setWeight(roundedValue);
+    }
     animateValue();
   };
 
   const handleHeightChange = (value: number) => {
-    setHeight(Math.round(value));
+    const roundedValue = Math.round(value);
+    if (unitSystem === 'imperial') {
+      setHeight(inchesToCm(roundedValue));
+    } else {
+      setHeight(roundedValue);
+    }
     animateValue();
   };
 
@@ -238,6 +264,42 @@ export default function PhysicalInfoScreen() {
       marginBottom: 24,
       fontStyle: 'italic',
     },
+    unitToggleContainer: {
+      flexDirection: 'row',
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      padding: 4,
+      marginBottom: 24,
+      shadowColor: colors.shadowColor,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: isDark ? 0.3 : 0.1,
+      shadowRadius: 8,
+      elevation: 3,
+    },
+    unitButton: {
+      flex: 1,
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    unitButtonActive: {
+      backgroundColor: colors.primary,
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 2,
+    },
+    unitButtonText: {
+      fontSize: 15,
+      fontWeight: '600',
+      color: colors.textSecondary,
+    },
+    unitButtonTextActive: {
+      color: '#FFFFFF',
+    },
   });
 
   return (
@@ -271,20 +333,60 @@ export default function PhysicalInfoScreen() {
             Slide to set your current measurements. Don't worry, you can always change these later.
           </Text>
 
+          {/* Unit Toggle */}
+          <View style={dynamicStyles.unitToggleContainer}>
+            <TouchableOpacity
+              style={[
+                dynamicStyles.unitButton,
+                unitSystem === 'metric' && dynamicStyles.unitButtonActive,
+              ]}
+              onPress={() => {
+                if (unitSystem !== 'metric') handleUnitToggle();
+              }}
+            >
+              <Text
+                style={[
+                  dynamicStyles.unitButtonText,
+                  unitSystem === 'metric' && dynamicStyles.unitButtonTextActive,
+                ]}
+              >
+                Metric (kg/cm)
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                dynamicStyles.unitButton,
+                unitSystem === 'imperial' && dynamicStyles.unitButtonActive,
+              ]}
+              onPress={() => {
+                if (unitSystem !== 'imperial') handleUnitToggle();
+              }}
+            >
+              <Text
+                style={[
+                  dynamicStyles.unitButtonText,
+                  unitSystem === 'imperial' && dynamicStyles.unitButtonTextActive,
+                ]}
+              >
+                Imperial (lb/in)
+              </Text>
+            </TouchableOpacity>
+          </View>
+
           {/* Weight Slider */}
           <View style={dynamicStyles.card}>
             <Text style={dynamicStyles.sliderLabel}>Your Weight</Text>
             <Animated.View style={[dynamicStyles.valueDisplay, { transform: [{ scale: scaleAnim }] }]}>
               <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-                <Text style={dynamicStyles.valueNumber}>{weight}</Text>
-                <Text style={dynamicStyles.valueUnit}>kg</Text>
+                <Text style={dynamicStyles.valueNumber}>{displayWeight}</Text>
+                <Text style={dynamicStyles.valueUnit}>{unitSystem === 'imperial' ? 'lbs' : 'kg'}</Text>
               </View>
             </Animated.View>
             <Slider
               style={dynamicStyles.slider}
-              minimumValue={30}
-              maximumValue={200}
-              value={weight}
+              minimumValue={unitSystem === 'imperial' ? 66 : 30}
+              maximumValue={unitSystem === 'imperial' ? 440 : 200}
+              value={displayWeight}
               onValueChange={handleWeightChange}
               minimumTrackTintColor={colors.primary}
               maximumTrackTintColor={colors.divider}
@@ -292,8 +394,12 @@ export default function PhysicalInfoScreen() {
               step={1}
             />
             <View style={dynamicStyles.sliderRange}>
-              <Text style={dynamicStyles.rangeText}>30 kg</Text>
-              <Text style={dynamicStyles.rangeText}>200 kg</Text>
+              <Text style={dynamicStyles.rangeText}>
+                {unitSystem === 'imperial' ? '66 lbs' : '30 kg'}
+              </Text>
+              <Text style={dynamicStyles.rangeText}>
+                {unitSystem === 'imperial' ? '440 lbs' : '200 kg'}
+              </Text>
             </View>
           </View>
 
@@ -302,15 +408,15 @@ export default function PhysicalInfoScreen() {
             <Text style={dynamicStyles.sliderLabel}>Your Height</Text>
             <Animated.View style={[dynamicStyles.valueDisplay, { transform: [{ scale: scaleAnim }] }]}>
               <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-                <Text style={dynamicStyles.valueNumber}>{height}</Text>
-                <Text style={dynamicStyles.valueUnit}>cm</Text>
+                <Text style={dynamicStyles.valueNumber}>{displayHeight}</Text>
+                <Text style={dynamicStyles.valueUnit}>{unitSystem === 'imperial' ? 'in' : 'cm'}</Text>
               </View>
             </Animated.View>
             <Slider
               style={dynamicStyles.slider}
-              minimumValue={100}
-              maximumValue={250}
-              value={height}
+              minimumValue={unitSystem === 'imperial' ? 39 : 100}
+              maximumValue={unitSystem === 'imperial' ? 98 : 250}
+              value={displayHeight}
               onValueChange={handleHeightChange}
               minimumTrackTintColor={colors.primary}
               maximumTrackTintColor={colors.divider}
@@ -318,8 +424,12 @@ export default function PhysicalInfoScreen() {
               step={1}
             />
             <View style={dynamicStyles.sliderRange}>
-              <Text style={dynamicStyles.rangeText}>100 cm</Text>
-              <Text style={dynamicStyles.rangeText}>250 cm</Text>
+              <Text style={dynamicStyles.rangeText}>
+                {unitSystem === 'imperial' ? '39 in (3\'3")' : '100 cm'}
+              </Text>
+              <Text style={dynamicStyles.rangeText}>
+                {unitSystem === 'imperial' ? '98 in (8\'2")' : '250 cm'}
+              </Text>
             </View>
           </View>
 

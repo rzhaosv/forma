@@ -7,8 +7,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export type Gender = 'male' | 'female' | 'other';
 export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
 export type WeightGoal = 'lose' | 'maintain' | 'gain';
+export type UnitSystem = 'metric' | 'imperial';
 
 export interface OnboardingData {
+  // Unit preference
+  unitSystem?: UnitSystem;
+
   // Step 1: Physical Info
   weight_kg?: number;
   height_cm?: number;
