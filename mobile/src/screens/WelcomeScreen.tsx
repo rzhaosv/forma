@@ -9,12 +9,14 @@ import {
   Alert,
   ActivityIndicator,
   Animated,
+  Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { signInWithGoogle, signInWithApple } from '../services/authService';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function WelcomeScreen() {
   const navigation = useNavigation();
@@ -135,7 +137,11 @@ export default function WelcomeScreen() {
               },
             ]}
           >
-            <Text style={styles.logoText}>🎯</Text>
+            <Image
+              source={require('../../assets/icon.png')}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
           </Animated.View>
 
           <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideUp }] }}>
@@ -151,15 +157,15 @@ export default function WelcomeScreen() {
           {/* Feature highlights */}
           <Animated.View style={[styles.featuresContainer, { opacity: fadeAnim }]}>
             <View style={styles.featureItem}>
-              <Text style={styles.featureIcon}>📸</Text>
+              <Ionicons name="camera" size={32} color="rgba(255, 255, 255, 0.95)" />
               <Text style={styles.featureText}>Snap & Track</Text>
             </View>
             <View style={styles.featureItem}>
-              <Text style={styles.featureIcon}>🧠</Text>
+              <Ionicons name="sparkles" size={32} color="rgba(255, 255, 255, 0.95)" />
               <Text style={styles.featureText}>AI Insights</Text>
             </View>
             <View style={styles.featureItem}>
-              <Text style={styles.featureIcon}>📈</Text>
+              <Ionicons name="trending-up" size={32} color="rgba(255, 255, 255, 0.95)" />
               <Text style={styles.featureText}>Hit Goals</Text>
             </View>
           </Animated.View>
@@ -261,15 +267,17 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 32,
     borderWidth: 3,
     borderColor: 'rgba(255, 255, 255, 0.5)',
+    overflow: 'hidden',
   },
-  logoText: {
-    fontSize: 64,
+  logoImage: {
+    width: 110,
+    height: 110,
   },
   appName: {
     fontSize: 36,
@@ -301,10 +309,7 @@ const styles = StyleSheet.create({
   featureItem: {
     alignItems: 'center',
     flex: 1,
-  },
-  featureIcon: {
-    fontSize: 32,
-    marginBottom: 8,
+    gap: 8,
   },
   featureText: {
     fontSize: 13,
