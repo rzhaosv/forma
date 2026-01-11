@@ -1,44 +1,101 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
   StatusBar,
   ScrollView,
+  Animated,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useOnboardingStore, Gender } from '../../store/useOnboardingStore';
 import { useTheme } from '../../hooks/useTheme';
+import Slider from '@react-native-community/slider';
+import OnboardingProgress from '../../components/OnboardingProgress';
 
 export default function DemographicsScreen() {
   const navigation = useNavigation();
   const { colors, isDark } = useTheme();
   const { data, updateData, setStep } = useOnboardingStore();
-  
-  const [age, setAge] = useState(data.age?.toString() || '28');
+
+  const [age, setAge] = useState(data.age || 28);
   const [selectedGender, setSelectedGender] = useState<Gender | undefined>(data.gender);
 
+  // Animations
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const genderScales = useRef({
+    male: new Animated.Value(1),
+    female: new Animated.Value(1),
+    other: new Animated.Value(1),
+  }).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
+
+  const handleGenderSelect = (gender: Gender) => {
+    setSelectedGender(gender);
+
+    // Bounce animation on selection
+    Animated.sequence([
+      Animated.spring(genderScales[gender], {
+        toValue: 1.1,
+        tension: 100,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+      Animated.spring(genderScales[gender], {
+        toValue: 1,
+        tension: 100,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
   const handleContinue = () => {
-    const ageNum = parseInt(age);
-    if (!age || isNaN(ageNum) || ageNum < 13 || ageNum > 120) {
-      return;
-    }
-    
     if (!selectedGender) {
       return;
     }
-    
+
     updateData({
-      age: ageNum,
+      age: age,
       gender: selectedGender,
     });
-    
+
     setStep(3);
     navigation.navigate('ActivityLevel' as never);
   };
+
+  const getAgeEmoji = () => {
+    if (age < 20) return '🧒';
+    if (age < 30) return '💪';
+    if (age < 40) return '🏃';
+    if (age < 50) return '🧑';
+    if (age < 60) return '👨';
+    return '👴';
+  };
+
+  const getAgeMessage = () => {
+    if (age < 20) return 'Starting young - amazing!';
+    if (age < 30) return 'Prime time for fitness!';
+    if (age < 40) return 'Perfect age to build habits!';
+    if (age < 50) return 'Never too late to start!';
+    if (age < 60) return 'Age is just a number!';
+    return 'Wisdom meets wellness!';
+  };
+
+  const genderOptions: { value: Gender; emoji: string; label: string; color: string }[] = [
+    { value: 'male', emoji: '👨', label: 'Male', color: '#3B82F6' },
+    { value: 'female', emoji: '👩', label: 'Female', color: '#EC4899' },
+    { value: 'other', emoji: '⭐', label: 'Other', color: '#8B5CF6' },
+  ];
 
   const dynamicStyles = StyleSheet.create({
     container: {
@@ -46,120 +103,152 @@ export default function DemographicsScreen() {
       backgroundColor: colors.background,
     },
     header: {
-      flexDirection: 'row',
-      alignItems: 'center',
       paddingHorizontal: 20,
-      paddingVertical: 16,
-      backgroundColor: colors.surface,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border,
+      paddingTop: 16,
+      paddingBottom: 8,
     },
     backButton: {
-      marginRight: 16,
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 16,
     },
     backText: {
       fontSize: 16,
       color: colors.primary,
       fontWeight: '600',
+      marginLeft: 4,
     },
     scrollContent: {
       padding: 20,
     },
     title: {
-      fontSize: 28,
-      fontWeight: '700',
+      fontSize: 32,
+      fontWeight: '800',
       color: colors.text,
       marginBottom: 8,
     },
     subtitle: {
-      fontSize: 16,
+      fontSize: 17,
       color: colors.textSecondary,
       marginBottom: 32,
+      lineHeight: 24,
     },
-    progressBar: {
-      height: 4,
-      backgroundColor: colors.divider,
-      borderRadius: 2,
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: 20,
+      padding: 24,
       marginBottom: 24,
+      shadowColor: colors.shadowColor,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: isDark ? 0.3 : 0.1,
+      shadowRadius: 12,
+      elevation: 4,
     },
-    progressFill: {
-      height: '100%',
-      backgroundColor: colors.primary,
-      borderRadius: 2,
-      width: '50%', // Step 2 of 4
-    },
-    stepText: {
-      fontSize: 14,
+    sectionLabel: {
+      fontSize: 15,
+      fontWeight: '600',
       color: colors.textSecondary,
-      marginBottom: 32,
+      marginBottom: 20,
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
     },
-    inputLabel: {
+    ageDisplay: {
+      alignItems: 'center',
+      marginBottom: 20,
+    },
+    ageEmoji: {
+      fontSize: 48,
+      marginBottom: 8,
+    },
+    ageNumber: {
+      fontSize: 56,
+      fontWeight: '800',
+      color: colors.text,
+    },
+    ageMessage: {
       fontSize: 16,
       fontWeight: '600',
-      color: colors.text,
-      marginBottom: 12,
+      color: colors.primary,
+      marginTop: 8,
     },
-    inputContainer: {
-      backgroundColor: colors.inputBackground,
-      borderWidth: 2,
-      borderColor: colors.inputBorder,
-      borderRadius: 12,
-      paddingHorizontal: 16,
-      marginBottom: 32,
+    slider: {
+      width: '100%',
+      height: 40,
     },
-    input: {
-      fontSize: 18,
-      fontWeight: '600',
-      color: colors.inputText,
-      paddingVertical: 16,
+    sliderRange: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: 8,
+    },
+    rangeText: {
+      fontSize: 13,
+      color: colors.textSecondary,
+      fontWeight: '500',
     },
     genderContainer: {
       flexDirection: 'row',
-      flexWrap: 'wrap',
       gap: 12,
-      marginBottom: 32,
     },
     genderButton: {
       flex: 1,
-      minWidth: 100,
       backgroundColor: colors.surface,
-      borderWidth: 2,
+      borderWidth: 3,
       borderColor: colors.border,
-      borderRadius: 12,
-      padding: 16,
+      borderRadius: 20,
+      padding: 20,
       alignItems: 'center',
+      minHeight: 140,
+      justifyContent: 'center',
     },
     genderButtonSelected: {
-      borderColor: colors.primary,
-      backgroundColor: colors.primary + '20',
+      borderWidth: 3,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+      elevation: 6,
     },
-    genderButtonText: {
+    genderEmoji: {
+      fontSize: 48,
+      marginBottom: 12,
+    },
+    genderLabel: {
       fontSize: 16,
-      fontWeight: '600',
+      fontWeight: '700',
       color: colors.text,
-    },
-    genderButtonTextSelected: {
-      color: colors.primary,
     },
     continueButton: {
       backgroundColor: colors.primary,
-      paddingVertical: 16,
-      borderRadius: 12,
+      paddingVertical: 18,
+      borderRadius: 16,
       alignItems: 'center',
-      marginTop: 20,
-      opacity: selectedGender ? 1 : 0.5,
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.3,
+      shadowRadius: 16,
+      elevation: 8,
+    },
+    continueButtonDisabled: {
+      opacity: 0.5,
     },
     continueButtonText: {
       color: '#FFFFFF',
-      fontSize: 16,
-      fontWeight: '600',
+      fontSize: 18,
+      fontWeight: '700',
+    },
+    encouragement: {
+      fontSize: 15,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      marginBottom: 24,
+      fontStyle: 'italic',
     },
   });
 
   return (
     <SafeAreaView style={dynamicStyles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      
+
       {/* Header */}
       <View style={dynamicStyles.header}>
         <TouchableOpacity
@@ -168,64 +257,102 @@ export default function DemographicsScreen() {
         >
           <Text style={dynamicStyles.backText}>← Back</Text>
         </TouchableOpacity>
+
+        <OnboardingProgress
+          currentStep={2}
+          totalSteps={4}
+          stepTitles={['Physical Info', 'About You', 'Activity', 'Goals']}
+        />
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={dynamicStyles.scrollContent}>
-        <Text style={dynamicStyles.title}>Tell us about yourself</Text>
-        <Text style={dynamicStyles.subtitle}>
-          This helps us calculate your metabolic rate
-        </Text>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={dynamicStyles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <Animated.View style={{ opacity: fadeAnim }}>
+          <Text style={dynamicStyles.title}>Tell us about yourself! 😊</Text>
+          <Text style={dynamicStyles.subtitle}>
+            We'll use this to personalize your nutrition goals and recommendations.
+          </Text>
 
-        {/* Progress Bar */}
-        <View style={dynamicStyles.progressBar}>
-          <View style={dynamicStyles.progressFill} />
-        </View>
-        <Text style={dynamicStyles.stepText}>Step 2 of 4</Text>
+          {/* Age Slider */}
+          <View style={dynamicStyles.card}>
+            <Text style={dynamicStyles.sectionLabel}>Your Age</Text>
+            <View style={dynamicStyles.ageDisplay}>
+              <Text style={dynamicStyles.ageEmoji}>{getAgeEmoji()}</Text>
+              <Text style={dynamicStyles.ageNumber}>{age}</Text>
+              <Text style={dynamicStyles.ageMessage}>{getAgeMessage()}</Text>
+            </View>
+            <Slider
+              style={dynamicStyles.slider}
+              minimumValue={13}
+              maximumValue={100}
+              value={age}
+              onValueChange={(value) => setAge(Math.round(value))}
+              minimumTrackTintColor={colors.primary}
+              maximumTrackTintColor={colors.divider}
+              thumbTintColor={colors.primary}
+              step={1}
+            />
+            <View style={dynamicStyles.sliderRange}>
+              <Text style={dynamicStyles.rangeText}>13 years</Text>
+              <Text style={dynamicStyles.rangeText}>100 years</Text>
+            </View>
+          </View>
 
-        {/* Age Input */}
-        <Text style={dynamicStyles.inputLabel}>Age</Text>
-        <View style={dynamicStyles.inputContainer}>
-          <TextInput
-            style={dynamicStyles.input}
-            value={age}
-            onChangeText={setAge}
-            keyboardType="numeric"
-            placeholder="28"
-            placeholderTextColor={colors.placeholder}
-          />
-        </View>
+          {/* Gender Selection */}
+          <View style={dynamicStyles.card}>
+            <Text style={dynamicStyles.sectionLabel}>Gender</Text>
+            <View style={dynamicStyles.genderContainer}>
+              {genderOptions.map((option) => (
+                <Animated.View
+                  key={option.value}
+                  style={{ flex: 1, transform: [{ scale: genderScales[option.value] }] }}
+                >
+                  <TouchableOpacity
+                    style={[
+                      dynamicStyles.genderButton,
+                      selectedGender === option.value && dynamicStyles.genderButtonSelected,
+                      selectedGender === option.value && {
+                        borderColor: option.color,
+                        backgroundColor: option.color + '15',
+                      },
+                    ]}
+                    onPress={() => handleGenderSelect(option.value)}
+                  >
+                    <Text style={dynamicStyles.genderEmoji}>{option.emoji}</Text>
+                    <Text
+                      style={[
+                        dynamicStyles.genderLabel,
+                        selectedGender === option.value && { color: option.color },
+                      ]}
+                    >
+                      {option.label}
+                    </Text>
+                  </TouchableOpacity>
+                </Animated.View>
+              ))}
+            </View>
+          </View>
 
-        {/* Gender Selection */}
-        <Text style={dynamicStyles.inputLabel}>Gender</Text>
-        <View style={dynamicStyles.genderContainer}>
-          {(['male', 'female', 'other'] as Gender[]).map((gender) => (
-            <TouchableOpacity
-              key={gender}
-              style={[
-                dynamicStyles.genderButton,
-                selectedGender === gender && dynamicStyles.genderButtonSelected,
-              ]}
-              onPress={() => setSelectedGender(gender)}
-            >
-              <Text
-                style={[
-                  dynamicStyles.genderButtonText,
-                  selectedGender === gender && dynamicStyles.genderButtonTextSelected,
-                ]}
-              >
-                {gender.charAt(0).toUpperCase() + gender.slice(1)}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+          <Text style={dynamicStyles.encouragement}>
+            "The best project you'll ever work on is you!" ✨
+          </Text>
 
-        <TouchableOpacity
-          style={dynamicStyles.continueButton}
-          onPress={handleContinue}
-          disabled={!selectedGender}
-        >
-          <Text style={dynamicStyles.continueButtonText}>Continue</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              dynamicStyles.continueButton,
+              !selectedGender && dynamicStyles.continueButtonDisabled,
+            ]}
+            onPress={handleContinue}
+            disabled={!selectedGender}
+          >
+            <Text style={dynamicStyles.continueButtonText}>Continue →</Text>
+          </TouchableOpacity>
+
+          <View style={{ height: 40 }} />
+        </Animated.View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -236,4 +363,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
