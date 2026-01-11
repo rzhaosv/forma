@@ -16,7 +16,6 @@ import Constants from 'expo-constants';
 import { signOut } from '../services/authService';
 import { useMealStore } from '../store/useMealStore';
 import { useTheme } from '../hooks/useTheme';
-import AdBanner from '../components/AdBanner';
 import InsightsCard from '../components/InsightsCard';
 import { Ionicons } from '@expo/vector-icons';
 import { isHealthKitEnabled } from '../utils/healthKitSettings';
@@ -672,9 +671,6 @@ export default function HomeScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
-
-      {/* Banner Ad for Free Users */}
-      <AdBanner placement="home_bottom" />
     </SafeAreaView >
   );
 }

@@ -15,7 +15,6 @@ import { Recipe } from '../types/meal.types';
 import { useTheme } from '../hooks/useTheme';
 import { useMealStore } from '../store/useMealStore';
 import { FoodItem, MealType } from '../types/meal.types';
-import AdBanner from '../components/AdBanner';
 
 export default function RecipeListScreen() {
   const navigation = useNavigation();
@@ -327,9 +326,6 @@ export default function RecipeListScreen() {
           contentContainerStyle={dynamicStyles.listContent}
         />
       )}
-
-      {/* Banner Ad for Users */}
-      <AdBanner placement="recipe_list" />
     </SafeAreaView>
   );
 }

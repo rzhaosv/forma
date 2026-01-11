@@ -5,7 +5,6 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { lookupBarcode, calculateNutrition, isValidBarcode } from '../services/barcodeService';
 import { useMealStore } from '../store/useMealStore';
 import { Meal, FoodItem, MealType } from '../types/meal.types';
-import AdBanner from '../components/AdBanner';
 
 export default function BarcodeScannerScreen() {
   const navigation = useNavigation();
@@ -339,8 +338,6 @@ export default function BarcodeScannerScreen() {
           )}
         </>
       )}
-      {/* Banner Ad for Free Users */}
-      <AdBanner placement="camera_bottom" />
     </View>
   );
 }

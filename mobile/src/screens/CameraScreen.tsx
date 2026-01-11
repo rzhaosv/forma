@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, App
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { analyzeFoodPhoto } from '../services/foodRecognitionService';
-import AdBanner from '../components/AdBanner';
 
 export default function CameraScreen() {
   const navigation = useNavigation();
@@ -187,9 +186,6 @@ export default function CameraScreen() {
           </View>
         </>
       )}
-
-      {/* Banner Ad for Users */}
-      <AdBanner placement="camera_bottom" />
     </View>
   );
 }

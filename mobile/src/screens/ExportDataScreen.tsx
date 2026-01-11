@@ -21,7 +21,6 @@ import {
   generateExportFile,
   getExportSummary,
 } from '../services/exportService';
-import AdBanner from '../components/AdBanner';
 
 export default function ExportDataScreen() {
   const navigation = useNavigation();
@@ -347,8 +346,6 @@ export default function ExportDataScreen() {
           )}
         </TouchableOpacity>
       </ScrollView>
-      {/* Banner Ad for Users */}
-      <AdBanner placement="export_data" />
     </SafeAreaView>
   );
 }

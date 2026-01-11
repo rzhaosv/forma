@@ -50,7 +50,6 @@ import {
   NotificationSettings,
 } from '../services/notificationService';
 import { deleteAccount, signOut } from '../services/authService';
-import AdBanner from '../components/AdBanner';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
@@ -402,6 +401,24 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* Subscription Section */}
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Subscription</Text>
+
+          <TouchableOpacity
+            style={dynamicStyles.settingRow}
+            onPress={() => navigation.navigate('Subscription' as never)}
+          >
+            <View style={dynamicStyles.settingContent}>
+              <Text style={dynamicStyles.settingLabel}>Manage Subscription</Text>
+              <Text style={dynamicStyles.settingDescription}>
+                View current plan and upgrade options
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
+          </TouchableOpacity>
+        </View>
+
         {/* Goals Section */}
         <View style={dynamicStyles.section}>
           <Text style={dynamicStyles.sectionTitle}>Goals</Text>
@@ -582,9 +599,6 @@ export default function SettingsScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
-
-      {/* Banner Ad for Users */}
-      <AdBanner placement="settings_bottom" />
     </SafeAreaView>
   );
 }

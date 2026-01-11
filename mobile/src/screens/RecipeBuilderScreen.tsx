@@ -19,7 +19,6 @@ import { Recipe, RecipeIngredient } from '../types/meal.types';
 import { FoodItem, MealType } from '../types/meal.types';
 import { useTheme } from '../hooks/useTheme';
 import { searchFoods, FoodDatabaseItem } from '../services/foodDatabaseService';
-import AdBanner from '../components/AdBanner';
 
 type RouteParams = {
   RecipeBuilder: {
@@ -656,8 +655,6 @@ export default function RecipeBuilderScreen() {
           <View style={{ height: 40 }} />
         </ScrollView>
       </KeyboardAvoidingView>
-      {/* Banner Ad for Users */}
-      <AdBanner placement="recipe_builder" />
     </SafeAreaView>
   );
 }

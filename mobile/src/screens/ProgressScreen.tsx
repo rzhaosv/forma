@@ -17,7 +17,6 @@ import { useProgressStore } from '../store/useProgressStore';
 import { useMealStore } from '../store/useMealStore';
 import { getLocalDateString } from '../utils/dateUtils';
 import { useTheme } from '../hooks/useTheme';
-import AdBanner from '../components/AdBanner';
 import { Ionicons } from '@expo/vector-icons';
 import { isHealthKitEnabled } from '../utils/healthKitSettings';
 import { Platform } from 'react-native';
@@ -550,9 +549,6 @@ export default function ProgressScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
-
-      {/* Banner Ad for Free Users */}
-      <AdBanner placement="progress_screen" />
     </SafeAreaView>
   );
 }

@@ -14,7 +14,6 @@ import { useMealStore } from '../store/useMealStore';
 import { Meal, DailySummary } from '../types/meal.types';
 import { useTheme } from '../hooks/useTheme';
 import { Swipeable } from 'react-native-gesture-handler';
-import AdBanner from '../components/AdBanner';
 
 import { getLocalDateString, parseLocalDate, isDateToday, isDateYesterday } from '../utils/dateUtils';
 
@@ -544,8 +543,6 @@ export default function MealHistoryScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
-      {/* Banner Ad for Users */}
-      <AdBanner placement="meal_detail" />
     </SafeAreaView>
   );
 }
