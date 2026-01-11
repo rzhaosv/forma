@@ -7,7 +7,7 @@
       "forma",
       "com.googleusercontent.apps.311242226872-4jrv4kndh6j0s974u1h0uqbj4bvmp3af"
     ],
-    "version": "1.0.8",
+    "version": "1.0.9",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -62,7 +62,7 @@
         "com.apple.developer.healthkit": true,
         "com.apple.developer.healthkit.access": []
       },
-      "buildNumber": "63"
+      "buildNumber": "64"
     },
     "android": {
       "adaptiveIcon": {
