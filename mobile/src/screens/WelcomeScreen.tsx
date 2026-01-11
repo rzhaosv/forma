@@ -116,7 +116,7 @@ export default function WelcomeScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#6366F1', '#8B5CF6', '#EC4899']}
+        colors={['#1E40AF', '#0891B2', '#14B8A6']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFillObject}
@@ -150,7 +150,7 @@ export default function WelcomeScreen() {
               Your AI-powered nutrition coach
             </Text>
             <Text style={styles.subtitle}>
-              Join thousands crushing their goals 💪
+              Trusted by thousands to reach their health goals
             </Text>
           </Animated.View>
 
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   primaryButtonText: {
-    color: '#6366F1',
+    color: '#0891B2',
     fontSize: 18,
     fontWeight: '700',
   },
