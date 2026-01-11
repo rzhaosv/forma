@@ -22,11 +22,11 @@ import { isHealthKitEnabled } from '../utils/healthKitSettings';
 import { Platform } from 'react-native';
 import { getLocalDateString } from '../utils/dateUtils';
 
-const MEAL_TYPE_ICONS = {
-  Breakfast: '🌅',
-  Lunch: '☀️',
-  Dinner: '🌙',
-  Snack: '🍎',
+const MEAL_TYPE_ICONS: { [key: string]: keyof typeof Ionicons.glyphMap } = {
+  Breakfast: 'sunny',
+  Lunch: 'partly-sunny',
+  Dinner: 'moon',
+  Snack: 'nutrition',
 };
 
 export default function HomeScreen() {
@@ -357,10 +357,6 @@ export default function HomeScreen() {
       color: colors.textTertiary,
       marginRight: 8,
     },
-    emptyStateIcon: {
-      fontSize: 64,
-      marginBottom: 16,
-    },
     versionContainer: {
       alignItems: 'center',
       paddingVertical: 20,
@@ -385,25 +381,25 @@ export default function HomeScreen() {
             onPress={() => navigation.navigate('Exercise' as never)}
             style={[dynamicStyles.signOutButton, { marginRight: 0 }]}
           >
-            <Text style={dynamicStyles.signOutText}>🏃</Text>
+            <Ionicons name="fitness" size={18} color={colors.textSecondary} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate('MealHistory' as never)}
             style={[dynamicStyles.signOutButton, { marginRight: 0 }]}
           >
-            <Text style={dynamicStyles.signOutText}>📅</Text>
+            <Ionicons name="calendar" size={18} color={colors.textSecondary} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate('Progress' as never)}
             style={[dynamicStyles.signOutButton, { marginRight: 0 }]}
           >
-            <Text style={dynamicStyles.signOutText}>📊</Text>
+            <Ionicons name="stats-chart" size={18} color={colors.textSecondary} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate('Settings' as never)}
             style={[dynamicStyles.signOutButton, { marginRight: 0 }]}
           >
-            <Text style={dynamicStyles.signOutText}>⚙️</Text>
+            <Ionicons name="settings" size={18} color={colors.textSecondary} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleSignOut} style={dynamicStyles.signOutButton}>
             <Text style={dynamicStyles.signOutText}>Sign Out</Text>
@@ -414,7 +410,10 @@ export default function HomeScreen() {
       <ScrollView style={dynamicStyles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Greeting */}
         <View style={dynamicStyles.greetingSection}>
-          <Text style={dynamicStyles.greeting}>{getGreeting()}! 👋</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Text style={dynamicStyles.greeting}>{getGreeting()}!</Text>
+            <Ionicons name="hand-right" size={24} color={colors.text} />
+          </View>
           <Text style={dynamicStyles.date}>{formatDate()}</Text>
         </View>
 
@@ -550,7 +549,7 @@ export default function HomeScreen() {
             style={dynamicStyles.quickAddButton}
             onPress={() => handleQuickAdd('photo')}
           >
-            <Text style={styles.quickAddIcon}>📸</Text>
+            <Ionicons name="camera" size={28} color={colors.primary} style={{ marginBottom: 4 }} />
             <Text style={dynamicStyles.quickAddText}>Photo</Text>
           </TouchableOpacity>
 
@@ -558,7 +557,7 @@ export default function HomeScreen() {
             style={dynamicStyles.quickAddButton}
             onPress={() => handleQuickAdd('barcode')}
           >
-            <Text style={styles.quickAddIcon}>📊</Text>
+            <Ionicons name="barcode" size={28} color={colors.primary} style={{ marginBottom: 4 }} />
             <Text style={dynamicStyles.quickAddText}>Barcode</Text>
           </TouchableOpacity>
 
@@ -567,7 +566,7 @@ export default function HomeScreen() {
             style={dynamicStyles.quickAddButton}
             onPress={() => handleQuickAdd('voice')}
           >
-            <Text style={styles.quickAddIcon}>🎙️</Text>
+            <Ionicons name="mic" size={28} color={colors.primary} style={{ marginBottom: 4 }} />
             <Text style={dynamicStyles.quickAddText}>Voice Add</Text>
           </TouchableOpacity>
 
@@ -575,7 +574,7 @@ export default function HomeScreen() {
             style={dynamicStyles.quickAddButton}
             onPress={() => handleQuickAdd('manual')}
           >
-            <Text style={styles.quickAddIcon}>✏️</Text>
+            <Ionicons name="create" size={28} color={colors.primary} style={{ marginBottom: 4 }} />
             <Text style={dynamicStyles.quickAddText}>Manual</Text>
           </TouchableOpacity>
 
@@ -583,7 +582,7 @@ export default function HomeScreen() {
             style={dynamicStyles.quickAddButton}
             onPress={() => navigation.navigate('RecipeList' as never)}
           >
-            <Text style={styles.quickAddIcon}>🍳</Text>
+            <Ionicons name="restaurant" size={28} color={colors.primary} style={{ marginBottom: 4 }} />
             <Text style={dynamicStyles.quickAddText}>Recipe</Text>
           </TouchableOpacity>
         </View>
@@ -595,7 +594,7 @@ export default function HomeScreen() {
 
         {todayMeals.length === 0 ? (
           <View style={dynamicStyles.emptyState}>
-            <Text style={dynamicStyles.emptyStateIcon}>🍽️</Text>
+            <Ionicons name="restaurant-outline" size={64} color={colors.textTertiary} style={{ marginBottom: 16 }} />
             <Text style={dynamicStyles.emptyStateText}>No meals logged yet today</Text>
             <Text style={dynamicStyles.emptyStateSubtext}>Use Quick Add to log your first meal!</Text>
           </View>
@@ -610,9 +609,12 @@ export default function HomeScreen() {
               <View style={dynamicStyles.mealCard}>
                 <View style={styles.mealHeader}>
                   <View style={styles.mealTitleRow}>
-                    <Text style={styles.mealIcon}>
-                      {MEAL_TYPE_ICONS[meal.mealType as keyof typeof MEAL_TYPE_ICONS] || '🍽️'}
-                    </Text>
+                    <Ionicons
+                      name={MEAL_TYPE_ICONS[meal.mealType as keyof typeof MEAL_TYPE_ICONS] || 'restaurant'}
+                      size={20}
+                      color={colors.primary}
+                      style={{ marginRight: 8 }}
+                    />
                     <Text style={dynamicStyles.mealType}>{meal.mealType}</Text>
                   </View>
                   <Text style={dynamicStyles.mealCalories}>{Math.round(meal.totalCalories)} cal</Text>
@@ -835,10 +837,6 @@ const styles = StyleSheet.create({
     elevation: 2,
     minWidth: 100,
   },
-  quickAddIcon: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
   quickAddText: {
     fontSize: 14,
     fontWeight: '600',
@@ -865,10 +863,6 @@ const styles = StyleSheet.create({
   mealTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  mealIcon: {
-    fontSize: 20,
-    marginRight: 8,
   },
   mealType: {
     fontSize: 18,
@@ -918,10 +912,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 48,
     paddingHorizontal: 32,
-  },
-  emptyStateIcon: {
-    fontSize: 64,
-    marginBottom: 16,
   },
   emptyStateText: {
     fontSize: 18,
