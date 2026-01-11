@@ -77,9 +77,9 @@ export default function CameraScreen() {
     if (cameraRef.current && !analyzing) {
       try {
         setAnalyzing(true);
-        // OPTIMIZATION: Quality 0.8 for better Clarifai accuracy (was 0.6)
+        // MAXIMAL QUALITY: 1.0 for best Clarifai confidence (no camera-level compression)
         const photo = await cameraRef.current.takePictureAsync({
-          quality: 0.8,
+          quality: 1.0,
         });
 
         if (!photo) {
