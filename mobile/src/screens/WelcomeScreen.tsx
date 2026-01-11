@@ -266,18 +266,13 @@ const styles = StyleSheet.create({
   logoCircle: {
     width: 120,
     height: 120,
-    borderRadius: 60,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 32,
-    borderWidth: 3,
-    borderColor: 'rgba(255, 255, 255, 0.5)',
-    overflow: 'hidden',
   },
   logoImage: {
-    width: 110,
-    height: 110,
+    width: 120,
+    height: 120,
   },
   appName: {
     fontSize: 36,
