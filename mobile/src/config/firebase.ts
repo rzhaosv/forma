@@ -1,5 +1,5 @@
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import { initializeFirestore, doc, setDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -21,8 +21,17 @@ if (getApps().length === 0) {
   app = getApps()[0];
 }
 
-// Initialize Auth
-const auth = getAuth(app);
+// Initialize Auth with AsyncStorage persistence for React Native
+// This ensures users stay logged in across app restarts
+let auth;
+try {
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage)
+  });
+} catch (error) {
+  // If auth is already initialized, just get it
+  auth = getAuth(app);
+}
 
 // Initialize Firestore with long polling for better tunnel/proxy compatibility
 const db = initializeFirestore(app, {
