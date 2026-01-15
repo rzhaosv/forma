@@ -80,8 +80,7 @@ export async function compressImage(
 /**
  * Quick compression preset for food photos
  * Optimized for speed + accuracy tradeoff
- * Reduced to 768px for faster API processing (was 1024px)
  */
 export async function compressFoodPhoto(imageUri: string): Promise<CompressionResult> {
-  return compressImage(imageUri, 768, 0.5);
+  return compressImage(imageUri, 1024, 0.6);
 }
