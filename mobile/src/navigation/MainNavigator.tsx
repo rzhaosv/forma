@@ -13,8 +13,6 @@ import RecipeBuilderScreen from '../screens/RecipeBuilderScreen';
 import RecipeListScreen from '../screens/RecipeListScreen';
 import MealHistoryScreen from '../screens/MealHistoryScreen';
 import ExportDataScreen from '../screens/ExportDataScreen';
-import SubscriptionScreen from '../screens/SubscriptionScreen';
-import PaywallScreen from '../screens/PaywallScreen';
 import ExerciseScreen from '../screens/ExerciseScreen';
 import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
 import TermsOfUseScreen from '../screens/TermsOfUseScreen';
@@ -42,8 +40,6 @@ export default function MainNavigator() {
       <Stack.Screen name="RecipeList" component={RecipeListScreen} />
       <Stack.Screen name="MealHistory" component={MealHistoryScreen} />
       <Stack.Screen name="ExportData" component={ExportDataScreen} />
-      <Stack.Screen name="Subscription" component={SubscriptionScreen} />
-      <Stack.Screen name="Paywall" component={PaywallScreen} />
       <Stack.Screen name="Exercise" component={ExerciseScreen} />
       <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
       <Stack.Screen name="TermsOfUse" component={TermsOfUseScreen} />
