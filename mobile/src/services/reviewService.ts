@@ -1,8 +1,8 @@
 import * as StoreReview from 'expo-store-review';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const STORAGE_KEY_LAST_REVIEW = '@forma_last_review_prompt_date';
-const STORAGE_KEY_ACTION_COUNT = '@forma_review_action_count';
+const STORAGE_KEY_LAST_REVIEW = '@nutrisnap_last_review_prompt_date';
+const STORAGE_KEY_ACTION_COUNT = '@nutrisnap_review_action_count';
 
 // Configuration
 const COOLDOWN_DAYS = 14; // Don't prompt more than once every 2 weeks

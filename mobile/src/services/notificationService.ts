@@ -34,8 +34,8 @@ const getNotifications = async () => {
 };
 
 // Storage keys
-const NOTIFICATION_SETTINGS_KEY = '@forma_notification_settings';
-const NOTIFICATION_TOKEN_KEY = '@forma_push_token';
+const NOTIFICATION_SETTINGS_KEY = '@nutrisnap_notification_settings';
+const NOTIFICATION_TOKEN_KEY = '@nutrisnap_push_token';
 
 export interface NotificationSettings {
   enabled: boolean;

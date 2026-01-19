@@ -180,7 +180,7 @@ export const exportAllData = async (format: ExportFormat): Promise<string> => {
   
   const allData = {
     exportDate: new Date().toISOString(),
-    appName: 'Forma',
+    appName: 'NutriSnap',
     summary: {
       totalMeals: meals.length,
       totalFoodItems: meals.reduce((sum, m) => sum + m.foods.length, 0),
@@ -332,20 +332,20 @@ export const generateExportFile = async (options: ExportOptions): Promise<boolea
     switch (options.dataType) {
       case 'meals':
         content = await exportMeals(options.format);
-        filename = `forma-meals-${timestamp}.${options.format}`;
+        filename = `nutrisnap-meals-${timestamp}.${options.format}`;
         break;
       case 'progress':
         content = await exportProgress(options.format);
-        filename = `forma-progress-${timestamp}.${options.format}`;
+        filename = `nutrisnap-progress-${timestamp}.${options.format}`;
         break;
       case 'recipes':
         content = await exportRecipes(options.format);
-        filename = `forma-recipes-${timestamp}.${options.format}`;
+        filename = `nutrisnap-recipes-${timestamp}.${options.format}`;
         break;
       case 'all':
       default:
         content = await exportAllData(options.format);
-        filename = `forma-all-data-${timestamp}.${options.format}`;
+        filename = `nutrisnap-all-data-${timestamp}.${options.format}`;
         break;
     }
     
@@ -365,7 +365,7 @@ export const generateExportFile = async (options: ExportOptions): Promise<boolea
         
         await Sharing.shareAsync(file.uri, {
           mimeType: options.format === 'json' ? 'application/json' : 'text/csv',
-          dialogTitle: 'Export Your Forma Data',
+          dialogTitle: 'Export Your NutriSnap Data',
         });
         
         return true;
@@ -407,7 +407,7 @@ export const generateExportFile = async (options: ExportOptions): Promise<boolea
     // Share the file
     await Sharing.shareAsync(fileUri, {
       mimeType: options.format === 'json' ? 'application/json' : 'text/csv',
-      dialogTitle: 'Export Your Forma Data',
+      dialogTitle: 'Export Your NutriSnap Data',
       UTI: options.format === 'json' ? 'public.json' : 'public.comma-separated-values-text',
     });
     

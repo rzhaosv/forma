@@ -40,12 +40,12 @@ export default function TermsOfUseScreen() {
 
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>1. Acceptance of Terms</Text>
                 <Text style={[styles.paragraph, { color: colors.textSecondary }]}>
-                    By accessing or using the Forma mobile application ("App"), you agree to be bound by these Terms of Use ("Terms"). If you do not agree to these Terms, do not use the App.
+                    By accessing or using the NutriSnap mobile application ("App"), you agree to be bound by these Terms of Use ("Terms"). If you do not agree to these Terms, do not use the App.
                 </Text>
 
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>2. Description of Service</Text>
                 <Text style={[styles.paragraph, { color: colors.textSecondary }]}>
-                    Forma is an AI-powered nutrition and health tracking application. Features include food recognition, nutrition logging, and health data integration.
+                    NutriSnap is an AI-powered nutrition and health tracking application. Features include food recognition, nutrition logging, and health data integration.
                 </Text>
 
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>3. Subscriptions and Payments</Text>
@@ -68,7 +68,7 @@ export default function TermsOfUseScreen() {
 
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>5. Medical Disclaimer</Text>
                 <Text style={[styles.paragraph, { color: colors.textSecondary }]}>
-                    Forma is NOT a medical device. The information produced by the App is for educational purposes only and should not be used as a substitute for professional medical advice, diagnosis, or treatment.
+                    NutriSnap is NOT a medical device. The information produced by the App is for educational purposes only and should not be used as a substitute for professional medical advice, diagnosis, or treatment.
                 </Text>
 
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>6. Standard EULA</Text>
@@ -84,7 +84,7 @@ export default function TermsOfUseScreen() {
 
                 <View style={styles.footer}>
                     <Text style={[styles.footerText, { color: colors.textTertiary }]}>
-                        © 2025 Forma. All rights reserved.
+                        © 2025 NutriSnap. All rights reserved.
                     </Text>
                 </View>
             </ScrollView>

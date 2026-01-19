@@ -375,7 +375,7 @@ export default function HomeScreen() {
 
       {/* Header */}
       <View style={dynamicStyles.header}>
-        <Text style={dynamicStyles.appName}>Forma</Text>
+        <Text style={dynamicStyles.appName}>NutriSnap</Text>
         <View style={{ flexDirection: 'row', gap: 12 }}>
           <TouchableOpacity
             onPress={() => navigation.navigate('Exercise' as never)}

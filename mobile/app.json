@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Forma",
+    "name": "NutriSnap",
     "slug": "forma",
     "scheme": [
       "com.raymondzhao3000.forma",
@@ -22,8 +22,8 @@
       "bundleIdentifier": "com.raymondzhao3000.forma",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSHealthShareUsageDescription": "Forma needs access to your health data to sync weight, calories, and nutrition information with Apple Health.",
-        "NSHealthUpdateUsageDescription": "Forma needs permission to write your weight, calories, and nutrition data to Apple Health."
+        "NSHealthShareUsageDescription": "NutriSnap needs access to your health data to sync weight, calories, and nutrition information with Apple Health.",
+        "NSHealthUpdateUsageDescription": "NutriSnap needs permission to write your weight, calories, and nutrition data to Apple Health."
       },
       "entitlements": {
         "com.apple.developer.healthkit": true,
@@ -55,13 +55,13 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow Forma to access your camera to scan food photos and barcodes for your nutrition tracking."
+          "cameraPermission": "Allow NutriSnap to access your camera to scan food photos and barcodes for your nutrition tracking."
         }
       ],
       [
         "expo-av",
         {
-          "microphonePermission": "Allow Forma to access your microphone to record voice logs for quick and easy meal tracking."
+          "microphonePermission": "Allow NutriSnap to access your microphone to record voice logs for quick and easy meal tracking."
         }
       ],
       "expo-web-browser",
@@ -71,8 +71,8 @@
       [
         "@kingstinct/react-native-healthkit",
         {
-          "NSHealthShareUsageDescription": "Forma needs access to read your health data to sync weight, calories, and nutrition information with your health dashboard.",
-          "NSHealthUpdateUsageDescription": "Forma needs permission to write your weight, calories, and nutrition data to Apple Health to keep your health records up to date.",
+          "NSHealthShareUsageDescription": "NutriSnap needs access to read your health data to sync weight, calories, and nutrition information with your health dashboard.",
+          "NSHealthUpdateUsageDescription": "NutriSnap needs permission to write your weight, calories, and nutrition data to Apple Health to keep your health records up to date.",
           "requiredBackgroundModes": []
         }
       ],

@@ -16,7 +16,7 @@ export default function App() {
     const buildNumber = Constants.expoConfig?.ios?.buildNumber || Constants.expoConfig?.android?.versionCode || 'dev';
 
     console.log('\n' + '='.repeat(50));
-    console.log('🚀 FORMA APP STARTED');
+    console.log('🚀 NUTRISNAP APP STARTED');
     console.log('='.repeat(50));
     console.log(`📦 Version:     ${appVersion}`);
     console.log(`🔢 Build:       ${buildNumber}`);

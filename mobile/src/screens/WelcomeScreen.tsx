@@ -145,7 +145,7 @@ export default function WelcomeScreen() {
           </Animated.View>
 
           <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideUp }] }}>
-            <Text style={styles.appName}>Welcome to Forma</Text>
+            <Text style={styles.appName}>Welcome to NutriSnap</Text>
             <Text style={styles.tagline}>
               Your AI-powered nutrition coach
             </Text>

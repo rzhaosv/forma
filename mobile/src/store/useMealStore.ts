@@ -34,8 +34,8 @@ interface MealStore {
 }
 
 const getStorageKeys = (userId: string) => ({
-  meals: `@forma_meals_${userId}`,
-  goals: `@forma_goals_${userId}`,
+  meals: `@nutrisnap_meals_${userId}`,
+  goals: `@nutrisnap_goals_${userId}`,
 });
 
 const calculateMealTotals = (foods: FoodItem[]) => {

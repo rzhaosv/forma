@@ -55,8 +55,8 @@ interface ExerciseStore {
 }
 
 const getStorageKeys = (userId: string) => ({
-  workouts: `@forma_workouts_${userId}`,
-  weeklyGoal: `@forma_weekly_exercise_goal_${userId}`,
+  workouts: `@nutrisnap_workouts_${userId}`,
+  weeklyGoal: `@nutrisnap_weekly_exercise_goal_${userId}`,
 });
 
 // Helper to sync workout to fitness apps

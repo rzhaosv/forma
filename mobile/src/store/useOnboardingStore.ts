@@ -49,8 +49,8 @@ interface OnboardingState {
 }
 
 const getStorageKeys = (userId: string) => ({
-  complete: `@forma_onboarding_complete_${userId}`,
-  data: `@forma_onboarding_data_${userId}`,
+  complete: `@nutrisnap_onboarding_complete_${userId}`,
+  data: `@nutrisnap_onboarding_data_${userId}`,
 });
 
 export const useOnboardingStore = create<OnboardingState>((set, get) => ({

@@ -367,7 +367,7 @@ export default function GoalsScreen() {
           <Text style={dynamicStyles.sectionTitle}>Scientific Basis</Text>
           <View style={dynamicStyles.goalCard}>
             <Text style={[dynamicStyles.infoText, { textAlign: 'left', marginBottom: 12 }]}>
-              Forma calculates your daily targets using established nutritional science guidelines:
+              NutriSnap calculates your daily targets using established nutritional science guidelines:
             </Text>
             <Text style={[dynamicStyles.infoText, { textAlign: 'left', marginBottom: 8 }]}>
               • BMR & TDEE: Calculated using the Mifflin-St Jeor Equation, widely considered the most accurate for estimating metabolic rate in clinical settings.

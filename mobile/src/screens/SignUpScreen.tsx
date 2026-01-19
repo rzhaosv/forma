@@ -68,7 +68,7 @@ export default function SignUpScreen() {
                 <Text style={styles.backText}>← Back</Text>
               </TouchableOpacity>
               <Text style={styles.title}>Create Account</Text>
-              <Text style={styles.subtitle}>Join Forma and start tracking</Text>
+              <Text style={styles.subtitle}>Join NutriSnap and start tracking</Text>
             </View>
 
             {/* Form */}

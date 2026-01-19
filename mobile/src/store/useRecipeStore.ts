@@ -26,7 +26,7 @@ interface RecipeStore {
   };
 }
 
-const getStorageKey = (userId: string) => `@forma_recipes_${userId}`;
+const getStorageKey = (userId: string) => `@nutrisnap_recipes_${userId}`;
 
 export const useRecipeStore = create<RecipeStore>((set, get) => ({
   recipes: [],

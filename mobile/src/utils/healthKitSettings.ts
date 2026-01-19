@@ -5,17 +5,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
 // HealthKit keys (iOS)
-const HEALTHKIT_ENABLED_KEY = '@forma_healthkit_enabled';
-const HEALTHKIT_SYNC_WEIGHT_KEY = '@forma_healthkit_sync_weight';
-const HEALTHKIT_SYNC_MEALS_KEY = '@forma_healthkit_sync_meals';
-const HEALTHKIT_SYNC_EXERCISE_KEY = '@forma_healthkit_sync_exercise';
+const HEALTHKIT_ENABLED_KEY = '@nutrisnap_healthkit_enabled';
+const HEALTHKIT_SYNC_WEIGHT_KEY = '@nutrisnap_healthkit_sync_weight';
+const HEALTHKIT_SYNC_MEALS_KEY = '@nutrisnap_healthkit_sync_meals';
+const HEALTHKIT_SYNC_EXERCISE_KEY = '@nutrisnap_healthkit_sync_exercise';
 
 // Google Fit keys (Android)
-const GOOGLEFIT_ENABLED_KEY = '@forma_googlefit_enabled';
-const GOOGLEFIT_SYNC_WEIGHT_KEY = '@forma_googlefit_sync_weight';
-const GOOGLEFIT_SYNC_MEALS_KEY = '@forma_googlefit_sync_meals';
-const GOOGLEFIT_SYNC_STEPS_KEY = '@forma_googlefit_sync_steps';
-const GOOGLEFIT_SYNC_EXERCISE_KEY = '@forma_googlefit_sync_exercise';
+const GOOGLEFIT_ENABLED_KEY = '@nutrisnap_googlefit_enabled';
+const GOOGLEFIT_SYNC_WEIGHT_KEY = '@nutrisnap_googlefit_sync_weight';
+const GOOGLEFIT_SYNC_MEALS_KEY = '@nutrisnap_googlefit_sync_meals';
+const GOOGLEFIT_SYNC_STEPS_KEY = '@nutrisnap_googlefit_sync_steps';
+const GOOGLEFIT_SYNC_EXERCISE_KEY = '@nutrisnap_googlefit_sync_exercise';
 
 /**
  * Check if HealthKit sync is enabled

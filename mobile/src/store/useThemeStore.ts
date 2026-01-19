@@ -14,7 +14,7 @@ interface ThemeState {
   initialize: () => Promise<void>;
 }
 
-const THEME_STORAGE_KEY = '@forma_theme_mode';
+const THEME_STORAGE_KEY = '@nutrisnap_theme_mode';
 
 export const useThemeStore = create<ThemeState>((set, get) => ({
   mode: 'light',

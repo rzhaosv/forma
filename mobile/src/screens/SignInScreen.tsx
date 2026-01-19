@@ -55,7 +55,7 @@ export default function SignInScreen() {
               <Text style={styles.backText}>← Back</Text>
             </TouchableOpacity>
             <Text style={styles.title}>Sign In</Text>
-            <Text style={styles.subtitle}>Welcome back to Forma</Text>
+            <Text style={styles.subtitle}>Welcome back to NutriSnap</Text>
           </View>
 
           {/* Form */}

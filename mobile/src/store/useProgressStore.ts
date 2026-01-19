@@ -46,8 +46,8 @@ interface ProgressState {
 }
 
 const getStorageKeys = (userId: string) => ({
-  weightEntries: `@forma_weight_entries_${userId}`,
-  lastLogged: `@forma_last_logged_date_${userId}`,
+  weightEntries: `@nutrisnap_weight_entries_${userId}`,
+  lastLogged: `@nutrisnap_last_logged_date_${userId}`,
 });
 
 export const useProgressStore = create<ProgressState>((set, get) => ({
