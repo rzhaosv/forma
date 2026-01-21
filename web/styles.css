@@ -220,12 +220,11 @@ body {
 .hero-image-container {
     position: relative;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
     width: 100%;
-    gap: 60px;
-    min-height: auto;
+    min-height: 700px;
+    perspective: 1000px;
 }
 
 .phone-mockup {
@@ -240,14 +239,14 @@ body {
 }
 
 .phone-primary {
-    transform: none;
+    transform: rotateY(-15deg) rotateX(5deg) translateX(40px) translateZ(0);
     z-index: 2;
 }
 
 .phone-secondary {
-    transform: none;
+    transform: rotateY(15deg) rotateX(5deg) translateX(-40px) translateZ(-50px);
     z-index: 1;
-    opacity: 1;
+    opacity: 0.9;
 }
 
 .phone-screen {
@@ -266,9 +265,13 @@ body {
     display: block;
 }
 
-.phone-mockup:hover {
-    transform: scale(1.02);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+.hero-image-container:hover .phone-primary {
+    transform: rotateY(-5deg) rotateX(2deg) translateX(20px) translateZ(30px);
+}
+
+.hero-image-container:hover .phone-secondary {
+    transform: rotateY(5deg) rotateX(2deg) translateX(-20px) translateZ(0);
+    opacity: 1;
 }
 
 /* Voice Transcript Overlay */
@@ -420,12 +423,16 @@ body {
 
 @media (max-width: 768px) {
     .hero-image-container {
+        flex-direction: column;
         gap: 40px;
+        min-height: auto;
+        perspective: none;
     }
 
-    .phone-mockup {
-        width: 240px;
-        height: 480px;
+    .phone-photo,
+    .phone-voice {
+        transform: rotateY(0) rotateX(0) translateX(0) translateZ(0) !important;
+        opacity: 1 !important;
     }
 }
 
