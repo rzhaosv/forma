@@ -311,13 +311,25 @@ body {
 }
 
 .phone-mockup {
-    position: relative;
+    position: absolute;
     width: 280px;
     height: 580px;
     background: #000;
     border-radius: 40px;
     padding: 10px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.phone-primary {
+    z-index: 2;
+    transform: translateX(-40px) rotate(-5deg);
+}
+
+.phone-secondary {
+    z-index: 1;
+    transform: translateX(120px) translateY(40px) rotate(5deg);
+    opacity: 0.9;
 }
 
 .phone-screen {
@@ -334,6 +346,50 @@ body {
     height: 100%;
     object-fit: cover;
     display: block;
+}
+
+/* Voice Transcript Overlay */
+.voice-transcript-overlay {
+    position: absolute;
+    bottom: 40px;
+    left: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.voice-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--primary);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.transcript-text {
+    font-size: 14px;
+    line-height: 1.4;
+    font-style: italic;
 }
 
 /* Pain Point Section */
@@ -732,7 +788,10 @@ body {
     .hero-download-buttons { justify-content: center; }
     .trust-badges { justify-content: center; }
     
-    .hero-image-container { min-height: auto; margin-top: 40px; }
+    .hero-image-container { min-height: 400px; margin-top: 40px; }
+    .phone-mockup { width: 200px; height: 414px; }
+    .phone-primary { transform: translateX(-30px) rotate(-5deg); }
+    .phone-secondary { transform: translateX(80px) translateY(30px) rotate(5deg); }
     
     .comparison-grid { grid-template-columns: 1fr; }
     .features-grid { grid-template-columns: 1fr; }
@@ -752,4 +811,6 @@ body {
     .hero-subtitle { font-size: 16px; }
     .store-btn { width: 100%; justify-content: center; }
     .footer-content { grid-template-columns: 1fr; }
+    .hero-image-container { min-height: 350px; }
+    .phone-mockup { width: 160px; height: 331px; }
 }
