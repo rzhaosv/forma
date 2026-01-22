@@ -31,7 +31,7 @@ export default function FoodSearchScreen() {
   const [results, setResults] = useState<FoodDatabaseItem[]>([]);
   const [selectedFood, setSelectedFood] = useState<FoodDatabaseItem | null>(null);
   const [selectedServing, setSelectedServing] = useState<{ label: string; grams: number } | null>(null);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState<number>(1);
   const [selectedMealType, setSelectedMealType] = useState<MealType>(route.params?.mealType || 'Lunch');
   const [isSearchingOnline, setIsSearchingOnline] = useState(false);
   const [hasSearchedOnline, setHasSearchedOnline] = useState(false);
@@ -71,6 +71,7 @@ export default function FoodSearchScreen() {
 
   const handleSelectFood = (food: FoodDatabaseItem) => {
     setSelectedFood(food);
+    setQuantity(1); // Reset to 1 when selecting a new food
     // Auto-select first serving size
     if (food.common_servings.length > 0) {
       setSelectedServing(food.common_servings[0]);
@@ -79,6 +80,7 @@ export default function FoodSearchScreen() {
 
   const handleAddToLog = () => {
     if (!selectedFood || !selectedServing) return;
+    if (quantity <= 0) return;
 
     const nutrition = calculateNutritionForServing(selectedFood, selectedServing.grams * quantity);
 
@@ -187,34 +189,24 @@ export default function FoodSearchScreen() {
           {/* Quantity */}
           <View style={styles.quantitySection}>
             <Text style={styles.sectionTitle}>Quantity</Text>
-            <View style={styles.quantityControls}>
-              <TouchableOpacity
-                style={styles.quantityButton}
-                onPress={() => setQuantity(Math.max(0.1, quantity - 0.5))}
-              >
-                <Text style={styles.quantityButtonText}>−</Text>
-              </TouchableOpacity>
-              <TextInput
-                style={styles.quantityInput}
-                value={quantity.toString()}
-                onChangeText={(text) => {
-                  const num = parseFloat(text);
-                  if (!isNaN(num) && num > 0) {
-                    setQuantity(num);
-                  } else if (text === '') {
-                    setQuantity(0.1);
-                  }
-                }}
-                keyboardType="decimal-pad"
-                selectTextOnFocus
-              />
-              <TouchableOpacity
-                style={styles.quantityButton}
-                onPress={() => setQuantity(quantity + 0.5)}
-              >
-                <Text style={styles.quantityButtonText}>+</Text>
-              </TouchableOpacity>
-            </View>
+            <TextInput
+              style={styles.quantityInputLarge}
+              value={quantity > 0 ? quantity.toString() : ''}
+              onChangeText={(text) => {
+                if (text === '') {
+                  setQuantity(0);
+                  return;
+                }
+                const num = parseFloat(text);
+                if (!isNaN(num) && num >= 0) {
+                  setQuantity(num);
+                }
+              }}
+              keyboardType="decimal-pad"
+              placeholder="1"
+              placeholderTextColor="#9CA3AF"
+              selectTextOnFocus
+            />
           </View>
 
           {/* Meal Type Selector */}
@@ -537,6 +529,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 16,
+  },
+  quantityInputLarge: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#111827',
+    textAlign: 'center',
+    backgroundColor: '#F3F4F6',
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderWidth: 2,
+    borderColor: '#6366F1',
   },
   nutritionCard: {
     backgroundColor: '#FFFFFF',

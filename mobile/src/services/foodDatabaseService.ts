@@ -52,22 +52,31 @@ export async function searchFoodOnline(query: string): Promise<FoodDatabaseItem[
           },
           {
             role: 'user',
-            content: `Find nutrition information for: "${query}". Return a JSON array of matching foods (up to 5 results) with this exact structure:
+            content: `Find nutrition information for: "${query}".
+
+Return a JSON array of matching foods with this EXACT structure (no markdown, no explanations):
 [{
-  "name": "exact food name",
-  "category": "food category (Protein/Carbs/Vegetables/Fruits/Dairy/Fats/Snacks/Beverages)",
-  "calories_per_100g": number,
-  "protein_per_100g": number,
-  "carbs_per_100g": number,
-  "fat_per_100g": number
+  "name": "food name",
+  "category": "Protein",
+  "calories_per_100g": 200,
+  "protein_per_100g": 15,
+  "carbs_per_100g": 10,
+  "fat_per_100g": 8
 }]
 
-Use USDA FoodData Central values. Return empty array [] if food doesn't exist.`,
+RULES:
+- Include common variations (e.g., for "banh mi" include Vietnamese sandwich)
+- Use average values from USDA or standard nutrition databases
+- If multiple variations exist, return the most common one
+- Category must be one of: Protein, Carbs, Vegetables, Fruits, Dairy, Fats, Snacks, Beverages
+- Return 1-3 most relevant results
+- If the food truly doesn't exist, return empty array []`,
           },
         ],
         temperature: 0.3,
-        max_tokens: 1000,
+        max_tokens: 500,
       }),
+      signal: AbortSignal.timeout(10000), // 10 second timeout
     });
 
     if (!response.ok) {
@@ -75,14 +84,26 @@ Use USDA FoodData Central values. Return empty array [] if food doesn't exist.`,
     }
 
     const data = await response.json();
-    const content = data.choices[0]?.message?.content?.trim();
+    let content = data.choices[0]?.message?.content?.trim();
 
     if (!content) {
+      console.log('No content in OpenAI response');
       return [];
     }
 
+    // Remove markdown code blocks if present
+    content = content.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+
+    console.log('OpenAI response for', query, ':', content);
+
     // Parse JSON response
-    const foods = JSON.parse(content);
+    let foods;
+    try {
+      foods = JSON.parse(content);
+    } catch (parseError) {
+      console.error('Failed to parse OpenAI response:', content);
+      return [];
+    }
 
     if (!Array.isArray(foods)) {
       return [];
