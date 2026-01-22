@@ -11,32 +11,28 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useOnboardingStore } from '../../store/useOnboardingStore';
+import { useUnitSystemStore } from '../../store/useUnitSystemStore';
 import { useTheme } from '../../hooks/useTheme';
 import Slider from '@react-native-community/slider';
 import OnboardingProgress from '../../components/OnboardingProgress';
 import { Ionicons } from '@expo/vector-icons';
+import { kgToLbs, lbsToKg, cmToInches, inchesToCm } from '../../utils/unitSystem';
 
 export default function PhysicalInfoScreen() {
   const navigation = useNavigation();
   const { colors, isDark } = useTheme();
   const { data, updateData, setStep } = useOnboardingStore();
+  const { unitSystem, setUnitSystem: setGlobalUnitSystem } = useUnitSystemStore();
 
-  const [unitSystem, setUnitSystem] = useState(data.unitSystem || 'metric');
   const [weight, setWeight] = useState(data.weight_kg || 70);
   const [height, setHeight] = useState(data.height_cm || 175);
-
-  // Unit conversion helpers
-  const kgToLbs = (kg: number) => Math.round(kg * 2.20462);
-  const lbsToKg = (lbs: number) => lbs / 2.20462;
-  const cmToInches = (cm: number) => Math.round(cm / 2.54);
-  const inchesToCm = (inches: number) => inches * 2.54;
 
   const displayWeight = unitSystem === 'imperial' ? kgToLbs(weight) : weight;
   const displayHeight = unitSystem === 'imperial' ? cmToInches(height) : height;
 
-  const handleUnitToggle = () => {
+  const handleUnitToggle = async () => {
     const newUnit = unitSystem === 'metric' ? 'imperial' : 'metric';
-    setUnitSystem(newUnit);
+    await setGlobalUnitSystem(newUnit);
     updateData({ unitSystem: newUnit });
   };
 

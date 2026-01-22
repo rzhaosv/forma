@@ -11,16 +11,19 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useOnboardingStore } from '../../store/useOnboardingStore';
+import { useUnitSystemStore } from '../../store/useUnitSystemStore';
 import { useMealStore } from '../../store/useMealStore';
 import { useTheme } from '../../hooks/useTheme';
 import { calculateAll } from '../../utils/calorieCalculator';
 import ConfettiCelebration from '../../components/ConfettiCelebration';
 import { Ionicons } from '@expo/vector-icons';
+import { formatWeight } from '../../utils/unitSystem';
 
 export default function GoalResultsScreen() {
   const navigation = useNavigation();
   const { colors, isDark } = useTheme();
   const { data, completeOnboarding, calculateGoals } = useOnboardingStore();
+  const { unitSystem } = useUnitSystemStore();
   const { setGoals } = useMealStore();
 
   // Celebration state
@@ -289,11 +292,13 @@ export default function GoalResultsScreen() {
     );
   }
 
+  const formattedTargetWeight = data.targetWeight_kg ? formatWeight(data.targetWeight_kg, unitSystem) : '';
+
   const goalExplanation =
     data.weightGoal === 'lose'
-      ? `To reach your goal of ${data.targetWeight_kg}kg, you need a daily deficit of 500 calories`
+      ? `To reach your goal of ${formattedTargetWeight}, you need a daily deficit of 500 calories`
       : data.weightGoal === 'gain'
-      ? `To reach your goal of ${data.targetWeight_kg}kg, you need a daily surplus of 500 calories`
+      ? `To reach your goal of ${formattedTargetWeight}, you need a daily surplus of 500 calories`
       : 'Your daily calorie target to maintain your current weight';
 
   return (

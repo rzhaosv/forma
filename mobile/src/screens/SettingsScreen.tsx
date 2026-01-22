@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
+import { useUnitSystemStore } from '../store/useUnitSystemStore';
 import { Ionicons } from '@expo/vector-icons';
 import {
   isHealthKitAvailable,
@@ -54,6 +55,7 @@ import { deleteAccount, signOut } from '../services/authService';
 export default function SettingsScreen() {
   const navigation = useNavigation();
   const { colors, isDark, toggleMode, mode } = useTheme();
+  const { unitSystem, setUnitSystem } = useUnitSystemStore();
 
   // iOS - HealthKit
   const [healthKitAvailable, setHealthKitAvailable] = useState(false);
@@ -504,6 +506,28 @@ export default function SettingsScreen() {
             <Switch
               value={isDark}
               onValueChange={toggleMode}
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
+        </View>
+
+        {/* Units Section */}
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Units</Text>
+
+          <View style={dynamicStyles.settingRow}>
+            <View style={dynamicStyles.settingContent}>
+              <Text style={dynamicStyles.settingLabel}>Unit System</Text>
+              <Text style={dynamicStyles.settingDescription}>
+                {unitSystem === 'metric' ? 'Kilograms & Centimeters' : 'Pounds & Inches'}
+              </Text>
+            </View>
+            <Switch
+              value={unitSystem === 'imperial'}
+              onValueChange={async (value) => {
+                await setUnitSystem(value ? 'imperial' : 'metric');
+              }}
               trackColor={{ false: colors.border, true: colors.primary }}
               thumbColor="#FFFFFF"
             />

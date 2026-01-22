@@ -4,11 +4,13 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 import AppNavigator from './src/navigation/AppNavigator';
 import { useThemeStore } from './src/store/useThemeStore';
+import { useUnitSystemStore } from './src/store/useUnitSystemStore';
 import Constants from 'expo-constants';
 import { initializeNotifications } from './src/services/notificationService';
 
 export default function App() {
   const initializeTheme = useThemeStore((state) => state.initialize);
+  const initializeUnitSystem = useUnitSystemStore((state) => state.initialize);
 
   useEffect(() => {
     // Log app version on startup
@@ -29,9 +31,12 @@ export default function App() {
     // All other stores are initialized in authService when user logs in
     initializeTheme();
 
+    // Initialize unit system store
+    initializeUnitSystem();
+
     // Initialize notifications
     initializeNotifications().catch(console.error);
-  }, [initializeTheme]);
+  }, [initializeTheme, initializeUnitSystem]);
 
   return (
     <GestureHandlerRootView style={styles.container}>

@@ -14,12 +14,14 @@ import { useNavigation } from '@react-navigation/native';
 import { LineChart, BarChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import { useProgressStore } from '../store/useProgressStore';
+import { useUnitSystemStore } from '../store/useUnitSystemStore';
 import { useMealStore } from '../store/useMealStore';
 import { getLocalDateString } from '../utils/dateUtils';
 import { useTheme } from '../hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 import { isHealthKitEnabled } from '../utils/healthKitSettings';
 import { Platform } from 'react-native';
+import { kgToLbs, lbsToKg, formatWeight } from '../utils/unitSystem';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -36,6 +38,7 @@ export default function ProgressScreen() {
     initialize: initializeProgress,
   } = useProgressStore();
   const { meals, calorieGoal } = useMealStore();
+  const { unitSystem } = useUnitSystemStore();
 
   const [weightInput, setWeightInput] = useState('');
   const [showWeightForm, setShowWeightForm] = useState(false);
@@ -91,7 +94,8 @@ export default function ProgressScreen() {
       if (entry && typeof entry.weight_kg === 'number') {
         const date = new Date(entry.date);
         labels.push(`${date.getMonth() + 1}/${date.getDate()}`);
-        data.push(entry.weight_kg);
+        const displayWeight = unitSystem === 'imperial' ? kgToLbs(entry.weight_kg) : Math.round(entry.weight_kg * 10) / 10;
+        data.push(displayWeight);
       }
     });
 
@@ -100,16 +104,23 @@ export default function ProgressScreen() {
 
 
   const handleAddWeight = async () => {
-    const weight = parseFloat(weightInput);
-    if (isNaN(weight) || weight < 30 || weight > 300) {
-      Alert.alert('Invalid Weight', 'Please enter a weight between 30-300 kg');
+    const inputWeight = parseFloat(weightInput);
+    const minWeight = unitSystem === 'imperial' ? 66 : 30;
+    const maxWeight = unitSystem === 'imperial' ? 660 : 300;
+    const unitLabel = unitSystem === 'imperial' ? 'lbs' : 'kg';
+
+    if (isNaN(inputWeight) || inputWeight < minWeight || inputWeight > maxWeight) {
+      Alert.alert('Invalid Weight', `Please enter a weight between ${minWeight}-${maxWeight} ${unitLabel}`);
       return;
     }
 
-    await addWeightEntry(weight);
+    // Convert to kg for storage
+    const weightInKg = unitSystem === 'imperial' ? lbsToKg(inputWeight) : inputWeight;
+
+    await addWeightEntry(weightInKg);
     setWeightInput('');
     setShowWeightForm(false);
-    Alert.alert('Weight Logged!', `Your weight of ${weight}kg has been recorded.`);
+    Alert.alert('Weight Logged!', `Your weight of ${inputWeight} ${unitLabel} has been recorded.`);
   };
 
   const calorieChartData = getWeeklyCalorieData();
@@ -367,12 +378,13 @@ export default function ProgressScreen() {
               {(() => {
                 const lastEntry = weightEntries[weightEntries.length - 1];
                 if (lastEntry && typeof lastEntry.weight_kg === 'number') {
-                  return lastEntry.weight_kg.toFixed(1);
+                  const displayWeight = unitSystem === 'imperial' ? kgToLbs(lastEntry.weight_kg) : Math.round(lastEntry.weight_kg * 10) / 10;
+                  return displayWeight;
                 }
                 return '--';
               })()}
             </Text>
-            <Text style={dynamicStyles.statLabel}>Current Weight (kg)</Text>
+            <Text style={dynamicStyles.statLabel}>Current Weight ({unitSystem === 'imperial' ? 'lbs' : 'kg'})</Text>
           </View>
         </View>
 
@@ -456,10 +468,10 @@ export default function ProgressScreen() {
                     value={weightInput}
                     onChangeText={setWeightInput}
                     keyboardType="numeric"
-                    placeholder="70"
+                    placeholder={unitSystem === 'imperial' ? '154' : '70'}
                     placeholderTextColor={colors.placeholder}
                   />
-                  <Text style={dynamicStyles.weightUnit}>kg</Text>
+                  <Text style={dynamicStyles.weightUnit}>{unitSystem === 'imperial' ? 'lbs' : 'kg'}</Text>
                 </View>
                 <View style={dynamicStyles.weightFormButtons}>
                   <TouchableOpacity

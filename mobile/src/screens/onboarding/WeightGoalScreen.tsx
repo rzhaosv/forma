@@ -11,10 +11,12 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useOnboardingStore, WeightGoal } from '../../store/useOnboardingStore';
+import { useUnitSystemStore } from '../../store/useUnitSystemStore';
 import { useTheme } from '../../hooks/useTheme';
 import Slider from '@react-native-community/slider';
 import OnboardingProgress from '../../components/OnboardingProgress';
 import { Ionicons } from '@expo/vector-icons';
+import { kgToLbs, lbsToKg, formatWeight } from '../../utils/unitSystem';
 
 const WEIGHT_GOALS: {
   value: WeightGoal;
@@ -54,6 +56,7 @@ export default function WeightGoalScreen() {
   const navigation = useNavigation();
   const { colors, isDark } = useTheme();
   const { data, updateData } = useOnboardingStore();
+  const { unitSystem } = useUnitSystemStore();
 
   const [selectedGoal, setSelectedGoal] = useState<WeightGoal | undefined>(data.weightGoal);
   const [targetWeight, setTargetWeight] = useState(
@@ -120,6 +123,10 @@ export default function WeightGoalScreen() {
   const weightDifference = targetWeight - currentWeight;
   const selectedGoalData = WEIGHT_GOALS.find((g) => g.value === selectedGoal);
 
+  const displayCurrentWeight = unitSystem === 'imperial' ? kgToLbs(currentWeight) : Math.round(currentWeight);
+  const displayTargetWeight = unitSystem === 'imperial' ? kgToLbs(targetWeight) : Math.round(targetWeight);
+  const weightUnit = unitSystem === 'imperial' ? 'lbs' : 'kg';
+
   const getWeightChangeMessage = () => {
     if (!selectedGoal) return '';
     if (selectedGoal === 'maintain') return 'Maintain current weight';
@@ -127,7 +134,9 @@ export default function WeightGoalScreen() {
     if (diff === 0) return 'Maintain current weight';
     const direction = weightDifference > 0 ? 'Gain' : 'Lose';
     const weeks = Math.ceil(diff / 0.5);
-    return `${direction} ${diff.toFixed(1)} kg (~${weeks} weeks at 0.5kg/week)`;
+    const displayDiff = unitSystem === 'imperial' ? Math.round(diff * 2.20462) : diff.toFixed(1);
+    const weeklyRate = unitSystem === 'imperial' ? '1lb/week' : '0.5kg/week';
+    return `${direction} ${displayDiff} ${weightUnit} (~${weeks} weeks at ${weeklyRate})`;
   };
 
   const dynamicStyles = StyleSheet.create({
@@ -400,25 +409,36 @@ export default function WeightGoalScreen() {
               <Text style={dynamicStyles.sectionLabel}>Target Weight</Text>
               <View style={dynamicStyles.weightDisplay}>
                 <Text style={dynamicStyles.currentWeightLabel}>Current:</Text>
-                <Text style={dynamicStyles.currentWeightValue}>{currentWeight} kg</Text>
+                <Text style={dynamicStyles.currentWeightValue}>{displayCurrentWeight} {weightUnit}</Text>
                 <Text style={dynamicStyles.arrow}>→</Text>
-                <Text style={dynamicStyles.targetWeightValue}>{targetWeight}</Text>
-                <Text style={dynamicStyles.weightUnit}>kg</Text>
+                <Text style={dynamicStyles.targetWeightValue}>{displayTargetWeight}</Text>
+                <Text style={dynamicStyles.weightUnit}>{weightUnit}</Text>
               </View>
               <Slider
                 style={dynamicStyles.slider}
-                minimumValue={30}
-                maximumValue={200}
-                value={targetWeight}
-                onValueChange={(value) => setTargetWeight(Math.round(value))}
+                minimumValue={unitSystem === 'imperial' ? 66 : 30}
+                maximumValue={unitSystem === 'imperial' ? 440 : 200}
+                value={displayTargetWeight}
+                onValueChange={(value) => {
+                  const roundedValue = Math.round(value);
+                  if (unitSystem === 'imperial') {
+                    setTargetWeight(lbsToKg(roundedValue));
+                  } else {
+                    setTargetWeight(roundedValue);
+                  }
+                }}
                 minimumTrackTintColor={selectedGoalData?.color || colors.primary}
                 maximumTrackTintColor={colors.divider}
                 thumbTintColor={selectedGoalData?.color || colors.primary}
                 step={1}
               />
               <View style={dynamicStyles.sliderRange}>
-                <Text style={dynamicStyles.rangeText}>30 kg</Text>
-                <Text style={dynamicStyles.rangeText}>200 kg</Text>
+                <Text style={dynamicStyles.rangeText}>
+                  {unitSystem === 'imperial' ? '66 lbs' : '30 kg'}
+                </Text>
+                <Text style={dynamicStyles.rangeText}>
+                  {unitSystem === 'imperial' ? '440 lbs' : '200 kg'}
+                </Text>
               </View>
               <Text style={dynamicStyles.changeMessage}>{getWeightChangeMessage()}</Text>
             </View>

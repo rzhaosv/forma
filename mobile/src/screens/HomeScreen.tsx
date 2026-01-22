@@ -168,7 +168,7 @@ export default function HomeScreen() {
       backgroundColor: colors.background,
     },
     appName: {
-      fontSize: 28,
+      fontSize: 22,
       fontWeight: 'bold',
       color: colors.text,
     },
