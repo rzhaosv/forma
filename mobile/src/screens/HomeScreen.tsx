@@ -8,6 +8,7 @@ import {
   StatusBar,
   ScrollView,
   Alert,
+  Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Swipeable } from 'react-native-gesture-handler';
@@ -167,10 +168,10 @@ export default function HomeScreen() {
       paddingBottom: 10,
       backgroundColor: colors.background,
     },
-    appName: {
-      fontSize: 22,
-      fontWeight: 'bold',
-      color: colors.text,
+    appLogo: {
+      width: 36,
+      height: 36,
+      borderRadius: 8,
     },
     signOutButton: {
       paddingHorizontal: 12,
@@ -375,7 +376,10 @@ export default function HomeScreen() {
 
       {/* Header */}
       <View style={dynamicStyles.header}>
-        <Text style={dynamicStyles.appName}>NutriSnap</Text>
+        <Image
+          source={require('../../assets/icon.png')}
+          style={dynamicStyles.appLogo}
+        />
         <View style={{ flexDirection: 'row', gap: 12 }}>
           <TouchableOpacity
             onPress={() => navigation.navigate('Exercise' as never)}

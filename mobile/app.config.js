@@ -11,7 +11,7 @@ module.exports = () => {
   const config = JSON.parse(JSON.stringify(base.expo));
 
   if (isDevDual) {
-    config.name = `${config.name} Dev`;
+    // Keep the same name, only change bundle ID and scheme
     config.ios = {
       ...config.ios,
       bundleIdentifier: 'com.raymondzhao3000.forma.dev',
