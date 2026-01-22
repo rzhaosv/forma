@@ -143,6 +143,10 @@ export default function ProgressScreen() {
       strokeWidth: '2',
       stroke: colors.primary,
     },
+    propsForBackgroundLines: {
+      strokeWidth: 1,
+    },
+    fillShadowGradientOpacity: 1,
   };
 
   const dynamicStyles = StyleSheet.create({
@@ -421,22 +425,22 @@ export default function ProgressScreen() {
               )}
             </View>
             <View style={dynamicStyles.chartContainer}>
-              <LineChart
+              <BarChart
                 data={calorieChartData}
                 width={screenWidth - 72}
                 height={220}
                 chartConfig={chartConfig}
-                bezier
+                fromZero
                 style={{
                   marginVertical: 8,
                   borderRadius: 16,
                 }}
                 withInnerLines={false}
-                withOuterLines={true}
-                withVerticalLines={false}
-                withHorizontalLines={true}
-                withDots={true}
-                withShadow={false}
+                showValuesOnTopOfBars={false}
+                withHorizontalLabels={true}
+                withVerticalLabels={true}
+                yAxisLabel=""
+                yAxisSuffix=""
               />
               {calorieGoal > 0 && (
                 <View style={{ marginTop: 8, paddingHorizontal: 16 }}>
