@@ -164,14 +164,27 @@ export default function FoodSearchScreen() {
             <View style={styles.quantityControls}>
               <TouchableOpacity
                 style={styles.quantityButton}
-                onPress={() => setQuantity(Math.max(1, quantity - 1))}
+                onPress={() => setQuantity(Math.max(0.1, quantity - 0.5))}
               >
                 <Text style={styles.quantityButtonText}>−</Text>
               </TouchableOpacity>
-              <Text style={styles.quantityValue}>{quantity}</Text>
+              <TextInput
+                style={styles.quantityInput}
+                value={quantity.toString()}
+                onChangeText={(text) => {
+                  const num = parseFloat(text);
+                  if (!isNaN(num) && num > 0) {
+                    setQuantity(num);
+                  } else if (text === '') {
+                    setQuantity(0.1);
+                  }
+                }}
+                keyboardType="decimal-pad"
+                selectTextOnFocus
+              />
               <TouchableOpacity
                 style={styles.quantityButton}
-                onPress={() => setQuantity(quantity + 1)}
+                onPress={() => setQuantity(quantity + 0.5)}
               >
                 <Text style={styles.quantityButtonText}>+</Text>
               </TouchableOpacity>
@@ -270,7 +283,10 @@ export default function FoodSearchScreen() {
         <View style={styles.emptyState}>
           <Text style={styles.emptyStateText}>No foods found</Text>
           <Text style={styles.emptyStateSubtext}>
-            Try a different search term
+            Try a different search term or search for the food category
+          </Text>
+          <Text style={[styles.emptyStateSubtext, { marginTop: 8, fontStyle: 'italic' }]}>
+            Tip: Search by ingredient name (e.g., "rice", "beef") or category (e.g., "protein", "vegetables")
           </Text>
         </View>
       ) : (
@@ -476,6 +492,18 @@ const styles = StyleSheet.create({
     marginHorizontal: 24,
     minWidth: 40,
     textAlign: 'center',
+  },
+  quantityInput: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#111827',
+    marginHorizontal: 24,
+    minWidth: 80,
+    textAlign: 'center',
+    backgroundColor: '#F3F4F6',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
   nutritionCard: {
     backgroundColor: '#FFFFFF',

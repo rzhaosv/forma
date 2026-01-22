@@ -151,7 +151,7 @@ export default function CameraScreen() {
             <View style={styles.analyzingOverlay}>
               <ActivityIndicator size="large" color="#FFF" />
               <Text style={styles.analyzingText}>Analyzing food...</Text>
-              <Text style={styles.analyzingSubtext}>⚡ Optimized for speed (2-3s)</Text>
+              <Text style={styles.analyzingSubtext}>⚡ Optimized for speed</Text>
             </View>
           ) : (
             <View style={styles.instructionsContainer}>

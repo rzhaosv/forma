@@ -39,14 +39,14 @@ export default function RecipeBuilderScreen() {
 
   const [recipeName, setRecipeName] = useState(editingRecipe?.name || '');
   const [description, setDescription] = useState(editingRecipe?.description || '');
-  const [servings, setServings] = useState(editingRecipe?.servings.toString() || '4');
+  const [servings, setServings] = useState(editingRecipe?.servings.toString() || '1');
   const [ingredients, setIngredients] = useState<RecipeIngredient[]>(editingRecipe?.ingredients || []);
   const [showIngredientSearch, setShowIngredientSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<FoodDatabaseItem[]>([]);
   const [selectedFood, setSelectedFood] = useState<FoodDatabaseItem | null>(null);
   const [ingredientAmount, setIngredientAmount] = useState('1');
-  const [ingredientUnit, setIngredientUnit] = useState('serving');
+  const [ingredientUnit, setIngredientUnit] = useState('oz');
 
   useEffect(() => {
     if (searchQuery.trim().length > 0) {
@@ -75,14 +75,12 @@ export default function RecipeBuilderScreen() {
     const carbsPer100g = selectedFood.carbs_per_100g;
     const fatPer100g = selectedFood.fat_per_100g;
 
-    // If unit is "serving", use the first common serving size
+    // Convert amount to grams based on unit
     let grams = amount;
-    if (ingredientUnit === 'serving' && selectedFood.common_servings.length > 0) {
-      grams = selectedFood.common_servings[0].grams * amount;
+    if (ingredientUnit === 'oz') {
+      grams = amount * 28.35; // 1 oz = 28.35g
     } else if (ingredientUnit === 'g') {
       grams = amount;
-    } else if (ingredientUnit === 'kg') {
-      grams = amount * 1000;
     }
 
     const ingredient: RecipeIngredient = {
@@ -100,7 +98,7 @@ export default function RecipeBuilderScreen() {
     setSelectedFood(null);
     setSearchQuery('');
     setIngredientAmount('1');
-    setIngredientUnit('serving');
+    setIngredientUnit('oz');
     setShowIngredientSearch(false);
   };
 
@@ -453,19 +451,6 @@ export default function RecipeBuilderScreen() {
             />
           </View>
 
-          {/* Servings */}
-          <View style={dynamicStyles.inputGroup}>
-            <Text style={dynamicStyles.label}>Number of Servings *</Text>
-            <TextInput
-              style={dynamicStyles.input}
-              value={servings}
-              onChangeText={setServings}
-              keyboardType="numeric"
-              placeholder="4"
-              placeholderTextColor={colors.placeholder}
-            />
-          </View>
-
           {/* Ingredients */}
           <Text style={dynamicStyles.sectionTitle}>Ingredients</Text>
 
@@ -537,21 +522,21 @@ export default function RecipeBuilderScreen() {
                     />
                     <View style={{ flexDirection: 'row', gap: 8 }}>
                       <TouchableOpacity
-                        onPress={() => setIngredientUnit('serving')}
+                        onPress={() => setIngredientUnit('oz')}
                         style={{
                           paddingHorizontal: 16,
                           paddingVertical: 10,
-                          backgroundColor: ingredientUnit === 'serving' ? colors.primary : colors.surfaceSecondary,
+                          backgroundColor: ingredientUnit === 'oz' ? colors.primary : colors.surfaceSecondary,
                           borderRadius: 8,
                           borderWidth: 1,
-                          borderColor: ingredientUnit === 'serving' ? colors.primary : colors.border,
+                          borderColor: ingredientUnit === 'oz' ? colors.primary : colors.border,
                         }}
                       >
                         <Text style={{
-                          color: ingredientUnit === 'serving' ? '#FFFFFF' : colors.text,
+                          color: ingredientUnit === 'oz' ? '#FFFFFF' : colors.text,
                           fontWeight: '600',
                         }}>
-                          serving
+                          oz
                         </Text>
                       </TouchableOpacity>
                       <TouchableOpacity

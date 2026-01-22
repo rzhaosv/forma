@@ -41,7 +41,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 0,
     fat_per_100g: 3.6,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 medium breast (150g)', grams: 150 },
       { label: '1 large breast (200g)', grams: 200 },
     ],
@@ -55,7 +56,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 0,
     fat_per_100g: 10.9,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 thigh (85g)', grams: 85 },
     ],
   },
@@ -68,7 +70,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 0,
     fat_per_100g: 12,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 fillet (150g)', grams: 150 },
       { label: '4 oz (113g)', grams: 113 },
     ],
@@ -82,7 +85,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 0,
     fat_per_100g: 17,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '4 oz patty (113g)', grams: 113 },
     ],
   },
@@ -108,7 +112,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 2.3,
     fat_per_100g: 8.7,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1/2 cup (126g)', grams: 126 },
     ],
   },
@@ -121,7 +126,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 3.6,
     fat_per_100g: 0.4,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (245g)', grams: 245 },
       { label: '1 container (170g)', grams: 170 },
     ],
@@ -137,7 +143,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 28,
     fat_per_100g: 0.3,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (195g)', grams: 195 },
       { label: '1/2 cup (98g)', grams: 98 },
     ],
@@ -151,7 +158,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 23,
     fat_per_100g: 0.9,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (195g)', grams: 195 },
     ],
   },
@@ -164,7 +172,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 25,
     fat_per_100g: 1.1,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (140g)', grams: 140 },
     ],
   },
@@ -216,7 +225,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 22,
     fat_per_100g: 1.9,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (185g)', grams: 185 },
     ],
   },
@@ -231,7 +241,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 7,
     fat_per_100g: 0.4,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (156g)', grams: 156 },
     ],
   },
@@ -244,7 +255,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 7,
     fat_per_100g: 0.4,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (91g)', grams: 91 },
     ],
   },
@@ -257,7 +269,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 3.6,
     fat_per_100g: 0.4,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (30g)', grams: 30 },
     ],
   },
@@ -270,7 +283,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 10,
     fat_per_100g: 0.2,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 medium carrot (61g)', grams: 61 },
     ],
   },
@@ -283,7 +297,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 21,
     fat_per_100g: 0.2,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 medium (130g)', grams: 130 },
     ],
   },
@@ -296,7 +311,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 21,
     fat_per_100g: 0.1,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 medium (173g)', grams: 173 },
     ],
   },
@@ -309,7 +325,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 3.9,
     fat_per_100g: 0.2,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 medium (123g)', grams: 123 },
     ],
   },
@@ -322,7 +339,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 7,
     fat_per_100g: 0.3,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 medium (119g)', grams: 119 },
     ],
   },
@@ -335,7 +353,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 9,
     fat_per_100g: 15,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 medium (150g)', grams: 150 },
       { label: '1/2 avocado (75g)', grams: 75 },
     ],
@@ -389,7 +408,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 8,
     fat_per_100g: 0.3,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (152g)', grams: 152 },
     ],
   },
@@ -402,7 +422,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 14,
     fat_per_100g: 0.3,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (148g)', grams: 148 },
     ],
   },
@@ -498,7 +519,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 0,
     fat_per_100g: 1,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '4 oz (113g)', grams: 113 },
     ],
   },
@@ -512,7 +534,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     fat_per_100g: 1,
     common_servings: [
       { label: '1 can (142g)', grams: 142 },
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
     ],
   },
   {
@@ -524,7 +547,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 0,
     fat_per_100g: 0.3,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '3 oz (85g)', grams: 85 },
     ],
   },
@@ -537,7 +561,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 0,
     fat_per_100g: 12,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 chop (150g)', grams: 150 },
     ],
   },
@@ -550,7 +575,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 0,
     fat_per_100g: 19,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '6 oz (170g)', grams: 170 },
     ],
   },
@@ -563,7 +589,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 20,
     fat_per_100g: 0.4,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (198g)', grams: 198 },
     ],
   },
@@ -576,7 +603,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 24,
     fat_per_100g: 0.5,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (172g)', grams: 172 },
     ],
   },
@@ -589,7 +617,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 27,
     fat_per_100g: 2.6,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (164g)', grams: 164 },
     ],
   },
@@ -604,7 +633,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 4,
     fat_per_100g: 0.2,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (180g)', grams: 180 },
     ],
   },
@@ -617,7 +647,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 5,
     fat_per_100g: 0.3,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (100g)', grams: 100 },
     ],
   },
@@ -630,7 +661,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 3,
     fat_per_100g: 0.4,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 medium (196g)', grams: 196 },
     ],
   },
@@ -643,7 +675,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 3.3,
     fat_per_100g: 0.3,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (70g)', grams: 70 },
     ],
   },
@@ -656,7 +689,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 9,
     fat_per_100g: 0.1,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 medium (110g)', grams: 110 },
     ],
   },
@@ -669,7 +703,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 4,
     fat_per_100g: 0.1,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 medium (201g)', grams: 201 },
     ],
   },
@@ -682,7 +717,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 2.9,
     fat_per_100g: 0.2,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup shredded (36g)', grams: 36 },
     ],
   },
@@ -695,7 +731,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 9,
     fat_per_100g: 0.9,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (67g)', grams: 67 },
     ],
   },
@@ -710,7 +747,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 18,
     fat_per_100g: 0.2,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (151g)', grams: 151 },
     ],
   },
@@ -723,7 +761,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 8,
     fat_per_100g: 0.2,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup diced (152g)', grams: 152 },
     ],
   },
@@ -736,7 +775,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 13,
     fat_per_100g: 0.1,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup chunks (165g)', grams: 165 },
     ],
   },
@@ -788,7 +828,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 12,
     fat_per_100g: 1.4,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (234g)', grams: 234 },
     ],
   },
@@ -801,7 +842,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 28,
     fat_per_100g: 0.4,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (157g)', grams: 157 },
     ],
   },
@@ -814,7 +856,8 @@ const COMMON_FOODS: FoodDatabaseItem[] = [
     carbs_per_100g: 23,
     fat_per_100g: 0.2,
     common_servings: [
-      { label: '100g', grams: 100 },
+      { label: '1g', grams: 1 },
+      { label: '1 oz (28g)', grams: 28 },
       { label: '1 cup (157g)', grams: 157 },
     ],
   },
