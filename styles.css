@@ -221,14 +221,8 @@ body {
 }
 
 .store-btn .store-icon {
-    width: 22px;
-    height: 22px;
-    padding: 8px;
-    border-radius: 14px;
-    background: linear-gradient(145deg, #f5f7fa 0%, #e5e7eb 100%);
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
-    color: #0f172a;
-    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
 }
 
 .store-btn .store-text {

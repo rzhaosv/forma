@@ -8,6 +8,10 @@
       "developmentClient": true,
       "distribution": "internal"
     },
+    "dev-dual": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
     "preview": {
       "distribution": "internal"
     },
