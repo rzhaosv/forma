@@ -28,6 +28,87 @@ export interface FoodDatabaseItem {
   }[];
 }
 
+const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
+
+// Search for food nutrition info online using OpenAI
+export async function searchFoodOnline(query: string): Promise<FoodDatabaseItem[]> {
+  try {
+    if (!OPENAI_API_KEY || OPENAI_API_KEY.includes('YOUR_')) {
+      throw new Error('OpenAI API Key is not configured');
+    }
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a nutrition expert. Provide accurate USDA-based nutrition data for foods. Return ONLY valid JSON, no markdown or explanations.',
+          },
+          {
+            role: 'user',
+            content: `Find nutrition information for: "${query}". Return a JSON array of matching foods (up to 5 results) with this exact structure:
+[{
+  "name": "exact food name",
+  "category": "food category (Protein/Carbs/Vegetables/Fruits/Dairy/Fats/Snacks/Beverages)",
+  "calories_per_100g": number,
+  "protein_per_100g": number,
+  "carbs_per_100g": number,
+  "fat_per_100g": number
+}]
+
+Use USDA FoodData Central values. Return empty array [] if food doesn't exist.`,
+          },
+        ],
+        temperature: 0.3,
+        max_tokens: 1000,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices[0]?.message?.content?.trim();
+
+    if (!content) {
+      return [];
+    }
+
+    // Parse JSON response
+    const foods = JSON.parse(content);
+
+    if (!Array.isArray(foods)) {
+      return [];
+    }
+
+    // Convert to FoodDatabaseItem format
+    return foods.map((food: any, index: number) => ({
+      id: `online-${Date.now()}-${index}`,
+      name: food.name,
+      category: food.category,
+      calories_per_100g: food.calories_per_100g,
+      protein_per_100g: food.protein_per_100g,
+      carbs_per_100g: food.carbs_per_100g,
+      fat_per_100g: food.fat_per_100g,
+      common_servings: [
+        { label: '1g', grams: 1 },
+        { label: '1 oz (28g)', grams: 28 },
+        { label: '100g', grams: 100 },
+      ],
+    }));
+  } catch (error) {
+    console.error('Error searching food online:', error);
+    return [];
+  }
+}
+
 // Common foods database (100+ most popular foods)
 // Based on USDA FoodData Central standards
 const COMMON_FOODS: FoodDatabaseItem[] = [

@@ -9,9 +9,10 @@ import {
   StatusBar,
   FlatList,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { searchFoods, FoodDatabaseItem, calculateNutritionForServing } from '../services/foodDatabaseService';
+import { searchFoods, searchFoodOnline, FoodDatabaseItem, calculateNutritionForServing } from '../services/foodDatabaseService';
 import { FoodItem, MealType } from '../types/meal.types';
 import { useMealStore } from '../store/useMealStore';
 import { Meal } from '../types/meal.types';
@@ -32,15 +33,40 @@ export default function FoodSearchScreen() {
   const [selectedServing, setSelectedServing] = useState<{ label: string; grams: number } | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedMealType, setSelectedMealType] = useState<MealType>(route.params?.mealType || 'Lunch');
+  const [isSearchingOnline, setIsSearchingOnline] = useState(false);
+  const [hasSearchedOnline, setHasSearchedOnline] = useState(false);
 
   // Search as user types
   useEffect(() => {
-    if (searchQuery.trim().length > 0) {
-      const searchResults = searchFoods(searchQuery);
-      setResults(searchResults);
-    } else {
-      setResults([]);
-    }
+    const performSearch = async () => {
+      setHasSearchedOnline(false);
+
+      if (searchQuery.trim().length === 0) {
+        setResults([]);
+        return;
+      }
+
+      // First search local database
+      const localResults = searchFoods(searchQuery);
+      setResults(localResults);
+
+      // If no local results and query is substantial, search online
+      if (localResults.length === 0 && searchQuery.trim().length >= 3) {
+        setIsSearchingOnline(true);
+        try {
+          const onlineResults = await searchFoodOnline(searchQuery);
+          setResults(onlineResults);
+          setHasSearchedOnline(true);
+        } catch (error) {
+          console.error('Online search failed:', error);
+        } finally {
+          setIsSearchingOnline(false);
+        }
+      }
+    };
+
+    const debounceTimer = setTimeout(performSearch, 500);
+    return () => clearTimeout(debounceTimer);
   }, [searchQuery]);
 
   const handleSelectFood = (food: FoodDatabaseItem) => {
@@ -279,14 +305,21 @@ export default function FoodSearchScreen() {
             Search by name or category (e.g., "protein", "grains")
           </Text>
         </View>
+      ) : isSearchingOnline ? (
+        <View style={styles.emptyState}>
+          <ActivityIndicator size="large" color="#6366F1" />
+          <Text style={[styles.emptyStateText, { marginTop: 16 }]}>Searching online...</Text>
+          <Text style={styles.emptyStateSubtext}>
+            Looking up nutrition info for "{searchQuery}"
+          </Text>
+        </View>
       ) : results.length === 0 ? (
         <View style={styles.emptyState}>
           <Text style={styles.emptyStateText}>No foods found</Text>
           <Text style={styles.emptyStateSubtext}>
-            Try a different search term or search for the food category
-          </Text>
-          <Text style={[styles.emptyStateSubtext, { marginTop: 8, fontStyle: 'italic' }]}>
-            Tip: Search by ingredient name (e.g., "rice", "beef") or category (e.g., "protein", "vegetables")
+            {hasSearchedOnline
+              ? 'Could not find nutrition information for this food'
+              : 'Try a different search term'}
           </Text>
         </View>
       ) : (
