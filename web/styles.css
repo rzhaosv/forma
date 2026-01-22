@@ -2188,16 +2188,21 @@ body {
 }
 
 .os-icon {
-    font-size: 4rem;
-    display: block;
-    margin-bottom: 1rem;
-    color: var(--primary);
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 0 auto 1rem;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #f5f7fa 0%, #e5e7eb 100%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    color: #0f172a;
 }
 
 .os-icon svg {
-    width: 64px;
-    height: 64px;
+    width: 36px;
+    height: 36px;
 }
 
 .download-card h3 {
@@ -2230,6 +2235,40 @@ body {
 .download-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(79, 171, 125, 0.4);
+}
+
+.store-proof {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin: 0 auto;
+    max-width: 900px;
+}
+
+.store-proof-item {
+    padding: 1rem 1.25rem;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.proof-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(79, 171, 125, 0.12);
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.proof-meta {
+    margin-top: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
 }
 
 /* Feedback Section */

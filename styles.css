@@ -205,7 +205,7 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 20px;
+    padding: 12px 18px;
     background: #000;
     color: #fff;
     border-radius: 12px;
@@ -221,8 +221,14 @@ body {
 }
 
 .store-btn .store-icon {
-    width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
+    padding: 8px;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #f5f7fa 0%, #e5e7eb 100%);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+    color: #0f172a;
+    flex-shrink: 0;
 }
 
 .store-btn .store-text {
@@ -862,6 +868,24 @@ body {
     border: 1px solid var(--border);
 }
 
+.os-icon {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #f5f7fa 0%, #e5e7eb 100%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    color: #0f172a;
+}
+
+.os-icon svg {
+    width: 34px;
+    height: 34px;
+}
+
 .download-btn {
     display: block;
     width: 100%;
@@ -872,6 +896,41 @@ body {
     text-decoration: none;
     font-weight: 700;
     margin-top: 24px;
+}
+
+.store-proof {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 0 auto 12px;
+    max-width: 900px;
+}
+
+.store-proof-item {
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    text-align: left;
+}
+
+.proof-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(79, 171, 125, 0.12);
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.proof-meta {
+    margin-top: 8px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
 }
 
 /* Feedback Section */
