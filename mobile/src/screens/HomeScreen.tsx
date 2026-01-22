@@ -17,7 +17,6 @@ import Constants from 'expo-constants';
 import { signOut } from '../services/authService';
 import { useMealStore } from '../store/useMealStore';
 import { useTheme } from '../hooks/useTheme';
-import InsightsCard from '../components/InsightsCard';
 import { Ionicons } from '@expo/vector-icons';
 import { isHealthKitEnabled } from '../utils/healthKitSettings';
 import { Platform } from 'react-native';
@@ -417,9 +416,6 @@ export default function HomeScreen() {
           </View>
           <Text style={dynamicStyles.date}>{formatDate()}</Text>
         </View>
-
-        {/* AI Insights Card */}
-        <InsightsCard />
 
         {/* Calorie Progress Card */}
         <View style={dynamicStyles.progressCard}>
