@@ -405,9 +405,6 @@ export default function HomeScreen() {
           >
             <Ionicons name="settings" size={18} color={colors.textSecondary} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleSignOut} style={dynamicStyles.signOutButton}>
-            <Text style={dynamicStyles.signOutText}>Sign Out</Text>
-          </TouchableOpacity>
         </View>
       </View>
 
