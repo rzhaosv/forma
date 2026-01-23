@@ -18,10 +18,17 @@ import { Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
+const TESTIMONIALS = [
+  { text: "Finally understand my macros!", author: "Sarah J." },
+  { text: "Lost 15 lbs in 2 months!", author: "Mike D." },
+  { text: "The voice logging is a game-changer.", author: "Emily R." },
+];
+
 export default function WelcomeScreen() {
   const navigation = useNavigation();
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [loadingApple, setLoadingApple] = useState(false);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
   // Animations
   const logoScale = useRef(new Animated.Value(0)).current;
@@ -29,6 +36,7 @@ export default function WelcomeScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideUp = useRef(new Animated.Value(50)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const testimonialOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     // Entrance animation sequence
@@ -78,7 +86,28 @@ export default function WelcomeScreen() {
         }),
       ])
     ).start();
-  }, [logoScale, logoRotate, fadeAnim, slideUp, pulseAnim]);
+
+    // Testimonial rotation
+    testimonialOpacity.setValue(1);
+    const testimonialInterval = setInterval(() => {
+      Animated.sequence([
+        Animated.timing(testimonialOpacity, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(testimonialOpacity, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+
+      setCurrentTestimonial((prev) => (prev + 1) % TESTIMONIALS.length);
+    }, 4000);
+
+    return () => clearInterval(testimonialInterval);
+  }, [logoScale, logoRotate, fadeAnim, slideUp, pulseAnim, testimonialOpacity]);
 
   const spin = logoRotate.interpolate({
     inputRange: [0, 1],
@@ -152,6 +181,21 @@ export default function WelcomeScreen() {
             <Text style={styles.subtitle}>
               Trusted by thousands to reach their health goals
             </Text>
+
+            {/* Testimonial */}
+            <Animated.View style={[styles.testimonialContainer, { opacity: testimonialOpacity }]}>
+              <View style={{ flexDirection: 'row', gap: 4, marginBottom: 4 }}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Ionicons key={star} name="star" size={16} color="#FCD34D" />
+                ))}
+              </View>
+              <Text style={styles.testimonialText}>
+                "{TESTIMONIALS[currentTestimonial].text}"
+              </Text>
+              <Text style={styles.testimonialAuthor}>
+                — {TESTIMONIALS[currentTestimonial].author}
+              </Text>
+            </Animated.View>
           </Animated.View>
 
           {/* Feature highlights */}
@@ -293,6 +337,26 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.85)',
     textAlign: 'center',
     fontWeight: '400',
+  },
+  testimonialContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+    paddingHorizontal: 24,
+    gap: 4,
+  },
+  testimonialText: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.95)',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    fontWeight: '500',
+    marginTop: 4,
+  },
+  testimonialAuthor: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.75)',
+    textAlign: 'center',
+    fontWeight: '600',
   },
   featuresContainer: {
     flexDirection: 'row',

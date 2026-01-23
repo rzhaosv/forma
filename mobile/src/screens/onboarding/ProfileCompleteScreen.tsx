@@ -11,22 +11,17 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useOnboardingStore } from '../../store/useOnboardingStore';
-import { useUnitSystemStore } from '../../store/useUnitSystemStore';
 import { useMealStore } from '../../store/useMealStore';
-import { useAuthStore } from '../../store/useAuthStore';
 import { useTheme } from '../../hooks/useTheme';
 import { calculateAll } from '../../utils/calorieCalculator';
 import ConfettiCelebration from '../../components/ConfettiCelebration';
 import { Ionicons } from '@expo/vector-icons';
-import { formatWeight } from '../../utils/unitSystem';
 
-export default function GoalResultsScreen() {
+export default function ProfileCompleteScreen() {
   const navigation = useNavigation();
   const { colors, isDark } = useTheme();
-  const { data, completeOnboarding, calculateGoals, completeProfile } = useOnboardingStore();
-  const { unitSystem } = useUnitSystemStore();
+  const { data, completeProfile } = useOnboardingStore();
   const { setGoals } = useMealStore();
-  const { isAuthenticated } = useAuthStore();
 
   // Celebration state
   const [showConfetti, setShowConfetti] = useState(false);
@@ -38,8 +33,8 @@ export default function GoalResultsScreen() {
   const slideUp = useRef(new Animated.Value(50)).current;
 
   useEffect(() => {
-    // Calculate proper target based on user data if authenticated
-    const calculatedResults = isAuthenticated && data.weight_kg && data.height_cm && data.age && data.gender && data.activityLevel && data.weightGoal
+    // Calculate proper goals based on user data
+    const calculatedResults = data.weight_kg && data.height_cm && data.age && data.gender && data.activityLevel && data.weightGoal
       ? calculateAll(
           data.weight_kg,
           data.height_cm,
@@ -51,7 +46,7 @@ export default function GoalResultsScreen() {
         )
       : null;
     
-    const calorieTarget = calculatedResults?.calorieGoal || data.estimatedCalorieGoal || 2200;
+    const calorieTarget = calculatedResults?.calorieGoal || data.calorieGoal || 2200;
 
     // Start celebration sequence
     setTimeout(() => {
@@ -100,44 +95,10 @@ export default function GoalResultsScreen() {
 
       return () => clearInterval(timer);
     }, 300);
-  }, [data.estimatedCalorieGoal, data.weight_kg, data.height_cm, data.age, data.gender, data.activityLevel, data.weightGoal, isAuthenticated, scaleAnim, fadeAnim, slideUp]);
-
-  const handleContinue = async () => {
-    // Update meal store with calculated goals
-    setGoals(results.calorieGoal, results.proteinGoal);
-
-    if (isAuthenticated) {
-      // Profile completion flow - go back to Home
-      await completeProfile();
-      const parent = navigation.getParent();
-      if (parent) {
-        parent.navigate('Home' as never);
-      }
-    } else {
-      // Initial onboarding - complete and go to signup
-      await completeOnboarding();
-      navigation.navigate('SignUp' as never);
-    }
-  };
-
-  const handleCreateAccount = async () => {
-    // Update meal store with goals
-    setGoals(results.calorieGoal, results.proteinGoal);
-
-    await completeOnboarding();
-    navigation.navigate('SignUp' as never);
-  };
-
-  const handleSignIn = async () => {
-    // Update meal store with goals
-    setGoals(results.calorieGoal, results.proteinGoal);
-
-    await completeOnboarding();
-    navigation.navigate('SignIn' as never);
-  };
+  }, [data.calorieGoal, data.weight_kg, data.height_cm, data.age, data.gender, data.activityLevel, data.weightGoal, scaleAnim, fadeAnim, slideUp]);
 
   // Calculate proper goals based on user data
-  const calculatedResults = isAuthenticated && data.weight_kg && data.height_cm && data.age && data.gender && data.activityLevel && data.weightGoal
+  const calculatedResults = data.weight_kg && data.height_cm && data.age && data.gender && data.activityLevel && data.weightGoal
     ? calculateAll(
         data.weight_kg,
         data.height_cm,
@@ -149,12 +110,25 @@ export default function GoalResultsScreen() {
       )
     : null;
 
-  const calorieTarget = calculatedResults?.calorieGoal || data.estimatedCalorieGoal || 2200;
+  const calorieTarget = calculatedResults?.calorieGoal || data.calorieGoal || 2200;
   const results = calculatedResults || {
     calorieGoal: calorieTarget,
-    proteinGoal: Math.round((calorieTarget * 0.3) / 4),
+    proteinGoal: data.proteinGoal || Math.round((calorieTarget * 0.3) / 4),
     carbsGoal: Math.round((calorieTarget * 0.4) / 4),
     fatGoal: Math.round((calorieTarget * 0.3) / 9),
+  };
+
+  const handleContinue = async () => {
+    // Update meal store with calculated goals
+    setGoals(results.calorieGoal, results.proteinGoal);
+
+    await completeProfile();
+    
+    // Navigate back to parent navigator (MainNavigator) then to Home
+    const parent = navigation.getParent();
+    if (parent) {
+      parent.navigate('Home' as never);
+    }
   };
 
   const dynamicStyles = StyleSheet.create({
@@ -278,13 +252,6 @@ export default function GoalResultsScreen() {
       color: colors.text,
       lineHeight: 22,
     },
-    citationText: {
-      fontSize: 12,
-      color: colors.textSecondary,
-      textAlign: 'center',
-      fontStyle: 'italic',
-      marginBottom: 32,
-    },
     buttonContainer: {
       width: '100%',
       marginTop: 32,
@@ -306,27 +273,14 @@ export default function GoalResultsScreen() {
       fontSize: 16,
       fontWeight: '600',
     },
-    secondaryButton: {
-      backgroundColor: colors.surface,
-      paddingVertical: 16,
-      borderRadius: 12,
-      alignItems: 'center',
-      borderWidth: 2,
-      borderColor: colors.border,
-    },
-    secondaryButtonText: {
-      color: colors.text,
-      fontSize: 16,
-      fontWeight: '600',
-    },
   });
 
   const goalExplanation =
     data.weightGoal === 'lose'
-      ? 'This starting estimate helps you lose weight at a healthy, sustainable pace of about 1 lb per week.'
+      ? 'Based on your profile, this personalized plan helps you lose weight at a healthy, sustainable pace of about 1 lb per week.'
       : data.weightGoal === 'gain'
-      ? 'This starting estimate helps you build muscle with a moderate calorie surplus for optimal gains.'
-      : 'This starting estimate helps you maintain your current weight while tracking your nutrition.';
+      ? 'Based on your profile, this personalized plan helps you build muscle with an optimal calorie surplus for gains.'
+      : 'Based on your profile, this personalized plan helps you maintain your current weight while tracking your nutrition.';
 
   return (
     <SafeAreaView style={dynamicStyles.container}>
@@ -338,10 +292,10 @@ export default function GoalResultsScreen() {
       <ScrollView style={styles.scrollView} contentContainerStyle={dynamicStyles.scrollContent}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
           <Ionicons name="checkmark-circle" size={36} color={colors.primary} style={{ marginRight: 8 }} />
-          <Text style={dynamicStyles.title}>You're All Set! 🎉</Text>
+          <Text style={dynamicStyles.title}>Profile Complete!</Text>
         </View>
         <Text style={dynamicStyles.subtitle}>
-          Here's your starting plan to get you started:
+          Here's your personalized plan based on your exact stats:
         </Text>
 
         {/* Calorie Display */}
@@ -356,7 +310,7 @@ export default function GoalResultsScreen() {
         </Animated.View>
 
         <Text style={dynamicStyles.celebrationMessage}>
-          "You're about to start an amazing journey! 🚀"
+          "Your journey to better health starts now!"
         </Text>
 
         {/* Macro Breakdown */}
@@ -388,45 +342,22 @@ export default function GoalResultsScreen() {
 
           {/* Explanation */}
           <View style={dynamicStyles.explanationCard}>
-            <Text style={dynamicStyles.explanationTitle}>
-              {isAuthenticated ? '🎯 Your Personalized Plan' : '📊 This is your starting estimate'}
-            </Text>
+            <Text style={dynamicStyles.explanationTitle}>🎯 Personalized For You</Text>
             <Text style={dynamicStyles.explanationText}>
               {goalExplanation}
-              {!isAuthenticated && (
-                '\n\nCreate your account to fine-tune your plan with your exact stats for even better results!'
-              )}
+              {'\n\n'}
+              These goals are calculated using your exact weight, height, age, gender, and activity level for the most accurate results!
             </Text>
           </View>
 
-          {/* Action Buttons */}
+          {/* Action Button */}
           <View style={dynamicStyles.buttonContainer}>
-          {isAuthenticated ? (
-            // Profile completion flow - just save and go to Home
             <TouchableOpacity
               style={dynamicStyles.primaryButton}
               onPress={handleContinue}
             >
-              <Text style={dynamicStyles.primaryButtonText}>Save Profile & Start Tracking →</Text>
+              <Text style={dynamicStyles.primaryButtonText}>Start Tracking →</Text>
             </TouchableOpacity>
-          ) : (
-            // Initial onboarding - create account or sign in
-            <>
-              <TouchableOpacity
-                style={dynamicStyles.primaryButton}
-                onPress={handleCreateAccount}
-              >
-                <Text style={dynamicStyles.primaryButtonText}>Create Account & Save Plan</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={dynamicStyles.secondaryButton}
-                onPress={handleSignIn}
-              >
-                <Text style={dynamicStyles.secondaryButtonText}>Already have an account? Sign In</Text>
-              </TouchableOpacity>
-            </>
-          )}
           </View>
         </Animated.View>
       </ScrollView>
@@ -439,4 +370,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-

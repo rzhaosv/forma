@@ -16,11 +16,13 @@ import Svg, { Circle } from 'react-native-svg';
 import Constants from 'expo-constants';
 import { signOut } from '../services/authService';
 import { useMealStore } from '../store/useMealStore';
+import { useOnboardingStore } from '../store/useOnboardingStore';
 import { useTheme } from '../hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 import { isHealthKitEnabled } from '../utils/healthKitSettings';
 import { Platform } from 'react-native';
 import { getLocalDateString } from '../utils/dateUtils';
+import ProfileCompletionBanner from '../components/ProfileCompletionBanner';
 
 const MEAL_TYPE_ICONS: { [key: string]: keyof typeof Ionicons.glyphMap } = {
   Breakfast: 'sunny',
@@ -34,6 +36,10 @@ export default function HomeScreen() {
   const [currentDate] = useState(new Date());
   const { colors, isDark } = useTheme();
   const [healthKitEnabled, setHealthKitEnabled] = useState(false);
+  const [showProfileBanner, setShowProfileBanner] = useState(true);
+
+  // Get onboarding status
+  const { isProfileComplete } = useOnboardingStore();
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
@@ -416,6 +422,16 @@ export default function HomeScreen() {
           </View>
           <Text style={dynamicStyles.date}>{formatDate()}</Text>
         </View>
+
+        {/* Profile Completion Banner */}
+        {!isProfileComplete && showProfileBanner && (
+          <ProfileCompletionBanner
+            onPress={() => navigation.navigate('ProfileCompletion' as never)}
+            onDismiss={() => setShowProfileBanner(false)}
+            message="Get personalized goals based on your exact stats!"
+            dismissable={true}
+          />
+        )}
 
         {/* Calorie Progress Card */}
         <View style={dynamicStyles.progressCard}>

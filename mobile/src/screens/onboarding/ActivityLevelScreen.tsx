@@ -113,8 +113,21 @@ export default function ActivityLevelScreen() {
     if (!selectedLevel) return;
 
     updateData({ activityLevel: selectedLevel });
-    setStep(4);
-    navigation.navigate('WeightGoal' as never);
+
+    // Check if we're in profile completion flow (no weightGoal yet) or old onboarding
+    const routes = navigation.getState?.()?.routes || [];
+    const currentRoute = routes[routes.length - 1];
+    const isProfileCompletion = currentRoute?.name === 'ProfileCompletion' ||
+                                 routes.some(r => r.name === 'ProfileCompletion');
+
+    if (isProfileCompletion) {
+      // Navigate to ProfileComplete in profile completion flow
+      navigation.navigate('ProfileComplete' as never);
+    } else {
+      // Old onboarding flow (kept for compatibility)
+      setStep(4);
+      navigation.navigate('WeightGoal' as never);
+    }
   };
 
   const dynamicStyles = StyleSheet.create({

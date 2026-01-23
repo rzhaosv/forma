@@ -30,6 +30,20 @@ export default function PhysicalInfoScreen() {
   const displayWeight = unitSystem === 'imperial' ? kgToLbs(weight) : weight;
   const displayHeight = unitSystem === 'imperial' ? cmToInches(height) : height;
 
+  const formatHeightImperial = (inches: number) => {
+    const feet = Math.floor(inches / 12);
+    const remainingInches = Math.round(inches % 12);
+    return { feet, inches: remainingInches };
+  };
+
+  const getHeightDisplay = () => {
+    if (unitSystem === 'imperial') {
+      const { feet, inches } = formatHeightImperial(displayHeight);
+      return `${feet}' ${inches}"`;
+    }
+    return displayHeight.toString();
+  };
+
   const handleUnitToggle = async () => {
     const newUnit = unitSystem === 'metric' ? 'imperial' : 'metric';
     await setGlobalUnitSystem(newUnit);
@@ -365,7 +379,7 @@ export default function PhysicalInfoScreen() {
                   unitSystem === 'imperial' && dynamicStyles.unitButtonTextActive,
                 ]}
               >
-                Imperial (lb/in)
+                Imperial (lb/ft)
               </Text>
             </TouchableOpacity>
           </View>
@@ -405,8 +419,8 @@ export default function PhysicalInfoScreen() {
             <Text style={dynamicStyles.sliderLabel}>Your Height</Text>
             <Animated.View style={[dynamicStyles.valueDisplay, { transform: [{ scale: scaleAnim }] }]}>
               <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-                <Text style={dynamicStyles.valueNumber}>{displayHeight}</Text>
-                <Text style={dynamicStyles.valueUnit}>{unitSystem === 'imperial' ? 'in' : 'cm'}</Text>
+                <Text style={dynamicStyles.valueNumber}>{getHeightDisplay()}</Text>
+                {unitSystem === 'metric' && <Text style={dynamicStyles.valueUnit}>cm</Text>}
               </View>
             </Animated.View>
             <Slider
@@ -422,10 +436,10 @@ export default function PhysicalInfoScreen() {
             />
             <View style={dynamicStyles.sliderRange}>
               <Text style={dynamicStyles.rangeText}>
-                {unitSystem === 'imperial' ? '39 in (3\'3")' : '100 cm'}
+                {unitSystem === 'imperial' ? '3\' 3"' : '100 cm'}
               </Text>
               <Text style={dynamicStyles.rangeText}>
-                {unitSystem === 'imperial' ? '98 in (8\'2")' : '250 cm'}
+                {unitSystem === 'imperial' ? '8\' 2"' : '250 cm'}
               </Text>
             </View>
           </View>
