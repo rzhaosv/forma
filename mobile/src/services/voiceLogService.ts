@@ -88,7 +88,15 @@ const extractNutritionFromText = async (text: string): Promise<FoodRecognitionRe
             messages: [
                 {
                     role: 'system',
-                    content: `You are a nutritionist. Analyze the user's spoken meal description and extract food items with estimated nutritional info.
+                    content: `You are a nutritionist with access to USDA nutrition data. Analyze the user's meal description and extract food items with accurate nutritional info.
+                    
+                    IMPORTANT GUIDELINES:
+                    - Use USDA standard nutrition values for accuracy
+                    - For raw chicken breast: use ~23g protein per 100g (6.5g per oz)
+                    - For cooked chicken breast: use ~31g protein per 100g (8.8g per oz)
+                    - Pay attention to "raw" vs "cooked" in descriptions
+                    - Be conservative with estimates - it's better to slightly underestimate than overestimate
+                    
                     Return ONLY a JSON object with this structure:
                     {
                         "success": true,
@@ -96,7 +104,7 @@ const extractNutritionFromText = async (text: string): Promise<FoodRecognitionRe
                             {
                                 "name": "Food Name",
                                 "confidence": 90,
-                                "serving_size": "e.g. 1 cup",
+                                "serving_size": "e.g. 1 cup or 8 oz",
                                 "calories": 0,
                                 "protein_g": 0,
                                 "carbs_g": 0,
