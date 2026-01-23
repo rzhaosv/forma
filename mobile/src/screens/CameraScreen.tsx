@@ -105,7 +105,7 @@ export default function CameraScreen() {
 
         if (result.success && result.foods.length > 0) {
           // Navigate to results screen
-          navigation.navigate('FoodResults' as never, { result } as never);
+          navigation.navigate('FoodResults' as never, { result, logType: 'photo' } as never);
         } else {
           Alert.alert(
             'No Food Detected',

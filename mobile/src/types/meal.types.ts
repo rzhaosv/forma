@@ -20,6 +20,7 @@ export interface Meal {
   totalProtein: number;
   totalCarbs: number;
   totalFat: number;
+  logType?: 'photo' | 'voice' | 'manual' | 'barcode'; // How the meal was logged
 }
 
 export interface DailySummary {

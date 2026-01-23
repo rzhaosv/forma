@@ -32,6 +32,7 @@ interface ProgressState {
   weightEntries: WeightEntry[];
   streak: number;
   lastLoggedDate: string | null;
+  lastStreakFreezeDate: string | null;
   currentUserId: string | null;
 
   // Actions
@@ -39,7 +40,7 @@ interface ProgressState {
   deleteWeightEntry: (id: string) => Promise<void>;
   getWeightEntries: (days?: number) => WeightEntry[];
   getWeeklySummaries: (weeks?: number) => WeeklySummary[];
-  calculateStreak: () => number;
+  calculateStreak: () => { streak: number; freezeUsed: boolean };
   getDailyCalories: (date: string) => number;
   initialize: (userId: string) => Promise<void>;
   clearData: () => Promise<void>;
@@ -48,12 +49,14 @@ interface ProgressState {
 const getStorageKeys = (userId: string) => ({
   weightEntries: `@nutrisnap_weight_entries_${userId}`,
   lastLogged: `@nutrisnap_last_logged_date_${userId}`,
+  lastStreakFreeze: `@nutrisnap_last_streak_freeze_${userId}`,
 });
 
 export const useProgressStore = create<ProgressState>((set, get) => ({
   weightEntries: [],
   streak: 0,
   lastLoggedDate: null,
+  lastStreakFreezeDate: null,
   currentUserId: null,
 
   addWeightEntry: async (weight_kg: number, notes?: string) => {
@@ -71,8 +74,8 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     set({ weightEntries: updatedEntries });
 
     // Update streak
-    const streak = get().calculateStreak();
-    set({ streak });
+    const streakResult = get().calculateStreak();
+    set({ streak: streakResult.streak });
 
     const userId = get().currentUserId;
     if (userId) {
@@ -111,8 +114,8 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     set({ weightEntries: updatedEntries });
 
     // Recalculate streak
-    const streak = get().calculateStreak();
-    set({ streak });
+    const streakResult = get().calculateStreak();
+    set({ streak: streakResult.streak });
 
     const userId = get().currentUserId;
     if (userId) {
@@ -186,40 +189,64 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
 
   calculateStreak: () => {
     const meals = useMealStore.getState().meals;
-    if (meals.length === 0) return 0;
+    if (meals.length === 0) return { streak: 0, freezeUsed: false };
 
     // Get unique dates with meals (YYYY-MM-DD), sorted descending
     const datesWithMeals = Array.from(
       new Set(meals.map(meal => getLocalDateString(new Date(meal.timestamp))))
     ).sort((a, b) => b.localeCompare(a));
 
-    if (datesWithMeals.length === 0) return 0;
+    if (datesWithMeals.length === 0) return { streak: 0, freezeUsed: false };
 
     const today = getLocalDateString();
     const yesterdayDate = new Date();
     yesterdayDate.setDate(yesterdayDate.getDate() - 1);
     const yesterday = getLocalDateString(yesterdayDate);
 
-    // If most recent log is NOT today AND NOT yesterday, streak is broken
-    if (datesWithMeals[0] !== today && datesWithMeals[0] !== yesterday) {
-      return 0;
+    const twoDaysAgoDate = new Date();
+    twoDaysAgoDate.setDate(twoDaysAgoDate.getDate() - 2);
+    const twoDaysAgo = getLocalDateString(twoDaysAgoDate);
+
+    const lastStreakFreezeDate = get().lastStreakFreezeDate;
+    let freezeUsed = false;
+
+    // If most recent log is NOT today, NOT yesterday, and NOT two days ago, streak is broken
+    if (datesWithMeals[0] !== today && datesWithMeals[0] !== yesterday && datesWithMeals[0] !== twoDaysAgo) {
+      return { streak: 0, freezeUsed: false };
+    }
+
+    // If most recent log is two days ago, check if we can use a freeze
+    if (datesWithMeals[0] === twoDaysAgo) {
+      // Can only use freeze if we haven't used it today
+      if (lastStreakFreezeDate === today) {
+        // Already used freeze today, streak is broken
+        return { streak: 0, freezeUsed: false };
+      }
+      // Use freeze and continue
+      freezeUsed = true;
+      set({ lastStreakFreezeDate: today });
     }
 
     // Count consecutive days starting from the most recent log
     let streak = 0;
     let checkDate = new Date(datesWithMeals[0] + 'T12:00:00');
+    let allowedGaps = freezeUsed ? 0 : 1; // Allow one gap (freeze)
 
     while (true) {
       const dateStr = getLocalDateString(checkDate);
       if (datesWithMeals.includes(dateStr)) {
         streak++;
         checkDate.setDate(checkDate.getDate() - 1);
+      } else if (allowedGaps > 0) {
+        // Use the freeze for this gap
+        allowedGaps--;
+        checkDate.setDate(checkDate.getDate() - 1);
       } else {
         break;
       }
     }
 
-    return streak;
+    return { streak, freezeUsed };
   },
 
   getDailyCalories: (date: string) => {
@@ -259,8 +286,8 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
       set({ weightEntries: localEntries });
 
       // Calculate initial streak
-      const streak = get().calculateStreak();
-      set({ streak });
+      const streakResult = get().calculateStreak();
+      set({ streak: streakResult.streak });
     } catch (error) {
       console.error('Failed to load progress data:', error);
     }
@@ -271,6 +298,7 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
       weightEntries: [],
       streak: 0,
       lastLoggedDate: null,
+      lastStreakFreezeDate: null,
       currentUserId: null,
     });
   },

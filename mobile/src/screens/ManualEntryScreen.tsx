@@ -16,6 +16,8 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useMealStore } from '../store/useMealStore';
 import { Meal, FoodItem, MealType } from '../types/meal.types';
 import { Ionicons } from '@expo/vector-icons';
+import BadgeCelebrationModal from '../components/BadgeCelebrationModal';
+import { checkAndAwardBadges } from '../services/achievementService';
 
 type RouteParams = {
   ManualEntry: {
@@ -36,6 +38,8 @@ export default function ManualEntryScreen() {
   const [portion, setPortion] = useState('');
   const [quantity, setQuantity] = useState('1');
   const [selectedMealType, setSelectedMealType] = useState<MealType>('Lunch');
+  const [celebrationBadgeId, setCelebrationBadgeId] = useState<string | null>(null);
+  const [showBadgeCelebration, setShowBadgeCelebration] = useState(false);
 
   // Handle food selected from search
   useEffect(() => {
@@ -92,16 +96,39 @@ export default function ManualEntryScreen() {
       totalProtein: proteinValue * quantityValue,
       totalCarbs: carbsValue * quantityValue,
       totalFat: fatValue * quantityValue,
+      logType: 'manual',
     };
 
     // Add to store
     addMeal(meal);
 
-    // Navigate back with success message
+    // Check for new achievements
+    try {
+      const newBadges = await checkAndAwardBadges();
+      if (newBadges.length > 0) {
+        // Show celebration for the first earned badge
+        console.log('New badges earned:', newBadges);
+        setCelebrationBadgeId(newBadges[0].badgeId);
+        setShowBadgeCelebration(true);
+        return; // Don't navigate back yet, let badge celebration handle it
+      }
+    } catch (error) {
+      console.error('Error checking achievements:', error);
+    }
+
+    // Navigate back with success message (only if no badge celebration)
     navigation.goBack();
     setTimeout(() => {
       Alert.alert('Added to Log!', `${foodName} added to ${selectedMealType}`);
     }, 500);
+  };
+
+  const handleBadgeCelebrationClose = () => {
+    setShowBadgeCelebration(false);
+    setCelebrationBadgeId(null);
+
+    // Navigate back after closing badge celebration
+    navigation.goBack();
   };
 
   return (
@@ -262,6 +289,15 @@ export default function ManualEntryScreen() {
           <Text style={styles.addButtonText}>Add to Log</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Badge Celebration Modal */}
+      {celebrationBadgeId && (
+        <BadgeCelebrationModal
+          visible={showBadgeCelebration}
+          badgeId={celebrationBadgeId}
+          onClose={handleBadgeCelebrationClose}
+        />
+      )}
     </SafeAreaView>
   );
 }

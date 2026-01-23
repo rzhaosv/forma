@@ -10,9 +10,11 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
 import { Insight, generateInsights, getMotivationalQuote } from '../services/insightsService';
 import { useMealStore } from '../store/useMealStore';
+import { Ionicons } from '@expo/vector-icons';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -22,6 +24,7 @@ interface InsightsCardProps {
 
 export default function InsightsCard({ onPress }: InsightsCardProps) {
   const { colors, isDark } = useTheme();
+  const navigation = useNavigation();
   const { meals, dailyGoals } = useMealStore();
   const [insights, setInsights] = useState<Insight[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -190,7 +193,32 @@ export default function InsightsCard({ onPress }: InsightsCardProps) {
       color: colors.textSecondary,
       fontWeight: '500',
     },
+    actionButton: {
+      backgroundColor: typeColor + '20',
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      marginTop: 12,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    actionButtonText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: typeColor,
+      marginRight: 6,
+    },
   });
+
+  const handleActionPress = () => {
+    if (currentInsight.action) {
+      navigation.navigate(
+        currentInsight.action.navigateTo as never,
+        currentInsight.action.params as never
+      );
+    }
+  };
   
   return (
     <TouchableOpacity 
@@ -218,7 +246,21 @@ export default function InsightsCard({ onPress }: InsightsCardProps) {
           </View>
         </View>
         <Text style={dynamicStyles.message}>{currentInsight.message}</Text>
-        
+
+        {/* Action Button */}
+        {currentInsight.actionable && currentInsight.action && (
+          <TouchableOpacity
+            style={dynamicStyles.actionButton}
+            onPress={handleActionPress}
+            activeOpacity={0.7}
+          >
+            <Text style={dynamicStyles.actionButtonText}>
+              {currentInsight.action.label}
+            </Text>
+            <Ionicons name="arrow-forward" size={16} color={typeColor} />
+          </TouchableOpacity>
+        )}
+
         {insights.length > 1 && (
           <View style={dynamicStyles.footer}>
             <View style={dynamicStyles.aiLabel}>

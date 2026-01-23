@@ -20,6 +20,7 @@ import { useProgressStore } from '../store/useProgressStore';
 import { useRecipeStore } from '../store/useRecipeStore';
 import { useOnboardingStore } from '../store/useOnboardingStore';
 import { useExerciseStore } from '../store/useExerciseStore';
+import { useAchievementStore } from '../store/useAchievementStore';
 
 // Complete the auth session
 WebBrowser.maybeCompleteAuthSession();
@@ -187,6 +188,8 @@ export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
         // Initialize onboarding store
         await useOnboardingStore.getState().initialize(userId);
 
+        // Initialize achievement store (badges, achievements)
+        await useAchievementStore.getState().initialize(userId);
 
         // Initialize exercise store (workouts, goals)
         await useExerciseStore.getState().initialize(userId);
@@ -203,6 +206,7 @@ export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
         await useProgressStore.getState().clearData();
         await useRecipeStore.getState().clearData();
         await useOnboardingStore.getState().clearData();
+        await useAchievementStore.getState().clearData();
         await useExerciseStore.getState().clearData();
 
 

@@ -5,6 +5,8 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { lookupBarcode, calculateNutrition, isValidBarcode } from '../services/barcodeService';
 import { useMealStore } from '../store/useMealStore';
 import { Meal, FoodItem, MealType } from '../types/meal.types';
+import BadgeCelebrationModal from '../components/BadgeCelebrationModal';
+import { checkAndAwardBadges } from '../services/achievementService';
 
 export default function BarcodeScannerScreen() {
   const navigation = useNavigation();
@@ -19,6 +21,8 @@ export default function BarcodeScannerScreen() {
   const [servingQuantity, setServingQuantity] = useState(1);
   const { addMeal } = useMealStore();
   const isProcessing = useRef(false);
+  const [celebrationBadgeId, setCelebrationBadgeId] = useState<string | null>(null);
+  const [showBadgeCelebration, setShowBadgeCelebration] = useState(false);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
@@ -173,20 +177,48 @@ export default function BarcodeScannerScreen() {
       totalProtein: nutritionPerServing.protein_g * servingQuantity,
       totalCarbs: nutritionPerServing.carbs_g * servingQuantity,
       totalFat: nutritionPerServing.fat_g * servingQuantity,
+      logType: 'barcode',
     };
 
     // Add to store
     addMeal(meal);
 
+    // Check for new achievements
+    try {
+      const newBadges = await checkAndAwardBadges();
+      if (newBadges.length > 0) {
+        // Show celebration for the first earned badge
+        console.log('New badges earned:', newBadges);
+        setCelebrationBadgeId(newBadges[0].badgeId);
+        setShowBadgeCelebration(true);
+        // Reset meal selector state but don't navigate yet
+        setShowMealSelector(false);
+        setScanned(false);
+        setScannedProduct(null);
+        setServingQuantity(1);
+        return; // Don't navigate back yet, let badge celebration handle it
+      }
+    } catch (error) {
+      console.error('Error checking achievements:', error);
+    }
+
     // Reset serving quantity for next scan
     setServingQuantity(1);
 
-    // Navigate back and show success
+    // Navigate back and show success (only if no badge celebration)
     navigation.goBack();
     setTimeout(() => {
       const servingText = servingQuantity === 1 ? '1 serving' : `${servingQuantity} servings`;
       Alert.alert('Added to Log!', `${scannedProduct.name} (${servingText}) added to ${selectedMealType}`);
     }, 500);
+  };
+
+  const handleBadgeCelebrationClose = () => {
+    setShowBadgeCelebration(false);
+    setCelebrationBadgeId(null);
+
+    // Navigate back after closing badge celebration
+    navigation.goBack();
   };
 
   return (
@@ -337,6 +369,15 @@ export default function BarcodeScannerScreen() {
             </View>
           )}
         </>
+      )}
+
+      {/* Badge Celebration Modal */}
+      {celebrationBadgeId && (
+        <BadgeCelebrationModal
+          visible={showBadgeCelebration}
+          badgeId={celebrationBadgeId}
+          onClose={handleBadgeCelebrationClose}
+        />
       )}
     </View>
   );

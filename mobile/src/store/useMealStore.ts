@@ -63,6 +63,20 @@ export const useMealStore = create<MealStore>((set, get) => ({
     }));
     get().updateDailySummary();
 
+    // Check for new achievements after adding meal
+    try {
+      const { checkAndAwardBadges } = await import('../services/achievementService');
+      const newBadges = await checkAndAwardBadges();
+
+      // If badges were earned, show celebration (handled by UI layer)
+      if (newBadges.length > 0) {
+        console.log('New badges earned:', newBadges);
+        // The UI can listen to achievement store changes to show confetti
+      }
+    } catch (error) {
+      console.error('Error checking achievements:', error);
+    }
+
     // Persist meals
     const userId = get().currentUserId;
     if (userId) {

@@ -9,10 +9,15 @@ import { useTheme } from '../hooks/useTheme';
 import { isHealthKitEnabled } from '../utils/healthKitSettings';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform } from 'react-native';
+import BadgeCelebrationModal from '../components/BadgeCelebrationModal';
+import { checkAndAwardBadges } from '../services/achievementService';
 
 type RouteParams = {
   FoodResults: {
     result: FoodRecognitionResult;
+    existingMealId?: string;
+    existingMealType?: MealType;
+    logType?: 'photo' | 'voice' | 'manual' | 'barcode';
   };
 };
 
@@ -23,17 +28,19 @@ interface EditableFood extends IdentifiedFood {
 export default function FoodResultsScreen() {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RouteParams, 'FoodResults'>>();
-  const { result } = route.params;
-  const { addMeal } = useMealStore();
+  const { result, existingMealId, existingMealType, logType } = route.params;
+  const { addMeal, deleteMeal } = useMealStore();
   const { colors, isDark } = useTheme();
   const [healthKitEnabled, setHealthKitEnabled] = useState(false);
+  const [celebrationBadgeId, setCelebrationBadgeId] = useState<string | null>(null);
+  const [showBadgeCelebration, setShowBadgeCelebration] = useState(false);
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
       isHealthKitEnabled().then(setHealthKitEnabled);
     }
   }, []);
-  const [selectedMealType, setSelectedMealType] = useState<MealType>('Lunch');
+  const [selectedMealType, setSelectedMealType] = useState<MealType>(existingMealType || 'Lunch');
 
   // Editable food state - initialize with AI results
   const [editableFoods, setEditableFoods] = useState<EditableFood[]>(
@@ -47,7 +54,12 @@ export default function FoodResultsScreen() {
   };
 
   const handleAddToLog = async () => {
-    const mealId = `meal-${Date.now()}`;
+    // If editing, delete the old meal first
+    if (existingMealId) {
+      deleteMeal(existingMealId);
+    }
+
+    const mealId = existingMealId || `meal-${Date.now()}`;
 
     // Create food items from editable foods (with quantity multiplier)
     const foodItems: FoodItem[] = editableFoods.map((food, index) => ({
@@ -78,6 +90,7 @@ export default function FoodResultsScreen() {
       totalProtein,
       totalCarbs,
       totalFat,
+      logType: logType || 'photo', // Default to photo if not specified
     };
 
     // Add to store
@@ -125,12 +138,40 @@ export default function FoodResultsScreen() {
       }
     }
 
-    // Show success and navigate back
-    Alert.alert(
-      'Added to Log!',
-      `${foodItems.length} item${foodItems.length !== 1 ? 's' : ''} added to ${selectedMealType}`,
-      [{ text: 'OK', onPress: () => navigation.navigate('Home' as never) }]
-    );
+    // Check for new achievements after tracking is complete
+    let earnedBadges = [];
+    try {
+      const newBadges = await checkAndAwardBadges();
+      earnedBadges = newBadges;
+      if (newBadges.length > 0) {
+        // Show celebration for the first earned badge
+        console.log('New badges earned:', newBadges);
+        setCelebrationBadgeId(newBadges[0].badgeId);
+        setShowBadgeCelebration(true);
+      }
+    } catch (error) {
+      console.error('Error checking achievements:', error);
+    }
+
+    // Only show success alert and navigate if no badges were earned
+    // If badge celebration is showing, it will handle navigation when closed
+    if (earnedBadges.length === 0) {
+      Alert.alert(
+        existingMealId ? 'Updated!' : 'Added to Log!',
+        existingMealId
+          ? `${selectedMealType} updated with ${foodItems.length} item${foodItems.length !== 1 ? 's' : ''}`
+          : `${foodItems.length} item${foodItems.length !== 1 ? 's' : ''} added to ${selectedMealType}`,
+        [{ text: 'OK', onPress: () => navigation.navigate('Home' as never) }]
+      );
+    }
+  };
+
+  const handleBadgeCelebrationClose = () => {
+    setShowBadgeCelebration(false);
+    setCelebrationBadgeId(null);
+
+    // Navigate home after closing badge celebration
+    navigation.navigate('Home' as never);
   };
 
   const dynamicStyles = StyleSheet.create({
@@ -313,7 +354,9 @@ export default function FoodResultsScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={dynamicStyles.backText}>← Retake</Text>
         </TouchableOpacity>
-        <Text style={dynamicStyles.title}>Food Identified</Text>
+        <Text style={dynamicStyles.title}>
+          {existingMealId ? 'Edit Meal' : 'Food Identified'}
+        </Text>
         <View style={styles.placeholder} />
       </View>
 
@@ -524,7 +567,9 @@ export default function FoodResultsScreen() {
           style={dynamicStyles.primaryButton}
           onPress={handleAddToLog}
         >
-          <Text style={dynamicStyles.primaryButtonText}>Add to Meal Log</Text>
+          <Text style={dynamicStyles.primaryButtonText}>
+            {existingMealId ? 'Update Meal Log' : 'Add to Meal Log'}
+          </Text>
         </TouchableOpacity>
 
         {healthKitEnabled && (
@@ -536,6 +581,15 @@ export default function FoodResultsScreen() {
           </View>
         )}
       </View>
+
+      {/* Badge Celebration Modal */}
+      {celebrationBadgeId && (
+        <BadgeCelebrationModal
+          visible={showBadgeCelebration}
+          badgeId={celebrationBadgeId}
+          onClose={handleBadgeCelebrationClose}
+        />
+      )}
     </SafeAreaView>
   );
 }

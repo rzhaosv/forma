@@ -143,6 +143,28 @@ export default function HomeScreen() {
     );
   };
 
+  const handleEditMeal = (meal: any) => {
+    // Convert meal foods to FoodRecognitionResult format
+    const result = {
+      foods: meal.foods.map((food: any) => ({
+        name: food.name,
+        calories: food.calories / (food.quantity || 1), // Per-item calories
+        protein_g: food.protein_g / (food.quantity || 1),
+        carbs_g: food.carbs_g / (food.quantity || 1),
+        fat_g: food.fat_g / (food.quantity || 1),
+        serving_size: food.portion || '1 serving',
+        confidence: 1.0,
+      })),
+      image_url: '',
+    };
+
+    navigation.navigate('FoodResults' as never, {
+      result,
+      existingMealId: meal.id,
+      existingMealType: meal.mealType,
+    } as never);
+  };
+
   const renderRightActions = (mealId: string, mealType: string) => {
     return (
       <View style={styles.swipeDeleteContainer}>
@@ -619,7 +641,11 @@ export default function HomeScreen() {
               overshootRight={false}
               rightThreshold={40}
             >
-              <View style={dynamicStyles.mealCard}>
+              <TouchableOpacity
+                style={dynamicStyles.mealCard}
+                onPress={() => handleEditMeal(meal)}
+                activeOpacity={0.7}
+              >
                 <View style={styles.mealHeader}>
                   <View style={styles.mealTitleRow}>
                     <Ionicons
@@ -643,7 +669,7 @@ export default function HomeScreen() {
                     </Text>
                   </View>
                 ))}
-              </View>
+              </TouchableOpacity>
             </Swipeable>
           ))
         )}

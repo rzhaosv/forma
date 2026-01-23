@@ -58,9 +58,10 @@ export default function VoiceLogScreen() {
                     console.log('Voice analysis result:', JSON.stringify(result));
 
                     if (result && result.success && Array.isArray(result.foods) && result.foods.length > 0) {
-                        // Navigate to results with mocked data
+                        // Navigate to results with voice log type
                         navigation.navigate('FoodResults' as never, {
-                            result: result
+                            result: result,
+                            logType: 'voice'
                         } as never);
                     } else {
                         Alert.alert('Error', 'Could not understand the meal. Please try again.');

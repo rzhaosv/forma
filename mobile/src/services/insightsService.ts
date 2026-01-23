@@ -12,7 +12,11 @@ export interface Insight {
   message: string;
   priority: number; // 1-10, higher = more important
   actionable?: boolean;
-  action?: string;
+  action?: {
+    label: string;
+    navigateTo: string;
+    params?: Record<string, any>;
+  };
 }
 
 interface NutritionSummary {
@@ -111,6 +115,12 @@ export const generateInsights = (
       title: "Halfway to Protein Goal!",
       message: `You've hit ${Math.round(summary.protein)}g of protein. ${Math.round(proteinRemaining)}g more to reach your ${safeGoals.proteinGoal}g goal!`,
       priority: 7,
+      actionable: true,
+      action: {
+        label: 'Find High-Protein Foods',
+        navigateTo: 'FoodSearch',
+        params: { query: 'high protein' },
+      },
     });
   } else if (proteinPercent >= 80 && proteinPercent < 100) {
     insights.push({
@@ -120,6 +130,12 @@ export const generateInsights = (
       title: 'Almost at Protein Goal!',
       message: `Just ${Math.round(proteinRemaining)}g more protein to hit your daily goal. A small snack can get you there!`,
       priority: 8,
+      actionable: true,
+      action: {
+        label: 'Find Protein Snacks',
+        navigateTo: 'FoodSearch',
+        params: { query: 'protein snack' },
+      },
     });
   } else if (proteinPercent >= 100) {
     insights.push({
@@ -138,6 +154,12 @@ export const generateInsights = (
       title: 'Protein Running Low',
       message: `You're at ${Math.round(proteinPercent)}% of your protein goal. Consider a protein-rich dinner to catch up!`,
       priority: 7,
+      actionable: true,
+      action: {
+        label: 'Find High-Protein Meals',
+        navigateTo: 'FoodSearch',
+        params: { query: 'high protein dinner' },
+      },
     });
   }
 
@@ -281,19 +303,92 @@ export const generateInsights = (
     }
   }
 
-  // === WEEKLY TRENDS ===
+  // === WEEKLY TRENDS & PATTERN RECOGNITION ===
   if (weeklyMeals && weeklyMeals.length > 0) {
     const weeklyCalories = weeklyMeals.reduce((sum, m) => sum + (m.totalCalories || 0), 0);
+    const weeklyProtein = weeklyMeals.reduce((sum, m) => sum + (m.totalProtein || 0), 0);
     const avgDailyCalories = weeklyCalories / 7;
+    const avgDailyProtein = weeklyProtein / 7;
 
+    // Group meals by day of week
+    const mealsByDay: { [key: number]: Meal[] } = {};
+    weeklyMeals.forEach(meal => {
+      const dayOfWeek = new Date(meal.timestamp).getDay(); // 0 = Sunday
+      if (!mealsByDay[dayOfWeek]) {
+        mealsByDay[dayOfWeek] = [];
+      }
+      mealsByDay[dayOfWeek].push(meal);
+    });
+
+    // Check for weekend pattern (Saturday = 6, Sunday = 0)
+    const weekendMeals = [...(mealsByDay[0] || []), ...(mealsByDay[6] || [])];
+    if (weekendMeals.length >= 4) {
+      const weekendCalories = weekendMeals.reduce((sum, m) => sum + (m.totalCalories || 0), 0);
+      const avgWeekendCalories = weekendCalories / 2;
+
+      const weekdayMeals = weeklyMeals.filter(m => {
+        const day = new Date(m.timestamp).getDay();
+        return day >= 1 && day <= 5;
+      });
+      const weekdayCalories = weekdayMeals.reduce((sum, m) => sum + (m.totalCalories || 0), 0);
+      const avgWeekdayCalories = weekdayCalories / 5;
+
+      if (avgWeekendCalories > avgWeekdayCalories * 1.2) {
+        insights.push({
+          id: 'weekend-pattern',
+          type: 'tip',
+          icon: '📅',
+          title: 'Weekend Eating Pattern',
+          message: `You tend to eat ${Math.round(((avgWeekendCalories - avgWeekdayCalories) / avgWeekdayCalories) * 100)}% more on weekends. Try planning a healthy, enjoyable meal for Saturday night!`,
+          priority: 7,
+          actionable: true,
+          action: {
+            label: 'Plan Weekend Meals',
+            navigateTo: 'RecipeList',
+          },
+        });
+      }
+    }
+
+    // Consistent protein achievement
+    if (avgDailyProtein >= safeGoals.proteinGoal * 0.9) {
+      insights.push({
+        id: 'protein-consistent',
+        type: 'success',
+        icon: '💎',
+        title: 'Protein Consistency!',
+        message: `Your protein intake has been consistently high this week (avg ${Math.round(avgDailyProtein)}g/day). Great job fueling your muscles!`,
+        priority: 7,
+      });
+    }
+
+    // Under-eating pattern
     if (avgDailyCalories < safeGoals.calorieGoal * 0.8) {
       insights.push({
         id: 'weekly-under',
-        type: 'tip',
+        type: 'warning',
         icon: '📈',
         title: 'Weekly Calorie Trend',
         message: `You're averaging ${Math.round(avgDailyCalories)} cal/day this week, below your ${safeGoals.calorieGoal} goal. Make sure you're eating enough!`,
         priority: 6,
+      });
+    }
+
+    // Great week pattern
+    const daysOnTrack = Object.keys(mealsByDay).filter(day => {
+      const dayMeals = mealsByDay[parseInt(day)];
+      const dayCalories = dayMeals.reduce((sum, m) => sum + (m.totalCalories || 0), 0);
+      return Math.abs(dayCalories - safeGoals.calorieGoal) <= safeGoals.calorieGoal * 0.15;
+    }).length;
+
+    if (daysOnTrack >= 5) {
+      insights.push({
+        id: 'great-week',
+        type: 'success',
+        icon: '🌟',
+        title: 'Outstanding Week!',
+        message: `You hit your calorie goal ${daysOnTrack} out of 7 days this week. You're building incredible habits!`,
+        priority: 9,
       });
     }
   }
@@ -323,7 +418,10 @@ export const generateInsights = (
       message: "Don't forget to log your meals! Tracking helps you stay aware of your nutrition.",
       priority: 8,
       actionable: true,
-      action: 'Log a meal',
+      action: {
+        label: 'Log a Meal',
+        navigateTo: 'Camera',
+      },
     });
   }
 
@@ -391,6 +489,114 @@ export const getNotificationTip = (
   }
 
   return null;
+};
+
+// Generate immediate feedback after logging a meal
+export const getPostMealFeedback = (meal: Meal, dailyGoals: DailyGoals): Insight | null => {
+  const insights: Insight[] = [];
+
+  const mealCalories = meal.totalCalories;
+  const mealProtein = meal.totalProtein;
+  const mealCarbs = meal.totalCarbs;
+  const mealFat = meal.totalFat;
+
+  // Calculate macro ratios
+  const totalMacros = mealProtein + mealCarbs + mealFat;
+  if (totalMacros === 0) return null;
+
+  const proteinRatio = mealProtein / totalMacros;
+  const carbRatio = mealCarbs / totalMacros;
+  const fatRatio = mealFat / totalMacros;
+
+  // High protein meal
+  if (proteinRatio > 0.35 || mealProtein > 30) {
+    insights.push({
+      id: 'post-meal-protein',
+      type: 'success',
+      icon: '💪',
+      title: 'Great Choice!',
+      message: `That meal is packed with ${Math.round(mealProtein)}g of protein to keep you full and support your muscles!`,
+      priority: 8,
+    });
+  }
+
+  // Balanced meal
+  if (proteinRatio >= 0.25 && proteinRatio <= 0.35 && carbRatio >= 0.3 && carbRatio <= 0.5 && fatRatio >= 0.2 && fatRatio <= 0.35) {
+    insights.push({
+      id: 'post-meal-balanced',
+      type: 'success',
+      icon: '⚖️',
+      title: 'Perfectly Balanced!',
+      message: 'This meal has a great balance of protein, carbs, and healthy fats. Excellent choice!',
+      priority: 7,
+    });
+  }
+
+  // High carb meal (could be pre-workout or dessert)
+  if (carbRatio > 0.6) {
+    if (mealCarbs > 50) {
+      insights.push({
+        id: 'post-meal-carbs',
+        type: 'tip',
+        icon: '🍞',
+        title: 'Carb-Heavy Meal',
+        message: `This meal is high in carbs (${Math.round(mealCarbs)}g). Great for energy! Balance your next meal with more protein and veggies.`,
+        priority: 6,
+      });
+    }
+  }
+
+  // High fat meal
+  if (fatRatio > 0.45) {
+    insights.push({
+      id: 'post-meal-fat',
+      type: 'tip',
+      icon: '🥑',
+      title: 'Fat-Rich Meal',
+      message: 'This meal is high in fats. Healthy fats are great, but try adding lean protein to your next meal!',
+      priority: 5,
+    });
+  }
+
+  // High calorie meal
+  if (mealCalories > dailyGoals.calorieGoal * 0.4) {
+    insights.push({
+      id: 'post-meal-calories',
+      type: 'tip',
+      icon: '🔥',
+      title: 'Big Meal!',
+      message: `That was a ${Math.round(mealCalories)} calorie meal! Consider lighter options for your remaining meals today.`,
+      priority: 6,
+    });
+  }
+
+  // Low calorie but nutritious
+  if (mealCalories < 300 && mealProtein > 15) {
+    insights.push({
+      id: 'post-meal-light',
+      type: 'success',
+      icon: '🌱',
+      title: 'Light & Nutritious!',
+      message: 'A perfectly portioned, protein-rich meal. Great for staying on track!',
+      priority: 7,
+    });
+  }
+
+  // Sweet treat detection (high carb, low protein)
+  if (carbRatio > 0.7 && proteinRatio < 0.1 && mealCarbs > 30) {
+    insights.push({
+      id: 'post-meal-sweet',
+      type: 'tip',
+      icon: '🍰',
+      title: 'Sweet Treat!',
+      message: 'Enjoyed a sweet treat! Remember to balance it out with protein and veggies in your next meal.',
+      priority: 6,
+    });
+  }
+
+  // Return highest priority insight, or null
+  if (insights.length === 0) return null;
+  return insights.sort((a, b) => b.priority - a.priority)[0];
 };
 
 // Motivational quotes for variety

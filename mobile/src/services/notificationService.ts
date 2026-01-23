@@ -331,6 +331,164 @@ export const sendImmediateNotification = async (
   });
 };
 
+// Schedule smart notifications based on user activity
+export const scheduleSmartNotifications = async (
+  userId: string,
+  meals: Meal[],
+  dailySummary: any,
+  streak: number,
+  dailyGoals: DailyGoals
+): Promise<void> => {
+  const settings = await getNotificationSettings();
+  if (!settings.enabled) return;
+
+  const notifs = await getNotifications();
+  if (!notifs) return;
+
+  // Get today's date string
+  const today = new Date().toISOString().split('T')[0];
+  const todayMeals = meals.filter(m => m.timestamp.split('T')[0] === today);
+
+  // Cancel existing smart notifications
+  const scheduled = await notifs.getAllScheduledNotificationsAsync();
+  for (const notif of scheduled) {
+    if (notif.identifier?.startsWith('smart-')) {
+      await notifs.cancelScheduledNotificationAsync(notif.identifier);
+    }
+  }
+
+  // 1. STREAK SAVER: If user has a streak of 3+ days and hasn't logged today by 8 PM
+  if (streak >= 3 && todayMeals.length === 0) {
+    const now = new Date();
+    const eightPM = new Date();
+    eightPM.setHours(20, 0, 0, 0);
+
+    // Only schedule if it's before 8 PM
+    if (now < eightPM) {
+      await scheduleNotification(
+        `Don't lose your ${streak}-day streak! 🔥`,
+        "Log one item to keep it going. You've got this!",
+        {
+          type: 'daily',
+          hour: 20,
+          minute: 0,
+        },
+        'smart-streak-saver'
+      );
+    }
+  }
+
+  // 2. STREAK CELEBRATION: Celebrate milestone streaks
+  if (streak === 7 || streak === 14 || streak === 30 || streak === 60 || streak === 100) {
+    await sendImmediateNotification(
+      `Wow, a ${streak}-day streak! 🎉`,
+      "You're building an amazing habit. Keep it up!"
+    );
+  }
+
+  // 3. INSIGHT-DRIVEN NOTIFICATION: Send one high-priority actionable insight per day
+  if (todayMeals.length > 0) {
+    const caloriesConsumed = todayMeals.reduce((sum, m) => sum + m.totalCalories, 0);
+    const proteinConsumed = todayMeals.reduce((sum, m) => sum + m.totalProtein, 0);
+    const caloriePercent = (caloriesConsumed / dailyGoals.calorieGoal) * 100;
+    const proteinPercent = (proteinConsumed / dailyGoals.proteinGoal) * 100;
+
+    // Close to protein goal (evening notification)
+    if (proteinPercent >= 70 && proteinPercent < 90) {
+      const proteinRemaining = Math.round(dailyGoals.proteinGoal - proteinConsumed);
+      await scheduleNotification(
+        "You're close to your protein goal! 💪",
+        `Just ${proteinRemaining}g more! A small snack like Greek yogurt can get you there.`,
+        {
+          type: 'daily',
+          hour: 18,
+          minute: 0,
+        },
+        'smart-protein-goal'
+      );
+    }
+
+    // Over calorie goal (gentle reminder)
+    if (caloriePercent > 110) {
+      await scheduleNotification(
+        "You went over today's goal 💡",
+        "No worries! Tomorrow is a fresh start. Consider a lighter breakfast.",
+        {
+          type: 'daily',
+          hour: 21,
+          minute: 0,
+        },
+        'smart-over-calories'
+      );
+    }
+  }
+};
+
+// Personalize meal reminders with user's name (if available)
+export const schedulePersonalizedMealReminders = async (
+  settings: NotificationSettings,
+  userName?: string
+): Promise<void> => {
+  if (!settings.mealReminders) return;
+
+  const notifs = await getNotifications();
+  if (!notifs) return;
+
+  // Cancel existing meal reminders
+  const scheduled = await notifs.getAllScheduledNotificationsAsync();
+  for (const notif of scheduled) {
+    if (notif.identifier?.startsWith('meal-reminder-')) {
+      await notifs.cancelScheduledNotificationAsync(notif.identifier);
+    }
+  }
+
+  const greeting = userName ? `${userName}` : '';
+
+  // Morning reminder (8:30 AM)
+  if (settings.morningReminder) {
+    await scheduleNotification(
+      "Good morning! 🌅",
+      greeting ? `What's for breakfast today, ${greeting}?` : "Start your day with a healthy breakfast!",
+      {
+        type: 'daily',
+        hour: 8,
+        minute: 30,
+      },
+      'meal-reminder-morning'
+    );
+  }
+
+  // Lunch reminder (12:30 PM)
+  if (settings.lunchReminder) {
+    await scheduleNotification(
+      "Lunchtime! 🍽️",
+      greeting ? `What's for lunch today, ${greeting}?` : "Time for a nutritious lunch!",
+      {
+        type: 'daily',
+        hour: 12,
+        minute: 30,
+      },
+      'meal-reminder-lunch'
+    );
+  }
+
+  // Dinner reminder (6:30 PM)
+  if (settings.dinnerReminder) {
+    await scheduleNotification(
+      "Dinner time! 🥗",
+      greeting ? `What's for dinner, ${greeting}?` : "Wrap up your day with a balanced dinner!",
+      {
+        type: 'daily',
+        hour: 18,
+        minute: 30,
+      },
+      'meal-reminder-dinner'
+    );
+  }
+
+  console.log('Personalized meal reminders scheduled');
+};
+
 // Get all scheduled notifications (for debugging)
 export const getScheduledNotifications = async () => {
   const notifs = await getNotifications();
