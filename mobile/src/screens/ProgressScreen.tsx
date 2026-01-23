@@ -56,8 +56,8 @@ export default function ProgressScreen() {
 
   // Recalculate streak when meals change
   useEffect(() => {
-    const newStreak = calculateStreak();
-    useProgressStore.setState({ streak: newStreak });
+    const streakResult = calculateStreak();
+    useProgressStore.setState({ streak: streakResult.streak });
   }, [meals.length, calculateStreak]);
 
   // Get last 7 days of calorie data for line chart
