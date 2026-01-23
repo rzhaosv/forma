@@ -178,9 +178,10 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
 
     try {
       const keys = getStorageKeys(userId);
+      await AsyncStorage.setItem(keys.complete, 'true');
       await AsyncStorage.setItem(keys.profileComplete, 'true');
       await AsyncStorage.setItem(keys.data, JSON.stringify(updatedData));
-      set({ isProfileComplete: true });
+      set({ isComplete: true, isProfileComplete: true });
     } catch (error) {
       console.error('Failed to save profile data:', error);
     }
