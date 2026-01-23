@@ -55,7 +55,7 @@ export default function ManualEntryScreen() {
     }
   }, [route.params]);
 
-  const handleAddFood = () => {
+  const handleAddFood = async () => {
     // Validation
     if (!foodName.trim()) {
       Alert.alert('Missing Info', 'Please enter a food name');
