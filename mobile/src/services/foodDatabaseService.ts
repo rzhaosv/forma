@@ -32,6 +32,9 @@ const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
 
 // Search for food nutrition info online using OpenAI
 export async function searchFoodOnline(query: string): Promise<FoodDatabaseItem[]> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
   try {
     if (!OPENAI_API_KEY || OPENAI_API_KEY.includes('YOUR_')) {
       throw new Error('OpenAI API Key is not configured');
@@ -76,7 +79,7 @@ RULES:
         temperature: 0.3,
         max_tokens: 500,
       }),
-      signal: AbortSignal.timeout(10000), // 10 second timeout
+      signal: controller.signal,
     });
 
     if (!response.ok) {
@@ -125,8 +128,14 @@ RULES:
       ],
     }));
   } catch (error) {
-    console.error('Error searching food online:', error);
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error('Food search request timed out');
+    } else {
+      console.error('Error searching food online:', error);
+    }
     return [];
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
