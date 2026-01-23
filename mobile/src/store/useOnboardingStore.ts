@@ -13,36 +13,36 @@ export interface OnboardingData {
   // Unit preference
   unitSystem?: UnitSystem;
 
-  // Step 1: Physical Info
+  // Phase 1: Initial onboarding (minimal - collected upfront)
+  weightGoal?: WeightGoal;
+  estimatedCalorieGoal?: number;
+
+  // Phase 2: Deferred profile completion (detailed - collected after signup)
   weight_kg?: number;
   height_cm?: number;
-  
-  // Step 2: Demographics
   age?: number;
   gender?: Gender;
-  
-  // Step 3: Activity
   activityLevel?: ActivityLevel;
-  
-  // Step 4: Goals
-  weightGoal?: WeightGoal;
   targetWeight_kg?: number;
-  
-  // Calculated
+
+  // Calculated (after profile completion)
   calorieGoal?: number;
   proteinGoal?: number;
 }
 
 interface OnboardingState {
-  isComplete: boolean;
+  isComplete: boolean;              // True after initial 3-screen flow
+  isProfileComplete: boolean;        // True after deferred profile screens
   isLoading: boolean;
   currentStep: number;
   data: OnboardingData;
   currentUserId: string | null;
   setStep: (step: number) => void;
   updateData: (data: Partial<OnboardingData>) => void;
-  calculateGoals: () => void;
+  calculateEstimatedGoal: () => void;     // Simple goal-based calculation
+  calculateGoals: () => void;              // Accurate calculation with full data
   completeOnboarding: () => Promise<void>;
+  completeProfile: () => Promise<void>;    // New method for profile completion
   initialize: (userId: string) => Promise<void>;
   reset: () => Promise<void>;
   clearData: () => Promise<void>;
@@ -50,11 +50,13 @@ interface OnboardingState {
 
 const getStorageKeys = (userId: string) => ({
   complete: `@nutrisnap_onboarding_complete_${userId}`,
+  profileComplete: `@nutrisnap_profile_complete_${userId}`,
   data: `@nutrisnap_onboarding_data_${userId}`,
 });
 
 export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   isComplete: false,
+  isProfileComplete: false,
   isLoading: true,
   currentStep: 1,
   data: {},
@@ -69,7 +71,20 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
       data: { ...state.data, ...newData },
     }));
   },
-  
+
+  calculateEstimatedGoal: () => {
+    const { data } = get();
+    let estimatedCalories = 2200; // default
+
+    if (data.weightGoal === 'lose') estimatedCalories = 1800;
+    else if (data.weightGoal === 'maintain') estimatedCalories = 2200;
+    else if (data.weightGoal === 'gain') estimatedCalories = 2600;
+
+    set((state) => ({
+      data: { ...state.data, estimatedCalorieGoal: estimatedCalories }
+    }));
+  },
+
   calculateGoals: () => {
     const { data } = get();
     const { weight_kg, height_cm, age, gender, activityLevel, weightGoal, targetWeight_kg } = data;
@@ -128,22 +143,46 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   completeOnboarding: async () => {
     const { data } = get();
     const userId = get().currentUserId;
-    
+
     if (!userId) {
       console.error('Cannot complete onboarding: user ID is required');
       return;
     }
-    
-    // Calculate goals before completing
-    get().calculateGoals();
-    
+
+    // Calculate estimated goal for initial flow
+    get().calculateEstimatedGoal();
+    const updatedData = get().data;
+
     try {
       const keys = getStorageKeys(userId);
       await AsyncStorage.setItem(keys.complete, 'true');
-      await AsyncStorage.setItem(keys.data, JSON.stringify(data));
+      await AsyncStorage.setItem(keys.data, JSON.stringify(updatedData));
       set({ isComplete: true, currentStep: 1 });
     } catch (error) {
       console.error('Failed to save onboarding data:', error);
+    }
+  },
+
+  completeProfile: async () => {
+    const { data } = get();
+    const userId = get().currentUserId;
+
+    if (!userId) {
+      console.error('Cannot complete profile: user ID is required');
+      return;
+    }
+
+    // Calculate accurate goals with full profile data
+    get().calculateGoals();
+    const updatedData = get().data;
+
+    try {
+      const keys = getStorageKeys(userId);
+      await AsyncStorage.setItem(keys.profileComplete, 'true');
+      await AsyncStorage.setItem(keys.data, JSON.stringify(updatedData));
+      set({ isProfileComplete: true });
+    } catch (error) {
+      console.error('Failed to save profile data:', error);
     }
   },
   
@@ -151,15 +190,22 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
     try {
       set({ currentUserId: userId });
       const keys = getStorageKeys(userId);
-      
+
       const isComplete = await AsyncStorage.getItem(keys.complete);
+      const isProfileComplete = await AsyncStorage.getItem(keys.profileComplete);
       const dataStr = await AsyncStorage.getItem(keys.data);
-      
+
       if (isComplete === 'true') {
         const data = dataStr ? JSON.parse(dataStr) : {};
-        set({ isComplete: true, data, currentStep: 1, isLoading: false });
+        set({
+          isComplete: true,
+          isProfileComplete: isProfileComplete === 'true',
+          data,
+          currentStep: 1,
+          isLoading: false
+        });
       } else {
-        set({ isComplete: false, isLoading: false, data: {} });
+        set({ isComplete: false, isProfileComplete: false, isLoading: false, data: {} });
       }
     } catch (error) {
       console.error('Failed to load onboarding data:', error);
@@ -170,22 +216,24 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   reset: async () => {
     const userId = get().currentUserId;
     if (!userId) return;
-    
+
     try {
       const keys = getStorageKeys(userId);
       await AsyncStorage.removeItem(keys.complete);
+      await AsyncStorage.removeItem(keys.profileComplete);
       await AsyncStorage.removeItem(keys.data);
-      set({ isComplete: false, currentStep: 1, data: {} });
+      set({ isComplete: false, isProfileComplete: false, currentStep: 1, data: {} });
     } catch (error) {
       console.error('Failed to reset onboarding:', error);
     }
   },
-  
+
   clearData: async () => {
-    set({ 
-      isComplete: false, 
+    set({
+      isComplete: false,
+      isProfileComplete: false,
       isLoading: false,
-      currentStep: 1, 
+      currentStep: 1,
       data: {},
       currentUserId: null,
     });

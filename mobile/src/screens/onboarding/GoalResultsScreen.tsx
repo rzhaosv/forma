@@ -36,8 +36,8 @@ export default function GoalResultsScreen() {
   const slideUp = useRef(new Animated.Value(50)).current;
 
   useEffect(() => {
-    // Ensure goals are calculated
-    calculateGoals();
+    // Use estimated goal for initial flow (not calculated from full data)
+    const calorieTarget = data.estimatedCalorieGoal || 2200;
 
     // Start celebration sequence
     setTimeout(() => {
@@ -69,53 +69,52 @@ export default function GoalResultsScreen() {
       ]).start();
 
       // Count-up animation for calories
-      if (data.calorieGoal) {
-        const duration = 1500;
-        const steps = 60;
-        const increment = data.calorieGoal / steps;
-        let current = 0;
+      const duration = 1500;
+      const steps = 60;
+      const increment = calorieTarget / steps;
+      let current = 0;
 
-        const timer = setInterval(() => {
-          current += increment;
-          if (current >= data.calorieGoal) {
-            setDisplayCalories(data.calorieGoal);
-            clearInterval(timer);
-          } else {
-            setDisplayCalories(Math.floor(current));
-          }
-        }, duration / steps);
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= calorieTarget) {
+          setDisplayCalories(calorieTarget);
+          clearInterval(timer);
+        } else {
+          setDisplayCalories(Math.floor(current));
+        }
+      }, duration / steps);
 
-        return () => clearInterval(timer);
-      }
+      return () => clearInterval(timer);
     }, 300);
-  }, [calculateGoals, data.calorieGoal, scaleAnim, fadeAnim, slideUp]);
+  }, [data.estimatedCalorieGoal, scaleAnim, fadeAnim, slideUp]);
 
   const handleCreateAccount = async () => {
-    // Update meal store with calculated goals
-    if (data.calorieGoal && data.proteinGoal) {
-      setGoals(data.calorieGoal, data.proteinGoal);
-    }
+    // Update meal store with estimated goals
+    const calorieTarget = data.estimatedCalorieGoal || 2200;
+    const proteinTarget = Math.round((calorieTarget * 0.3) / 4);
+    setGoals(calorieTarget, proteinTarget);
+
     await completeOnboarding();
     navigation.navigate('SignUp' as never);
   };
 
   const handleSignIn = async () => {
-    // Update meal store with calculated goals
-    if (data.calorieGoal && data.proteinGoal) {
-      setGoals(data.calorieGoal, data.proteinGoal);
-    }
+    // Update meal store with estimated goals
+    const calorieTarget = data.estimatedCalorieGoal || 2200;
+    const proteinTarget = Math.round((calorieTarget * 0.3) / 4);
+    setGoals(calorieTarget, proteinTarget);
+
     await completeOnboarding();
     navigation.navigate('SignIn' as never);
   };
 
-  const results = data.calorieGoal
-    ? {
-        calorieGoal: data.calorieGoal,
-        proteinGoal: data.proteinGoal || 0,
-        carbsGoal: Math.round((data.calorieGoal * 0.4) / 4),
-        fatGoal: Math.round((data.calorieGoal * 0.3) / 9),
-      }
-    : null;
+  const calorieTarget = data.estimatedCalorieGoal || 2200;
+  const results = {
+    calorieGoal: calorieTarget,
+    proteinGoal: Math.round((calorieTarget * 0.3) / 4),
+    carbsGoal: Math.round((calorieTarget * 0.4) / 4),
+    fatGoal: Math.round((calorieTarget * 0.3) / 9),
+  };
 
   const dynamicStyles = StyleSheet.create({
     container: {
@@ -281,25 +280,12 @@ export default function GoalResultsScreen() {
     },
   });
 
-  if (!results) {
-    return (
-      <SafeAreaView style={dynamicStyles.container}>
-        <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-        <View style={dynamicStyles.scrollContent}>
-          <Text style={dynamicStyles.title}>Calculating...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  const formattedTargetWeight = data.targetWeight_kg ? formatWeight(data.targetWeight_kg, unitSystem) : '';
-
   const goalExplanation =
     data.weightGoal === 'lose'
-      ? `To reach your goal of ${formattedTargetWeight}, you need a daily deficit of 500 calories`
+      ? 'This starting estimate helps you lose weight at a healthy, sustainable pace of about 1 lb per week.'
       : data.weightGoal === 'gain'
-      ? `To reach your goal of ${formattedTargetWeight}, you need a daily surplus of 500 calories`
-      : 'Your daily calorie target to maintain your current weight';
+      ? 'This starting estimate helps you build muscle with a moderate calorie surplus for optimal gains.'
+      : 'This starting estimate helps you maintain your current weight while tracking your nutrition.';
 
   return (
     <SafeAreaView style={dynamicStyles.container}>
@@ -311,10 +297,10 @@ export default function GoalResultsScreen() {
       <ScrollView style={styles.scrollView} contentContainerStyle={dynamicStyles.scrollContent}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
           <Ionicons name="checkmark-circle" size={36} color={colors.primary} style={{ marginRight: 8 }} />
-          <Text style={dynamicStyles.title}>You're All Set!</Text>
+          <Text style={dynamicStyles.title}>You're All Set! 🎉</Text>
         </View>
         <Text style={dynamicStyles.subtitle}>
-          Here's your personalized daily goal based on your profile:
+          Here's your starting plan to get you started:
         </Text>
 
         {/* Calorie Display */}
@@ -361,14 +347,13 @@ export default function GoalResultsScreen() {
 
           {/* Explanation */}
           <View style={dynamicStyles.explanationCard}>
-            <Text style={dynamicStyles.explanationTitle}>What This Means:</Text>
-            <Text style={dynamicStyles.explanationText}>{goalExplanation}</Text>
+            <Text style={dynamicStyles.explanationTitle}>📊 This is your starting estimate</Text>
+            <Text style={dynamicStyles.explanationText}>
+              {goalExplanation}
+              {'\n\n'}
+              Create your account to fine-tune your plan with your exact stats for even better results!
+            </Text>
           </View>
-
-          {/* Citation Note */}
-          <Text style={dynamicStyles.citationText}>
-            ✨ Calculated using the Mifflin-St Jeor Equation and USDA guidelines.
-          </Text>
 
           {/* Action Buttons */}
           <View style={dynamicStyles.buttonContainer}>
@@ -376,14 +361,14 @@ export default function GoalResultsScreen() {
             style={dynamicStyles.primaryButton}
             onPress={handleCreateAccount}
           >
-            <Text style={dynamicStyles.primaryButtonText}>Create Account</Text>
+            <Text style={dynamicStyles.primaryButtonText}>Create Account & Save Plan</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={dynamicStyles.secondaryButton}
             onPress={handleSignIn}
           >
-            <Text style={dynamicStyles.secondaryButtonText}>Sign In</Text>
+            <Text style={dynamicStyles.secondaryButtonText}>Already have an account? Sign In</Text>
           </TouchableOpacity>
           </View>
         </Animated.View>
