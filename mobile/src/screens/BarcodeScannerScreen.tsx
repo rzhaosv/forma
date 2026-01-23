@@ -147,7 +147,7 @@ export default function BarcodeScannerScreen() {
     }
   };
 
-  const handleAddToLog = () => {
+  const handleAddToLog = async () => {
     if (!scannedProduct) return;
 
     // Calculate nutrition based on serving size
