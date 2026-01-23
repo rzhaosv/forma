@@ -28,6 +28,19 @@ export interface FoodDatabaseItem {
   }[];
 }
 
+interface OnlineFoodResult {
+  name: string;
+  category: string;
+  calories_per_100g: number;
+  protein_per_100g: number;
+  carbs_per_100g: number;
+  fat_per_100g: number;
+  typical_serving: {
+    description: string;  // e.g., "sandwich", "piece", "cup", "item"
+    grams: number;        // typical weight in grams
+  };
+}
+
 const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
 
 // Search for food nutrition info online using OpenAI
@@ -64,14 +77,25 @@ Return a JSON array of matching foods with this EXACT structure (no markdown, no
   "calories_per_100g": 200,
   "protein_per_100g": 15,
   "carbs_per_100g": 10,
-  "fat_per_100g": 8
+  "fat_per_100g": 8,
+  "typical_serving": {
+    "description": "sandwich",
+    "grams": 250
+  }
 }]
 
 RULES:
 - Include common variations (e.g., for "banh mi" include Vietnamese sandwich)
 - Use average values from USDA or standard nutrition databases
-- If multiple variations exist, return the most common one
 - Category must be one of: Protein, Carbs, Vegetables, Fruits, Dairy, Fats, Snacks, Beverages
+- For typical_serving.description, use the most natural unit:
+  * Sandwiches/burgers: "sandwich", "burger"
+  * Pastries/baked goods: "piece", "slice"
+  * Beverages: "cup", "glass"
+  * Fruits/vegetables: "medium", "large", "cup"
+  * Prepared dishes: "bowl", "plate", "serving"
+  * Snacks: "piece", "item", "serving"
+- For typical_serving.grams, use realistic portion sizes (e.g., sandwich=250g, piece of baklava=80g)
 - Return 1-3 most relevant results
 - If the food truly doesn't exist, return empty array []`,
           },
@@ -113,20 +137,35 @@ RULES:
     }
 
     // Convert to FoodDatabaseItem format
-    return foods.map((food: any, index: number) => ({
-      id: `online-${Date.now()}-${index}`,
-      name: food.name,
-      category: food.category,
-      calories_per_100g: food.calories_per_100g,
-      protein_per_100g: food.protein_per_100g,
-      carbs_per_100g: food.carbs_per_100g,
-      fat_per_100g: food.fat_per_100g,
-      common_servings: [
+    return foods.map((food: OnlineFoodResult, index: number) => {
+      const servings = [];
+
+      // Add typical serving as first option if available
+      if (food.typical_serving?.description && food.typical_serving?.grams) {
+        servings.push({
+          label: `1 ${food.typical_serving.description} (${food.typical_serving.grams}g)`,
+          grams: food.typical_serving.grams,
+        });
+      }
+
+      // Add standard options
+      servings.push(
         { label: '1g', grams: 1 },
         { label: '1 oz (28g)', grams: 28 },
-        { label: '100g', grams: 100 },
-      ],
-    }));
+        { label: '100g', grams: 100 }
+      );
+
+      return {
+        id: `online-${Date.now()}-${index}`,
+        name: food.name,
+        category: food.category,
+        calories_per_100g: food.calories_per_100g,
+        protein_per_100g: food.protein_per_100g,
+        carbs_per_100g: food.carbs_per_100g,
+        fat_per_100g: food.fat_per_100g,
+        common_servings: servings,
+      };
+    });
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
       console.error('Food search request timed out');
