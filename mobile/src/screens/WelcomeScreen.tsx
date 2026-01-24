@@ -17,6 +17,7 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import { Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { trackSignUp, trackLogin } from '../utils/analytics';
 
 const TESTIMONIALS = [
   { text: "Finally understand my macros!", author: "Sarah J." },

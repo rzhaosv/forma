@@ -19,6 +19,7 @@ import { calculateAll } from '../../utils/calorieCalculator';
 import ConfettiCelebration from '../../components/ConfettiCelebration';
 import { Ionicons } from '@expo/vector-icons';
 import { formatWeight } from '../../utils/unitSystem';
+import { trackTutorialComplete } from '../../utils/analytics';
 
 export default function GoalResultsScreen() {
   const navigation = useNavigation();
@@ -116,6 +117,8 @@ export default function GoalResultsScreen() {
     } else {
       // Initial onboarding - complete and go to signup
       await completeOnboarding();
+      // Track tutorial completion for new users
+      await trackTutorialComplete();
       navigation.navigate('SignUp' as never);
     }
   };
@@ -125,6 +128,8 @@ export default function GoalResultsScreen() {
     setGoals(results.calorieGoal, results.proteinGoal);
 
     await completeOnboarding();
+    // Track tutorial completion for new users
+    await trackTutorialComplete();
     navigation.navigate('SignUp' as never);
   };
 
@@ -133,6 +138,8 @@ export default function GoalResultsScreen() {
     setGoals(results.calorieGoal, results.proteinGoal);
 
     await completeOnboarding();
+    // Track tutorial completion for new users
+    await trackTutorialComplete();
     navigation.navigate('SignIn' as never);
   };
 

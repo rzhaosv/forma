@@ -24,6 +24,19 @@ module.exports = () => {
     config.scheme = schemes;
   }
 
+  // Add Firebase plugins to existing plugins array
+  const plugins = ensureArray(config.plugins);
+
+  // Add Firebase plugins if not already present
+  if (!plugins.some(p => p === '@react-native-firebase/app' || (Array.isArray(p) && p[0] === '@react-native-firebase/app'))) {
+    plugins.push('@react-native-firebase/app');
+  }
+  if (!plugins.some(p => p === '@react-native-firebase/analytics' || (Array.isArray(p) && p[0] === '@react-native-firebase/analytics'))) {
+    plugins.push('@react-native-firebase/analytics');
+  }
+
+  config.plugins = plugins;
+
   return { expo: config };
 };
 

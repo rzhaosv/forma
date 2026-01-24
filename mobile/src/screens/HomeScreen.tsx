@@ -409,6 +409,12 @@ export default function HomeScreen() {
         />
         <View style={{ flexDirection: 'row', gap: 12 }}>
           <TouchableOpacity
+            onPress={() => navigation.navigate('Achievements' as never)}
+            style={[dynamicStyles.signOutButton, { marginRight: 0 }]}
+          >
+            <Ionicons name="trophy" size={18} color={colors.textSecondary} />
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={() => navigation.navigate('Exercise' as never)}
             style={[dynamicStyles.signOutButton, { marginRight: 0 }]}
           >

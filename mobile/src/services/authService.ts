@@ -21,6 +21,7 @@ import { useRecipeStore } from '../store/useRecipeStore';
 import { useOnboardingStore } from '../store/useOnboardingStore';
 import { useExerciseStore } from '../store/useExerciseStore';
 import { useAchievementStore } from '../store/useAchievementStore';
+import { trackSignUp, trackLogin, setUserId } from '../utils/analytics';
 
 // Complete the auth session
 WebBrowser.maybeCompleteAuthSession();
@@ -30,6 +31,11 @@ WebBrowser.maybeCompleteAuthSession();
  */
 export const signUp = async (email: string, password: string): Promise<User> => {
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+  // Track sign-up event for analytics
+  await trackSignUp('email');
+  await setUserId(userCredential.user.uid);
+
   return userCredential.user;
 };
 
@@ -38,6 +44,11 @@ export const signUp = async (email: string, password: string): Promise<User> => 
  */
 export const signIn = async (email: string, password: string): Promise<User> => {
   const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+  // Track login event for analytics
+  await trackLogin('email');
+  await setUserId(userCredential.user.uid);
+
   return userCredential.user;
 };
 
@@ -65,6 +76,18 @@ export const signInWithGoogle = async (): Promise<User> => {
 
     const credential = GoogleAuthProvider.credential(idToken);
     const result = await signInWithCredential(auth, credential);
+
+    // Check if this is a new user (account just created)
+    const isNewUser = result.user.metadata.creationTime === result.user.metadata.lastSignInTime;
+
+    // Track analytics event
+    if (isNewUser) {
+      await trackSignUp('google');
+    } else {
+      await trackLogin('google');
+    }
+    await setUserId(result.user.uid);
+
     return result.user;
   } catch (error: any) {
     console.error('Google Sign-In Error:', error);
@@ -108,6 +131,17 @@ export const signInWithApple = async (): Promise<User> => {
 
     const signInResult = await signInWithCredential(auth, firebaseCredential);
     const user = signInResult.user;
+
+    // Check if this is a new user (account just created)
+    const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
+
+    // Track analytics event
+    if (isNewUser) {
+      await trackSignUp('apple');
+    } else {
+      await trackLogin('apple');
+    }
+    await setUserId(user.uid);
 
     // TODO: Update user profile with full name if available (only available on first sign in)
     // if (fullName && (fullName.givenName || fullName.familyName)) {

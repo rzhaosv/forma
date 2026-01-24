@@ -29,7 +29,7 @@
         "com.apple.developer.healthkit": true,
         "com.apple.developer.healthkit.access": []
       },
-      "buildNumber": "64"
+      "buildNumber": "72"
     },
     "android": {
       "adaptiveIcon": {
