@@ -198,9 +198,30 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
 
       if (isComplete === 'true') {
         const data = dataStr ? JSON.parse(dataStr) : {};
+
+        // Check if user has all profile data but isProfileComplete is not set
+        // This handles migration for users who completed profile before this flag existed
+        const hasFullProfile = !!(
+          data.weight_kg &&
+          data.height_cm &&
+          data.age &&
+          data.gender &&
+          data.activityLevel &&
+          data.calorieGoal &&
+          data.proteinGoal
+        );
+
+        // If user has full profile data, mark as complete
+        const shouldBeProfileComplete = isProfileComplete === 'true' || hasFullProfile;
+
+        // If we detected full profile but flag wasn't set, save it
+        if (hasFullProfile && isProfileComplete !== 'true') {
+          await AsyncStorage.setItem(keys.profileComplete, 'true');
+        }
+
         set({
           isComplete: true,
-          isProfileComplete: isProfileComplete === 'true',
+          isProfileComplete: shouldBeProfileComplete,
           data,
           currentStep: 1,
           isLoading: false
