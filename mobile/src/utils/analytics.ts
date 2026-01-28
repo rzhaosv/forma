@@ -8,8 +8,19 @@
  */
 
 import analytics from '@react-native-firebase/analytics';
+import firebase from '@react-native-firebase/app';
 import { Platform } from 'react-native';
 
+/**
+ * Check if Firebase Native App is initialized
+ */
+export const isFirebaseReady = (): boolean => {
+  try {
+    return firebase.apps.length > 0;
+  } catch (e) {
+    return false;
+  }
+};
 
 /**
  * Wrapper to safely execute analytics functions only when Firebase is ready
@@ -22,7 +33,12 @@ const safeAnalytics = async <T>(
     console.warn(`⚠️ Firebase not ready, skipping ${eventName}`);
     return undefined;
   }
-  return fn();
+  try {
+    return await fn();
+  } catch (error) {
+    console.error(`❌ Analytics error for ${eventName}:`, error);
+    return undefined;
+  }
 };
 
 /**
@@ -39,6 +55,11 @@ export type SignUpMethod = 'google' | 'apple' | 'email';
 export const initializeAnalytics = async (): Promise<void> => {
   try {
     console.log('🔥 Attempting to initialize Firebase Analytics...');
+
+    if (!isFirebaseReady()) {
+      console.warn('⚠️ Firebase Native App not initialized. Analytics will be disabled.');
+      return;
+    }
 
     await analytics().setAnalyticsCollectionEnabled(true);
     console.log('✅ Firebase Analytics initialized successfully');
@@ -60,12 +81,10 @@ export const initializeAnalytics = async (): Promise<void> => {
  * await trackFirstOpen();
  */
 export const trackFirstOpen = async (): Promise<void> => {
-  try {
+  return safeAnalytics(async () => {
     await analytics().logAppOpen();
     console.log('📊 Event tracked: first_open');
-  } catch (error) {
-    console.error('Failed to track first_open:', error);
-  }
+  }, 'trackFirstOpen');
 };
 
 /**
@@ -78,12 +97,12 @@ export const trackFirstOpen = async (): Promise<void> => {
  * await trackSignUp('google');
  */
 export const trackSignUp = async (method: SignUpMethod): Promise<void> => {
-  try {
+  return safeAnalytics(async () => {
     await analytics().logSignUp({ method });
+    // Also track standard conversion event
+    await analytics().logEvent('sign_up', { method });
     console.log(`📊 Event tracked: sign_up (method: ${method})`);
-  } catch (error) {
-    console.error('Failed to track sign_up:', error);
-  }
+  }, 'trackSignUp');
 };
 
 /**
@@ -94,12 +113,12 @@ export const trackSignUp = async (method: SignUpMethod): Promise<void> => {
  * await trackTutorialComplete();
  */
 export const trackTutorialComplete = async (): Promise<void> => {
-  try {
+  return safeAnalytics(async () => {
     await analytics().logTutorialComplete();
+    // Also track standard conversion event for onboarding
+    await analytics().logEvent('tutorial_complete');
     console.log('📊 Event tracked: tutorial_complete');
-  } catch (error) {
-    console.error('Failed to track tutorial_complete:', error);
-  }
+  }, 'trackTutorialComplete');
 };
 
 /**
@@ -111,14 +130,12 @@ export const trackTutorialComplete = async (): Promise<void> => {
  * await trackStartTrial(7);
  */
 export const trackStartTrial = async (trialDays: number = 7): Promise<void> => {
-  try {
+  return safeAnalytics(async () => {
     await analytics().logEvent('start_trial', {
       trial_days: trialDays,
     });
     console.log(`📊 Event tracked: start_trial (${trialDays} days)`);
-  } catch (error) {
-    console.error('Failed to track start_trial:', error);
-  }
+  }, 'trackStartTrial');
 };
 
 /**
@@ -139,7 +156,7 @@ export const trackPurchase = async (
   itemId: string,
   itemName: string
 ): Promise<void> => {
-  try {
+  return safeAnalytics(async () => {
     await analytics().logPurchase({
       value,
       currency,
@@ -152,9 +169,7 @@ export const trackPurchase = async (
       ],
     });
     console.log(`📊 Event tracked: purchase (${currency} ${value}, item: ${itemName})`);
-  } catch (error) {
-    console.error('Failed to track purchase:', error);
-  }
+  }, 'trackPurchase');
 };
 
 /**
@@ -165,12 +180,10 @@ export const trackPurchase = async (
  * await trackAddPaymentInfo();
  */
 export const trackAddPaymentInfo = async (): Promise<void> => {
-  try {
+  return safeAnalytics(async () => {
     await analytics().logAddPaymentInfo();
     console.log('📊 Event tracked: add_payment_info');
-  } catch (error) {
-    console.error('Failed to track add_payment_info:', error);
-  }
+  }, 'trackAddPaymentInfo');
 };
 
 /**
@@ -186,15 +199,13 @@ export const trackScreenView = async (
   screenName: string,
   screenClass: string
 ): Promise<void> => {
-  try {
+  return safeAnalytics(async () => {
     await analytics().logScreenView({
       screen_name: screenName,
       screen_class: screenClass,
     });
     console.log(`📊 Screen viewed: ${screenName}`);
-  } catch (error) {
-    console.error(`Failed to track screen view ${screenName}:`, error);
-  }
+  }, 'trackScreenView');
 };
 
 /**
@@ -206,12 +217,10 @@ export const trackScreenView = async (
  * await trackLogin('google');
  */
 export const trackLogin = async (method: SignUpMethod): Promise<void> => {
-  try {
+  return safeAnalytics(async () => {
     await analytics().logLogin({ method });
     console.log(`📊 Event tracked: login (method: ${method})`);
-  } catch (error) {
-    console.error('Failed to track login:', error);
-  }
+  }, 'trackLogin');
 };
 
 /**
@@ -224,12 +233,10 @@ export const trackLogin = async (method: SignUpMethod): Promise<void> => {
  * await setUserId('user123');
  */
 export const setUserId = async (userId: string): Promise<void> => {
-  try {
+  return safeAnalytics(async () => {
     await analytics().setUserId(userId);
     console.log(`📊 User ID set: ${userId}`);
-  } catch (error) {
-    console.error('Failed to set user ID:', error);
-  }
+  }, 'setUserId');
 };
 
 /**
@@ -242,12 +249,10 @@ export const setUserId = async (userId: string): Promise<void> => {
  * await setUserProperty('subscription_status', 'premium');
  */
 export const setUserProperty = async (name: string, value: string): Promise<void> => {
-  try {
+  return safeAnalytics(async () => {
     await analytics().setUserProperty(name, value);
     console.log(`📊 User property set: ${name} = ${value}`);
-  } catch (error) {
-    console.error('Failed to set user property:', error);
-  }
+  }, 'setUserProperty');
 };
 
 /**
@@ -264,12 +269,10 @@ export const trackCustomEvent = async (
   eventName: string,
   parameters?: { [key: string]: any }
 ): Promise<void> => {
-  try {
+  return safeAnalytics(async () => {
     await analytics().logEvent(eventName, parameters);
     console.log(`📊 Custom event tracked: ${eventName}`, parameters);
-  } catch (error) {
-    console.error(`Failed to track custom event ${eventName}:`, error);
-  }
+  }, 'trackCustomEvent');
 };
 
 /**
@@ -282,12 +285,10 @@ export const trackCustomEvent = async (
  * await setAnalyticsEnabled(false); // Disable analytics
  */
 export const setAnalyticsEnabled = async (enabled: boolean): Promise<void> => {
-  try {
+  return safeAnalytics(async () => {
     await analytics().setAnalyticsCollectionEnabled(enabled);
     console.log(`📊 Analytics ${enabled ? 'enabled' : 'disabled'}`);
-  } catch (error) {
-    console.error('Failed to set analytics enabled state:', error);
-  }
+  }, 'setAnalyticsEnabled');
 };
 
 // Note: No default export needed - all functions above are self-contained

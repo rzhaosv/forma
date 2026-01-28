@@ -20,7 +20,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.raymondzhao3000.forma",
-      "googleServicesFile": "./ios/NutriSnap/GoogleService-Info.plist",
+      "googleServicesFile": "./Google-Services-Info.plist",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSHealthShareUsageDescription": "NutriSnap needs access to your health data to sync weight, calories, and nutrition information with Apple Health.",

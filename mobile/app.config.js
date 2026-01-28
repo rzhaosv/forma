@@ -24,9 +24,9 @@ module.exports = () => {
     config.scheme = schemes;
   }
 
-  // Note: React Native Firebase doesn't have Expo config plugins
-  // Firebase configuration is handled via google-services.json (Android)
-  // and GoogleService-Info.plist (iOS) which are already in the project
+  // Note: Firebase native linking is handled by CocoaPods/Autolinking.
+  // We don't need to add them to the Expo plugins array for native builds,
+  // which avoids directory import errors in some Node versions.
 
   return { expo: config };
 };
