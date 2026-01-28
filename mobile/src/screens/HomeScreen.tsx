@@ -39,7 +39,17 @@ export default function HomeScreen() {
   const [showProfileBanner, setShowProfileBanner] = useState(true);
 
   // Get onboarding status
-  const { isProfileComplete } = useOnboardingStore();
+  const { isProfileComplete, data } = useOnboardingStore();
+
+  // Enhanced check: also verify user has all required profile data
+  const hasCompleteProfileData = !!(
+    data.weight_kg &&
+    data.height_cm &&
+    data.age &&
+    data.gender &&
+    data.activityLevel &&
+    data.calorieGoal
+  );
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
@@ -452,7 +462,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Profile Completion Banner */}
-        {!isProfileComplete && showProfileBanner && (
+        {!isProfileComplete && !hasCompleteProfileData && showProfileBanner && (
           <ProfileCompletionBanner
             onPress={() => navigation.navigate('ProfileCompletion' as never)}
             onDismiss={() => setShowProfileBanner(false)}
