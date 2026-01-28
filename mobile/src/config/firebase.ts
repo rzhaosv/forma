@@ -2,8 +2,10 @@ import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import { initializeFirestore, doc, setDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// Import React Native Firebase (initialized natively in AppDelegate.swift/MainActivity.java)
+// No JavaScript initialization needed - FirebaseApp.configure() handles this natively
 
-// Firebase configuration for React Native
+// Firebase configuration for Web SDK (used for Auth and Firestore)
 const firebaseConfig = {
   apiKey: "AIzaSyCL6su_cFHvijSIuQYomXVzNvfMcsmcJTk",
   authDomain: "forma-3803d.firebaseapp.com",
@@ -13,7 +15,7 @@ const firebaseConfig = {
   appId: "1:311242226872:web:e3e40064d1471d8725884d",
 };
 
-// Initialize Firebase
+// Initialize Web Firebase SDK for Auth and Firestore
 let app: FirebaseApp;
 if (getApps().length === 0) {
   app = initializeApp(firebaseConfig);

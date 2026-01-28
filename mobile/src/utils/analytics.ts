@@ -10,6 +10,21 @@
 import analytics from '@react-native-firebase/analytics';
 import { Platform } from 'react-native';
 
+
+/**
+ * Wrapper to safely execute analytics functions only when Firebase is ready
+ */
+const safeAnalytics = async <T>(
+  fn: () => Promise<T>,
+  eventName: string
+): Promise<T | undefined> => {
+  if (!isFirebaseReady()) {
+    console.warn(`⚠️ Firebase not ready, skipping ${eventName}`);
+    return undefined;
+  }
+  return fn();
+};
+
 /**
  * Sign-up method types
  */
@@ -23,20 +38,16 @@ export type SignUpMethod = 'google' | 'apple' | 'email';
  */
 export const initializeAnalytics = async (): Promise<void> => {
   try {
-    // Enable analytics collection (enabled by default, but explicit for clarity)
-    await analytics().setAnalyticsCollectionEnabled(true);
+    console.log('🔥 Attempting to initialize Firebase Analytics...');
 
+    await analytics().setAnalyticsCollectionEnabled(true);
     console.log('✅ Firebase Analytics initialized successfully');
 
-    // Log app version for segmentation
     const appVersion = require('../../package.json').version;
     await analytics().setUserProperty('app_version', appVersion);
-
-    // Log platform for segmentation
     await analytics().setUserProperty('platform', Platform.OS);
   } catch (error) {
     console.error('❌ Failed to initialize Firebase Analytics:', error);
-    // Don't throw - analytics failures should not crash the app
   }
 };
 
@@ -68,9 +79,7 @@ export const trackFirstOpen = async (): Promise<void> => {
  */
 export const trackSignUp = async (method: SignUpMethod): Promise<void> => {
   try {
-    await analytics().logSignUp({
-      method,
-    });
+    await analytics().logSignUp({ method });
     console.log(`📊 Event tracked: sign_up (method: ${method})`);
   } catch (error) {
     console.error('Failed to track sign_up:', error);
@@ -184,7 +193,7 @@ export const trackScreenView = async (
     });
     console.log(`📊 Screen viewed: ${screenName}`);
   } catch (error) {
-    console.error('Failed to track screen view:', error);
+    console.error(`Failed to track screen view ${screenName}:`, error);
   }
 };
 
@@ -198,9 +207,7 @@ export const trackScreenView = async (
  */
 export const trackLogin = async (method: SignUpMethod): Promise<void> => {
   try {
-    await analytics().logLogin({
-      method,
-    });
+    await analytics().logLogin({ method });
     console.log(`📊 Event tracked: login (method: ${method})`);
   } catch (error) {
     console.error('Failed to track login:', error);
@@ -283,5 +290,5 @@ export const setAnalyticsEnabled = async (enabled: boolean): Promise<void> => {
   }
 };
 
-// Export default analytics instance for advanced use cases
-export default analytics();
+// Note: No default export needed - all functions above are self-contained
+// and call analytics() internally only when they're invoked
