@@ -30,7 +30,7 @@
         "com.apple.developer.healthkit": true,
         "com.apple.developer.healthkit.access": []
       },
-      "buildNumber": "72"
+      "buildNumber": "73"
     },
     "android": {
       "adaptiveIcon": {
@@ -54,6 +54,14 @@
     },
     "plugins": [
       "./plugins/withRemoveAdId",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ],
       [
         "expo-camera",
         {
