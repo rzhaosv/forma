@@ -400,12 +400,54 @@ const initInfiniteScroll = () => {
         });
     });
 };
+
+// Sync the voice transcript overlay with the second hero video loop
+const initVoiceOverlaySync = () => {
+    const voiceVideo = document.querySelector('.phone-secondary .hero-video');
+    const transcriptOverlay = document.querySelector('.phone-secondary .voice-transcript-overlay');
+
+    if (!voiceVideo || !transcriptOverlay) return;
+
+    let lastTime = 0;
+
+    const setOverlayDuration = () => {
+        if (!Number.isNaN(voiceVideo.duration) && voiceVideo.duration > 0) {
+            transcriptOverlay.style.animationDuration = `${voiceVideo.duration}s`;
+        }
+    };
+
+    const restartOverlay = () => {
+        transcriptOverlay.style.animation = 'none';
+        // Force reflow to reset the animation
+        void transcriptOverlay.offsetHeight;
+        const duration = transcriptOverlay.style.animationDuration || '21.1s';
+        transcriptOverlay.style.animation = `voiceLoop ${duration} linear infinite`;
+    };
+
+    voiceVideo.addEventListener('loadedmetadata', () => {
+        setOverlayDuration();
+        restartOverlay();
+    });
+
+    voiceVideo.addEventListener('play', () => {
+        setOverlayDuration();
+        restartOverlay();
+    });
+
+    voiceVideo.addEventListener('timeupdate', () => {
+        if (voiceVideo.currentTime < lastTime - 0.1) {
+            restartOverlay();
+        }
+        lastTime = voiceVideo.currentTime;
+    });
+};
 document.addEventListener('DOMContentLoaded', () => {
     initMobileMenu();
     // initHeroAnimations(); - Removed in favor of video
     initFAQAccordion();
     initInfiniteScroll();
     initFloatingCTA();
+    initVoiceOverlaySync();
 
 
 
