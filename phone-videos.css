@@ -1,0 +1,215 @@
+/* Phone Video Mockup Styles - Overrides for working video display */
+
+/* Phone Mockup Container */
+.phone-mockup {
+    position: relative;
+    width: 280px;
+    height: 580px;
+    background: #000;
+    border-radius: 40px;
+    padding: 10px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.phone-primary {
+    transform: rotateY(-15deg) rotateX(5deg) translateX(40px) translateZ(0);
+    z-index: 2;
+}
+
+.phone-secondary {
+    transform: rotateY(15deg) rotateX(5deg) translateX(-40px) translateZ(-50px);
+    z-index: 1;
+    opacity: 0.9;
+}
+
+/* Phone Screen - Critical for rounded corners on videos */
+.phone-screen {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    border-radius: 32px;
+    overflow: hidden;
+    position: relative;
+    /* Force GPU layer for proper clipping and prevent flickering */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    isolation: isolate;
+}
+
+/* Hero Video - Must have rounded corners and anti-flicker */
+.hero-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 32px;
+    /* Fix flickering issues */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+}
+
+/* Hover states */
+.hero-image-container:hover .phone-primary {
+    transform: rotateY(-5deg) rotateX(2deg) translateX(20px) translateZ(30px);
+}
+
+.hero-image-container:hover .phone-secondary {
+    transform: rotateY(5deg) rotateX(2deg) translateX(-20px) translateZ(0);
+    opacity: 1;
+}
+
+/* Voice Transcript Overlay */
+.voice-transcript-overlay {
+    position: absolute;
+    bottom: 20px;
+    left: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    animation: voiceLoop 21.1s linear infinite;
+}
+
+@keyframes voiceLoop {
+
+    0%,
+    2% {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    5%,
+    33.1% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    38%,
+    100% {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+}
+
+.voice-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+}
+
+.pulse-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--primary);
+    border-radius: 50%;
+    animation: pulseGlow 1.5s infinite;
+}
+
+.transcript-text {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+.waveform-mini {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 12px;
+}
+
+.waveform-mini span {
+    width: 2px;
+    height: 4px;
+    background: var(--primary);
+    border-radius: 1px;
+    animation: waveMini 1s ease-in-out infinite;
+}
+
+.waveform-mini span:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.waveform-mini span:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.waveform-mini span:nth-child(4) {
+    animation-delay: 0.15s;
+}
+
+.waveform-mini span:nth-child(5) {
+    animation-delay: 0.3s;
+}
+
+@keyframes pulseGlow {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(79, 171, 125, 0.4);
+    }
+
+    70% {
+        transform: scale(1.5);
+        opacity: 0;
+        box-shadow: 0 0 0 10px rgba(79, 171, 125, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+@keyframes waveMini {
+
+    0%,
+    100% {
+        height: 4px;
+    }
+
+    50% {
+        height: 12px;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .phone-mockup {
+        width: 240px;
+        height: 480px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-image-container {
+        flex-direction: column;
+        gap: 40px;
+        min-height: auto;
+        perspective: none;
+    }
+
+    .phone-primary,
+    .phone-secondary {
+        transform: rotateY(0) rotateX(0) translateX(0) translateZ(0) !important;
+        opacity: 1 !important;
+    }
+}
