@@ -570,6 +570,19 @@ export default function SettingsScreen() {
 
           <TouchableOpacity
             style={dynamicStyles.settingRow}
+            onPress={() => Linking.openURL('https://t.me/+tyaqT57kKmQ3MGUx')}
+          >
+            <View style={dynamicStyles.settingContent}>
+              <Text style={dynamicStyles.settingLabel}>Join Community</Text>
+              <Text style={dynamicStyles.settingDescription}>
+                Connect with other users on Telegram
+              </Text>
+            </View>
+            <Ionicons name="chatbubbles-outline" size={20} color={colors.textTertiary} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={dynamicStyles.settingRow}
             onPress={() => Linking.openURL('mailto:tryformaapp@gmail.com')}
           >
             <View style={dynamicStyles.settingContent}>

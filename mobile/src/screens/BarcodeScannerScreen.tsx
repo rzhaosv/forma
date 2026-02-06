@@ -7,6 +7,8 @@ import { useMealStore } from '../store/useMealStore';
 import { Meal, FoodItem, MealType } from '../types/meal.types';
 import BadgeCelebrationModal from '../components/BadgeCelebrationModal';
 import { checkAndAwardBadges } from '../services/achievementService';
+import { triggerSmartReviewPrompt } from '../services/reviewService';
+import { badges } from '../config/badgeData';
 
 export default function BarcodeScannerScreen() {
   const navigation = useNavigation();
@@ -214,6 +216,15 @@ export default function BarcodeScannerScreen() {
   };
 
   const handleBadgeCelebrationClose = () => {
+    // Check if this was a streak badge (win moment for review prompt)
+    if (celebrationBadgeId) {
+      const badge = badges[celebrationBadgeId];
+      if (badge && badge.category === 'streak') {
+        // Trigger smart review after streak milestone celebration
+        triggerSmartReviewPrompt('streak_milestone');
+      }
+    }
+
     setShowBadgeCelebration(false);
     setCelebrationBadgeId(null);
 

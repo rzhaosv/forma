@@ -116,6 +116,11 @@ export const useMealStore = create<MealStore>((set, get) => ({
     // Attempt to prompt for review
     const { checkAndRequestReview } = require('../services/reviewService');
     checkAndRequestReview('meal_logged');
+
+    // Check if we should show community prompt (after 2nd food log)
+    const { checkAndShowCommunityPrompt } = require('../services/communityPromptService');
+    const totalMeals = get().meals.length;
+    checkAndShowCommunityPrompt(totalMeals);
   },
 
   addFoodToMeal: async (mealId, food) => {

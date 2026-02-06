@@ -11,6 +11,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Platform } from 'react-native';
 import BadgeCelebrationModal from '../components/BadgeCelebrationModal';
 import { checkAndAwardBadges } from '../services/achievementService';
+import { triggerSmartReviewPrompt } from '../services/reviewService';
+import { badges } from '../config/badgeData';
 
 type RouteParams = {
   FoodResults: {
@@ -167,6 +169,15 @@ export default function FoodResultsScreen() {
   };
 
   const handleBadgeCelebrationClose = () => {
+    // Check if this was a streak badge (win moment for review prompt)
+    if (celebrationBadgeId) {
+      const badge = badges[celebrationBadgeId];
+      if (badge && badge.category === 'streak') {
+        // Trigger smart review after streak milestone celebration
+        triggerSmartReviewPrompt('streak_milestone');
+      }
+    }
+
     setShowBadgeCelebration(false);
     setCelebrationBadgeId(null);
 

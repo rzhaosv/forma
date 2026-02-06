@@ -22,6 +22,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { isHealthKitEnabled } from '../utils/healthKitSettings';
 import { Platform } from 'react-native';
 import { kgToLbs, lbsToKg, formatWeight } from '../utils/unitSystem';
+import { triggerSmartReviewPrompt } from '../services/reviewService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -59,6 +61,32 @@ export default function ProgressScreen() {
     const streakResult = calculateStreak();
     useProgressStore.setState({ streak: streakResult.streak });
   }, [meals.length, calculateStreak]);
+
+  // Trigger smart review when viewing a successful weekly summary
+  useEffect(() => {
+    const checkWeeklySummaryReview = async () => {
+      if (!currentWeek) return;
+      
+      // Only trigger if user had a successful week (5+ days logged)
+      if (currentWeek.daysLogged < 5) return;
+      
+      // Check if we've already shown review prompt for this week
+      const weekKey = `@nutrisnap_weekly_review_${currentWeek.weekStart}`;
+      const alreadyShown = await AsyncStorage.getItem(weekKey);
+      if (alreadyShown) return;
+      
+      // Mark as shown for this week
+      await AsyncStorage.setItem(weekKey, 'true');
+      
+      // Small delay to let screen settle
+      setTimeout(() => {
+        console.log('[ReviewService] Triggering review for successful weekly summary');
+        triggerSmartReviewPrompt('weekly_summary');
+      }, 2000);
+    };
+    
+    checkWeeklySummaryReview();
+  }, [currentWeek]);
 
   // Get last 7 days of calorie data for line chart
   const getWeeklyCalorieData = () => {
