@@ -12,7 +12,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useOnboardingStore, ActivityLevel } from '../../store/useOnboardingStore';
 import { useTheme } from '../../hooks/useTheme';
-import OnboardingProgress from '../../components/OnboardingProgress';
+import BlueprintProgress from '../../components/BlueprintProgress';
 import { Ionicons } from '@expo/vector-icons';
 
 const ACTIVITY_LEVELS: {
@@ -124,9 +124,8 @@ export default function ActivityLevelScreen() {
       // Navigate to ProfileComplete in profile completion flow
       navigation.navigate('ProfileComplete' as never);
     } else {
-      // Old onboarding flow (kept for compatibility)
-      setStep(4);
-      navigation.navigate('WeightGoal' as never);
+      // New onboarding quiz flow
+      navigation.navigate('TimeAvailable' as never);
     }
   };
 
@@ -267,11 +266,7 @@ export default function ActivityLevelScreen() {
           <Text style={dynamicStyles.backText}>← Back</Text>
         </TouchableOpacity>
 
-        <OnboardingProgress
-          currentStep={3}
-          totalSteps={4}
-          stepTitles={['Physical Info', 'About You', 'Activity', 'Goals']}
-        />
+        <BlueprintProgress progress={0.56} />
       </View>
 
       <ScrollView

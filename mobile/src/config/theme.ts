@@ -96,47 +96,47 @@ const lightTheme: ThemeColors = {
 };
 
 const darkTheme: ThemeColors = {
-  // Backgrounds
-  background: '#000000',
-  surface: '#1C1C1E',
-  surfaceSecondary: '#2C2C2E',
-  
-  // Text
-  text: '#FFFFFF',
-  textSecondary: '#A1A1AA',
-  textTertiary: '#71717A',
-  
+  // Backgrounds — premium off-black, never pure black
+  background: '#0A0A0C',
+  surface: '#121214',
+  surfaceSecondary: '#1A1A1E',
+
+  // Text — never pure white (eye strain)
+  text: '#F0F0F5',
+  textSecondary: '#A0A0B0',
+  textTertiary: '#6B6B80',
+
   // Primary colors
   primary: '#6366F1',
   primaryLight: '#818CF8',
   primaryDark: '#4F46E5',
-  
+
   // Borders and dividers
-  border: '#3A3A3C',
-  divider: '#2C2C2E',
-  
+  border: 'rgba(255,255,255,0.08)',
+  divider: '#1A1A1E',
+
   // Status colors
   success: '#10B981',
   warning: '#F59E0B',
   error: '#EF4444',
   info: '#3B82F6',
-  
+
   // Input fields
-  inputBackground: '#2C2C2E',
-  inputBorder: '#3A3A3C',
-  inputText: '#FFFFFF',
-  placeholder: '#71717A',
-  
+  inputBackground: '#1A1A1E',
+  inputBorder: 'rgba(255,255,255,0.1)',
+  inputText: '#F0F0F5',
+  placeholder: '#6B6B80',
+
   // Buttons
   buttonPrimary: '#6366F1',
   buttonPrimaryText: '#FFFFFF',
-  buttonSecondary: '#2C2C2E',
-  buttonSecondaryText: '#FFFFFF',
-  
+  buttonSecondary: '#1A1A1E',
+  buttonSecondaryText: '#F0F0F5',
+
   // Cards
-  cardBackground: '#1C1C1E',
-  cardBorder: '#3A3A3C',
-  
+  cardBackground: '#1A1A1E',
+  cardBorder: 'rgba(255,255,255,0.08)',
+
   // Shadows
   shadowColor: '#000000',
 };

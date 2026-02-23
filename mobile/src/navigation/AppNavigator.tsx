@@ -12,6 +12,7 @@ import { listenToAuthChanges } from '../services/authService';
 import { useTheme } from '../hooks/useTheme';
 import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
 import TermsOfUseScreen from '../screens/TermsOfUseScreen';
+import PaywallScreen from '../screens/PaywallScreen';
 
 const Stack = createStackNavigator();
 
@@ -59,6 +60,7 @@ export default function AppNavigator() {
           <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
           <Stack.Screen name="SignIn" component={SignInScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
+          <Stack.Screen name="Paywall" component={PaywallScreen} />
           <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
           <Stack.Screen name="TermsOfUse" component={TermsOfUseScreen} />
         </>

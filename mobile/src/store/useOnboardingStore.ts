@@ -8,12 +8,16 @@ export type Gender = 'male' | 'female' | 'other';
 export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
 export type WeightGoal = 'lose' | 'maintain' | 'gain';
 export type UnitSystem = 'metric' | 'imperial';
+export type PrimaryGoal = 'lean_physique' | 'muscle_gain' | 'fat_loss' | 'recomposition';
+export type TimeAvailable = '15' | '30' | '45' | '60+';
+export type CoachingStyle = 'guided' | 'collaborative' | 'independent';
 
 export interface OnboardingData {
   // Unit preference
   unitSystem?: UnitSystem;
 
   // Phase 1: Initial onboarding (minimal - collected upfront)
+  primaryGoal?: PrimaryGoal;
   weightGoal?: WeightGoal;
   estimatedCalorieGoal?: number;
 
@@ -24,6 +28,12 @@ export interface OnboardingData {
   gender?: Gender;
   activityLevel?: ActivityLevel;
   targetWeight_kg?: number;
+
+  // Extended onboarding (new quiz fields)
+  timeAvailable?: TimeAvailable;
+  dietaryPrefs?: string[];
+  obstacles?: string[];
+  coachingStyle?: CoachingStyle;
 
   // Calculated (after profile completion)
   calorieGoal?: number;

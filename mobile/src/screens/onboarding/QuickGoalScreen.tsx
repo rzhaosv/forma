@@ -6,207 +6,201 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
+  ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useOnboardingStore, WeightGoal } from '../../store/useOnboardingStore';
-import { useTheme } from '../../hooks/useTheme';
+import { useOnboardingStore, PrimaryGoal } from '../../store/useOnboardingStore';
 import { Ionicons } from '@expo/vector-icons';
+import BlueprintProgress from '../../components/BlueprintProgress';
 
-const GOALS = [
+const C = {
+  bg: '#0A0A0C',
+  surface: '#1A1A1E',
+  elevated: '#222228',
+  text: '#F0F0F5',
+  textSub: '#A0A0B0',
+  textTertiary: '#6B6B80',
+  accent: '#00E676',
+  accentBg: 'rgba(0,230,118,0.12)',
+  border: 'rgba(255,255,255,0.08)',
+};
+
+const GOALS: {
+  value: PrimaryGoal;
+  weightGoal: 'lose' | 'maintain' | 'gain';
+  icon: string;
+  title: string;
+  subtitle: string;
+  color: string;
+}[] = [
   {
-    value: 'lose' as WeightGoal,
+    value: 'lean_physique',
+    weightGoal: 'lose',
+    icon: 'body',
+    title: 'Lean Physique',
+    subtitle: 'Burn fat, reveal definition',
+    color: '#00E676',
+  },
+  {
+    value: 'muscle_gain',
+    weightGoal: 'gain',
+    icon: 'barbell',
+    title: 'Muscle Gain',
+    subtitle: 'Build size and strength',
+    color: '#00B0FF',
+  },
+  {
+    value: 'fat_loss',
+    weightGoal: 'lose',
     icon: 'trending-down',
-    title: 'Lose Weight',
-    subtitle: 'Shed pounds & feel amazing',
-    color: '#EF4444',
+    title: 'Fat Loss',
+    subtitle: 'Lose weight, feel lighter',
+    color: '#FF6D00',
   },
   {
-    value: 'maintain' as WeightGoal,
-    icon: 'scale',
-    title: 'Maintain Weight',
-    subtitle: 'Stay balanced & healthy',
-    color: '#10B981',
-  },
-  {
-    value: 'gain' as WeightGoal,
-    icon: 'trending-up',
-    title: 'Gain Muscle',
-    subtitle: 'Build strength & size',
-    color: '#3B82F6',
+    value: 'recomposition',
+    weightGoal: 'maintain',
+    icon: 'sync',
+    title: 'Body Recomposition',
+    subtitle: 'Lose fat and gain muscle simultaneously',
+    color: '#AA00FF',
   },
 ];
 
 export default function QuickGoalScreen() {
   const navigation = useNavigation();
-  const { colors, isDark } = useTheme();
-  const { updateData, calculateEstimatedGoal } = useOnboardingStore();
-  const [selectedGoal, setSelectedGoal] = useState<WeightGoal | null>(null);
+  const { updateData } = useOnboardingStore();
+  const [selected, setSelected] = useState<PrimaryGoal | null>(null);
 
   const handleContinue = () => {
-    if (!selectedGoal) return;
-
-    updateData({ weightGoal: selectedGoal });
-    calculateEstimatedGoal();
-    navigation.navigate('GoalResults' as never);
+    if (!selected) return;
+    const goal = GOALS.find(g => g.value === selected)!;
+    updateData({ primaryGoal: selected, weightGoal: goal.weightGoal });
+    navigation.navigate('Height' as never);
   };
 
-  const dynamicStyles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    content: {
-      flex: 1,
-      padding: 20,
-      paddingTop: 40,
-    },
-    header: {
-      marginBottom: 40,
-    },
-    title: {
-      fontSize: 32,
-      fontWeight: '800',
-      color: colors.text,
-      marginBottom: 8,
-    },
-    subtitle: {
-      fontSize: 17,
-      color: colors.textSecondary,
-      lineHeight: 24,
-    },
-    goalsContainer: {
-      gap: 16,
-    },
-    goalCard: {
-      backgroundColor: colors.surface,
-      borderRadius: 16,
-      padding: 20,
-      borderWidth: 3,
-      borderColor: 'transparent',
-      shadowColor: colors.shadowColor,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: isDark ? 0.3 : 0.1,
-      shadowRadius: 8,
-      elevation: 3,
-    },
-    goalCardSelected: {
-      borderColor: colors.primary,
-      backgroundColor: colors.primary + '10',
-    },
-    goalCardContent: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 16,
-    },
-    goalIconContainer: {
-      width: 56,
-      height: 56,
-      borderRadius: 28,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    goalTextContainer: {
-      flex: 1,
-    },
-    goalTitle: {
-      fontSize: 20,
-      fontWeight: '700',
-      color: colors.text,
-      marginBottom: 4,
-    },
-    goalSubtitle: {
-      fontSize: 15,
-      color: colors.textSecondary,
-    },
-    checkIcon: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
-      backgroundColor: colors.primary,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    continueButton: {
-      backgroundColor: colors.primary,
-      paddingVertical: 18,
-      borderRadius: 16,
-      alignItems: 'center',
-      marginTop: 32,
-      shadowColor: colors.primary,
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.3,
-      shadowRadius: 16,
-      elevation: 8,
-    },
-    continueButtonDisabled: {
-      opacity: 0.5,
-    },
-    continueButtonText: {
-      color: '#FFFFFF',
-      fontSize: 18,
-      fontWeight: '700',
-    },
-  });
-
   return (
-    <SafeAreaView style={dynamicStyles.container}>
-      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" />
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        showsVerticalScrollIndicator={false}
+      >
+        <BlueprintProgress progress={0.14} />
 
-      <View style={dynamicStyles.content}>
-        <View style={dynamicStyles.header}>
-          <Text style={dynamicStyles.title}>What's Your Main Goal?</Text>
-          <Text style={dynamicStyles.subtitle}>
-            We'll create a personalized starting plan for you.
-          </Text>
-        </View>
+        <Text style={styles.title}>What's your primary goal?</Text>
+        <Text style={styles.subtitle}>
+          We'll build your nutrition plan around it.
+        </Text>
 
-        <View style={dynamicStyles.goalsContainer}>
-          {GOALS.map((goal) => (
-            <TouchableOpacity
-              key={goal.value}
-              style={[
-                dynamicStyles.goalCard,
-                selectedGoal === goal.value && dynamicStyles.goalCardSelected,
-              ]}
-              onPress={() => setSelectedGoal(goal.value)}
-              activeOpacity={0.7}
-            >
-              <View style={dynamicStyles.goalCardContent}>
-                <View
-                  style={[
-                    dynamicStyles.goalIconContainer,
-                    { backgroundColor: goal.color + '20' },
-                  ]}
-                >
-                  <Ionicons name={goal.icon as any} size={32} color={goal.color} />
+        <View style={styles.cards}>
+          {GOALS.map((goal) => {
+            const isSelected = selected === goal.value;
+            return (
+              <TouchableOpacity
+                key={goal.value}
+                style={[
+                  styles.card,
+                  isSelected && { borderColor: goal.color, backgroundColor: goal.color + '12' },
+                ]}
+                onPress={() => setSelected(goal.value)}
+                activeOpacity={0.75}
+              >
+                <View style={[styles.iconBox, { backgroundColor: goal.color + '18' }]}>
+                  <Ionicons name={goal.icon as any} size={26} color={isSelected ? goal.color : C.textSub} />
                 </View>
-
-                <View style={dynamicStyles.goalTextContainer}>
-                  <Text style={dynamicStyles.goalTitle}>{goal.title}</Text>
-                  <Text style={dynamicStyles.goalSubtitle}>{goal.subtitle}</Text>
+                <View style={styles.cardText}>
+                  <Text style={[styles.cardTitle, isSelected && { color: goal.color }]}>
+                    {goal.title}
+                  </Text>
+                  <Text style={styles.cardSubtitle}>{goal.subtitle}</Text>
                 </View>
-
-                {selectedGoal === goal.value && (
-                  <View style={dynamicStyles.checkIcon}>
-                    <Ionicons name="checkmark" size={20} color="#FFFFFF" />
+                {isSelected && (
+                  <View style={[styles.checkBox, { backgroundColor: goal.color }]}>
+                    <Ionicons name="checkmark" size={16} color="#0A0A0C" />
                   </View>
                 )}
-              </View>
-            </TouchableOpacity>
-          ))}
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         <TouchableOpacity
-          style={[
-            dynamicStyles.continueButton,
-            !selectedGoal && dynamicStyles.continueButtonDisabled,
-          ]}
+          style={[styles.continueBtn, !selected && styles.continueBtnDisabled]}
           onPress={handleContinue}
-          disabled={!selectedGoal}
+          disabled={!selected}
+          activeOpacity={0.85}
         >
-          <Text style={dynamicStyles.continueButtonText}>Continue →</Text>
+          <Text style={styles.continueBtnText}>Continue</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: C.bg },
+  scroll: { padding: 24, paddingTop: 16 },
+  title: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: C.text,
+    marginTop: 20,
+    marginBottom: 8,
+    letterSpacing: -0.3,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: C.textSub,
+    lineHeight: 23,
+    marginBottom: 28,
+  },
+  cards: { gap: 12, marginBottom: 32 },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: C.surface,
+    borderRadius: 16,
+    padding: 18,
+    borderWidth: 1.5,
+    borderColor: C.border,
+    gap: 14,
+  },
+  iconBox: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cardText: { flex: 1 },
+  cardTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: C.text,
+    marginBottom: 3,
+  },
+  cardSubtitle: {
+    fontSize: 14,
+    color: C.textSub,
+  },
+  checkBox: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  continueBtn: {
+    backgroundColor: C.accent,
+    paddingVertical: 17,
+    borderRadius: 14,
+    alignItems: 'center',
+  },
+  continueBtnDisabled: { opacity: 0.4 },
+  continueBtnText: {
+    color: '#0A0A0C',
+    fontSize: 17,
+    fontWeight: '700',
+  },
+});
