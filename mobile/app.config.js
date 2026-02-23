@@ -24,10 +24,6 @@ module.exports = () => {
     config.scheme = schemes;
   }
 
-  // Note: Firebase native linking is handled by CocoaPods/Autolinking.
-  // We don't need to add them to the Expo plugins array for native builds,
-  // which avoids directory import errors in some Node versions.
-
   return { expo: config };
 };
 

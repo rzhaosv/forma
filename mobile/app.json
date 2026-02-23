@@ -54,6 +54,7 @@
     },
     "plugins": [
       "./plugins/withRemoveAdId",
+      "@react-native-firebase/app",
       [
         "expo-build-properties",
         {

@@ -65,24 +65,30 @@ export default function ProgressScreen() {
   // Trigger smart review when viewing a successful weekly summary
   useEffect(() => {
     const checkWeeklySummaryReview = async () => {
-      if (!currentWeek) return;
-      
-      // Only trigger if user had a successful week (5+ days logged)
-      if (currentWeek.daysLogged < 5) return;
-      
-      // Check if we've already shown review prompt for this week
-      const weekKey = `@nutrisnap_weekly_review_${currentWeek.weekStart}`;
-      const alreadyShown = await AsyncStorage.getItem(weekKey);
-      if (alreadyShown) return;
-      
-      // Mark as shown for this week
-      await AsyncStorage.setItem(weekKey, 'true');
-      
-      // Small delay to let screen settle
-      setTimeout(() => {
-        console.log('[ReviewService] Triggering review for successful weekly summary');
-        triggerSmartReviewPrompt('weekly_summary');
-      }, 2000);
+      try {
+        if (!currentWeek) return;
+        
+        // Only trigger if user had a successful week (5+ days logged)
+        if (currentWeek.daysLogged < 5) return;
+        
+        // Check if we've already shown review prompt for this week
+        const weekKey = `@nutrisnap_weekly_review_${currentWeek.weekStart}`;
+        const alreadyShown = await AsyncStorage.getItem(weekKey);
+        if (alreadyShown) return;
+        
+        // Mark as shown for this week
+        await AsyncStorage.setItem(weekKey, 'true');
+        
+        // Small delay to let screen settle
+        setTimeout(() => {
+          console.log('[ReviewService] Triggering review for successful weekly summary');
+          triggerSmartReviewPrompt('weekly_summary').catch((e) => 
+            console.warn('[ProgressScreen] Review prompt error:', e)
+          );
+        }, 2000);
+      } catch (error) {
+        console.warn('[ProgressScreen] Error in weekly summary review check:', error);
+      }
     };
     
     checkWeeklySummaryReview();

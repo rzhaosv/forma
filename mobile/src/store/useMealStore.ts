@@ -113,14 +113,26 @@ export const useMealStore = create<MealStore>((set, get) => ({
       // Don't throw - we don't want to block the meal entry if HealthKit sync fails
     }
 
-    // Attempt to prompt for review
-    const { checkAndRequestReview } = require('../services/reviewService');
-    checkAndRequestReview('meal_logged');
+    // Attempt to prompt for review (wrapped in try-catch to prevent crashes)
+    try {
+      const { checkAndRequestReview } = require('../services/reviewService');
+      checkAndRequestReview('meal_logged').catch((e: Error) => 
+        console.warn('[MealStore] Review service error:', e)
+      );
+    } catch (error) {
+      console.warn('[MealStore] Failed to load review service:', error);
+    }
 
     // Check if we should show community prompt (after 2nd food log)
-    const { checkAndShowCommunityPrompt } = require('../services/communityPromptService');
-    const totalMeals = get().meals.length;
-    checkAndShowCommunityPrompt(totalMeals);
+    try {
+      const { checkAndShowCommunityPrompt } = require('../services/communityPromptService');
+      const totalMeals = get().meals.length;
+      checkAndShowCommunityPrompt(totalMeals).catch((e: Error) => 
+        console.warn('[MealStore] Community prompt error:', e)
+      );
+    } catch (error) {
+      console.warn('[MealStore] Failed to load community prompt service:', error);
+    }
   },
 
   addFoodToMeal: async (mealId, food) => {

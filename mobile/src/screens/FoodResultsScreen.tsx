@@ -171,10 +171,16 @@ export default function FoodResultsScreen() {
   const handleBadgeCelebrationClose = () => {
     // Check if this was a streak badge (win moment for review prompt)
     if (celebrationBadgeId) {
-      const badge = badges[celebrationBadgeId];
-      if (badge && badge.category === 'streak') {
-        // Trigger smart review after streak milestone celebration
-        triggerSmartReviewPrompt('streak_milestone');
+      try {
+        const badge = badges[celebrationBadgeId];
+        if (badge && badge.category === 'streak') {
+          // Trigger smart review after streak milestone celebration
+          triggerSmartReviewPrompt('streak_milestone').catch((e) => 
+            console.warn('[FoodResults] Review prompt error:', e)
+          );
+        }
+      } catch (error) {
+        console.warn('[FoodResults] Error checking badge for review:', error);
       }
     }
 

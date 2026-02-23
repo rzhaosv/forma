@@ -1,6 +1,18 @@
-import * as StoreReview from 'expo-store-review';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert, Linking } from 'react-native';
+
+// Lazy load StoreReview to prevent crashes on unsupported devices
+let StoreReview: typeof import('expo-store-review') | null = null;
+const getStoreReview = async () => {
+  if (StoreReview === null) {
+    try {
+      StoreReview = await import('expo-store-review');
+    } catch (error) {
+      console.warn('[ReviewService] Failed to load expo-store-review:', error);
+    }
+  }
+  return StoreReview;
+};
 
 // Storage keys
 const STORAGE_KEY_LAST_REVIEW = '@nutrisnap_last_review_prompt_date';
@@ -141,10 +153,18 @@ const showFeedbackOptions = (): void => {
  */
 const requestAppStoreReview = async (): Promise<void> => {
   try {
-    const isAvailable = await StoreReview.hasAction();
+    const storeReviewModule = await getStoreReview();
+    if (!storeReviewModule) {
+      console.warn('[ReviewService] StoreReview module not available');
+      return;
+    }
+    
+    const isAvailable = await storeReviewModule.hasAction();
     if (isAvailable) {
       console.log('[ReviewService] Showing App Store review prompt');
-      await StoreReview.requestReview();
+      await storeReviewModule.requestReview();
+    } else {
+      console.log('[ReviewService] Store review not available on this device');
     }
   } catch (error) {
     console.error('[ReviewService] Error requesting App Store review:', error);

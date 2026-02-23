@@ -8,29 +8,31 @@
  */
 
 import analytics from '@react-native-firebase/analytics';
-import firebase from '@react-native-firebase/app';
+import firebaseNative from '@react-native-firebase/app';
 import { Platform } from 'react-native';
 
 /**
  * Check if Firebase Native App is initialized
+ * Uses the React Native Firebase native module, NOT the Web SDK
  */
 export const isFirebaseReady = (): boolean => {
   try {
-    return firebase.apps.length > 0;
+    const apps = firebaseNative.apps;
+    return apps && apps.length > 0;
   } catch (e) {
     return false;
   }
 };
 
 /**
- * Wrapper to safely execute analytics functions only when Firebase is ready
+ * Wrapper to safely execute analytics functions only when Firebase is ready.
+ * Guards against native crashes when Firebase isn't configured.
  */
 const safeAnalytics = async <T>(
   fn: () => Promise<T>,
   eventName: string
 ): Promise<T | undefined> => {
   if (!isFirebaseReady()) {
-    console.warn(`⚠️ Firebase not ready, skipping ${eventName}`);
     return undefined;
   }
   try {
@@ -54,19 +56,18 @@ export type SignUpMethod = 'google' | 'apple' | 'email';
  */
 export const initializeAnalytics = async (): Promise<void> => {
   try {
-    console.log('🔥 Attempting to initialize Firebase Analytics...');
-
     if (!isFirebaseReady()) {
-      console.warn('⚠️ Firebase Native App not initialized. Analytics will be disabled.');
+      console.warn('⚠️ Firebase not initialized, skipping analytics setup');
       return;
     }
 
     await analytics().setAnalyticsCollectionEnabled(true);
-    console.log('✅ Firebase Analytics initialized successfully');
 
     const appVersion = require('../../package.json').version;
     await analytics().setUserProperty('app_version', appVersion);
     await analytics().setUserProperty('platform', Platform.OS);
+    
+    console.log('✅ Firebase Analytics initialized');
   } catch (error) {
     console.error('❌ Failed to initialize Firebase Analytics:', error);
   }
