@@ -207,6 +207,13 @@ export default function WelcomeScreen() {
               <Text style={styles.secondaryCtaText}>I already have an account</Text>
             </TouchableOpacity>
 
+            <TouchableOpacity
+              style={[styles.secondaryCta, { marginBottom: 20, borderColor: C.accent, borderWidth: 1 }]}
+              onPress={() => navigation.navigate('Paywall' as never)}
+            >
+              <Text style={[styles.secondaryCtaText, { color: C.accent }]}>View Premium Plans</Text>
+            </TouchableOpacity>
+
             {/* Divider */}
             <View style={styles.divider}>
               <View style={styles.dividerLine} />

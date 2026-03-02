@@ -3,13 +3,19 @@ import './src/config/firebase';
 import React, { useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, LogBox } from 'react-native';
 import AppNavigator from './src/navigation/AppNavigator';
+
+LogBox.ignoreLogs([
+  '[RevenueCat]',
+  'RevenueCat SDK Configuration is not valid',
+]);
 import { useThemeStore } from './src/store/useThemeStore';
 import { useUnitSystemStore } from './src/store/useUnitSystemStore';
 import Constants from 'expo-constants';
 import { initializeNotifications } from './src/services/notificationService';
 import { initializeAnalytics, trackScreenView } from './src/utils/analytics';
+import { useSubscriptionStore } from './src/store/useSubscriptionStore';
 
 // Error Boundary to catch and display JavaScript errors gracefully
 interface ErrorBoundaryState {
@@ -111,6 +117,7 @@ const errorStyles = StyleSheet.create({
 export default function App() {
   const initializeTheme = useThemeStore((state) => state.initialize);
   const initializeUnitSystem = useUnitSystemStore((state) => state.initialize);
+  const initializeSubscription = useSubscriptionStore((state) => state.initialize);
   const routeNameRef = React.useRef<string>();
   const navigationRef = React.useRef<any>();
 
@@ -141,7 +148,10 @@ export default function App() {
 
     // Initialize Firebase Analytics
     initializeAnalytics().catch(console.error);
-  }, [initializeTheme, initializeUnitSystem]);
+
+    // Initialize RevenueCat SDK (anonymous user — userId is linked after auth in authService)
+    initializeSubscription().catch(console.error);
+  }, [initializeTheme, initializeUnitSystem, initializeSubscription]);
 
   return (
     <ErrorBoundary>

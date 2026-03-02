@@ -16,13 +16,12 @@ import Svg, { Circle } from 'react-native-svg';
 import Constants from 'expo-constants';
 import { signOut } from '../services/authService';
 import { useMealStore } from '../store/useMealStore';
-import { useOnboardingStore } from '../store/useOnboardingStore';
 import { useTheme } from '../hooks/useTheme';
+import { useSubscriptionStore } from '../store/useSubscriptionStore';
 import { Ionicons } from '@expo/vector-icons';
 import { isHealthKitEnabled } from '../utils/healthKitSettings';
 import { Platform } from 'react-native';
 import { getLocalDateString } from '../utils/dateUtils';
-import ProfileCompletionBanner from '../components/ProfileCompletionBanner';
 
 const MEAL_TYPE_ICONS: { [key: string]: keyof typeof Ionicons.glyphMap } = {
   Breakfast: 'sunny',
@@ -35,21 +34,8 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const [currentDate] = useState(new Date());
   const { colors, isDark } = useTheme();
+  const { isPremium } = useSubscriptionStore();
   const [healthKitEnabled, setHealthKitEnabled] = useState(false);
-  const [showProfileBanner, setShowProfileBanner] = useState(true);
-
-  // Get onboarding status
-  const { isProfileComplete, data } = useOnboardingStore();
-
-  // Enhanced check: also verify user has all required profile data
-  const hasCompleteProfileData = !!(
-    data.weight_kg &&
-    data.height_cm &&
-    data.age &&
-    data.gender &&
-    data.activityLevel &&
-    data.calorieGoal
-  );
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
@@ -124,6 +110,18 @@ export default function HomeScreen() {
   };
 
   const handleQuickAdd = (type: string) => {
+    if (!isPremium && (type === 'photo' || type === 'barcode' || type === 'voice')) {
+      Alert.alert(
+        'Premium Feature',
+        'AI-powered logging is a premium feature. Start your free trial to unlock it!',
+        [
+          { text: 'Later', style: 'cancel' },
+          { text: 'View Plans', onPress: () => navigation.navigate('Paywall' as never) }
+        ]
+      );
+      return;
+    }
+
     if (type === 'photo') {
       navigation.navigate('Camera' as never);
     } else if (type === 'barcode') {
@@ -460,16 +458,6 @@ export default function HomeScreen() {
           </View>
           <Text style={dynamicStyles.date}>{formatDate()}</Text>
         </View>
-
-        {/* Profile Completion Banner */}
-        {!isProfileComplete && !hasCompleteProfileData && showProfileBanner && (
-          <ProfileCompletionBanner
-            onPress={() => navigation.navigate('ProfileCompletion' as never)}
-            onDismiss={() => setShowProfileBanner(false)}
-            message="Get personalized goals based on your exact stats!"
-            dismissable={true}
-          />
-        )}
 
         {/* Calorie Progress Card */}
         <View style={dynamicStyles.progressCard}>

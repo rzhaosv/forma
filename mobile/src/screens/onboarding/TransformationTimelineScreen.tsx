@@ -12,6 +12,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useOnboardingStore } from '../../store/useOnboardingStore';
 import { useUnitSystemStore } from '../../store/useUnitSystemStore';
+import { useAuthStore } from '../../store/useAuthStore';
 import { calculateAll } from '../../utils/calorieCalculator';
 import { kgToLbs } from '../../utils/unitSystem';
 import BlueprintProgress from '../../components/BlueprintProgress';
@@ -40,6 +41,7 @@ export default function TransformationTimelineScreen() {
   const navigation = useNavigation();
   const { data } = useOnboardingStore();
   const { unitSystem } = useUnitSystemStore();
+  const { isAuthenticated } = useAuthStore();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [calorieCount, setCalorieCount] = useState(0);
@@ -79,7 +81,11 @@ export default function TransformationTimelineScreen() {
   }, [results.calorieGoal]);
 
   const handleStartTrial = () => {
-    navigation.navigate('Paywall' as never);
+    if (isAuthenticated) {
+      navigation.navigate('Paywall' as never);
+    } else {
+      navigation.navigate('SignUp' as never);
+    }
   };
 
   return (

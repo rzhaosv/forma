@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,14 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { PACKAGE_TYPE } from 'react-native-purchases';
+import { useSubscriptionStore } from '../store/useSubscriptionStore';
 
 const C = {
   bg: '#0A0A0C',
@@ -43,11 +47,44 @@ const getTrialEndDate = () => {
 export default function PaywallScreen() {
   const navigation = useNavigation();
   const [selectedPlan, setSelectedPlan] = useState<'annual' | 'monthly' | 'lifetime'>('annual');
+  const { offering, isPurchasing, purchase, restore } = useSubscriptionStore();
   const trialEndDate = getTrialEndDate();
 
-  const handleStartTrial = () => {
-    // Navigate to sign up — actual payment flow requires RevenueCat integration
-    navigation.navigate('SignUp' as never);
+  const annualPkg = offering?.availablePackages.find(p => p.packageType === PACKAGE_TYPE.ANNUAL);
+  const monthlyPkg = offering?.availablePackages.find(p => p.packageType === PACKAGE_TYPE.MONTHLY);
+  const lifetimePkg = offering?.availablePackages.find(p => p.packageType === PACKAGE_TYPE.LIFETIME);
+
+  // Displayed prices — use real prices from RC, fall back to static
+  const annualMonthly = annualPkg
+    ? `$${(annualPkg.product.price / 12).toFixed(2)}`
+    : '$4.99';
+  const annualFull = annualPkg?.product.priceString ?? '$59.99';
+  const monthlyPrice = monthlyPkg?.product.priceString ?? '$14.99';
+  const lifetimePrice = lifetimePkg?.product.priceString ?? '$149';
+
+  const handleStartTrial = async () => {
+    const pkg =
+      selectedPlan === 'annual' ? annualPkg :
+      selectedPlan === 'monthly' ? monthlyPkg :
+      lifetimePkg;
+
+    if (!pkg) {
+      Alert.alert(
+        'Offerings Not Available',
+        'We could not load the subscription plans. Please check your internet connection or try again later.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+
+    const success = await purchase(pkg);
+    if (success) {
+      navigation.navigate('SignUp' as never);
+    }
+  };
+
+  const handleRestore = async () => {
+    await restore();
   };
 
   return (
@@ -122,13 +159,13 @@ export default function PaywallScreen() {
             </View>
             <View style={styles.planInfo}>
               <Text style={[styles.planName, selectedPlan === 'annual' && { color: C.accent }]}>Annual</Text>
-              <Text style={styles.planBilling}>$59.99 billed once a year</Text>
+              <Text style={styles.planBilling}>{annualFull} billed once a year</Text>
             </View>
             <View style={styles.planPrice}>
               <View style={styles.strikePriceRow}>
-                <Text style={styles.strikePrice}>$14.99</Text>
+                <Text style={styles.strikePrice}>{monthlyPrice}</Text>
               </View>
-              <Text style={[styles.mainPrice, selectedPlan === 'annual' && { color: C.accent }]}>$4.99</Text>
+              <Text style={[styles.mainPrice, selectedPlan === 'annual' && { color: C.accent }]}>{annualMonthly}</Text>
               <Text style={styles.perMonth}>/mo</Text>
             </View>
           </View>
@@ -149,7 +186,7 @@ export default function PaywallScreen() {
               <Text style={styles.planBilling}>Billed every month</Text>
             </View>
             <View style={styles.planPrice}>
-              <Text style={styles.mainPriceNeutral}>$14.99</Text>
+              <Text style={styles.mainPriceNeutral}>{monthlyPrice}</Text>
               <Text style={styles.perMonth}>/mo</Text>
             </View>
           </View>
@@ -170,21 +207,32 @@ export default function PaywallScreen() {
               <Text style={styles.planBilling}>One-time payment, forever</Text>
             </View>
             <View style={styles.planPrice}>
-              <Text style={styles.mainPriceNeutral}>$149</Text>
+              <Text style={styles.mainPriceNeutral}>{lifetimePrice}</Text>
               <Text style={styles.perMonth}> once</Text>
             </View>
           </View>
         </TouchableOpacity>
 
         {/* CTA */}
-        <TouchableOpacity style={styles.ctaBtn} onPress={handleStartTrial} activeOpacity={0.85}>
-          <Text style={styles.ctaBtnText}>Start My Free Trial</Text>
-          <Ionicons name="arrow-forward" size={18} color="#0A0A0C" style={{ marginLeft: 8 }} />
+        <TouchableOpacity
+          style={[styles.ctaBtn, isPurchasing && { opacity: 0.7 }]}
+          onPress={handleStartTrial}
+          activeOpacity={0.85}
+          disabled={isPurchasing}
+        >
+          {isPurchasing ? (
+            <ActivityIndicator color="#0A0A0C" />
+          ) : (
+            <>
+              <Text style={styles.ctaBtnText}>Start My Free Trial</Text>
+              <Ionicons name="arrow-forward" size={18} color="#0A0A0C" style={{ marginLeft: 8 }} />
+            </>
+          )}
         </TouchableOpacity>
 
         <Text style={styles.ctaSubtext}>
           Try free for 7 days, then{' '}
-          {selectedPlan === 'annual' ? '$59.99/year' : selectedPlan === 'monthly' ? '$14.99/month' : '$149 once'}
+          {selectedPlan === 'annual' ? `${annualFull}/year` : selectedPlan === 'monthly' ? `${monthlyPrice}/month` : `${lifetimePrice} once`}
         </Text>
 
         {/* Risk reversal */}
@@ -212,6 +260,15 @@ export default function PaywallScreen() {
           onPress={() => navigation.navigate('SignIn' as never)}
         >
           <Text style={styles.signInLinkText}>Already have an account? Sign in</Text>
+        </TouchableOpacity>
+
+        {/* Restore purchases */}
+        <TouchableOpacity
+          style={styles.signInLink}
+          onPress={handleRestore}
+          disabled={isPurchasing}
+        >
+          <Text style={[styles.signInLinkText, { color: C.textTertiary }]}>Restore purchases</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

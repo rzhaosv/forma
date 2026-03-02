@@ -21,6 +21,7 @@ import { useRecipeStore } from '../store/useRecipeStore';
 import { useOnboardingStore } from '../store/useOnboardingStore';
 import { useExerciseStore } from '../store/useExerciseStore';
 import { useAchievementStore } from '../store/useAchievementStore';
+import { useSubscriptionStore } from '../store/useSubscriptionStore';
 import { trackSignUp, trackLogin, setUserId } from '../utils/analytics';
 
 // Complete the auth session
@@ -227,6 +228,9 @@ export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
 
         // Initialize exercise store (workouts, goals)
         await useExerciseStore.getState().initialize(userId);
+
+        // Link RevenueCat to the Firebase user ID (merges any anonymous purchases)
+        await useSubscriptionStore.getState().initialize(userId);
       } catch (error) {
         console.error('Failed to initialize user stores:', error);
       }
