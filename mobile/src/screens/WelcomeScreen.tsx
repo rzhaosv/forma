@@ -17,7 +17,7 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import { Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import Svg, { Circle } from 'react-native-svg';
+import Svg, { Circle, Rect, Polygon, Ellipse, LinearGradient as SvgLinearGradient, RadialGradient, Stop, Defs } from 'react-native-svg';
 
 const { width } = Dimensions.get('window');
 
@@ -35,23 +35,44 @@ const C = {
   gold: '#F59E0B',
 };
 
-const TESTIMONIALS = [
-  {
-    text: "I log meals in under 30 seconds now. Nothing else I've tried comes close.",
-    author: "Priya S.",
-    role: "VP Finance · lost 14 lbs in 3 months",
-  },
-  {
-    text: "Works around 60-hour weeks. I take a photo and move on.",
-    author: "Marcus T.",
-    role: "Product Lead · hit 180g protein daily",
-  },
-  {
-    text: "The only health app I've used for more than 2 weeks.",
-    author: "Jordan K.",
-    role: "Senior Engineer · body recomp in 8 weeks",
-  },
+const FEATURES = [
+  { icon: 'camera-outline' as const, text: 'Log meals by photo — takes 3 seconds' },
+  { icon: 'bar-chart-outline' as const, text: 'Macros, not just calories' },
+  { icon: 'trending-up-outline' as const, text: 'Insights that adapt to your week' },
 ];
+
+// Inline M mark — matches assets/logo.svg geometry exactly
+function MMark({ size = 36 }: { size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 400 400">
+      <Defs>
+        <SvgLinearGradient id="wbg" x1="200" y1="0" x2="200" y2="400" gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#1E1E26" />
+          <Stop offset="1" stopColor="#07070B" />
+        </SvgLinearGradient>
+        <SvgLinearGradient id="wgreen" x1="90" y1="78" x2="200" y2="230" gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#18FF84" />
+          <Stop offset="1" stopColor="#00B84A" />
+        </SvgLinearGradient>
+        <SvgLinearGradient id="wbar" x1="0" y1="78" x2="0" y2="322" gradientUnits="userSpaceOnUse">
+          <Stop stopColor="#FFFFFF" />
+          <Stop offset="1" stopColor="#C8C8DA" />
+        </SvgLinearGradient>
+        <RadialGradient id="wsheen" cx="28%" cy="18%" r="55%">
+          <Stop stopColor="#FFFFFF" stopOpacity="0.09" />
+          <Stop offset="1" stopColor="#FFFFFF" stopOpacity="0" />
+        </RadialGradient>
+      </Defs>
+      <Rect width="400" height="400" rx="90" fill="url(#wbg)" />
+      <Rect width="400" height="400" rx="90" fill="url(#wsheen)" />
+      <Ellipse cx="200" cy="180" rx="120" ry="105" fill="#00E676" opacity="0.06" />
+      <Polygon points="62,78 117,78 200,230 145,230" fill="url(#wgreen)" />
+      <Polygon points="283,78 338,78 255,230 200,230" fill="url(#wgreen)" />
+      <Rect x="62" y="78" width="55" height="244" rx="11" fill="url(#wbar)" />
+      <Rect x="283" y="78" width="55" height="244" rx="11" fill="url(#wbar)" />
+    </Svg>
+  );
+}
 
 // Static preview of what the app looks like — communicates value instantly
 function AppPreview() {
@@ -66,9 +87,7 @@ function AppPreview() {
           <Text style={preview.greeting}>Good morning</Text>
           <Text style={preview.dateLabel}>Today · 1,847 cal logged</Text>
         </View>
-        <View style={preview.streakBadge}>
-          <Text style={preview.streakText}>🔥 12</Text>
-        </View>
+        <Text style={preview.dateSubLabel}>Mar 4</Text>
       </View>
 
       {/* Calorie ring */}
@@ -131,34 +150,15 @@ export default function WelcomeScreen() {
   const navigation = useNavigation();
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [loadingApple, setLoadingApple] = useState(false);
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideUp = useRef(new Animated.Value(32)).current;
-  const testimonialOpacity = useRef(new Animated.Value(1)).current;
-  const glowAnim = useRef(new Animated.Value(0.5)).current;
+  const slideUp = useRef(new Animated.Value(24)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fadeAnim, { toValue: 1, duration: 700, useNativeDriver: true }),
-      Animated.spring(slideUp, { toValue: 0, tension: 45, friction: 9, useNativeDriver: true }),
+      Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
+      Animated.spring(slideUp, { toValue: 0, tension: 50, friction: 10, useNativeDriver: true }),
     ]).start();
-
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(glowAnim, { toValue: 0.85, duration: 2800, useNativeDriver: true }),
-        Animated.timing(glowAnim, { toValue: 0.5, duration: 2800, useNativeDriver: true }),
-      ])
-    ).start();
-
-    const interval = setInterval(() => {
-      Animated.timing(testimonialOpacity, { toValue: 0, duration: 220, useNativeDriver: true }).start(() => {
-        setCurrentTestimonial(p => (p + 1) % TESTIMONIALS.length);
-        Animated.timing(testimonialOpacity, { toValue: 1, duration: 300, useNativeDriver: true }).start();
-      });
-    }, 4500);
-
-    return () => clearInterval(interval);
   }, []);
 
   const handleGoogleSignIn = async () => {
@@ -187,118 +187,111 @@ export default function WelcomeScreen() {
     }
   };
 
-  const testimonial = TESTIMONIALS[currentTestimonial];
-
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
 
-      {/* Ambient green bloom */}
-      <Animated.View style={[styles.glowWrap, { opacity: glowAnim }]}>
-        <LinearGradient
-          colors={['rgba(0,230,118,0.07)', 'transparent']}
-          style={styles.glow}
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 1 }}
-        />
-      </Animated.View>
+      {/* Subtle top glow — static, no animation */}
+      <LinearGradient
+        colors={['rgba(0,230,118,0.05)', 'transparent']}
+        style={styles.glow}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+        pointerEvents="none"
+      />
 
       <SafeAreaView style={styles.safeArea}>
         <Animated.View style={{ flex: 1, opacity: fadeAnim, transform: [{ translateY: slideUp }] }}>
-        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-
-          {/* Logo wordmark */}
-          <View style={styles.logoRow}>
-            <View style={styles.logoMark}>
-              <Ionicons name="nutrition" size={18} color={C.accent} />
-            </View>
-            <Text style={styles.logoText}>Macra</Text>
-          </View>
-
-          {/* Headline */}
-          <Text style={styles.headline}>
-            Your body,{'\n'}
-            <Text style={styles.headlineAccent}>optimized.</Text>
-          </Text>
-          <Text style={styles.subheadline}>
-            AI macro tracking built for people who don't have time to think about it.
-          </Text>
-
-          {/* App Preview Widget */}
-          <AppPreview />
-
-          {/* Social proof */}
-          <View style={styles.proofRow}>
-            <View style={styles.stars}>
-              {[1,2,3,4,5].map(s => <Ionicons key={s} name="star" size={12} color={C.gold} />)}
-            </View>
-            <Text style={styles.proofText}>
-              <Text style={styles.proofBold}>47,392</Text> professionals · <Text style={styles.proofBold}>4.8★</Text>
-            </Text>
-          </View>
-
-          {/* Rotating testimonial */}
-          <Animated.View style={[styles.testimonialCard, { opacity: testimonialOpacity }]}>
-            <Text style={styles.testimonialQuote}>"{testimonial.text}"</Text>
-            <Text style={styles.testimonialAuthor}>
-              — {testimonial.author}, <Text style={{ color: C.accent }}>{testimonial.role}</Text>
-            </Text>
-          </Animated.View>
-
-          {/* Primary CTA */}
-          <TouchableOpacity
-            style={styles.primaryCta}
-            onPress={() => navigation.navigate('Onboarding' as never)}
-            activeOpacity={0.85}
+          <ScrollView
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
           >
-            <Text style={styles.primaryCtaText}>Build My Nutrition Plan</Text>
-            <Ionicons name="arrow-forward" size={18} color="#0A0A0C" style={{ marginLeft: 8 }} />
-          </TouchableOpacity>
 
-          {/* Divider */}
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerLabel}>or continue with</Text>
-            <View style={styles.dividerLine} />
-          </View>
+            {/* Logo */}
+            <View style={styles.logoRow}>
+              <MMark size={36} />
+              <Text style={styles.logoText}>Macra</Text>
+            </View>
 
-          {/* Social auth */}
-          {Platform.OS === 'ios' && (
-            <AppleAuthentication.AppleAuthenticationButton
-              buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
-              buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE_OUTLINE}
-              cornerRadius={12}
-              style={styles.appleButton}
-              onPress={handleAppleSignIn}
-            />
-          )}
+            {/* Headline */}
+            <Text style={styles.headline}>
+              Your body,{'\n'}
+              <Text style={styles.headlineAccent}>optimized.</Text>
+            </Text>
+            <Text style={styles.subheadline}>
+              AI macro tracking built for people who don't have time to think about it.
+            </Text>
 
-          <TouchableOpacity
-            style={[styles.googleButton, loadingGoogle && { opacity: 0.5 }]}
-            onPress={handleGoogleSignIn}
-            disabled={loadingGoogle}
-          >
-            {loadingGoogle
-              ? <ActivityIndicator size="small" color={C.text} style={{ marginRight: 10 }} />
-              : <Text style={styles.googleG}>G</Text>
-            }
-            <Text style={styles.googleText}>Continue with Google</Text>
-          </TouchableOpacity>
+            {/* App Preview Widget */}
+            <AppPreview />
 
-          {/* Sign-in link */}
-          <TouchableOpacity style={styles.signInLink} onPress={() => navigation.navigate('SignIn' as never)}>
-            <Text style={styles.signInLinkText}>I already have an account →</Text>
-          </TouchableOpacity>
+            {/* Feature bullets — specific, honest, no fake numbers */}
+            <View style={styles.features}>
+              {FEATURES.map(f => (
+                <View key={f.icon} style={styles.featureRow}>
+                  <View style={styles.featureIconWrap}>
+                    <Ionicons name={f.icon} size={16} color={C.accent} />
+                  </View>
+                  <Text style={styles.featureText}>{f.text}</Text>
+                </View>
+              ))}
+            </View>
 
-          {/* Legal */}
-          <Text style={styles.legal}>
-            By continuing you agree to our{' '}
-            <Text style={styles.legalLink} onPress={() => navigation.navigate('TermsOfUse' as never)}>Terms</Text>
-            {' '}and{' '}
-            <Text style={styles.legalLink} onPress={() => navigation.navigate('PrivacyPolicy' as never)}>Privacy Policy</Text>
-          </Text>
+            {/* Primary CTA */}
+            <TouchableOpacity
+              style={styles.primaryCta}
+              onPress={() => navigation.navigate('Onboarding' as never)}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.primaryCtaText}>Get Started</Text>
+              <Ionicons name="arrow-forward" size={18} color="#0A0A0C" style={{ marginLeft: 8 }} />
+            </TouchableOpacity>
 
-        </ScrollView>
+            {/* Divider */}
+            <View style={styles.divider}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerLabel}>or sign in with</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            {/* Social auth */}
+            {Platform.OS === 'ios' && (
+              <AppleAuthentication.AppleAuthenticationButton
+                buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
+                buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE_OUTLINE}
+                cornerRadius={12}
+                style={styles.appleButton}
+                onPress={handleAppleSignIn}
+              />
+            )}
+
+            <TouchableOpacity
+              style={[styles.googleButton, loadingGoogle && { opacity: 0.5 }]}
+              onPress={handleGoogleSignIn}
+              disabled={loadingGoogle}
+            >
+              {loadingGoogle
+                ? <ActivityIndicator size="small" color={C.text} style={{ marginRight: 10 }} />
+                : <Text style={styles.googleG}>G</Text>
+              }
+              <Text style={styles.googleText}>Continue with Google</Text>
+            </TouchableOpacity>
+
+            {/* Sign-in link */}
+            <TouchableOpacity style={styles.signInLink} onPress={() => navigation.navigate('SignIn' as never)}>
+              <Text style={styles.signInLinkText}>I already have an account →</Text>
+            </TouchableOpacity>
+
+            {/* Legal */}
+            <Text style={styles.legal}>
+              By continuing you agree to our{' '}
+              <Text style={styles.legalLink} onPress={() => navigation.navigate('TermsOfUse' as never)}>Terms</Text>
+              {' '}and{' '}
+              <Text style={styles.legalLink} onPress={() => navigation.navigate('PrivacyPolicy' as never)}>Privacy Policy</Text>
+            </Text>
+
+          </ScrollView>
         </Animated.View>
       </SafeAreaView>
     </View>
@@ -319,6 +312,7 @@ const preview = StyleSheet.create({
   topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   greeting: { fontSize: 13, fontWeight: '700', color: C.text },
   dateLabel: { fontSize: 11, color: C.textTertiary, marginTop: 2 },
+  dateSubLabel: { fontSize: 12, fontWeight: '600', color: C.textTertiary },
   streakBadge: {
     backgroundColor: 'rgba(245,158,11,0.12)',
     paddingHorizontal: 8,
@@ -360,43 +354,23 @@ const preview = StyleSheet.create({
 // ─── Main styles ──────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: C.bg },
-  glowWrap: { ...StyleSheet.absoluteFillObject, alignItems: 'center' },
   glow: {
-    width: width * 1.6,
-    height: 260,
     position: 'absolute',
-    top: -60,
-    left: -width * 0.3,
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 220,
   },
   safeArea: { flex: 1 },
-  content: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 8, paddingBottom: 32 },
+  content: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 12, paddingBottom: 32 },
 
   logoRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 28,
-    gap: 8,
+    gap: 10,
   },
-  logoMark: {
-    width: 34,
-    height: 34,
-    borderRadius: 10,
-    backgroundColor: C.accentDim,
-    borderWidth: 1,
-    borderColor: C.accentBorder,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logoText: { fontSize: 18, fontWeight: '700', color: C.text, letterSpacing: -0.2 },
-  badge: {
-    backgroundColor: C.accentDim,
-    borderRadius: 6,
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-    borderWidth: 1,
-    borderColor: C.accentBorder,
-  },
-  badgeText: { fontSize: 10, fontWeight: '800', color: C.accent, letterSpacing: 0.5 },
+  logoText: { fontSize: 20, fontWeight: '700', color: C.text, letterSpacing: -0.3 },
 
   headline: {
     fontSize: 40,
@@ -414,32 +388,26 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
-  proofRow: {
+  features: {
+    gap: 10,
+    marginBottom: 24,
+  },
+  featureRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 12,
+    gap: 12,
   },
-  stars: { flexDirection: 'row', gap: 2 },
-  proofText: { fontSize: 12, color: C.textSub },
-  proofBold: { color: C.text, fontWeight: '700' },
-
-  testimonialCard: {
-    backgroundColor: C.surface,
-    borderRadius: 14,
-    padding: 14,
+  featureIconWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 9,
+    backgroundColor: C.accentDim,
     borderWidth: 1,
-    borderColor: C.border,
-    marginBottom: 20,
+    borderColor: C.accentBorder,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  testimonialQuote: {
-    fontSize: 13,
-    color: C.text,
-    lineHeight: 20,
-    fontStyle: 'italic',
-    marginBottom: 6,
-  },
-  testimonialAuthor: { fontSize: 11, color: C.textSub, fontWeight: '600' },
+  featureText: { fontSize: 14, color: C.textSub, flex: 1 },
 
   primaryCta: {
     backgroundColor: C.accent,

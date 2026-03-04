@@ -193,12 +193,11 @@ export default function ProgressScreen() {
       alignItems: 'center',
       paddingHorizontal: 20,
       paddingVertical: 16,
-      backgroundColor: colors.surface,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border,
+      backgroundColor: colors.background,
     },
     backButton: {
       marginRight: 16,
+      paddingVertical: 4,
     },
     backText: {
       fontSize: 16,
@@ -207,51 +206,55 @@ export default function ProgressScreen() {
     },
     title: {
       fontSize: 20,
-      fontWeight: '700',
+      fontWeight: '800',
       color: colors.text,
+      letterSpacing: -0.3,
     },
     scrollContent: {
       padding: 20,
+      paddingTop: 16,
     },
     statsRow: {
       flexDirection: 'row',
-      gap: 12,
+      gap: 10,
       marginBottom: 24,
     },
     statCard: {
       flex: 1,
       backgroundColor: colors.surface,
-      borderRadius: 12,
+      borderRadius: 16,
       padding: 16,
       alignItems: 'center',
-      shadowColor: colors.shadowColor,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: isDark ? 0.3 : 0.1,
-      shadowRadius: 8,
-      elevation: 3,
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(255,255,255,0.06)' : colors.border,
     },
     statValue: {
-      fontSize: 24,
-      fontWeight: '700',
+      fontSize: 28,
+      fontWeight: '800',
       color: colors.primary,
       marginBottom: 4,
+      letterSpacing: -1,
     },
     statLabel: {
-      fontSize: 12,
-      color: colors.textSecondary,
+      fontSize: 11,
+      color: colors.textTertiary,
       textAlign: 'center',
+      letterSpacing: 0.4,
+      textTransform: 'uppercase',
     },
     tabContainer: {
       flexDirection: 'row',
       backgroundColor: colors.surface,
       borderRadius: 12,
-      padding: 4,
+      padding: 3,
       marginBottom: 20,
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(255,255,255,0.06)' : colors.border,
     },
     tab: {
       flex: 1,
       paddingVertical: 10,
-      borderRadius: 8,
+      borderRadius: 10,
       alignItems: 'center',
     },
     tabActive: {
@@ -263,111 +266,114 @@ export default function ProgressScreen() {
       color: colors.textSecondary,
     },
     tabTextActive: {
-      color: '#FFFFFF',
+      color: '#0A0A0C',
     },
     chartCard: {
       backgroundColor: colors.surface,
       borderRadius: 16,
-      padding: 16,
+      padding: 20,
       marginBottom: 20,
-      shadowColor: colors.shadowColor,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: isDark ? 0.3 : 0.1,
-      shadowRadius: 8,
-      elevation: 3,
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(255,255,255,0.06)' : colors.border,
     },
     chartTitle: {
-      fontSize: 18,
+      fontSize: 15,
       fontWeight: '700',
       color: colors.text,
       marginBottom: 16,
+      letterSpacing: 0.2,
     },
     chartContainer: {
       height: 250,
     },
     weightForm: {
       backgroundColor: colors.surface,
-      borderRadius: 12,
+      borderRadius: 16,
       padding: 20,
       marginBottom: 20,
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(255,255,255,0.06)' : colors.border,
     },
     weightFormTitle: {
-      fontSize: 16,
-      fontWeight: '600',
+      fontSize: 15,
+      fontWeight: '700',
       color: colors.text,
-      marginBottom: 12,
+      marginBottom: 14,
     },
     weightInputContainer: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: colors.inputBackground,
-      borderWidth: 2,
+      borderWidth: 1,
       borderColor: colors.inputBorder,
       borderRadius: 12,
       paddingHorizontal: 16,
-      marginBottom: 12,
+      marginBottom: 14,
     },
     weightInput: {
       flex: 1,
-      fontSize: 18,
-      fontWeight: '600',
+      fontSize: 20,
+      fontWeight: '700',
       color: colors.inputText,
-      paddingVertical: 12,
+      paddingVertical: 14,
     },
     weightUnit: {
-      fontSize: 16,
+      fontSize: 15,
       color: colors.textSecondary,
       marginLeft: 8,
+      fontWeight: '600',
     },
     weightFormButtons: {
       flexDirection: 'row',
-      gap: 12,
+      gap: 10,
     },
     weightFormButton: {
       flex: 1,
-      paddingVertical: 12,
-      borderRadius: 8,
+      paddingVertical: 14,
+      borderRadius: 12,
       alignItems: 'center',
     },
     weightFormButtonCancel: {
-      backgroundColor: colors.surfaceSecondary,
+      backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : colors.surfaceSecondary,
     },
     weightFormButtonSave: {
       backgroundColor: colors.primary,
     },
     weightFormButtonText: {
-      fontSize: 16,
-      fontWeight: '600',
-      color: colors.text,
+      fontSize: 15,
+      fontWeight: '700',
+      color: colors.textSecondary,
     },
     weightFormButtonTextSave: {
-      color: '#FFFFFF',
+      color: '#0A0A0C',
     },
     addWeightButton: {
       backgroundColor: colors.primary,
-      paddingVertical: 14,
-      borderRadius: 12,
+      paddingVertical: 16,
+      borderRadius: 14,
       alignItems: 'center',
       marginBottom: 20,
     },
     addWeightButtonText: {
-      color: '#FFFFFF',
+      color: '#0A0A0C',
       fontSize: 16,
-      fontWeight: '600',
+      fontWeight: '700',
     },
     summaryCard: {
       backgroundColor: colors.surface,
-      borderRadius: 12,
-      padding: 16,
-      marginBottom: 12,
+      borderRadius: 16,
+      padding: 20,
+      marginBottom: 16,
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(255,255,255,0.06)' : colors.border,
     },
     summaryRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      paddingVertical: 8,
+      paddingVertical: 10,
       borderBottomWidth: 1,
-      borderBottomColor: colors.divider,
+      borderBottomColor: isDark ? 'rgba(255,255,255,0.04)' : colors.divider,
     },
     summaryRowLast: {
       borderBottomWidth: 0,
@@ -377,8 +383,8 @@ export default function ProgressScreen() {
       color: colors.textSecondary,
     },
     summaryValue: {
-      fontSize: 16,
-      fontWeight: '600',
+      fontSize: 15,
+      fontWeight: '700',
       color: colors.text,
     },
   });
@@ -393,7 +399,7 @@ export default function ProgressScreen() {
           style={dynamicStyles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Text style={dynamicStyles.backText}>← Back</Text>
+          <Ionicons name="chevron-back" size={22} color={colors.primary} />
         </TouchableOpacity>
         <Text style={dynamicStyles.title}>Progress</Text>
       </View>
@@ -403,7 +409,7 @@ export default function ProgressScreen() {
         <View style={dynamicStyles.statsRow}>
           <View style={dynamicStyles.statCard}>
             <Text style={dynamicStyles.statValue}>{streak}</Text>
-            <Text style={dynamicStyles.statLabel}>Day Streak 🔥</Text>
+            <Text style={dynamicStyles.statLabel}>Day Streak</Text>
           </View>
           <View style={dynamicStyles.statCard}>
             <Text style={dynamicStyles.statValue}>

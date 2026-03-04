@@ -19,6 +19,7 @@ import TermsOfUseScreen from '../screens/TermsOfUseScreen';
 import VoiceLogScreen from '../screens/VoiceLogScreen';
 import ProfileCompletionNavigator from '../navigation/ProfileCompletionNavigator';
 import AchievementsScreen from '../screens/AchievementsScreen';
+import PaywallScreen from '../screens/PaywallScreen';
 
 const Stack = createStackNavigator();
 
@@ -48,6 +49,7 @@ export default function MainNavigator() {
       <Stack.Screen name="VoiceLog" component={VoiceLogScreen} />
       <Stack.Screen name="ProfileCompletion" component={ProfileCompletionNavigator} />
       <Stack.Screen name="Achievements" component={AchievementsScreen} />
+      <Stack.Screen name="Paywall" component={PaywallScreen} />
     </Stack.Navigator>
   );
 }

@@ -38,21 +38,13 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
   },
   
   initialize: async () => {
+    // App is dark-mode only — always enforce dark regardless of any saved preference
+    const colors = getTheme('dark');
+    set({ mode: 'dark', colors, isDark: true });
     try {
-      const savedMode = await AsyncStorage.getItem(THEME_STORAGE_KEY);
-      if (savedMode === 'light' || savedMode === 'dark') {
-        const colors = getTheme(savedMode);
-        set({ mode: savedMode, colors, isDark: savedMode === 'dark' });
-      } else {
-        // Default to dark mode (premium experience)
-        const colors = getTheme('dark');
-        set({ mode: 'dark', colors, isDark: true });
-      }
-    } catch (error) {
-      console.error('Failed to load theme preference:', error);
-      // Default to dark mode on error
-      const colors = getTheme('dark');
-      set({ mode: 'dark', colors, isDark: true });
+      await AsyncStorage.setItem(THEME_STORAGE_KEY, 'dark');
+    } catch {
+      // Non-fatal
     }
   },
 }));

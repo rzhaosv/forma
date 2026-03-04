@@ -8,6 +8,7 @@ import MainNavigator from './MainNavigator';
 import OnboardingNavigator from './OnboardingNavigator';
 import { useAuthStore } from '../store/useAuthStore';
 import { useOnboardingStore } from '../store/useOnboardingStore';
+import { useSubscriptionStore } from '../store/useSubscriptionStore';
 import { listenToAuthChanges } from '../services/authService';
 import { useTheme } from '../hooks/useTheme';
 import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
@@ -19,6 +20,7 @@ const Stack = createStackNavigator();
 export default function AppNavigator() {
   const { isAuthenticated, isLoading, user } = useAuthStore();
   const { isComplete: isOnboardingComplete, isLoading: isOnboardingLoading, initialize: initializeOnboarding } = useOnboardingStore();
+  const { isPremium } = useSubscriptionStore();
   const { colors } = useTheme();
 
   // Initialize onboarding store
@@ -51,8 +53,13 @@ export default function AppNavigator() {
       }}
     >
       {isAuthenticated ? (
-        // Authenticated screens
-        <Stack.Screen name="Main" component={MainNavigator} />
+        // Authenticated screens — show Paywall first if not yet subscribed
+        <>
+          {!isPremium && (
+            <Stack.Screen name="Paywall" component={PaywallScreen} />
+          )}
+          <Stack.Screen name="Main" component={MainNavigator} />
+        </>
       ) : (
         // Auth/Onboarding screens
         <>

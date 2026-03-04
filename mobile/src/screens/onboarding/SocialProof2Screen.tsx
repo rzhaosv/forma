@@ -16,47 +16,43 @@ import BlueprintProgress from '../../components/BlueprintProgress';
 const C = {
   bg: '#0A0A0C',
   surface: '#1A1A1E',
+  elevated: '#222228',
   text: '#F0F0F5',
   textSub: '#A0A0B0',
   textTertiary: '#6B6B80',
   accent: '#00E676',
   accentBg: 'rgba(0,230,118,0.10)',
   border: 'rgba(255,255,255,0.08)',
+  accentBorder: 'rgba(0,230,118,0.18)',
 };
 
-const TESTIMONIALS = [
+const PLAN_ITEMS = [
   {
-    quote: "Down 12 lbs in 10 weeks while working 60-hour weeks. Finally something that fits my life.",
-    name: "Mark T.",
-    role: "Product Manager, 31",
-    initial: "M",
-    result: "–12 lbs in 10 weeks",
+    icon: 'flame-outline' as const,
+    title: 'Your daily calorie target',
+    desc: 'Calculated from your body weight, height, age, and activity level using Mifflin-St Jeor.',
   },
   {
-    quote: "The macro tracking takes 30 seconds per meal. I've never stuck with an app longer than 2 weeks before this.",
-    name: "Priya S.",
-    role: "Financial Analyst, 28",
-    initial: "P",
-    result: "Consistent for 6 months",
+    icon: 'stats-chart-outline' as const,
+    title: 'Macro breakdown by gram',
+    desc: 'Protein, carbs, and fat targets tailored to your goal — not a one-size-fits-all split.',
   },
   {
-    quote: "Lost 8% body fat in 12 weeks without changing my workout. Just dialed in my nutrition.",
-    name: "Chris W.",
-    role: "Software Engineer, 35",
-    initial: "C",
-    result: "–8% body fat",
+    icon: 'calendar-outline' as const,
+    title: 'Weekly progress check-in',
+    desc: 'Your targets adapt as your body changes. Consistent logging compounds over time.',
   },
 ];
 
 export default function SocialProof2Screen() {
   const navigation = useNavigation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideUp = useRef(new Animated.Value(30)).current;
+  const slideUp = useRef(new Animated.Value(24)).current;
 
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
-      Animated.spring(slideUp, { toValue: 0, tension: 40, friction: 8, useNativeDriver: true }),
+      Animated.spring(slideUp, { toValue: 0, tension: 45, friction: 9, useNativeDriver: true }),
     ]).start();
   }, []);
 
@@ -66,7 +62,8 @@ export default function SocialProof2Screen() {
 
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Text style={styles.backText}>← Back</Text>
+          <Ionicons name="chevron-back" size={22} color={C.textSub} />
+          <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
         <BlueprintProgress progress={0.84} />
       </View>
@@ -76,47 +73,45 @@ export default function SocialProof2Screen() {
         showsVerticalScrollIndicator={false}
         style={{ opacity: fadeAnim }}
       >
-        <Text style={styles.title}>You're in good company.</Text>
-        <Text style={styles.subtitle}>
-          Real results from professionals just like you.
-        </Text>
-
-        {TESTIMONIALS.map((t, i) => (
-          <View key={i} style={styles.testimonialCard}>
-            <View style={styles.resultBadge}>
-              <Text style={styles.resultText}>{t.result}</Text>
-            </View>
-            <Text style={styles.quote}>"{t.quote}"</Text>
-            <View style={styles.authorRow}>
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>{t.initial}</Text>
-              </View>
-              <View>
-                <Text style={styles.authorName}>{t.name}</Text>
-                <Text style={styles.authorRole}>{t.role}</Text>
-              </View>
-            </View>
-          </View>
-        ))}
-
-        {/* Science credibility */}
-        <View style={styles.scienceCard}>
-          <View style={styles.scienceHeader}>
-            <Ionicons name="ribbon" size={18} color={C.accent} />
-            <Text style={styles.scienceTitle}>Built on peer-reviewed metabolic research</Text>
-          </View>
-          <Text style={styles.scienceText}>
-            Macra's calorie and macro calculations use the Mifflin-St Jeor equation — the gold standard used by registered dietitians worldwide.
+        <Animated.View style={{ transform: [{ translateY: slideUp }] }}>
+          <Text style={styles.title}>Your plan is already{'\n'}taking shape.</Text>
+          <Text style={styles.subtitle}>
+            Here's what your personalised plan includes — calculated from your answers.
           </Text>
-        </View>
 
-        <TouchableOpacity
-          style={styles.continueBtn}
-          onPress={() => navigation.navigate('CoachingStyle' as never)}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.continueBtnText}>Continue</Text>
-        </TouchableOpacity>
+          {PLAN_ITEMS.map((item) => (
+            <View key={item.icon} style={styles.itemCard}>
+              <View style={styles.iconWrap}>
+                <Ionicons name={item.icon} size={20} color={C.accent} />
+              </View>
+              <View style={styles.itemText}>
+                <Text style={styles.itemTitle}>{item.title}</Text>
+                <Text style={styles.itemDesc}>{item.desc}</Text>
+              </View>
+            </View>
+          ))}
+
+          <View style={styles.scienceCard}>
+            <View style={styles.scienceHeader}>
+              <Ionicons name="ribbon-outline" size={18} color={C.accent} />
+              <Text style={styles.scienceTitle}>Built on peer-reviewed metabolic research</Text>
+            </View>
+            <Text style={styles.scienceText}>
+              Macra's calorie and macro calculations use the{' '}
+              <Text style={styles.scienceBold}>Mifflin-St Jeor equation</Text> — the gold standard
+              used by registered dietitians worldwide.
+            </Text>
+          </View>
+
+          <TouchableOpacity
+            style={styles.continueBtn}
+            onPress={() => navigation.navigate('CoachingStyle' as never)}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.continueBtnText}>Continue</Text>
+            <Ionicons name="arrow-forward" size={18} color="#0A0A0C" style={{ marginLeft: 8 }} />
+          </TouchableOpacity>
+        </Animated.View>
       </Animated.ScrollView>
     </SafeAreaView>
   );
@@ -124,67 +119,60 @@ export default function SocialProof2Screen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: C.bg },
-  header: { paddingHorizontal: 24, paddingTop: 12 },
-  backBtn: { marginBottom: 8 },
-  backText: { color: C.accent, fontSize: 15, fontWeight: '600' },
-  scroll: { padding: 24, paddingTop: 8, paddingBottom: 32 },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingTop: 12,
+    marginBottom: 4,
+    gap: 8,
+  },
+  backBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  backText: { color: C.textSub, fontSize: 15, fontWeight: '500' },
+  scroll: { paddingHorizontal: 24, paddingTop: 16, paddingBottom: 40 },
   title: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: '800',
     color: C.text,
-    marginBottom: 8,
-    letterSpacing: -0.3,
+    letterSpacing: -0.5,
+    lineHeight: 38,
+    marginBottom: 10,
   },
   subtitle: {
     fontSize: 16,
     color: C.textSub,
     lineHeight: 23,
-    marginBottom: 24,
+    marginBottom: 28,
   },
-  testimonialCard: {
+  itemCard: {
+    flexDirection: 'row',
+    gap: 16,
     backgroundColor: C.surface,
     borderRadius: 16,
-    padding: 20,
-    marginBottom: 14,
+    padding: 18,
+    marginBottom: 10,
     borderWidth: 1,
     borderColor: C.border,
+    alignItems: 'flex-start',
   },
-  resultBadge: {
-    alignSelf: 'flex-start',
+  iconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
     backgroundColor: C.accentBg,
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    marginBottom: 12,
     borderWidth: 1,
-    borderColor: 'rgba(0,230,118,0.2)',
-  },
-  resultText: { fontSize: 13, fontWeight: '700', color: C.accent },
-  quote: {
-    fontSize: 15,
-    color: C.text,
-    lineHeight: 23,
-    fontStyle: 'italic',
-    marginBottom: 14,
-  },
-  authorRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: C.accentBg,
+    borderColor: C.accentBorder,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(0,230,118,0.2)',
   },
-  avatarText: { color: C.accent, fontWeight: '700', fontSize: 13 },
-  authorName: { fontSize: 14, fontWeight: '700', color: C.text },
-  authorRole: { fontSize: 12, color: C.textSub },
+  itemText: { flex: 1 },
+  itemTitle: { fontSize: 16, fontWeight: '700', color: C.text, marginBottom: 4 },
+  itemDesc: { fontSize: 14, color: C.textSub, lineHeight: 20 },
   scienceCard: {
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: C.elevated,
     borderRadius: 14,
     padding: 18,
+    marginTop: 8,
     marginBottom: 28,
     borderWidth: 1,
     borderColor: C.border,
@@ -197,11 +185,14 @@ const styles = StyleSheet.create({
   },
   scienceTitle: { fontSize: 14, fontWeight: '700', color: C.text, flex: 1 },
   scienceText: { fontSize: 14, color: C.textSub, lineHeight: 21 },
+  scienceBold: { color: C.text, fontWeight: '600' },
   continueBtn: {
     backgroundColor: C.accent,
     paddingVertical: 17,
     borderRadius: 14,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   continueBtnText: { color: '#0A0A0C', fontSize: 17, fontWeight: '700' },
 });

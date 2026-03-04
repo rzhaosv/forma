@@ -13,6 +13,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useOnboardingStore } from '../../store/useOnboardingStore';
 import { useUnitSystemStore } from '../../store/useUnitSystemStore';
 import { useAuthStore } from '../../store/useAuthStore';
+import { useSubscriptionStore } from '../../store/useSubscriptionStore';
+import { PACKAGE_TYPE } from 'react-native-purchases';
 import { calculateAll } from '../../utils/calorieCalculator';
 import { kgToLbs } from '../../utils/unitSystem';
 import BlueprintProgress from '../../components/BlueprintProgress';
@@ -42,12 +44,15 @@ export default function TransformationTimelineScreen() {
   const { data } = useOnboardingStore();
   const { unitSystem } = useUnitSystemStore();
   const { isAuthenticated } = useAuthStore();
+  const { offering } = useSubscriptionStore();
+  const annualPkg = offering?.availablePackages.find(p => p.packageType === PACKAGE_TYPE.ANNUAL);
+  const trialNote = annualPkg ? `Try free for 7 days, then ${annualPkg.product.priceString}/year` : 'Try free for 7 days';
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [calorieCount, setCalorieCount] = useState(0);
 
-  const results = data.weight_kg && data.height_cm && data.age && data.gender && data.activityLevel && data.weightGoal
-    ? calculateAll(data.weight_kg, data.height_cm, data.age, data.gender, data.activityLevel, data.weightGoal, data.targetWeight_kg)
+  const results = data.weight_kg && data.height_cm && data.age && data.activityLevel && data.weightGoal
+    ? calculateAll(data.weight_kg, data.height_cm, data.age, data.gender ?? 'other', data.activityLevel, data.weightGoal, data.targetWeight_kg)
     : {
         calorieGoal: data.estimatedCalorieGoal || 2000,
         proteinGoal: Math.round(((data.estimatedCalorieGoal || 2000) * 0.3) / 4),
@@ -175,7 +180,7 @@ export default function TransformationTimelineScreen() {
             <Ionicons name="arrow-forward" size={18} color="#0A0A0C" style={{ marginLeft: 8 }} />
           </TouchableOpacity>
 
-          <Text style={styles.trialNote}>Try free for 7 days, then $59.99/year</Text>
+          <Text style={styles.trialNote}>{trialNote}</Text>
         </Animated.View>
       </ScrollView>
     </SafeAreaView>

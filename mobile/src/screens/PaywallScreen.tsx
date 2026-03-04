@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -34,7 +34,7 @@ const C = {
 const BENEFITS = [
   { icon: 'flash', text: 'Never wonder what to eat again', sub: 'AI builds your meal plan around your macros' },
   { icon: 'time', text: 'Log any meal in under 30 seconds', sub: 'Camera scan, voice, or search — your choice' },
-  { icon: 'trending-up', text: '86% of users improved their diet', sub: 'Visible results in 4 weeks on average' },
+  { icon: 'body-outline', text: 'Personalised to your body', sub: 'Macros calculated from your height, weight, age and goals' },
   { icon: 'shield-checkmark', text: 'Cancel anytime — no commitment', sub: '7-day free trial, money-back guarantee' },
 ];
 
@@ -47,8 +47,16 @@ const getTrialEndDate = () => {
 export default function PaywallScreen() {
   const navigation = useNavigation();
   const [selectedPlan, setSelectedPlan] = useState<'annual' | 'monthly' | 'lifetime'>('annual');
-  const { offering, isPurchasing, purchase, restore } = useSubscriptionStore();
+  const [offeringLoading, setOfferingLoading] = useState(false);
+  const { offering, isPurchasing, purchase, restore, loadOffering } = useSubscriptionStore();
   const trialEndDate = getTrialEndDate();
+
+  useEffect(() => {
+    if (!offering) {
+      setOfferingLoading(true);
+      loadOffering().finally(() => setOfferingLoading(false));
+    }
+  }, []);
 
   const annualPkg = offering?.availablePackages.find(p => p.packageType === PACKAGE_TYPE.ANNUAL);
   const monthlyPkg = offering?.availablePackages.find(p => p.packageType === PACKAGE_TYPE.MONTHLY);
@@ -63,23 +71,44 @@ export default function PaywallScreen() {
   const lifetimePrice = lifetimePkg?.product.priceString ?? '$149';
 
   const handleStartTrial = async () => {
+    // If still loading, wait — don't show error yet
+    if (offeringLoading) return;
+
     const pkg =
       selectedPlan === 'annual' ? annualPkg :
       selectedPlan === 'monthly' ? monthlyPkg :
       lifetimePkg;
 
     if (!pkg) {
-      Alert.alert(
-        'Offerings Not Available',
-        'We could not load the subscription plans. Please check your internet connection or try again later.',
-        [{ text: 'OK' }]
-      );
+      // Retry once before failing
+      setOfferingLoading(true);
+      await loadOffering();
+      setOfferingLoading(false);
+
+      const retryPkg =
+        selectedPlan === 'annual'
+          ? useSubscriptionStore.getState().offering?.availablePackages.find(p => p.packageType === PACKAGE_TYPE.ANNUAL)
+          : selectedPlan === 'monthly'
+          ? useSubscriptionStore.getState().offering?.availablePackages.find(p => p.packageType === PACKAGE_TYPE.MONTHLY)
+          : useSubscriptionStore.getState().offering?.availablePackages.find(p => p.packageType === PACKAGE_TYPE.LIFETIME);
+
+      if (!retryPkg) {
+        Alert.alert(
+          'Plans Unavailable',
+          'Could not connect to the subscription service. Please check your internet connection and try again.',
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+
+      const success = await purchase(retryPkg);
+      if (success) navigation.navigate('Main' as never);
       return;
     }
 
     const success = await purchase(pkg);
     if (success) {
-      navigation.navigate('SignUp' as never);
+      navigation.navigate('Main' as never);
     }
   };
 
@@ -111,19 +140,6 @@ export default function PaywallScreen() {
           </View>
           <Text style={styles.heroTitle}>Start your free trial{'\n'}to unlock it.</Text>
 
-          {/* Social proof */}
-          <View style={styles.socialProofBar}>
-            <View style={styles.stars}>
-              {[1,2,3,4,5].map(s => <Ionicons key={s} name="star" size={14} color={C.gold} />)}
-            </View>
-            <Text style={styles.socialProofText}>
-              <Text style={styles.socialProofBold}>4.8</Text> · 23,000+ ratings
-            </Text>
-            <Text style={styles.socialProofDot}>·</Text>
-            <Text style={styles.socialProofText}>
-              <Text style={styles.socialProofBold}>47K+</Text> professionals
-            </Text>
-          </View>
         </View>
 
         {/* Benefits */}
@@ -215,12 +231,12 @@ export default function PaywallScreen() {
 
         {/* CTA */}
         <TouchableOpacity
-          style={[styles.ctaBtn, isPurchasing && { opacity: 0.7 }]}
+          style={[styles.ctaBtn, (isPurchasing || offeringLoading) && { opacity: 0.7 }]}
           onPress={handleStartTrial}
           activeOpacity={0.85}
-          disabled={isPurchasing}
+          disabled={isPurchasing || offeringLoading}
         >
-          {isPurchasing ? (
+          {isPurchasing || offeringLoading ? (
             <ActivityIndicator color="#0A0A0C" />
           ) : (
             <>
@@ -270,6 +286,14 @@ export default function PaywallScreen() {
         >
           <Text style={[styles.signInLinkText, { color: C.textTertiary }]}>Restore purchases</Text>
         </TouchableOpacity>
+
+        {/* Skip */}
+        <TouchableOpacity
+          style={styles.signInLink}
+          onPress={() => navigation.navigate('Main' as never)}
+        >
+          <Text style={[styles.signInLinkText, { color: C.textTertiary, fontSize: 13 }]}>Maybe later</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -312,16 +336,6 @@ const styles = StyleSheet.create({
     lineHeight: 42,
     marginBottom: 16,
   },
-  socialProofBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flexWrap: 'wrap',
-  },
-  stars: { flexDirection: 'row', gap: 2 },
-  socialProofText: { fontSize: 13, color: C.textSub },
-  socialProofBold: { color: C.text, fontWeight: '700' },
-  socialProofDot: { color: C.textTertiary },
   benefitsSection: {
     paddingHorizontal: 24,
     gap: 16,

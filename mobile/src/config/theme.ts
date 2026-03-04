@@ -98,8 +98,8 @@ const lightTheme: ThemeColors = {
 const darkTheme: ThemeColors = {
   // Backgrounds — premium off-black, never pure black
   background: '#0A0A0C',
-  surface: '#121214',
-  surfaceSecondary: '#1A1A1E',
+  surface: '#141418',
+  surfaceSecondary: '#1E1E24',
 
   // Text — never pure white (eye strain)
   text: '#F0F0F5',
@@ -113,7 +113,7 @@ const darkTheme: ThemeColors = {
 
   // Borders and dividers
   border: 'rgba(255,255,255,0.08)',
-  divider: '#1A1A1E',
+  divider: 'rgba(255,255,255,0.06)',
 
   // Status colors
   success: '#00E676',

@@ -10,6 +10,9 @@ import Purchases, {
 // Set your key in .env as EXPO_PUBLIC_REVENUECAT_IOS_KEY=appl_...
 const IOS_KEY = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY ?? '';
 
+// RC must only be configured once per app session — track at module level
+let _rcConfigured = false;
+
 interface SubscriptionStore {
   isPremium: boolean;
   isLoading: boolean;
@@ -43,10 +46,14 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
       return;
     }
 
-    Purchases.setLogLevel(__DEV__ ? LOG_LEVEL.WARN : LOG_LEVEL.ERROR);
-    Purchases.configure({ apiKey: IOS_KEY });
+    // Configure RC exactly once — subsequent calls only log in the user
+    if (!_rcConfigured) {
+      Purchases.setLogLevel(__DEV__ ? LOG_LEVEL.DEBUG : LOG_LEVEL.ERROR);
+      Purchases.configure({ apiKey: IOS_KEY });
+      _rcConfigured = true;
+    }
 
-    // Link to your Firebase/auth user ID so RevenueCat tracks per-user
+    // Link to Firebase user ID so RC tracks purchases per user
     if (userId) {
       try {
         await Purchases.logIn(userId);
@@ -64,11 +71,30 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
       const offerings = await Purchases.getOfferings();
       if (offerings.current) {
         set({ offering: offerings.current });
+        return;
+      }
+      console.warn('[RC] No current offering on first fetch — retrying in 3s...');
+    } catch (e) {
+      console.error('[RC] getOfferings failed:', e);
+    }
+
+    // Retry once after a short delay (network timing, cold start)
+    await new Promise(r => setTimeout(r, 3000));
+    try {
+      const retried = await Purchases.getOfferings();
+      if (retried.current) {
+        set({ offering: retried.current });
       } else {
-        console.warn('[RC] No current offering found. Check RevenueCat dashboard.');
+        console.warn(
+          '[RC] Still no current offering after retry.\n' +
+          'Fix in RevenueCat dashboard:\n' +
+          '  1. Products → import from App Store Connect\n' +
+          '  2. Offerings → create an offering, add packages\n' +
+          '  3. Set that offering as "Current"'
+        );
       }
     } catch (e) {
-      console.error('[RC] getOfferings failed', e);
+      console.error('[RC] getOfferings retry failed:', e);
     }
   },
 

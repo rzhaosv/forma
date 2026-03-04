@@ -17,24 +17,22 @@ import Constants from 'expo-constants';
 import { signOut } from '../services/authService';
 import { useMealStore } from '../store/useMealStore';
 import { useTheme } from '../hooks/useTheme';
-import { useSubscriptionStore } from '../store/useSubscriptionStore';
 import { Ionicons } from '@expo/vector-icons';
 import { isHealthKitEnabled } from '../utils/healthKitSettings';
 import { Platform } from 'react-native';
 import { getLocalDateString } from '../utils/dateUtils';
 
 const MEAL_TYPE_ICONS: { [key: string]: keyof typeof Ionicons.glyphMap } = {
-  Breakfast: 'sunny',
-  Lunch: 'partly-sunny',
-  Dinner: 'moon',
-  Snack: 'nutrition',
+  Breakfast: 'sunny-outline',
+  Lunch: 'partly-sunny-outline',
+  Dinner: 'moon-outline',
+  Snack: 'nutrition-outline',
 };
 
 export default function HomeScreen() {
   const navigation = useNavigation();
   const [currentDate] = useState(new Date());
   const { colors, isDark } = useTheme();
-  const { isPremium } = useSubscriptionStore();
   const [healthKitEnabled, setHealthKitEnabled] = useState(false);
 
   useEffect(() => {
@@ -110,18 +108,6 @@ export default function HomeScreen() {
   };
 
   const handleQuickAdd = (type: string) => {
-    if (!isPremium && (type === 'photo' || type === 'barcode' || type === 'voice')) {
-      Alert.alert(
-        'Premium Feature',
-        'AI-powered logging is a premium feature. Start your free trial to unlock it!',
-        [
-          { text: 'Later', style: 'cancel' },
-          { text: 'View Plans', onPress: () => navigation.navigate('Paywall' as never) }
-        ]
-      );
-      return;
-    }
-
     if (type === 'photo') {
       navigation.navigate('Camera' as never);
     } else if (type === 'barcode') {
@@ -199,20 +185,18 @@ export default function HomeScreen() {
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: 20,
-      paddingTop: 20,
-      paddingBottom: 10,
+      paddingTop: 16,
+      paddingBottom: 12,
       backgroundColor: colors.background,
     },
     appLogo: {
-      width: 36,
-      height: 36,
+      width: 32,
+      height: 32,
       borderRadius: 8,
     },
     signOutButton: {
-      paddingHorizontal: 12,
-      paddingVertical: 6,
-      backgroundColor: colors.surfaceSecondary,
-      borderRadius: 8,
+      paddingHorizontal: 8,
+      paddingVertical: 8,
     },
     signOutText: {
       color: colors.textSecondary,
@@ -221,95 +205,104 @@ export default function HomeScreen() {
     },
     greetingSection: {
       paddingHorizontal: 20,
-      marginTop: 10,
+      marginTop: 8,
       marginBottom: 20,
     },
     greeting: {
-      fontSize: 24,
-      fontWeight: 'bold',
+      fontSize: 28,
+      fontWeight: '800',
       color: colors.text,
+      letterSpacing: -0.5,
     },
     date: {
-      fontSize: 16,
-      color: colors.textSecondary,
-      marginTop: 4,
+      fontSize: 12,
+      color: colors.textTertiary,
+      marginTop: 3,
+      letterSpacing: 0.5,
+      textTransform: 'uppercase',
     },
     progressCard: {
       backgroundColor: colors.surface,
       marginHorizontal: 20,
-      borderRadius: 16,
-      padding: 20,
-      marginBottom: 20,
+      borderRadius: 20,
+      padding: 24,
+      marginBottom: 24,
       shadowColor: colors.shadowColor,
       shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: isDark ? 0.3 : 0.1,
-      shadowRadius: 8,
-      elevation: 3,
+      shadowOpacity: isDark ? 0 : 0.08,
+      shadowRadius: 12,
+      elevation: isDark ? 0 : 3,
       alignItems: 'center',
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(255,255,255,0.06)' : colors.border,
     },
     calorieText: {
-      fontSize: 28,
-      fontWeight: '700',
+      fontSize: 32,
+      fontWeight: '800',
       color: colors.text,
+      letterSpacing: -1,
     },
     calorieGoal: {
-      fontSize: 18,
-      color: colors.textSecondary,
+      fontSize: 16,
+      color: colors.textTertiary,
     },
     percentageText: {
-      fontSize: 14,
-      color: colors.textSecondary,
-      marginTop: 4,
+      fontSize: 13,
+      color: colors.textTertiary,
+      marginTop: 2,
+      letterSpacing: 0.2,
     },
     caloriesLeftLabel: {
-      fontSize: 14,
-      color: colors.textSecondary,
+      fontSize: 11,
+      color: colors.textTertiary,
       marginTop: 8,
+      letterSpacing: 0.8,
+      textTransform: 'uppercase',
     },
     macroLabel: {
-      fontSize: 14,
+      fontSize: 13,
       fontWeight: '600',
       color: colors.textSecondary,
       width: 60,
     },
     macroValue: {
-      fontSize: 14,
-      color: colors.textSecondary,
+      fontSize: 13,
+      color: colors.textTertiary,
       marginRight: 10,
     },
     macroBar: {
       flex: 1,
-      height: 8,
-      backgroundColor: colors.divider,
-      borderRadius: 4,
+      height: 3,
+      backgroundColor: isDark ? 'rgba(255,255,255,0.07)' : colors.divider,
+      borderRadius: 2,
       overflow: 'hidden',
     },
     sectionHeader: {
       paddingHorizontal: 20,
       marginBottom: 12,
-      marginTop: 24,
+      marginTop: 8,
       flexDirection: 'row',
       alignItems: 'center',
       gap: 8,
     },
     sectionDot: {
-      width: 4,
-      height: 4,
-      borderRadius: 2,
+      width: 3,
+      height: 3,
+      borderRadius: 1.5,
       backgroundColor: colors.primary,
     },
     sectionTitle: {
-      fontSize: 12,
+      fontSize: 11,
       fontWeight: '700',
-      color: colors.textSecondary,
-      letterSpacing: 0.8,
+      color: colors.textTertiary,
+      letterSpacing: 1.2,
       textTransform: 'uppercase',
     },
     quickAddContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginHorizontal: 20,
-      marginBottom: 20,
+      marginBottom: 24,
       gap: 8,
     },
     quickAddButton: {
@@ -319,57 +312,57 @@ export default function HomeScreen() {
       paddingVertical: 16,
       alignItems: 'center',
       borderWidth: 1,
-      borderColor: isDark ? 'rgba(255,255,255,0.07)' : colors.border,
+      borderColor: isDark ? 'rgba(255,255,255,0.06)' : colors.border,
       gap: 6,
     },
     quickAddText: {
-      fontSize: 11,
-      fontWeight: '600',
-      color: colors.textSecondary,
-      letterSpacing: 0.2,
+      fontSize: 10,
+      fontWeight: '700',
+      color: colors.textTertiary,
+      letterSpacing: 0.6,
+      textTransform: 'uppercase',
     },
     mealCard: {
       backgroundColor: colors.surface,
       marginHorizontal: 20,
       borderRadius: 16,
-      padding: 15,
-      marginBottom: 15,
-      shadowColor: colors.shadowColor,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: isDark ? 0.3 : 0.05,
-      shadowRadius: 8,
-      elevation: 3,
+      padding: 16,
+      marginBottom: 10,
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(255,255,255,0.06)' : colors.border,
     },
     mealType: {
-      fontSize: 18,
+      fontSize: 15,
       fontWeight: '700',
       color: colors.text,
     },
     mealCalories: {
-      fontSize: 16,
+      fontSize: 14,
       fontWeight: '600',
       color: colors.textSecondary,
     },
     foodName: {
       flex: 1,
-      fontSize: 15,
-      color: colors.text,
+      fontSize: 14,
+      color: colors.textSecondary,
     },
     addMealButton: {
       backgroundColor: colors.surface,
       marginHorizontal: 20,
-      marginTop: 10,
-      paddingVertical: 15,
+      marginTop: 8,
+      paddingVertical: 14,
       borderRadius: 12,
-      borderWidth: 2,
-      borderColor: colors.border,
-      borderStyle: 'dashed',
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(255,255,255,0.06)' : colors.border,
       alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      gap: 8,
     },
     addMealText: {
-      fontSize: 16,
+      fontSize: 14,
       fontWeight: '600',
-      color: colors.primary,
+      color: colors.textSecondary,
     },
     emptyState: {
       alignItems: 'center',
@@ -377,8 +370,8 @@ export default function HomeScreen() {
       paddingHorizontal: 32,
     },
     emptyStateText: {
-      fontSize: 18,
-      fontWeight: '600',
+      fontSize: 17,
+      fontWeight: '700',
       color: colors.text,
       textAlign: 'center',
       marginBottom: 8,
@@ -389,16 +382,17 @@ export default function HomeScreen() {
       textAlign: 'center',
     },
     caloriesLeft: {
-      fontSize: 32,
-      fontWeight: '700',
+      fontSize: 44,
+      fontWeight: '800',
       marginBottom: 24,
+      letterSpacing: -2,
     },
     foodCalories: {
-      fontSize: 15,
-      color: colors.textSecondary,
+      fontSize: 13,
+      color: colors.textTertiary,
     },
     foodBullet: {
-      fontSize: 16,
+      fontSize: 14,
       color: colors.textTertiary,
       marginRight: 8,
     },
@@ -408,7 +402,7 @@ export default function HomeScreen() {
       marginTop: 20,
     },
     versionText: {
-      fontSize: 12,
+      fontSize: 11,
       color: colors.textTertiary,
       fontFamily: 'monospace',
     },
@@ -462,8 +456,7 @@ export default function HomeScreen() {
         {/* Greeting */}
         <View style={dynamicStyles.greetingSection}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Text style={dynamicStyles.greeting}>{getGreeting()}!</Text>
-            <Ionicons name="hand-right" size={24} color={colors.text} />
+            <Text style={dynamicStyles.greeting}>{getGreeting()}</Text>
           </View>
           <Text style={dynamicStyles.date}>{formatDate()}</Text>
         </View>
@@ -489,29 +482,29 @@ export default function HomeScreen() {
           )}
           <View style={styles.calorieRing}>
             {/* SVG Circle Progress */}
-            <Svg width="180" height="180" style={styles.svgContainer}>
-              {/* Background Circle (gray) */}
+            <Svg width="200" height="200" style={styles.svgContainer}>
+              {/* Background Circle */}
               <Circle
-                cx="90"
-                cy="90"
-                r="76"
-                stroke={colors.divider}
-                strokeWidth="14"
+                cx="100"
+                cy="100"
+                r="86"
+                stroke={isDark ? 'rgba(255,255,255,0.07)' : colors.divider}
+                strokeWidth="8"
                 fill="none"
               />
-              {/* Progress Circle (colored, fills based on percentage, caps at 100%) */}
+              {/* Progress Circle */}
               <Circle
-                cx="90"
-                cy="90"
-                r="76"
+                cx="100"
+                cy="100"
+                r="86"
                 stroke={getProgressColor()}
-                strokeWidth="14"
+                strokeWidth="8"
                 fill="none"
-                strokeDasharray={`${2 * Math.PI * 76}`}
-                strokeDashoffset={`${2 * Math.PI * 76 * (1 - Math.min(percentage, 100) / 100)}`}
+                strokeDasharray={`${2 * Math.PI * 86}`}
+                strokeDashoffset={`${2 * Math.PI * 86 * (1 - Math.min(percentage, 100) / 100)}`}
                 strokeLinecap="round"
                 rotation="-90"
-                origin="90, 90"
+                origin="100, 100"
               />
             </Svg>
 
@@ -624,9 +617,9 @@ export default function HomeScreen() {
 
         {todayMeals.length === 0 ? (
           <View style={dynamicStyles.emptyState}>
-            <Ionicons name="restaurant-outline" size={64} color={colors.textTertiary} style={{ marginBottom: 16 }} />
-            <Text style={dynamicStyles.emptyStateText}>No meals logged yet today</Text>
-            <Text style={dynamicStyles.emptyStateSubtext}>Use Quick Add to log your first meal!</Text>
+            <Ionicons name="restaurant-outline" size={40} color={colors.textTertiary} style={{ marginBottom: 14 }} />
+            <Text style={dynamicStyles.emptyStateText}>Nothing logged yet</Text>
+            <Text style={dynamicStyles.emptyStateSubtext}>Use the log buttons above to add your first meal.</Text>
           </View>
         ) : (
           todayMeals.map((meal) => (
@@ -655,7 +648,7 @@ export default function HomeScreen() {
                 </View>
                 {meal.foods.map((food) => (
                   <View key={food.id} style={styles.foodItem}>
-                    <Text style={dynamicStyles.foodBullet}>○</Text>
+                    <Text style={dynamicStyles.foodBullet}>·</Text>
                     <Text style={dynamicStyles.foodName}>
                       {food.name} {food.quantity > 1 ? `(${food.quantity}x)` : ''}
                     </Text>
@@ -675,7 +668,8 @@ export default function HomeScreen() {
             style={dynamicStyles.addMealButton}
             onPress={() => handleQuickAdd('photo')}
           >
-            <Text style={dynamicStyles.addMealText}>+ Add Breakfast</Text>
+            <Ionicons name="add" size={16} color={colors.textTertiary} />
+            <Text style={dynamicStyles.addMealText}>Breakfast</Text>
           </TouchableOpacity>
         )}
 
@@ -684,7 +678,8 @@ export default function HomeScreen() {
             style={dynamicStyles.addMealButton}
             onPress={() => handleQuickAdd('photo')}
           >
-            <Text style={dynamicStyles.addMealText}>+ Add Lunch</Text>
+            <Ionicons name="add" size={16} color={colors.textTertiary} />
+            <Text style={dynamicStyles.addMealText}>Lunch</Text>
           </TouchableOpacity>
         )}
 
@@ -693,7 +688,8 @@ export default function HomeScreen() {
             style={dynamicStyles.addMealButton}
             onPress={() => handleQuickAdd('photo')}
           >
-            <Text style={dynamicStyles.addMealText}>+ Add Dinner</Text>
+            <Ionicons name="add" size={16} color={colors.textTertiary} />
+            <Text style={dynamicStyles.addMealText}>Dinner</Text>
           </TouchableOpacity>
         )}
 
@@ -701,7 +697,8 @@ export default function HomeScreen() {
           style={dynamicStyles.addMealButton}
           onPress={() => handleQuickAdd('photo')}
         >
-          <Text style={dynamicStyles.addMealText}>+ Add Snack</Text>
+          <Ionicons name="add" size={16} color={colors.textTertiary} />
+          <Text style={dynamicStyles.addMealText}>Snack</Text>
         </TouchableOpacity>
 
 
@@ -773,8 +770,8 @@ const styles = StyleSheet.create({
   },
   calorieRing: {
     marginBottom: 16,
-    width: 180,
-    height: 180,
+    width: 200,
+    height: 200,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
@@ -911,7 +908,7 @@ const styles = StyleSheet.create({
   foodItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 6,
+    paddingVertical: 4,
   },
   foodBullet: {
     fontSize: 16,

@@ -54,7 +54,7 @@ import { deleteAccount, signOut } from '../services/authService';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
-  const { colors, isDark, toggleMode, mode } = useTheme();
+  const { colors, isDark } = useTheme();
   const { unitSystem, setUnitSystem } = useUnitSystemStore();
 
   // iOS - HealthKit
@@ -505,24 +505,6 @@ export default function SettingsScreen() {
               )}
             </>
           )}
-        </View>
-
-        {/* Appearance Section */}
-        <View style={dynamicStyles.section}>
-          <Text style={dynamicStyles.sectionTitle}>Appearance</Text>
-
-          <View style={dynamicStyles.settingRow}>
-            <View style={dynamicStyles.settingContent}>
-              <Text style={dynamicStyles.settingLabel}>Dark Mode</Text>
-              <Text style={dynamicStyles.settingDescription}>Switch themes</Text>
-            </View>
-            <Switch
-              value={isDark}
-              onValueChange={toggleMode}
-              trackColor={{ false: colors.border, true: colors.primary }}
-              thumbColor="#FFFFFF"
-            />
-          </View>
         </View>
 
         {/* Units Section */}
