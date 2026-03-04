@@ -106,7 +106,7 @@ export default function SocialProof2Screen() {
             <Text style={styles.scienceTitle}>Built on peer-reviewed metabolic research</Text>
           </View>
           <Text style={styles.scienceText}>
-            NutriSnap's calorie and macro calculations use the Mifflin-St Jeor equation — the gold standard used by registered dietitians worldwide.
+            Macra's calorie and macro calculations use the Mifflin-St Jeor equation — the gold standard used by registered dietitians worldwide.
           </Text>
         </View>
 

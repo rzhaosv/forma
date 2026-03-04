@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "NutriSnap",
+    "name": "Macra",
     "slug": "forma",
     "scheme": [
       "com.raymondzhao3000.forma",
@@ -23,8 +23,8 @@
       "googleServicesFile": "./Google-Services-Info.plist",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSHealthShareUsageDescription": "NutriSnap needs access to your health data to sync weight, calories, and nutrition information with Apple Health.",
-        "NSHealthUpdateUsageDescription": "NutriSnap needs permission to write your weight, calories, and nutrition data to Apple Health."
+        "NSHealthShareUsageDescription": "Macra needs access to your health data to sync weight, calories, and nutrition information with Apple Health.",
+        "NSHealthUpdateUsageDescription": "Macra needs permission to write your weight, calories, and nutrition data to Apple Health."
       },
       "entitlements": {
         "com.apple.developer.healthkit": true,
@@ -66,13 +66,13 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow NutriSnap to access your camera to scan food photos and barcodes for your nutrition tracking."
+          "cameraPermission": "Allow Macra to access your camera to scan food photos and barcodes for your nutrition tracking."
         }
       ],
       [
         "expo-av",
         {
-          "microphonePermission": "Allow NutriSnap to access your microphone to record voice logs for quick and easy meal tracking."
+          "microphonePermission": "Allow Macra to access your microphone to record voice logs for quick and easy meal tracking."
         }
       ],
       "expo-web-browser",
@@ -82,8 +82,8 @@
       [
         "@kingstinct/react-native-healthkit",
         {
-          "NSHealthShareUsageDescription": "NutriSnap needs access to read your health data to sync weight, calories, and nutrition information with your health dashboard.",
-          "NSHealthUpdateUsageDescription": "NutriSnap needs permission to write your weight, calories, and nutrition data to Apple Health to keep your health records up to date.",
+          "NSHealthShareUsageDescription": "Macra needs access to read your health data to sync weight, calories, and nutrition information with your health dashboard.",
+          "NSHealthUpdateUsageDescription": "Macra needs permission to write your weight, calories, and nutrition data to Apple Health to keep your health records up to date.",
           "requiredBackgroundModes": []
         }
       ],

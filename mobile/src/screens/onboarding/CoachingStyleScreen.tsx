@@ -78,7 +78,7 @@ export default function CoachingStyleScreen() {
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>How do you want to be coached?</Text>
         <Text style={styles.subtitle}>
-          NutriSnap adapts to your style — not the other way around.
+          Macra adapts to your style — not the other way around.
         </Text>
 
         <View style={styles.cards}>

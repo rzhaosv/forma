@@ -7,8 +7,8 @@
       <stop offset="100%" stop-color="#07070B"/>
     </linearGradient>
 
-    <!-- Green diagonal: bright top, rich bottom -->
-    <linearGradient id="green" x1="110" y1="78" x2="290" y2="322" gradientUnits="userSpaceOnUse">
+    <!-- Green diagonals: bright top, rich bottom -->
+    <linearGradient id="green" x1="90" y1="78" x2="200" y2="240" gradientUnits="userSpaceOnUse">
       <stop stop-color="#18FF84"/>
       <stop offset="100%" stop-color="#00B84A"/>
     </linearGradient>
@@ -40,28 +40,34 @@
   <rect width="400" height="400" rx="90" fill="url(#sheen)"/>
 
   <!-- ── Subtle ambient green glow behind the mark ── -->
-  <ellipse cx="200" cy="200" rx="105" ry="125" fill="#00E676" opacity="0.06"/>
+  <ellipse cx="200" cy="180" rx="120" ry="105" fill="#00E676" opacity="0.06"/>
 
   <!-- ────────────────────────────────────────────────
-       N  M A R K
+       M  M A R K
 
        Geometry:
-         Left bar:   x=90–150,  y=78–322   (w=60, h=244)
-         Right bar:  x=250–310, y=78–322   (w=60, h=244)
-         Diagonal:   parallelogram sharing the bar endpoints:
-                     (90,78) → (150,78) → (310,322) → (250,322)
-         The white bars are drawn on top, so only the green
-         strip between the bars is visible.
+         Left bar:    x=62–117,  y=78–322  (w=55, h=244)
+         Right bar:   x=283–338, y=78–322  (w=55, h=244)
+         Left arm:    parallelogram from top of left bar
+                      down to center vertex at (200, 230)
+                      (62,78)→(117,78)→(200,230)→(145,230)
+         Right arm:   mirror image
+                      (283,78)→(338,78)→(255,230)→(200,230)
+         White bars drawn on top mask the arm origins,
+         leaving only the inner green V visible.
   ──────────────────────────────────────────────── -->
 
-  <!-- Green diagonal (behind bars) -->
-  <polygon points="90,78 150,78 310,322 250,322" fill="url(#green)"/>
+  <!-- Left diagonal arm (behind bars) -->
+  <polygon points="62,78 117,78 200,230 145,230" fill="url(#green)"/>
+
+  <!-- Right diagonal arm (behind bars) -->
+  <polygon points="283,78 338,78 255,230 200,230" fill="url(#green)"/>
 
   <!-- Left vertical bar -->
-  <rect x="90" y="78" width="60" height="244" rx="11" fill="url(#barFill)"/>
+  <rect x="62" y="78" width="55" height="244" rx="11" fill="url(#barFill)"/>
 
   <!-- Right vertical bar -->
-  <rect x="250" y="78" width="60" height="244" rx="11" fill="url(#barFill)"/>
+  <rect x="283" y="78" width="55" height="244" rx="11" fill="url(#barFill)"/>
 
   <!-- ── Hair-line border (glass-morphism edge) ── -->
   <rect x="1.5" y="1.5" width="397" height="397" rx="88.5"

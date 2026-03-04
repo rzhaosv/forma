@@ -359,7 +359,7 @@ export default function ValueDemoScreen() {
                   },
                 ]}
               />
-              <Text style={dynamicStyles.scanningText}>Analyzing with NutriSnap AI...</Text>
+              <Text style={dynamicStyles.scanningText}>Analyzing with Macra AI...</Text>
             </View>
           )}
         </View>

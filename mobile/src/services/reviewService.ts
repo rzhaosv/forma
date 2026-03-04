@@ -27,7 +27,7 @@ const MIN_DAYS_REQUIRED = 3; // Must have used app on at least 3 separate days
 
 // Feedback destinations
 const TELEGRAM_URL = 'https://t.me/+tyaqT57kKmQ3MGUx';
-const FEEDBACK_EMAIL = 'mailto:tryformaapp@gmail.com?subject=NutriSnap%20Feedback';
+const FEEDBACK_EMAIL = 'mailto:tryformaapp@gmail.com?subject=Macra%20Feedback';
 
 /**
  * Track a meal being logged - updates engagement metrics
@@ -107,7 +107,7 @@ const showSentimentPrompt = (): Promise<'positive' | 'negative' | 'dismissed'> =
   return new Promise((resolve) => {
     Alert.alert(
       'Quick question! 💬',
-      'Are you enjoying NutriSnap?',
+      'Are you enjoying Macra?',
       [
         {
           text: 'Not really',

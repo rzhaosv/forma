@@ -27,7 +27,7 @@ const OPTIONS: { value: TimeAvailable; label: string; sublabel: string; icon: st
   { value: '15', label: '15 minutes', sublabel: 'Quick logging, high portability', icon: 'flash' },
   { value: '30', label: '30 minutes', sublabel: 'Full tracking with meal planning', icon: 'time' },
   { value: '45', label: '45 minutes', sublabel: 'Detailed insights and coaching', icon: 'analytics' },
-  { value: '60+', label: '60+ minutes', sublabel: 'Deep dive — everything NutriSnap offers', icon: 'trending-up' },
+  { value: '60+', label: '60+ minutes', sublabel: 'Deep dive — everything Macra offers', icon: 'trending-up' },
 ];
 
 export default function TimeAvailableScreen() {

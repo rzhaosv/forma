@@ -72,7 +72,7 @@ export default function SocialProof1Screen() {
         {/* Count */}
         <View style={styles.countSection}>
           <Text style={styles.countNumber}>{displayCount.toLocaleString()}</Text>
-          <Text style={styles.countLabel}>professionals trust NutriSnap</Text>
+          <Text style={styles.countLabel}>professionals trust Macra</Text>
           <View style={styles.stars}>
             {[1,2,3,4,5].map(s => (
               <Ionicons key={s} name="star" size={20} color="#FCD34D" />
@@ -113,7 +113,7 @@ export default function SocialProof1Screen() {
           <Ionicons name="bulb" size={20} color={C.accent} style={{ marginBottom: 8 }} />
           <Text style={styles.scienceTitle}>Did you know?</Text>
           <Text style={styles.scienceText}>
-            Studies show that tracking meals increases weight loss success by <Text style={styles.scienceBold}>2×</Text>. That's why we built NutriSnap's 30-second logging feature.
+            Studies show that tracking meals increases weight loss success by <Text style={styles.scienceBold}>2×</Text>. That's why we built Macra's 30-second logging feature.
           </Text>
         </View>
 

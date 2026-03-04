@@ -39,13 +39,13 @@ export default function PrivacyPolicyScreen() {
                 </Text>
 
                 <Text style={[styles.paragraph, { color: colors.textSecondary, marginBottom: 24 }]}>
-                    NutriSnap respects your privacy. This Privacy Policy explains how we collect, use, and protect your information.
+                    Macra respects your privacy. This Privacy Policy explains how we collect, use, and protect your information.
                 </Text>
 
 
                 <Text style={[styles.sectionTitle, { color: colors.text }]}>Information We Collect</Text>
                 <Text style={[styles.paragraph, { color: colors.textSecondary }]}>
-                    NutriSnap may collect the following information:
+                    Macra may collect the following information:
                     {"\n\n"}
                     • Photos of food that you choose to upload for nutrition analysis
                     {"\n"}
@@ -124,7 +124,7 @@ export default function PrivacyPolicyScreen() {
 
                 <View style={styles.footer}>
                     <Text style={[styles.footerText, { color: colors.textTertiary }]}>
-                        © 2025 NutriSnap. All rights reserved.
+                        © 2025 Macra. All rights reserved.
                     </Text>
                 </View>
             </ScrollView>

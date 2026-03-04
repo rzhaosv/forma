@@ -1,4 +1,4 @@
-<svg width="680" height="160" viewBox="0 0 680 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="420" height="160" viewBox="0 0 420 160" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
 
     <linearGradient id="bg" x1="80" y1="0" x2="80" y2="160" gradientUnits="userSpaceOnUse">
@@ -31,40 +31,40 @@
   <!-- ── Icon mark (160×160) ── -->
   <rect x="0" y="0" width="160" height="160" rx="36" fill="url(#bg)"/>
   <rect x="0" y="0" width="160" height="160" rx="36" fill="url(#sheen)"/>
-  <ellipse cx="80" cy="80" rx="42" ry="50" fill="#00E676" opacity="0.06"/>
+  <ellipse cx="80" cy="72" rx="48" ry="42" fill="#00E676" opacity="0.06"/>
 
-  <!-- N diagonal -->
-  <polygon points="36,31 60,31 124,129 100,129" fill="url(#green)"/>
-
+  <!-- M mark: left arm -->
+  <polygon points="25,31 47,31 80,92 58,92" fill="url(#green)"/>
+  <!-- M mark: right arm -->
+  <polygon points="113,31 135,31 102,92 80,92" fill="url(#green)"/>
   <!-- Left bar -->
-  <rect x="36" y="31" width="24" height="98" rx="5" fill="url(#barFill)"/>
-
+  <rect x="25" y="31" width="22" height="98" rx="5" fill="url(#barFill)"/>
   <!-- Right bar -->
-  <rect x="100" y="31" width="24" height="98" rx="5" fill="url(#barFill)"/>
+  <rect x="113" y="31" width="22" height="98" rx="5" fill="url(#barFill)"/>
 
   <!-- Border -->
   <rect x="0.75" y="0.75" width="158.5" height="158.5" rx="35.25"
         stroke="url(#border)" stroke-width="1.5"/>
 
   <!-- ── Wordmark ── -->
-  <!-- "NUTRI" — light weight -->
+  <!-- "MAC" — light weight -->
   <text
-    x="192" y="88"
+    x="188" y="88"
     font-family="-apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif"
     font-size="62"
     font-weight="300"
     letter-spacing="-1.5"
     fill="#EEEEF4"
-  >NUTRI</text>
+  >MAC</text>
 
-  <!-- "SNAP" — bold weight, green -->
+  <!-- "RA" — bold weight, green -->
   <text
-    x="192" y="148"
+    x="188" y="148"
     font-family="-apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif"
     font-size="62"
     font-weight="800"
     letter-spacing="-2"
     fill="#00E676"
-  >SNAP</text>
+  >RA</text>
 
 </svg>

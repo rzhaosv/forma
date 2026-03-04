@@ -210,7 +210,7 @@ export default function WelcomeScreen() {
             <View style={styles.logoMark}>
               <Ionicons name="nutrition" size={18} color={C.accent} />
             </View>
-            <Text style={styles.logoText}>NutriSnap</Text>
+            <Text style={styles.logoText}>Macra</Text>
             <View style={styles.badge}>
               <Text style={styles.badgeText}>PRO</Text>
             </View>
