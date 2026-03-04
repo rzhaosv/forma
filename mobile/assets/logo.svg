@@ -1,0 +1,70 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+
+    <!-- Background: deep dark, slightly lighter at top to suggest depth -->
+    <linearGradient id="bg" x1="200" y1="0" x2="200" y2="400" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1E1E26"/>
+      <stop offset="100%" stop-color="#07070B"/>
+    </linearGradient>
+
+    <!-- Green diagonal: bright top, rich bottom -->
+    <linearGradient id="green" x1="110" y1="78" x2="290" y2="322" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#18FF84"/>
+      <stop offset="100%" stop-color="#00B84A"/>
+    </linearGradient>
+
+    <!-- Bar fill: white at top, cool grey at bottom (material highlight) -->
+    <linearGradient id="barFill" x1="0" y1="78" x2="0" y2="322" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#C8C8DA"/>
+    </linearGradient>
+
+    <!-- Radial sheen: top-left glass highlight -->
+    <radialGradient id="sheen" cx="28%" cy="18%" r="55%">
+      <stop stop-color="#FFFFFF" stop-opacity="0.09"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Outer border gradient: bright top-left, dim bottom-right -->
+    <linearGradient id="border" x1="0" y1="0" x2="400" y2="400" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity="0.18"/>
+      <stop offset="60%" stop-color="#FFFFFF" stop-opacity="0.04"/>
+    </linearGradient>
+
+  </defs>
+
+  <!-- ── Background squircle ── -->
+  <rect width="400" height="400" rx="90" fill="url(#bg)"/>
+
+  <!-- ── Top-left glass sheen (premium depth) ── -->
+  <rect width="400" height="400" rx="90" fill="url(#sheen)"/>
+
+  <!-- ── Subtle ambient green glow behind the mark ── -->
+  <ellipse cx="200" cy="200" rx="105" ry="125" fill="#00E676" opacity="0.06"/>
+
+  <!-- ────────────────────────────────────────────────
+       N  M A R K
+
+       Geometry:
+         Left bar:   x=90–150,  y=78–322   (w=60, h=244)
+         Right bar:  x=250–310, y=78–322   (w=60, h=244)
+         Diagonal:   parallelogram sharing the bar endpoints:
+                     (90,78) → (150,78) → (310,322) → (250,322)
+         The white bars are drawn on top, so only the green
+         strip between the bars is visible.
+  ──────────────────────────────────────────────── -->
+
+  <!-- Green diagonal (behind bars) -->
+  <polygon points="90,78 150,78 310,322 250,322" fill="url(#green)"/>
+
+  <!-- Left vertical bar -->
+  <rect x="90" y="78" width="60" height="244" rx="11" fill="url(#barFill)"/>
+
+  <!-- Right vertical bar -->
+  <rect x="250" y="78" width="60" height="244" rx="11" fill="url(#barFill)"/>
+
+  <!-- ── Hair-line border (glass-morphism edge) ── -->
+  <rect x="1.5" y="1.5" width="397" height="397" rx="88.5"
+        stroke="url(#border)" stroke-width="2"/>
+
+</svg>

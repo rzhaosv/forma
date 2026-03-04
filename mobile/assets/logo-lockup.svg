@@ -1,0 +1,70 @@
+<svg width="680" height="160" viewBox="0 0 680 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+
+    <linearGradient id="bg" x1="80" y1="0" x2="80" y2="160" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1E1E26"/>
+      <stop offset="100%" stop-color="#07070B"/>
+    </linearGradient>
+
+    <linearGradient id="green" x1="20" y1="20" x2="140" y2="140" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#18FF84"/>
+      <stop offset="100%" stop-color="#00B84A"/>
+    </linearGradient>
+
+    <linearGradient id="barFill" x1="0" y1="20" x2="0" y2="140" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#C8C8DA"/>
+    </linearGradient>
+
+    <radialGradient id="sheen" cx="28%" cy="18%" r="55%">
+      <stop stop-color="#FFFFFF" stop-opacity="0.09"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="border" x1="0" y1="0" x2="160" y2="160" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity="0.18"/>
+      <stop offset="60%" stop-color="#FFFFFF" stop-opacity="0.04"/>
+    </linearGradient>
+
+  </defs>
+
+  <!-- ── Icon mark (160×160) ── -->
+  <rect x="0" y="0" width="160" height="160" rx="36" fill="url(#bg)"/>
+  <rect x="0" y="0" width="160" height="160" rx="36" fill="url(#sheen)"/>
+  <ellipse cx="80" cy="80" rx="42" ry="50" fill="#00E676" opacity="0.06"/>
+
+  <!-- N diagonal -->
+  <polygon points="36,31 60,31 124,129 100,129" fill="url(#green)"/>
+
+  <!-- Left bar -->
+  <rect x="36" y="31" width="24" height="98" rx="5" fill="url(#barFill)"/>
+
+  <!-- Right bar -->
+  <rect x="100" y="31" width="24" height="98" rx="5" fill="url(#barFill)"/>
+
+  <!-- Border -->
+  <rect x="0.75" y="0.75" width="158.5" height="158.5" rx="35.25"
+        stroke="url(#border)" stroke-width="1.5"/>
+
+  <!-- ── Wordmark ── -->
+  <!-- "NUTRI" — light weight -->
+  <text
+    x="192" y="88"
+    font-family="-apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif"
+    font-size="62"
+    font-weight="300"
+    letter-spacing="-1.5"
+    fill="#EEEEF4"
+  >NUTRI</text>
+
+  <!-- "SNAP" — bold weight, green -->
+  <text
+    x="192" y="148"
+    font-family="-apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif"
+    font-size="62"
+    font-weight="800"
+    letter-spacing="-2"
+    fill="#00E676"
+  >SNAP</text>
+
+</svg>
