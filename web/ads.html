@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriSnap — Ad Creative Testing Suite</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0D0D0D;
+    --lime: #C8F135;
+    --lime-dim: rgba(200,241,53,0.12);
+    --lime-dim2: rgba(200,241,53,0.06);
+    --white: #FFFFFF;
+    --gray-1: #F5F5F5;
+    --gray-2: #A0A0A0;
+    --gray-3: #404040;
+    --gray-4: #1A1A1A;
+    --font: 'Inter', system-ui, -apple-system, 'SF Pro Display', sans-serif;
+    --ad-size: 540px;
+  }
+
+  body {
+    background: #111;
+    font-family: var(--font);
+    padding: 48px 32px;
+    min-height: 100vh;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  header h1 {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 10px;
+  }
+
+  header p {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+
+  header span {
+    color: var(--gray-2);
+    font-size: 14px;
+    font-weight: 400;
+    display: block;
+    margin-top: 8px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, var(--ad-size));
+    gap: 32px;
+    justify-content: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .ad-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ad-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 4px;
+  }
+
+  .variant-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--bg);
+    background: var(--lime);
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .variant-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gray-2);
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── AD CARD BASE ─── */
+  .ad {
+    width: var(--ad-size);
+    height: var(--ad-size);
+    background: var(--bg);
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 44px 44px 40px;
+    cursor: default;
+    flex-shrink: 0;
+  }
+
+  /* Noise texture overlay */
+  .ad::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 10;
+    mix-blend-mode: overlay;
+  }
+
+  .ad-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* App name + icon top-right */
+  .ad-topbar {
+    position: absolute;
+    top: 32px;
+    left: 44px;
+    right: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 3;
+  }
+
+  .app-pill {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 100px;
+    padding: 5px 12px 5px 6px;
+    backdrop-filter: blur(8px);
+  }
+
+  .app-icon {
+    width: 22px;
+    height: 22px;
+    background: var(--lime);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--bg);
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+
+  .app-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.02em;
+  }
+
+  .ad-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--lime);
+    opacity: 0.85;
+  }
+
+  /* Headline */
+  .ad-headline {
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -1.5px;
+    color: var(--white);
+    margin-bottom: 14px;
+  }
+
+  .ad-headline .accent { color: var(--lime); }
+  .ad-headline .dim { color: var(--gray-2); }
+
+  /* Subtext */
+  .ad-sub {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--gray-2);
+    line-height: 1.5;
+    margin-bottom: 28px;
+    max-width: 380px;
+  }
+
+  .ad-sub strong { color: var(--gray-1); font-weight: 600; }
+
+  /* CTA */
+  .ad-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--lime);
+    color: var(--bg);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    border-radius: 100px;
+    padding: 14px 26px;
+    width: fit-content;
+    line-height: 1;
+  }
+
+  .ad-cta .arrow {
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  /* Divider line accent */
+  .ad-divider {
+    width: 40px;
+    height: 2px;
+    background: var(--lime);
+    margin-bottom: 20px;
+    border-radius: 2px;
+  }
+
+  /* Copy button */
+  .copy-btn {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 10px 16px;
+    color: var(--gray-2);
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.15s ease;
+    letter-spacing: 0.01em;
+  }
+
+  .copy-btn:hover {
+    background: rgba(200,241,53,0.08);
+    border-color: rgba(200,241,53,0.3);
+    color: var(--lime);
+  }
+
+  .copy-btn.copied {
+    background: rgba(200,241,53,0.12);
+    border-color: rgba(200,241,53,0.4);
+    color: var(--lime);
+  }
+
+  .copy-btn .copy-label { opacity: 0.7; }
+  .copy-btn .copy-icon { font-size: 14px; }
+
+
+  /* ══════════════════════════════════════
+     AD 1 — Pain / Problem
+  ══════════════════════════════════════ */
+  .ad-1 {
+    background: var(--bg);
+  }
+
+  /* Subtle top gradient glow */
+  .ad-1 .glow {
+    position: absolute;
+    top: -120px;
+    right: -80px;
+    width: 340px;
+    height: 340px;
+    background: radial-gradient(circle, rgba(200,241,53,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .ad-1 .scan-visual {
+    position: absolute;
+    top: 50%;
+    right: 44px;
+    transform: translateY(-60%);
+    z-index: 1;
+    opacity: 0.18;
+  }
+
+  .ad-1 .scan-grid {
+    width: 180px;
+    height: 180px;
+    border: 1px solid var(--lime);
+    border-radius: 12px;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    grid-template-rows: repeat(3,1fr);
+    gap: 1px;
+    padding: 1px;
+  }
+
+  .ad-1 .scan-cell {
+    background: rgba(200,241,53,0.12);
+    border-radius: 3px;
+  }
+
+  .ad-1 .scan-cell:nth-child(2),
+  .ad-1 .scan-cell:nth-child(5) {
+    background: rgba(200,241,53,0.28);
+  }
+
+
+  /* ══════════════════════════════════════
+     AD 2 — Speed Hook
+  ══════════════════════════════════════ */
+  .ad-2 {
+    background: linear-gradient(165deg, #0D0D0D 55%, #141A00 100%);
+  }
+
+  .ad-2 .speed-visual {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .ad-2 .speed-line {
+    position: absolute;
+    left: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(200,241,53,0.4), transparent);
+    animation: none;
+  }
+
+  .speed-line:nth-child(1) { top: 22%; width: 60%; }
+  .speed-line:nth-child(2) { top: 35%; width: 80%; opacity: 0.5; }
+  .speed-line:nth-child(3) { top: 48%; width: 45%; opacity: 0.3; }
+
+  .ad-2 .timer-badge {
+    position: absolute;
+    top: 110px;
+    right: 44px;
+    z-index: 3;
+    background: rgba(200,241,53,0.1);
+    border: 1px solid rgba(200,241,53,0.25);
+    border-radius: 100px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .timer-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--lime);
+    border-radius: 50%;
+  }
+
+  .timer-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--lime);
+    letter-spacing: 0.05em;
+  }
+
+
+  /* ══════════════════════════════════════
+     AD 3 — Identity
+  ══════════════════════════════════════ */
+  .ad-3 {
+    background: var(--bg);
+  }
+
+  .ad-3 .grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(200,241,53,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,241,53,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    z-index: 1;
+    mask-image: radial-gradient(ellipse 70% 60% at 80% 20%, black 10%, transparent 75%);
+  }
+
+  .ad-3 .stat-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    z-index: 2;
+    position: relative;
+  }
+
+  .stat-chip {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stat-chip .val {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--lime);
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+
+  .stat-chip .lbl {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--gray-2);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+
+  /* ══════════════════════════════════════
+     AD 4 — Social Proof
+  ══════════════════════════════════════ */
+  .ad-4 {
+    background: linear-gradient(160deg, #0D0D0D 40%, #0D150D 100%);
+  }
+
+  .ad-4 .quote-mark {
+    position: absolute;
+    top: 90px;
+    left: 44px;
+    font-size: 160px;
+    font-weight: 900;
+    color: var(--lime);
+    opacity: 0.08;
+    line-height: 1;
+    font-family: Georgia, serif;
+    z-index: 1;
+    user-select: none;
+  }
+
+  .testimonial-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 22px 22px 18px;
+    position: relative;
+    z-index: 2;
+    margin-bottom: 24px;
+  }
+
+  .testimonial-text {
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.4;
+    letter-spacing: -0.3px;
+    margin-bottom: 18px;
+  }
+
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .author-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #2a3d00, #5a8000);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--lime);
+  }
+
+  .author-info .name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  .author-info .role {
+    font-size: 11px;
+    color: var(--gray-2);
+    font-weight: 400;
+  }
+
+  .star-row {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 12px;
+  }
+
+  .star { color: var(--lime); font-size: 13px; }
+
+  .result-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(200,241,53,0.1);
+    border: 1px solid rgba(200,241,53,0.2);
+    border-radius: 100px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--lime);
+    letter-spacing: 0.03em;
+  }
+
+  /* ══════════════════════════════════════
+     AD 5 — Curiosity Gap
+  ══════════════════════════════════════ */
+  .ad-5 {
+    background: var(--bg);
+  }
+
+  .ad-5 .wrong-right {
+    position: absolute;
+    top: 90px;
+    right: 44px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .wr-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    padding: 9px 14px;
+  }
+
+  .wr-row.wrong { border-color: rgba(255,80,80,0.2); }
+  .wr-row.right { border-color: rgba(200,241,53,0.2); background: rgba(200,241,53,0.05); }
+
+  .wr-icon { font-size: 14px; line-height: 1; }
+  .wr-label { font-size: 12px; font-weight: 600; color: var(--gray-1); }
+  .wr-row.wrong .wr-label { text-decoration: line-through; color: var(--gray-2); }
+
+  .ad-5 .reveal-hint {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--lime);
+    opacity: 0.7;
+    margin-bottom: 8px;
+  }
+
+
+  /* ══════════════════════════════════════
+     AD 6 — Direct Offer
+  ══════════════════════════════════════ */
+  .ad-6 {
+    background: var(--bg);
+  }
+
+  .ad-6 .offer-glow {
+    position: absolute;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 300px;
+    background: radial-gradient(ellipse, rgba(200,241,53,0.09) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .price-block {
+    margin-bottom: 28px;
+    z-index: 2;
+    position: relative;
+  }
+
+  .price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .price-main {
+    font-size: 56px;
+    font-weight: 900;
+    color: var(--white);
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+
+  .price-period {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--gray-2);
+    letter-spacing: 0;
+  }
+
+  .price-strike {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--gray-3);
+    text-decoration: line-through;
+  }
+
+  .offer-features {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 28px;
+    z-index: 2;
+    position: relative;
+  }
+
+  .offer-feature {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-1);
+  }
+
+  .offer-check {
+    width: 18px;
+    height: 18px;
+    background: rgba(200,241,53,0.12);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 9px;
+    color: var(--lime);
+    font-weight: 700;
+  }
+
+  .ad-cta.full {
+    width: 100%;
+    justify-content: center;
+    font-size: 15px;
+    padding: 16px 26px;
+  }
+
+  .fine-print {
+    font-size: 11px;
+    color: var(--gray-3);
+    margin-top: 10px;
+    text-align: center;
+    z-index: 2;
+    position: relative;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1>NutriSnap · Ad Creative Suite</h1>
+  <p>6 Variants — Facebook / Instagram Square (1080×1080)</p>
+  <span>Screenshot each card at 2× scale · Upload directly to Meta Ads Manager</span>
+</header>
+
+<div class="grid">
+
+  <!-- ─── AD 1: PAIN / PROBLEM ─── -->
+  <div class="ad-wrapper">
+    <div class="ad-meta">
+      <span class="variant-badge">V1</span>
+      <span class="variant-label">Pain / Problem</span>
+    </div>
+    <div class="ad ad-1" id="ad1">
+      <div class="glow"></div>
+      <div class="scan-visual">
+        <div class="scan-grid">
+          <div class="scan-cell"></div><div class="scan-cell"></div><div class="scan-cell"></div>
+          <div class="scan-cell"></div><div class="scan-cell"></div><div class="scan-cell"></div>
+          <div class="scan-cell"></div><div class="scan-cell"></div><div class="scan-cell"></div>
+        </div>
+      </div>
+
+      <div class="ad-topbar">
+        <div class="app-pill">
+          <div class="app-icon">NS</div>
+          <span class="app-name">NutriSnap</span>
+        </div>
+        <span class="ad-tag">Nutrition</span>
+      </div>
+
+      <div class="ad-content">
+        <div class="ad-divider"></div>
+        <h2 class="ad-headline">
+          You're eating clean.<br>
+          <span class="accent">Why aren't you</span><br>
+          losing fat?
+        </h2>
+        <p class="ad-sub">Most people guess their macros. <strong>NutriSnap doesn't guess.</strong> Scan your food, get the truth.</p>
+        <div class="ad-cta">
+          Start Free Trial <span class="arrow">↗</span>
+        </div>
+      </div>
+    </div>
+    <button class="copy-btn" onclick="copyHeadline(this, `You're eating clean. Why aren't you losing fat?`)">
+      <span class="copy-label">Copy Headline</span>
+      <span class="copy-icon">⌘</span>
+    </button>
+  </div>
+
+  <!-- ─── AD 2: SPEED HOOK ─── -->
+  <div class="ad-wrapper">
+    <div class="ad-meta">
+      <span class="variant-badge">V2</span>
+      <span class="variant-label">Speed Hook</span>
+    </div>
+    <div class="ad ad-2" id="ad2">
+      <div class="speed-visual">
+        <div class="speed-line"></div>
+        <div class="speed-line"></div>
+        <div class="speed-line"></div>
+      </div>
+
+      <div class="ad-topbar">
+        <div class="app-pill">
+          <div class="app-icon">NS</div>
+          <span class="app-name">NutriSnap</span>
+        </div>
+        <span class="ad-tag">AI-Powered</span>
+      </div>
+
+      <div class="timer-badge">
+        <div class="timer-dot"></div>
+        <span class="timer-text">3 sec scan</span>
+      </div>
+
+      <div class="ad-content">
+        <div class="ad-divider"></div>
+        <h2 class="ad-headline">
+          Track your meal<br>
+          in <span class="accent">3 seconds.</span><br>
+          <span class="dim">Not 3 minutes.</span>
+        </h2>
+        <p class="ad-sub">Point. Shoot. Done. <strong>Instant macros, zero manual entry.</strong> Built for people with things to do.</p>
+        <div class="ad-cta">
+          Try It Free <span class="arrow">↗</span>
+        </div>
+      </div>
+    </div>
+    <button class="copy-btn" onclick="copyHeadline(this, 'Track your entire meal in 3 seconds. Not 3 minutes.')">
+      <span class="copy-label">Copy Headline</span>
+      <span class="copy-icon">⌘</span>
+    </button>
+  </div>
+
+  <!-- ─── AD 3: IDENTITY ─── -->
+  <div class="ad-wrapper">
+    <div class="ad-meta">
+      <span class="variant-badge">V3</span>
+      <span class="variant-label">Identity</span>
+    </div>
+    <div class="ad ad-3" id="ad3">
+      <div class="grid-bg"></div>
+
+      <div class="ad-topbar">
+        <div class="app-pill">
+          <div class="app-icon">NS</div>
+          <span class="app-name">NutriSnap</span>
+        </div>
+        <span class="ad-tag">Premium</span>
+      </div>
+
+      <div class="ad-content">
+        <div class="stat-row">
+          <div class="stat-chip">
+            <span class="val">97%</span>
+            <span class="lbl">Accuracy</span>
+          </div>
+          <div class="stat-chip">
+            <span class="val">3s</span>
+            <span class="lbl">Avg scan</span>
+          </div>
+          <div class="stat-chip">
+            <span class="val">2.4M</span>
+            <span class="lbl">Foods</span>
+          </div>
+        </div>
+        <div class="ad-divider"></div>
+        <h2 class="ad-headline">
+          Built for people<br>
+          who <span class="accent">optimize</span><br>
+          everything.
+        </h2>
+        <p class="ad-sub">Your calendar, your workouts, your sleep — now your nutrition. <strong>Including your body.</strong></p>
+        <div class="ad-cta">
+          Optimize Now <span class="arrow">↗</span>
+        </div>
+      </div>
+    </div>
+    <button class="copy-btn" onclick="copyHeadline(this, 'Built for people who optimize everything. Including their body.')">
+      <span class="copy-label">Copy Headline</span>
+      <span class="copy-icon">⌘</span>
+    </button>
+  </div>
+
+  <!-- ─── AD 4: SOCIAL PROOF ─── -->
+  <div class="ad-wrapper">
+    <div class="ad-meta">
+      <span class="variant-badge">V4</span>
+      <span class="variant-label">Social Proof</span>
+    </div>
+    <div class="ad ad-4" id="ad4">
+      <div class="quote-mark">"</div>
+
+      <div class="ad-topbar">
+        <div class="app-pill">
+          <div class="app-icon">NS</div>
+          <span class="app-name">NutriSnap</span>
+        </div>
+        <div class="result-pill">↓ 11 lbs · 6 weeks</div>
+      </div>
+
+      <div class="ad-content">
+        <div class="testimonial-card">
+          <div class="star-row">
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+          </div>
+          <p class="testimonial-text">"Lost 11lbs in 6 weeks without changing <em>what</em> I eat — just finally seeing <em>how much</em>"</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">MR</div>
+            <div class="author-info">
+              <div class="name">Marcus R.</div>
+              <div class="role">Product Manager, 34 · San Francisco</div>
+            </div>
+          </div>
+        </div>
+        <p class="ad-sub" style="margin-bottom:20px;">Real results. No diet overhaul. No meal prep. <strong>Just clarity.</strong></p>
+        <div class="ad-cta">
+          Start Free — 7 Days <span class="arrow">↗</span>
+        </div>
+      </div>
+    </div>
+    <button class="copy-btn" onclick="copyHeadline(this, '\"Lost 11lbs in 6 weeks without changing what I eat.\" — Marcus R.')">
+      <span class="copy-label">Copy Headline</span>
+      <span class="copy-icon">⌘</span>
+    </button>
+  </div>
+
+  <!-- ─── AD 5: CURIOSITY GAP ─── -->
+  <div class="ad-wrapper">
+    <div class="ad-meta">
+      <span class="variant-badge">V5</span>
+      <span class="variant-label">Curiosity Gap</span>
+    </div>
+    <div class="ad ad-5" id="ad5">
+      <div class="ad-topbar">
+        <div class="app-pill">
+          <div class="app-icon">NS</div>
+          <span class="app-name">NutriSnap</span>
+        </div>
+        <span class="ad-tag">Data-Driven</span>
+      </div>
+
+      <div class="wrong-right">
+        <div class="wr-row wrong">
+          <span class="wr-icon">✕</span>
+          <span class="wr-label">Calorie totals</span>
+        </div>
+        <div class="wr-row wrong">
+          <span class="wr-icon">✕</span>
+          <span class="wr-label">Carb guessing</span>
+        </div>
+        <div class="wr-row right">
+          <span class="wr-icon" style="color:var(--lime)">✓</span>
+          <span class="wr-label">Protein timing</span>
+        </div>
+        <div class="wr-row right">
+          <span class="wr-icon" style="color:var(--lime)">✓</span>
+          <span class="wr-label">Macro ratios</span>
+        </div>
+      </div>
+
+      <div class="ad-content">
+        <p class="reveal-hint">The real signal →</p>
+        <div class="ad-divider"></div>
+        <h2 class="ad-headline">
+          Most people track<br>
+          calories <span class="dim">wrong.</span><br>
+          <span class="accent">Here's what works.</span>
+        </h2>
+        <p class="ad-sub">It's not about counting. It's about <strong>the right numbers.</strong> NutriSnap shows you what actually drives fat loss.</p>
+        <div class="ad-cta">
+          See What Matters <span class="arrow">↗</span>
+        </div>
+      </div>
+    </div>
+    <button class="copy-btn" onclick="copyHeadline(this, 'Most people track calories wrong. Here\'s what actually matters.')">
+      <span class="copy-label">Copy Headline</span>
+      <span class="copy-icon">⌘</span>
+    </button>
+  </div>
+
+  <!-- ─── AD 6: DIRECT OFFER ─── -->
+  <div class="ad-wrapper">
+    <div class="ad-meta">
+      <span class="variant-badge">V6</span>
+      <span class="variant-label">Direct Offer</span>
+    </div>
+    <div class="ad ad-6" id="ad6">
+      <div class="offer-glow"></div>
+
+      <div class="ad-topbar">
+        <div class="app-pill">
+          <div class="app-icon">NS</div>
+          <span class="app-name">NutriSnap</span>
+        </div>
+        <span class="ad-tag">Limited Time</span>
+      </div>
+
+      <div class="ad-content">
+        <div class="ad-divider"></div>
+        <h2 class="ad-headline" style="margin-bottom:20px;">
+          7 days free.<br>
+          <span class="accent">Cancel anytime.</span><br>
+          Start tonight.
+        </h2>
+
+        <div class="price-block">
+          <div class="price-row">
+            <span class="price-main">$59</span>
+            <span class="price-period">.99 / year</span>
+            <span class="price-strike">$99</span>
+          </div>
+          <p style="font-size:12px;color:var(--gray-2);font-weight:500;">That's $1.15/week to know exactly what's in your food.</p>
+        </div>
+
+        <div class="offer-features">
+          <div class="offer-feature">
+            <div class="offer-check">✓</div>
+            AI food scanning — 2.4M+ items
+          </div>
+          <div class="offer-feature">
+            <div class="offer-check">✓</div>
+            Real-time macro breakdowns
+          </div>
+          <div class="offer-feature">
+            <div class="offer-check">✓</div>
+            Body recomposition insights
+          </div>
+        </div>
+
+        <div class="ad-cta full">
+          Start Free Trial — No Card Needed <span class="arrow">↗</span>
+        </div>
+        <p class="fine-print">7-day trial · $59.99/yr after · Cancel anytime</p>
+      </div>
+    </div>
+    <button class="copy-btn" onclick="copyHeadline(this, '7 days free. Cancel anytime. Start scanning tonight.')">
+      <span class="copy-label">Copy Headline</span>
+      <span class="copy-icon">⌘</span>
+    </button>
+  </div>
+
+</div>
+
+<!-- Screenshot guide -->
+<div style="max-width:1200px;margin:48px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+  <div style="background:rgba(200,241,53,0.06);border:1px solid rgba(200,241,53,0.15);border-radius:12px;padding:20px;">
+    <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--lime);margin-bottom:8px;">Screenshot Tips</div>
+    <div style="font-size:13px;color:var(--gray-2);line-height:1.6;">Use browser zoom at 200% → screenshot each card for native 1080px output. Or use browser DevTools device emulation set to 540×540 @2×.</div>
+  </div>
+  <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;">
+    <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray-2);margin-bottom:8px;">Testing Priority</div>
+    <div style="font-size:13px;color:var(--gray-2);line-height:1.6;">Run V1 (Pain) and V2 (Speed) first — highest proven CTR for utility apps. V4 (Social Proof) as control. Budget split: 40 / 40 / 20.</div>
+  </div>
+  <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;">
+    <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray-2);margin-bottom:8px;">Meta Specs</div>
+    <div style="font-size:13px;color:var(--gray-2);line-height:1.6;">Format: 1080×1080px · Ratio: 1:1 · Text overlay: &lt;20% · File: JPG/PNG · All 6 variants fit Feed, Stories (crop), Reels (crop).</div>
+  </div>
+</div>
+
+<p style="text-align:center;margin-top:32px;font-size:12px;color:#333;font-family:var(--font);">NutriSnap Ad Creative Suite · 6 Variants · 2026</p>
+
+<script>
+  async function copyHeadline(btn, text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      const label = btn.querySelector('.copy-label');
+      const icon = btn.querySelector('.copy-icon');
+      btn.classList.add('copied');
+      label.textContent = 'Copied!';
+      icon.textContent = '✓';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        label.textContent = 'Copy Headline';
+        icon.textContent = '⌘';
+      }, 2000);
+    } catch(e) {
+      btn.querySelector('.copy-label').textContent = 'Copy manually above';
+    }
+  }
+</script>
+
+</body>
+</html>

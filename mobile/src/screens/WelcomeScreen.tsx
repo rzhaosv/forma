@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Animated,
   Dimensions,
+  ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { signInWithGoogle, signInWithApple } from '../services/authService';
@@ -203,7 +204,8 @@ export default function WelcomeScreen() {
       </Animated.View>
 
       <SafeAreaView style={styles.safeArea}>
-        <Animated.View style={[styles.content, { opacity: fadeAnim, transform: [{ translateY: slideUp }] }]}>
+        <Animated.View style={{ flex: 1, opacity: fadeAnim, transform: [{ translateY: slideUp }] }}>
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
 
           {/* Logo wordmark */}
           <View style={styles.logoRow}>
@@ -211,9 +213,6 @@ export default function WelcomeScreen() {
               <Ionicons name="nutrition" size={18} color={C.accent} />
             </View>
             <Text style={styles.logoText}>Macra</Text>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>PRO</Text>
-            </View>
           </View>
 
           {/* Headline */}
@@ -299,6 +298,7 @@ export default function WelcomeScreen() {
             <Text style={styles.legalLink} onPress={() => navigation.navigate('PrivacyPolicy' as never)}>Privacy Policy</Text>
           </Text>
 
+        </ScrollView>
         </Animated.View>
       </SafeAreaView>
     </View>
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
     left: -width * 0.3,
   },
   safeArea: { flex: 1 },
-  content: { flex: 1, paddingHorizontal: 24, paddingTop: 8, paddingBottom: 16 },
+  content: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 8, paddingBottom: 32 },
 
   logoRow: {
     flexDirection: 'row',
