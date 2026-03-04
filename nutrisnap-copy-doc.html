@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriSnap — Ad Copy Doc</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0D0D0D;
+    --bg2: #141414;
+    --bg3: #1A1A1A;
+    --lime: #C8F135;
+    --lime-dim: rgba(200,241,53,0.1);
+    --lime-border: rgba(200,241,53,0.2);
+    --white: #FFFFFF;
+    --g1: #E8E8E8;
+    --g2: #A0A0A0;
+    --g3: #555;
+    --g4: #252525;
+    --font: system-ui, -apple-system, 'SF Pro Text', 'Inter', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: var(--font);
+    color: var(--g1);
+    padding: 40px 32px 80px;
+    min-height: 100vh;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    max-width: 1600px;
+    margin: 0 auto 36px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .page-title h1 {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 6px;
+  }
+
+  .page-title p {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.4px;
+  }
+
+  .page-title span {
+    font-size: 13px;
+    color: var(--g2);
+    font-weight: 400;
+    display: block;
+    margin-top: 4px;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: none;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: var(--lime);
+    color: var(--bg);
+  }
+
+  .btn-primary:hover { background: #d4f54a; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--g2);
+    border: 1px solid var(--g3);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--lime-border);
+    color: var(--lime);
+    background: var(--lime-dim);
+  }
+
+  .btn.success {
+    background: rgba(200,241,53,0.15) !important;
+    border-color: var(--lime-border) !important;
+    color: var(--lime) !important;
+  }
+
+  /* ── LEGEND ── */
+  .legend {
+    max-width: 1600px;
+    margin: 0 auto 24px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg3);
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    color: var(--g2);
+    font-weight: 500;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ── TABLE WRAPPER ── */
+  .table-outer {
+    max-width: 1600px;
+    margin: 0 auto;
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid #222;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1400px;
+  }
+
+  /* ── COLUMN GROUPS ── */
+  colgroup .col-meta    { width: 140px; }
+  colgroup .col-pt      { width: 230px; }
+  colgroup .col-hl      { width: 160px; }
+  colgroup .col-desc    { width: 210px; }
+  colgroup .col-cta     { width: 140px; }
+
+  /* ── THEAD ── */
+  thead tr:first-child th {
+    background: #0f0f0f;
+    padding: 10px 14px 8px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-bottom: 1px solid #222;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    white-space: nowrap;
+  }
+
+  .th-meta    { color: var(--g2); text-align: left; }
+  .th-pt      { color: #7EB5FF; }
+  .th-hl      { color: #FF9F6B; }
+  .th-desc    { color: #C084FC; }
+  .th-cta     { color: var(--lime); }
+
+  thead tr:nth-child(2) th {
+    background: #111;
+    padding: 7px 14px 9px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--g3);
+    border-bottom: 2px solid #222;
+    position: sticky;
+    top: 33px;
+    z-index: 9;
+    text-align: left;
+  }
+
+  /* ── TBODY ── */
+  tbody tr {
+    border-bottom: 1px solid #1e1e1e;
+    vertical-align: top;
+    transition: background 0.1s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover td { background: rgba(255,255,255,0.015); }
+
+  td {
+    padding: 18px 14px;
+    vertical-align: top;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--g1);
+    border-right: 1px solid #1a1a1a;
+  }
+
+  td:last-child { border-right: none; }
+
+  /* Alternating row tint */
+  tbody tr:nth-child(even) td { background: rgba(255,255,255,0.012); }
+
+  /* ── META CELL ── */
+  .cell-meta {
+    min-width: 120px;
+  }
+
+  .variant-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: var(--lime);
+    color: var(--bg);
+    font-size: 11px;
+    font-weight: 800;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    letter-spacing: 0;
+  }
+
+  .variant-angle {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--lime);
+    line-height: 1.2;
+  }
+
+  /* ── PRIMARY TEXT CELLS ── */
+  .cell-pt {
+    min-width: 200px;
+    max-width: 260px;
+  }
+
+  .pt-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+
+  .pt-short   .pt-label { color: #7EB5FF; background: rgba(126,181,255,0.1); }
+  .pt-story   .pt-label { color: #A78BFA; background: rgba(167,139,250,0.1); }
+  .pt-curious .pt-label { color: #FB923C; background: rgba(251,146,60,0.1); }
+
+  .pt-text {
+    font-size: 12.5px;
+    color: var(--g1);
+    line-height: 1.6;
+  }
+
+  /* ── HEADLINE CELLS ── */
+  .cell-hl {
+    min-width: 150px;
+    max-width: 200px;
+  }
+
+  .hl-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .hl-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: all 0.12s;
+    group: 'hl';
+  }
+
+  .hl-item:hover {
+    background: rgba(255,159,107,0.06);
+    border-color: rgba(255,159,107,0.2);
+  }
+
+  .hl-num {
+    font-size: 9px;
+    font-weight: 800;
+    color: #FF9F6B;
+    opacity: 0.7;
+    min-width: 12px;
+    padding-top: 1px;
+    flex-shrink: 0;
+  }
+
+  .hl-text {
+    font-size: 12px;
+    color: var(--g1);
+    line-height: 1.45;
+    font-weight: 500;
+  }
+
+  /* ── DESCRIPTION CELL ── */
+  .cell-desc {
+    min-width: 190px;
+    max-width: 240px;
+  }
+
+  .desc-text {
+    font-size: 12.5px;
+    color: var(--g1);
+    line-height: 1.6;
+    padding: 10px 12px;
+    background: rgba(192,132,252,0.06);
+    border: 1px solid rgba(192,132,252,0.12);
+    border-radius: 8px;
+  }
+
+  /* ── CTA CELLS ── */
+  .cell-cta {
+    min-width: 130px;
+  }
+
+  .cta-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .cta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--lime-dim);
+    border: 1px solid var(--lime-border);
+    border-radius: 100px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--lime);
+    cursor: pointer;
+    transition: all 0.12s;
+    white-space: nowrap;
+    width: fit-content;
+  }
+
+  .cta-item:hover {
+    background: rgba(200,241,53,0.18);
+  }
+
+  /* ── COPY ROW (mini copy buttons for each cell) ── */
+  .copy-cell-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid #2a2a2a;
+    background: transparent;
+    font-family: var(--font);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--g3);
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: all 0.12s;
+  }
+
+  .copy-cell-btn:hover {
+    border-color: var(--lime-border);
+    color: var(--lime);
+    background: var(--lime-dim);
+  }
+
+  .copy-cell-btn.ok {
+    border-color: var(--lime-border);
+    color: var(--lime);
+    background: var(--lime-dim);
+  }
+
+  /* ── FOOTER INFO ── */
+  .footer-note {
+    max-width: 1600px;
+    margin: 24px auto 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+    gap: 12px;
+  }
+
+  .note-card {
+    background: var(--bg2);
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+
+  .note-card h4 {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 8px;
+  }
+
+  .note-card p {
+    font-size: 12px;
+    color: var(--g2);
+    line-height: 1.6;
+  }
+
+  .note-card ul {
+    padding-left: 14px;
+    font-size: 12px;
+    color: var(--g2);
+    line-height: 1.8;
+  }
+
+  /* ── SECTION GROUP HEADERS ── */
+  .group-header th {
+    background: #0d0d0d !important;
+    padding: 6px 14px 5px !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.06em !important;
+    color: var(--g3) !important;
+    border-bottom: 1px solid #1e1e1e !important;
+    border-top: 2px solid #222 !important;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="page-title">
+    <h1>NutriSnap · Ad Copy Doc</h1>
+    <p>6 Variants — Full Copy Matrix</p>
+    <span>Primary Text (3 versions) · 5 Headlines · Description · 3 CTAs per variant</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="copyTSV(this)">
+      <span>⬇</span> Copy All as TSV (Google Sheets)
+    </button>
+    <button class="btn btn-primary" onclick="downloadTSV()">
+      <span>↓</span> Download .tsv
+    </button>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#7EB5FF"></div>Primary Text</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#FF9F6B"></div>Headlines</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#C084FC"></div>Description</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#C8F135"></div>CTA Options</div>
+  <div class="legend-item" style="margin-left:auto;color:#555">Click any headline or CTA to copy it</div>
+</div>
+
+<div class="table-outer">
+<table id="main-table">
+  <colgroup>
+    <col class="col-meta">
+    <col class="col-pt"><col class="col-pt"><col class="col-pt">
+    <col class="col-hl"><col class="col-hl"><col class="col-hl"><col class="col-hl"><col class="col-hl">
+    <col class="col-desc">
+    <col class="col-cta"><col class="col-cta"><col class="col-cta">
+  </colgroup>
+  <thead>
+    <tr>
+      <th class="th-meta" rowspan="2">Variant</th>
+      <th class="th-pt" colspan="3">Primary Text</th>
+      <th class="th-hl" colspan="5">Headlines</th>
+      <th class="th-desc" rowspan="2">Description Line</th>
+      <th class="th-cta" colspan="3">CTA Button</th>
+    </tr>
+    <tr>
+      <th>Short / Punchy</th>
+      <th>Story-Driven</th>
+      <th>Curiosity</th>
+      <th>H1</th><th>H2</th><th>H3</th><th>H4</th><th>H5</th>
+      <th>CTA 1</th><th>CTA 2</th><th>CTA 3</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <!-- ═══════════════════════════════════
+         V1: PAIN / PROBLEM
+    ═══════════════════════════════════ -->
+    <tr>
+      <td class="cell-meta">
+        <div class="variant-num">V1</div>
+        <div class="variant-angle">Pain /<br>Problem</div>
+      </td>
+
+      <td class="cell-pt pt-short">
+        <div class="pt-label">Short / Punchy</div>
+        <div class="pt-text">You track. You cook clean. You hit the gym. Still nothing.<br><br>The problem isn't discipline — it's data.<br><br>Start scanning free today.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `You track. You cook clean. You hit the gym. Still nothing.\n\nThe problem isn't discipline — it's data.\n\nStart scanning free today.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-pt pt-story">
+        <div class="pt-label">Story-Driven</div>
+        <div class="pt-text">James cut carbs for 3 months. Meal prepped every Sunday. Lost 4lbs, hit a wall, and quit.<br><br>The issue wasn't his food — it was that he never actually knew what was in it.<br><br>NutriSnap shows you the real numbers, instantly. 7-day free trial.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `James cut carbs for 3 months. Meal prepped every Sunday. Lost 4lbs, hit a wall, and quit.\n\nThe issue wasn't his food — it was that he never actually knew what was in it.\n\nNutriSnap shows you the real numbers, instantly. 7-day free trial.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-pt pt-curious">
+        <div class="pt-label">Curiosity</div>
+        <div class="pt-text">There's a specific macro ratio that determines whether your body burns fat or stores it.<br><br>Most nutrition apps never show you this. NutriSnap does — in 3 seconds, with your camera.<br><br>Try it free.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `There's a specific macro ratio that determines whether your body burns fat or stores it.\n\nMost nutrition apps never show you this. NutriSnap does — in 3 seconds, with your camera.\n\nTry it free.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, `You're eating clean. Why aren't you leaner?`)"><span class="hl-num">H1</span><span class="hl-text">You're eating clean. Why aren't you leaner?</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, `Your diet isn't broken. Your data is.`)"><span class="hl-num">H2</span><span class="hl-text">Your diet isn't broken. Your data is.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, `Clean eating isn't enough. Here's what is.`)"><span class="hl-num">H3</span><span class="hl-text">Clean eating isn't enough. Here's what is.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, `The gap between effort and results — solved.`)"><span class="hl-num">H4</span><span class="hl-text">The gap between effort and results — solved.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, `You're doing everything right. Except this.`)"><span class="hl-num">H5</span><span class="hl-text">You're doing everything right. Except this.</span></li></ul></td>
+
+      <td class="cell-desc">
+        <div class="desc-text">Scan any meal. See exact macros. Stop guessing. Start losing.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, 'Scan any meal. See exact macros. Stop guessing. Start losing.')">⌘ Copy</button>
+      </td>
+
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'Start Free Trial')">Start Free Trial</li></ul></td>
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'Scan My Food')">Scan My Food</li></ul></td>
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'Try Free for 7 Days')">Try Free for 7 Days</li></ul></td>
+    </tr>
+
+    <!-- ═══════════════════════════════════
+         V2: SPEED HOOK
+    ═══════════════════════════════════ -->
+    <tr>
+      <td class="cell-meta">
+        <div class="variant-num">V2</div>
+        <div class="variant-angle">Speed<br>Hook</div>
+      </td>
+
+      <td class="cell-pt pt-short">
+        <div class="pt-label">Short / Punchy</div>
+        <div class="pt-text">Point your phone at your plate. Get full macros in 3 seconds. No typing. No searching. No excuses.<br><br>NutriSnap — built for busy.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `Point your phone at your plate. Get full macros in 3 seconds. No typing. No searching. No excuses.\n\nNutriSnap — built for busy.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-pt pt-story">
+        <div class="pt-label">Story-Driven</div>
+        <div class="pt-text">The average person spends 4+ minutes logging a single meal in traditional apps. That's 2 hours a month of manual entry.<br><br>NutriSnap users spend 3 seconds. Same data. Zero friction. That's why they actually stick to it.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `The average person spends 4+ minutes logging a single meal in traditional apps. That's 2 hours a month of manual entry.\n\nNutriSnap users spend 3 seconds. Same data. Zero friction. That's why they actually stick to it.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-pt pt-curious">
+        <div class="pt-label">Curiosity</div>
+        <div class="pt-text">What if tracking nutrition was so fast you actually did it every day?<br><br>Not 3 minutes of hunting through databases. 3 seconds with your camera. AI that recognizes 2.4M foods — and gets smarter the more you use it.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `What if tracking nutrition was so fast you actually did it every day?\n\nNot 3 minutes of hunting through databases. 3 seconds with your camera. AI that recognizes 2.4M foods — and gets smarter the more you use it.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, '3-second food scan. 100% accurate macros.')"><span class="hl-num">H1</span><span class="hl-text">3-second food scan. 100% accurate macros.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, 'The fastest nutrition tracker on the planet.')"><span class="hl-num">H2</span><span class="hl-text">The fastest nutrition tracker on the planet.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, 'Logging meals used to take minutes. Now: seconds.')"><span class="hl-num">H3</span><span class="hl-text">Logging meals used to take minutes. Now: seconds.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, 'Your camera is now a nutrition label.')"><span class="hl-num">H4</span><span class="hl-text">Your camera is now a nutrition label.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, 'Point. Scan. Know. Move on.')"><span class="hl-num">H5</span><span class="hl-text">Point. Scan. Know. Move on.</span></li></ul></td>
+
+      <td class="cell-desc">
+        <div class="desc-text">AI food scanning for people who have better things to do than log meals manually.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, 'AI food scanning for people who have better things to do than log meals manually.')">⌘ Copy</button>
+      </td>
+
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'Scan Your First Meal')">Scan Your First Meal</li></ul></td>
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'Try Free — 3 Seconds')">Try Free — 3 Seconds</li></ul></td>
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'Download Free')">Download Free</li></ul></td>
+    </tr>
+
+    <!-- ═══════════════════════════════════
+         V3: IDENTITY
+    ═══════════════════════════════════ -->
+    <tr>
+      <td class="cell-meta">
+        <div class="variant-num">V3</div>
+        <div class="variant-angle">Identity</div>
+      </td>
+
+      <td class="cell-pt pt-short">
+        <div class="pt-label">Short / Punchy</div>
+        <div class="pt-text">You track your sleep. Your HRV. Your calendar. Your workouts.<br><br>Your nutrition is the last unoptimized variable.<br><br>Fix it. NutriSnap.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `You track your sleep. Your HRV. Your calendar. Your workouts.\n\nYour nutrition is the last unoptimized variable.\n\nFix it. NutriSnap.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-pt pt-story">
+        <div class="pt-label">Story-Driven</div>
+        <div class="pt-text">High performers obsess over output — but most never connect their nutrition to their performance.<br><br>NutriSnap gives you the data layer your body's been missing. Precise macros. Body composition trends. Actual insights. Not just calories.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `High performers obsess over output — but most never connect their nutrition to their performance.\n\nNutriSnap gives you the data layer your body's been missing. Precise macros. Body composition trends. Actual insights. Not just calories.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-pt pt-curious">
+        <div class="pt-label">Curiosity</div>
+        <div class="pt-text">Every serious optimizer hits a ceiling where effort stops producing results.<br><br>Usually it's nutrition — specifically the gap between what you think you're eating and what you're actually eating.<br><br>NutriSnap closes that gap in 3 seconds.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `Every serious optimizer hits a ceiling where effort stops producing results.\n\nUsually it's nutrition — specifically the gap between what you think you're eating and what you're actually eating.\n\nNutriSnap closes that gap in 3 seconds.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, `The nutrition app for people who don't settle.`)"><span class="hl-num">H1</span><span class="hl-text">The nutrition app for people who don't settle.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, 'Finally — a tracker as serious as you are.')"><span class="hl-num">H2</span><span class="hl-text">Finally — a tracker as serious as you are.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, 'Optimized everything. Except your nutrition. Until now.')"><span class="hl-num">H3</span><span class="hl-text">Optimized everything. Except your nutrition. Until now.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, 'Data-driven people deserve data-driven nutrition.')"><span class="hl-num">H4</span><span class="hl-text">Data-driven people deserve data-driven nutrition.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, 'High performers track everything. Now track this.')"><span class="hl-num">H5</span><span class="hl-text">High performers track everything. Now track this.</span></li></ul></td>
+
+      <td class="cell-desc">
+        <div class="desc-text">Premium nutrition intelligence for people who expect more from their tools — and themselves.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, 'Premium nutrition intelligence for people who expect more from their tools — and themselves.')">⌘ Copy</button>
+      </td>
+
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'Optimize My Nutrition')">Optimize My Nutrition</li></ul></td>
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'Join the Top 1%')">Join the Top 1%</li></ul></td>
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'Start for Free')">Start for Free</li></ul></td>
+    </tr>
+
+    <!-- ═══════════════════════════════════
+         V4: SOCIAL PROOF
+    ═══════════════════════════════════ -->
+    <tr>
+      <td class="cell-meta">
+        <div class="variant-num">V4</div>
+        <div class="variant-angle">Social<br>Proof</div>
+      </td>
+
+      <td class="cell-pt pt-short">
+        <div class="pt-label">Short / Punchy</div>
+        <div class="pt-text">Marcus lost 11lbs in 6 weeks. Didn't change what he ate — just finally saw how much.<br><br>7-day free trial. No card needed.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `Marcus lost 11lbs in 6 weeks. Didn't change what he ate — just finally saw how much.\n\n7-day free trial. No card needed.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-pt pt-story">
+        <div class="pt-label">Story-Driven</div>
+        <div class="pt-text">Marcus R., 34, product manager. He wasn't eating badly — he just had no real idea what "a serving" looked like.<br><br>After 2 weeks with NutriSnap, he recalibrated. 6 weeks later, down 11lbs. Same foods. Just actual data.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `Marcus R., 34, product manager. He wasn't eating badly — he just had no real idea what \"a serving\" looked like.\n\nAfter 2 weeks with NutriSnap, he recalibrated. 6 weeks later, down 11lbs. Same foods. Just actual data.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-pt pt-curious">
+        <div class="pt-label">Curiosity</div>
+        <div class="pt-text">What if the food you're already eating is almost perfect — you're just slightly off on portions?<br><br>That slight miscalibration is where 90% of stubborn fat hides. NutriSnap has helped 50,000+ people find and fix it.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `What if the food you're already eating is almost perfect — you're just slightly off on portions?\n\nThat slight miscalibration is where 90% of stubborn fat hides. NutriSnap has helped 50,000+ people find and fix it.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, `\"Lost 11lbs without changing what I eat.\" — Marcus R.`)"><span class="hl-num">H1</span><span class="hl-text">"Lost 11lbs without changing what I eat." — Marcus R.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, 'Real results. No diet overhaul required.')"><span class="hl-num">H2</span><span class="hl-text">Real results. No diet overhaul required.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, '50,000+ people know their real macros. Do you?')"><span class="hl-num">H3</span><span class="hl-text">50,000+ people know their real macros. Do you?</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, `The app that shows you what's actually on your plate.`)"><span class="hl-num">H4</span><span class="hl-text">The app that shows you what's actually on your plate.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, `Results like Marcus's start with one scan.`)"><span class="hl-num">H5</span><span class="hl-text">Results like Marcus's start with one scan.</span></li></ul></td>
+
+      <td class="cell-desc">
+        <div class="desc-text">Join 50,000+ people who stopped guessing and started seeing real results with NutriSnap.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, 'Join 50,000+ people who stopped guessing and started seeing real results with NutriSnap.')">⌘ Copy</button>
+      </td>
+
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'Get My Free Trial')">Get My Free Trial</li></ul></td>
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'Start Scanning Today')">Start Scanning Today</li></ul></td>
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'Try What Marcus Used')">Try What Marcus Used</li></ul></td>
+    </tr>
+
+    <!-- ═══════════════════════════════════
+         V5: CURIOSITY GAP
+    ═══════════════════════════════════ -->
+    <tr>
+      <td class="cell-meta">
+        <div class="variant-num">V5</div>
+        <div class="variant-angle">Curiosity<br>Gap</div>
+      </td>
+
+      <td class="cell-pt pt-short">
+        <div class="pt-label">Short / Punchy</div>
+        <div class="pt-text">Calories are a proxy. Protein timing, fat-to-carb ratios, and meal frequency are what actually move the needle.<br><br>NutriSnap tracks what matters.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `Calories are a proxy. Protein timing, fat-to-carb ratios, and meal frequency are what actually move the needle.\n\nNutriSnap tracks what matters.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-pt pt-story">
+        <div class="pt-label">Story-Driven</div>
+        <div class="pt-text">Researchers have confirmed what nutrition coaches have known for years: calorie counting alone predicts almost nothing.<br><br>What predicts body composition? Protein distribution. Macro ratios. Meal timing. NutriSnap tracks all three — automatically.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `Researchers have confirmed what nutrition coaches have known for years: calorie counting alone predicts almost nothing.\n\nWhat predicts body composition? Protein distribution. Macro ratios. Meal timing. NutriSnap tracks all three — automatically.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-pt pt-curious">
+        <div class="pt-label">Curiosity</div>
+        <div class="pt-text">There are 3 numbers that determine whether your body burns fat or stores it.<br><br>Most trackers show you 1 of them. NutriSnap shows you all 3 — and tells you if you're in the right range.<br><br>Try it free and see where you actually stand.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `There are 3 numbers that determine whether your body burns fat or stores it.\n\nMost trackers show you 1 of them. NutriSnap shows you all 3 — and tells you if you're in the right range.\n\nTry it free and see where you actually stand.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, `Calories don't predict fat loss. This does.`)"><span class="hl-num">H1</span><span class="hl-text">Calories don't predict fat loss. This does.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, 'The number you should actually be tracking.')"><span class="hl-num">H2</span><span class="hl-text">The number you should actually be tracking.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, 'Stop counting calories. Start tracking this.')"><span class="hl-num">H3</span><span class="hl-text">Stop counting calories. Start tracking this.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, `Why your calorie deficit isn't working — explained.`)"><span class="hl-num">H4</span><span class="hl-text">Why your calorie deficit isn't working — explained.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, 'Most nutrition apps measure the wrong thing.')"><span class="hl-num">H5</span><span class="hl-text">Most nutrition apps measure the wrong thing.</span></li></ul></td>
+
+      <td class="cell-desc">
+        <div class="desc-text">It's not about eating less. It's about knowing more. NutriSnap shows you the metrics that actually drive fat loss.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `It's not about eating less. It's about knowing more. NutriSnap shows you the metrics that actually drive fat loss.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'See What Actually Matters')">See What Actually Matters</li></ul></td>
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'Learn the Real Metrics')">Learn the Real Metrics</li></ul></td>
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'Try Free — 7 Days')">Try Free — 7 Days</li></ul></td>
+    </tr>
+
+    <!-- ═══════════════════════════════════
+         V6: DIRECT OFFER
+    ═══════════════════════════════════ -->
+    <tr>
+      <td class="cell-meta">
+        <div class="variant-num">V6</div>
+        <div class="variant-angle">Direct<br>Offer</div>
+      </td>
+
+      <td class="cell-pt pt-short">
+        <div class="pt-label">Short / Punchy</div>
+        <div class="pt-text">7 days free. No card. Full access.<br><br>Scan your first meal tonight and see exactly what you've been eating.<br><br>$59.99/yr after — less than $1.20/week.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `7 days free. No card. Full access.\n\nScan your first meal tonight and see exactly what you've been eating.\n\n$59.99/yr after — less than $1.20/week.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-pt pt-story">
+        <div class="pt-label">Story-Driven</div>
+        <div class="pt-text">For the price of one overpriced lunch a month, NutriSnap gives you a nutrition coach in your pocket.<br><br>7-day free trial — full access, no credit card. After that, $59.99/year. Most users say they recoup that in food they stop wasting.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `For the price of one overpriced lunch a month, NutriSnap gives you a nutrition coach in your pocket.\n\n7-day free trial — full access, no credit card. After that, $59.99/year. Most users say they recoup that in food they stop wasting.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-pt pt-curious">
+        <div class="pt-label">Curiosity</div>
+        <div class="pt-text">Curious what your "healthy" meal actually contains? Your lunchtime salad. Your post-gym shake. Your "light" dinner.<br><br>Scan them free for 7 days and prepare to be surprised. Cancel if you're not.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, `Curious what your \"healthy\" meal actually contains? Your lunchtime salad. Your post-gym shake. Your \"light\" dinner.\n\nScan them free for 7 days and prepare to be surprised. Cancel if you're not.`)">⌘ Copy</button>
+      </td>
+
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, '7 days free. No card. Full access. Start tonight.')"><span class="hl-num">H1</span><span class="hl-text">7 days free. No card. Full access. Start tonight.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, 'Try NutriSnap free — cancel before you\'re charged.')"><span class="hl-num">H2</span><span class="hl-text">Try NutriSnap free — cancel before you're charged.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, 'Less than $1.20/week. Unlimited food scans.')"><span class="hl-num">H3</span><span class="hl-text">Less than $1.20/week. Unlimited food scans.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, 'Free trial. Real results. Zero risk.')"><span class="hl-num">H4</span><span class="hl-text">Free trial. Real results. Zero risk.</span></li></ul></td>
+      <td class="cell-hl"><ul class="hl-list"><li class="hl-item" onclick="copyText(this, 'The $1.15/week habit that changes your body.')"><span class="hl-num">H5</span><span class="hl-text">The $1.15/week habit that changes your body.</span></li></ul></td>
+
+      <td class="cell-desc">
+        <div class="desc-text">Full access free for 7 days. $59.99/yr after — cancel anytime, no questions asked.</div>
+        <button class="copy-cell-btn" onclick="copyText(this, 'Full access free for 7 days. $59.99/yr after — cancel anytime, no questions asked.')">⌘ Copy</button>
+      </td>
+
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'Start Free Trial')">Start Free Trial</li></ul></td>
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'Claim 7 Free Days')">Claim 7 Free Days</li></ul></td>
+      <td class="cell-cta"><ul class="cta-list"><li class="cta-item" onclick="copyText(this, 'Scan My First Meal Free')">Scan My First Meal Free</li></ul></td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+<div class="footer-note">
+  <div class="note-card">
+    <h4>Meta Character Limits</h4>
+    <ul>
+      <li>Primary Text: 125 chars before "See more" (2200 max)</li>
+      <li>Headline: 27 chars recommended (40 max)</li>
+      <li>Description: 30 chars recommended (30 max)</li>
+      <li>CTA: use Meta's preset list in Ads Manager</li>
+    </ul>
+  </div>
+  <div class="note-card">
+    <h4>Copy Pairings to Test First</h4>
+    <p>V1 Pain + Short PT · H2 "Your diet isn't broken. Your data is." — highest friction match.<br><br>V2 Speed + Curiosity PT · H4 "Your camera is now a nutrition label." — pattern interrupt.<br><br>V4 Social Proof + Story PT · H1 quote — lowest resistance entry.</p>
+  </div>
+  <div class="note-card">
+    <h4>A/B Testing Note</h4>
+    <p>Test PT style (Short vs Story) before headline variants. Primary text has the highest impact on cost-per-click for cold audiences. Once a winning PT is found, run headline tests within that variant.</p>
+  </div>
+  <div class="note-card">
+    <h4>How to Paste into Sheets</h4>
+    <p>Click "Copy All as TSV" above → open Google Sheets → click cell A1 → Paste (⌘V). Columns auto-separate. Or download the .tsv file and import via File → Import.</p>
+  </div>
+</div>
+
+<script>
+// ── TSV data ──────────────────────────────────────────────────────────
+const tsvData = [
+  [
+    "Variant","Angle",
+    "Primary Text – Short/Punchy","Primary Text – Story-Driven","Primary Text – Curiosity",
+    "Headline 1","Headline 2","Headline 3","Headline 4","Headline 5",
+    "Description Line",
+    "CTA 1","CTA 2","CTA 3"
+  ],
+  [
+    "V1","Pain / Problem",
+    "You track. You cook clean. You hit the gym. Still nothing.\n\nThe problem isn't discipline — it's data.\n\nStart scanning free today.",
+    "James cut carbs for 3 months. Meal prepped every Sunday. Lost 4lbs, hit a wall, and quit.\n\nThe issue wasn't his food — it was that he never actually knew what was in it.\n\nNutriSnap shows you the real numbers, instantly. 7-day free trial.",
+    "There's a specific macro ratio that determines whether your body burns fat or stores it.\n\nMost nutrition apps never show you this. NutriSnap does — in 3 seconds, with your camera.\n\nTry it free.",
+    "You're eating clean. Why aren't you leaner?",
+    "Your diet isn't broken. Your data is.",
+    "Clean eating isn't enough. Here's what is.",
+    "The gap between effort and results — solved.",
+    "You're doing everything right. Except this.",
+    "Scan any meal. See exact macros. Stop guessing. Start losing.",
+    "Start Free Trial","Scan My Food","Try Free for 7 Days"
+  ],
+  [
+    "V2","Speed Hook",
+    "Point your phone at your plate. Get full macros in 3 seconds. No typing. No searching. No excuses.\n\nNutriSnap — built for busy.",
+    "The average person spends 4+ minutes logging a single meal in traditional apps. That's 2 hours a month of manual entry.\n\nNutriSnap users spend 3 seconds. Same data. Zero friction. That's why they actually stick to it.",
+    "What if tracking nutrition was so fast you actually did it every day?\n\nNot 3 minutes of hunting through databases. 3 seconds with your camera. AI that recognizes 2.4M foods — and gets smarter the more you use it.",
+    "3-second food scan. 100% accurate macros.",
+    "The fastest nutrition tracker on the planet.",
+    "Logging meals used to take minutes. Now: seconds.",
+    "Your camera is now a nutrition label.",
+    "Point. Scan. Know. Move on.",
+    "AI food scanning for people who have better things to do than log meals manually.",
+    "Scan Your First Meal","Try Free — 3 Seconds","Download Free"
+  ],
+  [
+    "V3","Identity",
+    "You track your sleep. Your HRV. Your calendar. Your workouts.\n\nYour nutrition is the last unoptimized variable.\n\nFix it. NutriSnap.",
+    "High performers obsess over output — but most never connect their nutrition to their performance.\n\nNutriSnap gives you the data layer your body's been missing. Precise macros. Body composition trends. Actual insights. Not just calories.",
+    "Every serious optimizer hits a ceiling where effort stops producing results.\n\nUsually it's nutrition — specifically the gap between what you think you're eating and what you're actually eating.\n\nNutriSnap closes that gap in 3 seconds.",
+    "The nutrition app for people who don't settle.",
+    "Finally — a tracker as serious as you are.",
+    "Optimized everything. Except your nutrition. Until now.",
+    "Data-driven people deserve data-driven nutrition.",
+    "High performers track everything. Now track this.",
+    "Premium nutrition intelligence for people who expect more from their tools — and themselves.",
+    "Optimize My Nutrition","Join the Top 1%","Start for Free"
+  ],
+  [
+    "V4","Social Proof",
+    "Marcus lost 11lbs in 6 weeks. Didn't change what he ate — just finally saw how much.\n\n7-day free trial. No card needed.",
+    "Marcus R., 34, product manager. He wasn't eating badly — he just had no real idea what \"a serving\" looked like.\n\nAfter 2 weeks with NutriSnap, he recalibrated. 6 weeks later, down 11lbs. Same foods. Just actual data.",
+    "What if the food you're already eating is almost perfect — you're just slightly off on portions?\n\nThat slight miscalibration is where 90% of stubborn fat hides. NutriSnap has helped 50,000+ people find and fix it.",
+    "\"Lost 11lbs without changing what I eat.\" — Marcus R.",
+    "Real results. No diet overhaul required.",
+    "50,000+ people know their real macros. Do you?",
+    "The app that shows you what's actually on your plate.",
+    "Results like Marcus's start with one scan.",
+    "Join 50,000+ people who stopped guessing and started seeing real results with NutriSnap.",
+    "Get My Free Trial","Start Scanning Today","Try What Marcus Used"
+  ],
+  [
+    "V5","Curiosity Gap",
+    "Calories are a proxy. Protein timing, fat-to-carb ratios, and meal frequency are what actually move the needle.\n\nNutriSnap tracks what matters.",
+    "Researchers have confirmed what nutrition coaches have known for years: calorie counting alone predicts almost nothing.\n\nWhat predicts body composition? Protein distribution. Macro ratios. Meal timing. NutriSnap tracks all three — automatically.",
+    "There are 3 numbers that determine whether your body burns fat or stores it.\n\nMost trackers show you 1 of them. NutriSnap shows you all 3 — and tells you if you're in the right range.\n\nTry it free and see where you actually stand.",
+    "Calories don't predict fat loss. This does.",
+    "The number you should actually be tracking.",
+    "Stop counting calories. Start tracking this.",
+    "Why your calorie deficit isn't working — explained.",
+    "Most nutrition apps measure the wrong thing.",
+    "It's not about eating less. It's about knowing more. NutriSnap shows you the metrics that actually drive fat loss.",
+    "See What Actually Matters","Learn the Real Metrics","Try Free — 7 Days"
+  ],
+  [
+    "V6","Direct Offer",
+    "7 days free. No card. Full access.\n\nScan your first meal tonight and see exactly what you've been eating.\n\n$59.99/yr after — less than $1.20/week.",
+    "For the price of one overpriced lunch a month, NutriSnap gives you a nutrition coach in your pocket.\n\n7-day free trial — full access, no credit card. After that, $59.99/year. Most users say they recoup that in food they stop wasting.",
+    "Curious what your \"healthy\" meal actually contains? Your lunchtime salad. Your post-gym shake. Your \"light\" dinner.\n\nScan them free for 7 days and prepare to be surprised. Cancel if you're not.",
+    "7 days free. No card. Full access. Start tonight.",
+    "Try NutriSnap free — cancel before you're charged.",
+    "Less than $1.20/week. Unlimited food scans.",
+    "Free trial. Real results. Zero risk.",
+    "The $1.15/week habit that changes your body.",
+    "Full access free for 7 days. $59.99/yr after — cancel anytime, no questions asked.",
+    "Start Free Trial","Claim 7 Free Days","Scan My First Meal Free"
+  ]
+];
+
+function rowsToTSV(rows) {
+  return rows.map(row =>
+    row.map(cell => {
+      // Wrap in quotes if contains tab, newline, or quote
+      if (/[\t\n"]/.test(cell)) {
+        return '"' + cell.replace(/"/g, '""') + '"';
+      }
+      return cell;
+    }).join('\t')
+  ).join('\n');
+}
+
+async function copyTSV(btn) {
+  const tsv = rowsToTSV(tsvData);
+  try {
+    await navigator.clipboard.writeText(tsv);
+    btn.classList.add('success');
+    btn.innerHTML = '<span>✓</span> Copied! Paste into Google Sheets';
+    setTimeout(() => {
+      btn.classList.remove('success');
+      btn.innerHTML = '<span>⬇</span> Copy All as TSV (Google Sheets)';
+    }, 3000);
+  } catch(e) {
+    btn.innerHTML = '<span>!</span> Copy failed — try Download instead';
+  }
+}
+
+function downloadTSV() {
+  const tsv = rowsToTSV(tsvData);
+  const blob = new Blob([tsv], { type: 'text/tab-separated-values;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'nutrisnap-ad-copy.tsv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function copyText(el, text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    const original = el.innerHTML;
+    const originalClass = el.className;
+    el.classList.add('ok');
+    if (el.tagName === 'BUTTON') {
+      el.querySelector('.copy-cell-btn') || (el.innerHTML = '✓ Copied');
+      const lbl = el.querySelector ? el : el;
+      const prev = lbl.textContent;
+      lbl.textContent = '✓ Copied';
+      setTimeout(() => { lbl.innerHTML = original; el.classList.remove('ok'); }, 1800);
+    } else {
+      // headline/cta items — flash border
+      el.style.outline = '1px solid rgba(200,241,53,0.5)';
+      setTimeout(() => { el.style.outline = ''; }, 1200);
+    }
+  } catch(e) {}
+}
+</script>
+
+</body>
+</html>

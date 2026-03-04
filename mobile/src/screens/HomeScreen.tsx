@@ -286,38 +286,47 @@ export default function HomeScreen() {
     },
     sectionHeader: {
       paddingHorizontal: 20,
-      marginBottom: 15,
-      marginTop: 20,
+      marginBottom: 12,
+      marginTop: 24,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    sectionDot: {
+      width: 4,
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: colors.primary,
     },
     sectionTitle: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: colors.text,
+      fontSize: 12,
+      fontWeight: '700',
+      color: colors.textSecondary,
+      letterSpacing: 0.8,
+      textTransform: 'uppercase',
     },
     quickAddContainer: {
       flexDirection: 'row',
-      flexWrap: 'wrap',
       justifyContent: 'space-between',
       marginHorizontal: 20,
       marginBottom: 20,
-      gap: 10,
+      gap: 8,
     },
     quickAddButton: {
-      width: '48%',
+      flex: 1,
       backgroundColor: colors.surface,
-      borderRadius: 12,
-      paddingVertical: 15,
+      borderRadius: 14,
+      paddingVertical: 16,
       alignItems: 'center',
-      shadowColor: colors.shadowColor,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: isDark ? 0.3 : 0.05,
-      shadowRadius: 4,
-      elevation: 2,
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(255,255,255,0.07)' : colors.border,
+      gap: 6,
     },
     quickAddText: {
-      fontSize: 14,
+      fontSize: 11,
       fontWeight: '600',
       color: colors.textSecondary,
+      letterSpacing: 0.2,
     },
     mealCard: {
       backgroundColor: colors.surface,
@@ -581,53 +590,35 @@ export default function HomeScreen() {
 
         {/* Quick Add Section */}
         <View style={dynamicStyles.sectionHeader}>
-          <Text style={dynamicStyles.sectionTitle}>Quick Add</Text>
+          <View style={dynamicStyles.sectionDot} />
+          <Text style={dynamicStyles.sectionTitle}>Log Food</Text>
         </View>
         <View style={dynamicStyles.quickAddContainer}>
-          <TouchableOpacity
-            style={dynamicStyles.quickAddButton}
-            onPress={() => handleQuickAdd('photo')}
-          >
-            <Ionicons name="camera" size={28} color={colors.primary} style={{ marginBottom: 4 }} />
+          <TouchableOpacity style={dynamicStyles.quickAddButton} onPress={() => handleQuickAdd('photo')}>
+            <Ionicons name="camera" size={24} color={colors.primary} />
             <Text style={dynamicStyles.quickAddText}>Photo</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={dynamicStyles.quickAddButton}
-            onPress={() => handleQuickAdd('barcode')}
-          >
-            <Ionicons name="barcode" size={28} color={colors.primary} style={{ marginBottom: 4 }} />
-            <Text style={dynamicStyles.quickAddText}>Barcode</Text>
+          <TouchableOpacity style={dynamicStyles.quickAddButton} onPress={() => handleQuickAdd('barcode')}>
+            <Ionicons name="barcode" size={24} color={colors.primary} />
+            <Text style={dynamicStyles.quickAddText}>Scan</Text>
           </TouchableOpacity>
-
-
-          <TouchableOpacity
-            style={dynamicStyles.quickAddButton}
-            onPress={() => handleQuickAdd('voice')}
-          >
-            <Ionicons name="mic" size={28} color={colors.primary} style={{ marginBottom: 4 }} />
-            <Text style={dynamicStyles.quickAddText}>Voice Add</Text>
+          <TouchableOpacity style={dynamicStyles.quickAddButton} onPress={() => handleQuickAdd('voice')}>
+            <Ionicons name="mic" size={24} color={colors.primary} />
+            <Text style={dynamicStyles.quickAddText}>Voice</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={dynamicStyles.quickAddButton}
-            onPress={() => handleQuickAdd('manual')}
-          >
-            <Ionicons name="create" size={28} color={colors.primary} style={{ marginBottom: 4 }} />
+          <TouchableOpacity style={dynamicStyles.quickAddButton} onPress={() => handleQuickAdd('manual')}>
+            <Ionicons name="create" size={24} color={colors.primary} />
             <Text style={dynamicStyles.quickAddText}>Manual</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={dynamicStyles.quickAddButton}
-            onPress={() => navigation.navigate('RecipeList' as never)}
-          >
-            <Ionicons name="restaurant" size={28} color={colors.primary} style={{ marginBottom: 4 }} />
+          <TouchableOpacity style={dynamicStyles.quickAddButton} onPress={() => navigation.navigate('RecipeList' as never)}>
+            <Ionicons name="restaurant" size={24} color={colors.primary} />
             <Text style={dynamicStyles.quickAddText}>Recipe</Text>
           </TouchableOpacity>
         </View>
 
         {/* Today's Meals */}
         <View style={dynamicStyles.sectionHeader}>
+          <View style={dynamicStyles.sectionDot} />
           <Text style={dynamicStyles.sectionTitle}>Today's Meals</Text>
         </View>
 

@@ -106,20 +106,20 @@ const darkTheme: ThemeColors = {
   textSecondary: '#A0A0B0',
   textTertiary: '#6B6B80',
 
-  // Primary colors
-  primary: '#6366F1',
-  primaryLight: '#818CF8',
-  primaryDark: '#4F46E5',
+  // Primary colors — green accent for dark/luxury mode
+  primary: '#00E676',
+  primaryLight: '#69F0AE',
+  primaryDark: '#00C853',
 
   // Borders and dividers
   border: 'rgba(255,255,255,0.08)',
   divider: '#1A1A1E',
 
   // Status colors
-  success: '#10B981',
+  success: '#00E676',
   warning: '#F59E0B',
   error: '#EF4444',
-  info: '#3B82F6',
+  info: '#40C4FF',
 
   // Input fields
   inputBackground: '#1A1A1E',
@@ -128,8 +128,8 @@ const darkTheme: ThemeColors = {
   placeholder: '#6B6B80',
 
   // Buttons
-  buttonPrimary: '#6366F1',
-  buttonPrimaryText: '#FFFFFF',
+  buttonPrimary: '#00E676',
+  buttonPrimaryText: '#0A0A0C',
   buttonSecondary: '#1A1A1E',
   buttonSecondaryText: '#F0F0F5',
 

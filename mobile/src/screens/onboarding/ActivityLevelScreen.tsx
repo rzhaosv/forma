@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,361 +7,213 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
-  Animated,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useOnboardingStore, ActivityLevel } from '../../store/useOnboardingStore';
-import { useTheme } from '../../hooks/useTheme';
 import BlueprintProgress from '../../components/BlueprintProgress';
 import { Ionicons } from '@expo/vector-icons';
+
+const C = {
+  bg: '#0A0A0C',
+  surface: '#1A1A1E',
+  text: '#F0F0F5',
+  textSub: '#A0A0B0',
+  textTertiary: '#6B6B80',
+  accent: '#00E676',
+  accentBg: 'rgba(0,230,118,0.10)',
+  border: 'rgba(255,255,255,0.08)',
+};
 
 const ACTIVITY_LEVELS: {
   value: ActivityLevel;
   label: string;
   description: string;
-  icon: string;
-  multiplier: string;
+  icon: keyof typeof Ionicons.glyphMap;
   color: string;
 }[] = [
   {
     value: 'sedentary',
-    label: 'Couch Potato',
-    description: 'Little to no exercise, mostly sitting',
-    icon: 'bed',
-    multiplier: '× 1.2',
-    color: '#94A3B8',
+    label: 'Desk-bound',
+    description: 'Mostly sitting, little movement outside work',
+    icon: 'laptop-outline',
+    color: '#A0A0B0',
   },
   {
     value: 'light',
-    label: 'Lightly Active',
-    description: 'Light exercise 1-3 days/week',
-    icon: 'walk',
-    multiplier: '× 1.375',
-    color: '#3B82F6',
+    label: 'Light mover',
+    description: 'Walking 1–3× per week, casual movement',
+    icon: 'walk-outline',
+    color: '#40C4FF',
   },
   {
     value: 'moderate',
-    label: 'Moderately Active',
-    description: 'Moderate exercise 3-5 days/week',
-    icon: 'bicycle',
-    multiplier: '× 1.55',
-    color: '#10B981',
+    label: 'Consistently active',
+    description: 'Exercise 3–5× per week, gym or cardio',
+    icon: 'bicycle-outline',
+    color: '#00E676',
   },
   {
     value: 'active',
-    label: 'Very Active',
-    description: 'Hard exercise 6-7 days/week',
-    icon: 'barbell',
-    multiplier: '× 1.725',
+    label: 'High performer',
+    description: 'Intense training 6–7× per week',
+    icon: 'barbell-outline',
     color: '#F59E0B',
   },
   {
     value: 'very_active',
-    label: 'Super Active',
-    description: 'Very hard exercise or physical job daily',
-    icon: 'flame',
-    multiplier: '× 1.9',
+    label: 'Athlete mode',
+    description: 'Multiple sessions daily or physical job',
+    icon: 'flame-outline',
     color: '#EF4444',
   },
 ];
 
 export default function ActivityLevelScreen() {
   const navigation = useNavigation();
-  const { colors, isDark } = useTheme();
-  const { data, updateData, setStep } = useOnboardingStore();
-
+  const { data, updateData } = useOnboardingStore();
   const [selectedLevel, setSelectedLevel] = useState<ActivityLevel | undefined>(data.activityLevel);
-
-  // Animations
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const cardScales = useRef(
-    ACTIVITY_LEVELS.reduce((acc, level) => {
-      acc[level.value] = new Animated.Value(1);
-      return acc;
-    }, {} as Record<ActivityLevel, Animated.Value>)
-  ).current;
-
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 600,
-      useNativeDriver: true,
-    }).start();
-  }, [fadeAnim]);
-
-  const handleSelect = (level: ActivityLevel) => {
-    setSelectedLevel(level);
-
-    // Bounce animation
-    Animated.sequence([
-      Animated.spring(cardScales[level], {
-        toValue: 0.95,
-        tension: 100,
-        friction: 3,
-        useNativeDriver: true,
-      }),
-      Animated.spring(cardScales[level], {
-        toValue: 1,
-        tension: 100,
-        friction: 3,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
 
   const handleContinue = () => {
     if (!selectedLevel) return;
-
     updateData({ activityLevel: selectedLevel });
 
-    // Check if we're in profile completion flow (no weightGoal yet) or old onboarding
     const routes = navigation.getState?.()?.routes || [];
-    const currentRoute = routes[routes.length - 1];
-    const isProfileCompletion = currentRoute?.name === 'ProfileCompletion' ||
-                                 routes.some(r => r.name === 'ProfileCompletion');
+    const isProfileCompletion = routes.some(r => r.name === 'ProfileCompletion');
 
     if (isProfileCompletion) {
-      // Navigate to ProfileComplete in profile completion flow
       navigation.navigate('ProfileComplete' as never);
     } else {
-      // New onboarding quiz flow
       navigation.navigate('TimeAvailable' as never);
     }
   };
 
-  const dynamicStyles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    header: {
-      paddingHorizontal: 20,
-      paddingTop: 16,
-      paddingBottom: 8,
-    },
-    backButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 16,
-    },
-    backText: {
-      fontSize: 16,
-      color: colors.primary,
-      fontWeight: '600',
-      marginLeft: 4,
-    },
-    scrollContent: {
-      padding: 20,
-    },
-    title: {
-      fontSize: 32,
-      fontWeight: '800',
-      color: colors.text,
-      marginBottom: 8,
-    },
-    subtitle: {
-      fontSize: 17,
-      color: colors.textSecondary,
-      marginBottom: 32,
-      lineHeight: 24,
-    },
-    activityCard: {
-      backgroundColor: colors.surface,
-      borderRadius: 20,
-      padding: 20,
-      marginBottom: 16,
-      borderWidth: 3,
-      borderColor: colors.border,
-      shadowColor: colors.shadowColor,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: isDark ? 0.3 : 0.1,
-      shadowRadius: 8,
-      elevation: 3,
-    },
-    activityCardSelected: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.25,
-      shadowRadius: 12,
-      elevation: 8,
-    },
-    activityHeader: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 12,
-    },
-    activityEmoji: {
-      fontSize: 40,
-      marginRight: 16,
-    },
-    activityTitleContainer: {
-      flex: 1,
-    },
-    activityLabel: {
-      fontSize: 20,
-      fontWeight: '800',
-      color: colors.text,
-      marginBottom: 4,
-    },
-    activityMultiplier: {
-      fontSize: 14,
-      fontWeight: '700',
-      opacity: 0.6,
-    },
-    activityDescription: {
-      fontSize: 15,
-      color: colors.textSecondary,
-      lineHeight: 22,
-    },
-    continueButton: {
-      backgroundColor: colors.primary,
-      paddingVertical: 18,
-      borderRadius: 16,
-      alignItems: 'center',
-      marginTop: 8,
-      shadowColor: colors.primary,
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.3,
-      shadowRadius: 16,
-      elevation: 8,
-    },
-    continueButtonDisabled: {
-      opacity: 0.5,
-    },
-    continueButtonText: {
-      color: '#FFFFFF',
-      fontSize: 18,
-      fontWeight: '700',
-    },
-    encouragement: {
-      fontSize: 15,
-      color: colors.textSecondary,
-      textAlign: 'center',
-      marginBottom: 24,
-      fontStyle: 'italic',
-    },
-    tip: {
-      backgroundColor: colors.primary + '15',
-      borderRadius: 12,
-      padding: 16,
-      marginBottom: 24,
-    },
-    tipText: {
-      fontSize: 14,
-      color: colors.text,
-      lineHeight: 20,
-    },
-  });
-
   return (
-    <SafeAreaView style={dynamicStyles.container}>
-      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" />
 
-      {/* Header */}
-      <View style={dynamicStyles.header}>
-        <TouchableOpacity
-          style={dynamicStyles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={dynamicStyles.backText}>← Back</Text>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.back}>
+          <Ionicons name="chevron-back" size={22} color={C.textSub} />
+          <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
-
         <BlueprintProgress progress={0.56} />
       </View>
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={dynamicStyles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <Animated.View style={{ opacity: fadeAnim }}>
-          <Text style={dynamicStyles.title}>How active are you? 🏃‍♂️</Text>
-          <Text style={dynamicStyles.subtitle}>
-            This helps us calculate how many calories you burn each day. Be honest - no judgment!
-          </Text>
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <Text style={styles.title}>How active are you?</Text>
+        <Text style={styles.subtitle}>
+          Be honest — we'll calibrate your calorie burn accordingly.
+        </Text>
 
-          <View style={dynamicStyles.tip}>
-            <Text style={dynamicStyles.tipText}>
-              💡 Tip: Choose based on your typical week. You can always change this later as your habits evolve!
-            </Text>
-          </View>
-
+        <View style={styles.cards}>
           {ACTIVITY_LEVELS.map((level) => {
             const isSelected = selectedLevel === level.value;
             return (
-              <Animated.View
+              <TouchableOpacity
                 key={level.value}
-                style={{ transform: [{ scale: cardScales[level.value] }] }}
+                style={[
+                  styles.card,
+                  isSelected && { borderColor: level.color, backgroundColor: level.color + '12' },
+                ]}
+                onPress={() => setSelectedLevel(level.value)}
+                activeOpacity={0.75}
               >
-                <TouchableOpacity
-                  style={[
-                    dynamicStyles.activityCard,
-                    isSelected && dynamicStyles.activityCardSelected,
-                    isSelected && {
-                      borderColor: level.color,
-                      backgroundColor: level.color + '10',
-                    },
-                  ]}
-                  onPress={() => handleSelect(level.value)}
-                  activeOpacity={0.7}
-                >
-                  <View style={dynamicStyles.activityHeader}>
-                    <Ionicons
-                      name={level.icon as any}
-                      size={36}
-                      color={isSelected ? level.color : colors.textSecondary}
-                    />
-                    <View style={dynamicStyles.activityTitleContainer}>
-                      <Text
-                        style={[
-                          dynamicStyles.activityLabel,
-                          isSelected && { color: level.color },
-                        ]}
-                      >
-                        {level.label}
-                      </Text>
-                      <Text
-                        style={[
-                          dynamicStyles.activityMultiplier,
-                          isSelected && { color: level.color },
-                        ]}
-                      >
-                        {level.multiplier} BMR
-                      </Text>
-                    </View>
-                  </View>
-                  <Text style={dynamicStyles.activityDescription}>
-                    {level.description}
+                <View style={[styles.iconBox, { backgroundColor: level.color + '18' }]}>
+                  <Ionicons
+                    name={level.icon}
+                    size={24}
+                    color={isSelected ? level.color : C.textSub}
+                  />
+                </View>
+                <View style={styles.cardText}>
+                  <Text style={[styles.cardTitle, isSelected && { color: level.color }]}>
+                    {level.label}
                   </Text>
-                </TouchableOpacity>
-              </Animated.View>
+                  <Text style={styles.cardSubtitle}>{level.description}</Text>
+                </View>
+                {isSelected && (
+                  <View style={[styles.checkBox, { backgroundColor: level.color }]}>
+                    <Ionicons name="checkmark" size={14} color="#0A0A0C" />
+                  </View>
+                )}
+              </TouchableOpacity>
             );
           })}
+        </View>
 
-          <Text style={dynamicStyles.encouragement}>
-            "Movement is a medicine for creating change in a person's physical, emotional, and mental states." 💫
-          </Text>
+        <TouchableOpacity
+          style={[styles.continueBtn, !selectedLevel && styles.continueBtnDisabled]}
+          onPress={handleContinue}
+          disabled={!selectedLevel}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.continueBtnText}>Continue</Text>
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              dynamicStyles.continueButton,
-              !selectedLevel && dynamicStyles.continueButtonDisabled,
-            ]}
-            onPress={handleContinue}
-            disabled={!selectedLevel}
-          >
-            <Text style={dynamicStyles.continueButtonText}>Continue →</Text>
-          </TouchableOpacity>
-
-          <View style={{ height: 40 }} />
-        </Animated.View>
+        <View style={{ height: 32 }} />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
+  container: { flex: 1, backgroundColor: C.bg },
+  header: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 4 },
+  back: { flexDirection: 'row', alignItems: 'center', marginBottom: 16, gap: 4 },
+  backText: { fontSize: 15, color: C.textSub, fontWeight: '500' },
+  scroll: { padding: 24, paddingTop: 8 },
+  title: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: C.text,
+    marginBottom: 8,
+    letterSpacing: -0.5,
   },
+  subtitle: {
+    fontSize: 16,
+    color: C.textSub,
+    lineHeight: 23,
+    marginBottom: 28,
+  },
+  cards: { gap: 10, marginBottom: 32 },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: C.surface,
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1.5,
+    borderColor: C.border,
+    gap: 14,
+  },
+  iconBox: {
+    width: 46,
+    height: 46,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cardText: { flex: 1 },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: C.text,
+    marginBottom: 3,
+  },
+  cardSubtitle: { fontSize: 13, color: C.textSub, lineHeight: 18 },
+  checkBox: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  continueBtn: {
+    backgroundColor: C.accent,
+    paddingVertical: 17,
+    borderRadius: 14,
+    alignItems: 'center',
+  },
+  continueBtnDisabled: { opacity: 0.35 },
+  continueBtnText: { color: '#0A0A0C', fontSize: 17, fontWeight: '700' },
 });

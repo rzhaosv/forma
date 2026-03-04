@@ -1,7 +1,7 @@
 // Exercise Tracking Screen
 // Log workouts and view exercise history
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -15,12 +15,19 @@ import {
   Modal,
   TextInput,
   Platform,
+  Animated,
 } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../hooks/useTheme';
 import { useExerciseStore } from '../store/useExerciseStore';
 import { Ionicons } from '@expo/vector-icons';
+import { Audio } from 'expo-av';
+import {
+  startRecording,
+  stopRecording,
+  analyzeVoiceExercise,
+} from '../services/voiceExerciseService';
 import {
   Exercise,
   COMMON_EXERCISES,
@@ -72,6 +79,14 @@ export default function ExerciseScreen() {
   const [duration, setDuration] = useState('30');
   const [intensity, setIntensity] = useState<IntensityLevel>('moderate');
   const [showQuickLog, setShowQuickLog] = useState(false);
+
+  // Voice logging state
+  const [showVoiceModal, setShowVoiceModal] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [voiceResult, setVoiceResult] = useState<null | { exerciseName: string; durationMinutes: number; intensity: string; caloriesBurned: number; transcript: string }>(null);
+  const recordingRef = useRef<Audio.Recording | null>(null);
+  const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     updateDailySummary();
@@ -146,6 +161,98 @@ export default function ExerciseScreen() {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+  };
+
+  const startPulse = () => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, { toValue: 1.3, duration: 700, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1, duration: 700, useNativeDriver: true }),
+      ])
+    ).start();
+  };
+
+  const handleStartVoiceRecording = async () => {
+    try {
+      const recording = await startRecording();
+      if (!recording) return;
+      recordingRef.current = recording;
+      setIsRecording(true);
+      startPulse();
+    } catch (e: any) {
+      Alert.alert('Microphone error', e.message || 'Could not start recording.');
+    }
+  };
+
+  const handleStopVoiceRecording = async () => {
+    setIsRecording(false);
+    pulseAnim.stopAnimation();
+    pulseAnim.setValue(1);
+
+    const recording = recordingRef.current;
+    if (!recording) return;
+
+    setIsAnalyzing(true);
+    const uri = await stopRecording(recording);
+    recordingRef.current = null;
+
+    if (!uri) {
+      setIsAnalyzing(false);
+      Alert.alert('Recording error', 'Could not save the recording.');
+      return;
+    }
+
+    const result = await analyzeVoiceExercise(uri);
+    setIsAnalyzing(false);
+
+    if (!result.success || !result.exerciseName) {
+      Alert.alert('Not recognised', result.error || 'Could not detect exercise. Try saying "30 minutes of running" or "45 minutes heavy lifting".');
+      return;
+    }
+
+    setVoiceResult({
+      exerciseName: result.exerciseName,
+      durationMinutes: result.durationMinutes ?? 30,
+      intensity: result.intensity ?? 'moderate',
+      caloriesBurned: result.caloriesBurned ?? 0,
+      transcript: result.transcript ?? '',
+    });
+  };
+
+  const handleConfirmVoiceLog = () => {
+    if (!voiceResult) return;
+
+    const quickWorkout = {
+      id: `workout-${Date.now()}`,
+      name: voiceResult.exerciseName,
+      exercises: [{
+        id: `exercise-${Date.now()}`,
+        exercise: {
+          id: 'voice',
+          name: voiceResult.exerciseName,
+          icon: '🎤',
+          category: 'other' as ExerciseCategory,
+          caloriesPerMinute: voiceResult.durationMinutes > 0
+            ? voiceResult.caloriesBurned / voiceResult.durationMinutes
+            : 5,
+          metValue: 4.0,
+        },
+        sets: [],
+        duration: voiceResult.durationMinutes,
+        caloriesBurned: voiceResult.caloriesBurned,
+        intensity: voiceResult.intensity as IntensityLevel,
+      }],
+      startTime: new Date().toISOString(),
+      endTime: new Date().toISOString(),
+      totalDuration: voiceResult.durationMinutes,
+      totalCaloriesBurned: voiceResult.caloriesBurned,
+      timestamp: new Date().toISOString(),
+    };
+
+    useExerciseStore.getState().logWorkout(quickWorkout);
+    setVoiceResult(null);
+    setShowVoiceModal(false);
+    Alert.alert('Logged!', `${voiceResult.exerciseName} · ${voiceResult.durationMinutes} min · ${voiceResult.caloriesBurned} cal`);
   };
 
   const dynamicStyles = StyleSheet.create({
@@ -668,13 +775,21 @@ export default function ExerciseScreen() {
             </View>
           </View>
 
-          {/* Quick Log Button */}
-          <TouchableOpacity
-            style={dynamicStyles.logButton}
-            onPress={() => setShowQuickLog(true)}
-          >
-            <Text style={dynamicStyles.logButtonText}>+ Log Exercise</Text>
-          </TouchableOpacity>
+          {/* Log buttons row */}
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <TouchableOpacity
+              style={[dynamicStyles.logButton, { flex: 1 }]}
+              onPress={() => setShowQuickLog(true)}
+            >
+              <Text style={dynamicStyles.logButtonText}>+ Log Exercise</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[dynamicStyles.logButton, { flex: 0, paddingHorizontal: 18, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.primary }]}
+              onPress={() => { setVoiceResult(null); setShowVoiceModal(true); }}
+            >
+              <Ionicons name="mic" size={22} color={colors.primary} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Today's Workouts */}
@@ -785,6 +900,79 @@ export default function ExerciseScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
+
+      {/* Voice Log Modal */}
+      <Modal visible={showVoiceModal} transparent animationType="slide" onRequestClose={() => setShowVoiceModal(false)}>
+        <View style={dynamicStyles.modalOverlay}>
+          <View style={[dynamicStyles.modalContent, { alignItems: 'center' }]}>
+            <Text style={dynamicStyles.modalTitle}>Voice Log Exercise</Text>
+
+            {!voiceResult ? (
+              <>
+                <Text style={{ fontSize: 14, color: colors.textSecondary, textAlign: 'center', marginBottom: 28 }}>
+                  Say something like:{'\n'}
+                  <Text style={{ color: colors.text, fontStyle: 'italic' }}>"30 minutes of running, high intensity"</Text>
+                </Text>
+
+                {/* Mic button */}
+                <Animated.View style={[
+                  voiceMicOuter,
+                  { transform: [{ scale: isRecording ? pulseAnim : 1 }] }
+                ]}>
+                  <TouchableOpacity
+                    style={[voiceMicBtn, { backgroundColor: isRecording ? colors.error : colors.primary }]}
+                    onPress={isRecording ? handleStopVoiceRecording : handleStartVoiceRecording}
+                    disabled={isAnalyzing}
+                  >
+                    <Ionicons name={isRecording ? 'stop' : 'mic'} size={36} color={isRecording ? '#fff' : '#0A0A0C'} />
+                  </TouchableOpacity>
+                </Animated.View>
+
+                <Text style={{ color: colors.textSecondary, marginTop: 20, fontSize: 14, fontWeight: '600' }}>
+                  {isAnalyzing ? 'Analysing...' : isRecording ? 'Tap to stop' : 'Tap to speak'}
+                </Text>
+
+                <TouchableOpacity
+                  style={[dynamicStyles.cancelButton, { marginTop: 24, alignSelf: 'stretch' }]}
+                  onPress={() => setShowVoiceModal(false)}
+                >
+                  <Text style={dynamicStyles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                {/* Show parsed result for confirmation */}
+                <View style={[dynamicStyles.caloriePreview, { alignSelf: 'stretch', marginBottom: 16 }]}>
+                  <Text style={{ fontSize: 13, color: colors.textSecondary, marginBottom: 4 }}>Heard:</Text>
+                  <Text style={{ fontSize: 13, color: colors.text, fontStyle: 'italic', marginBottom: 12 }}>"{voiceResult.transcript}"</Text>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text }}>{voiceResult.exerciseName}</Text>
+                    <Text style={{ fontSize: 14, color: colors.primary, fontWeight: '600' }}>{voiceResult.caloriesBurned} cal</Text>
+                  </View>
+                  <Text style={{ fontSize: 13, color: colors.textSecondary, marginTop: 4 }}>
+                    {voiceResult.durationMinutes} min · {voiceResult.intensity}
+                  </Text>
+                </View>
+
+                <View style={dynamicStyles.modalButtons}>
+                  <TouchableOpacity
+                    style={dynamicStyles.cancelButton}
+                    onPress={() => setVoiceResult(null)}
+                  >
+                    <Text style={dynamicStyles.cancelButtonText}>Re-record</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={dynamicStyles.saveButton}
+                    onPress={handleConfirmVoiceLog}
+                  >
+                    <Text style={dynamicStyles.saveButtonText}>Log It</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
 
       {/* Quick Log Modal */}
       <Modal
@@ -919,3 +1107,20 @@ export default function ExerciseScreen() {
   );
 }
 
+// Voice mic button styles (static — no theme dependency)
+const voiceMicOuter: object = {
+  width: 100,
+  height: 100,
+  borderRadius: 50,
+  backgroundColor: 'rgba(0,230,118,0.10)',
+  justifyContent: 'center',
+  alignItems: 'center',
+};
+
+const voiceMicBtn: object = {
+  width: 80,
+  height: 80,
+  borderRadius: 40,
+  justifyContent: 'center',
+  alignItems: 'center',
+};

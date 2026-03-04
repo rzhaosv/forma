@@ -17,9 +17,9 @@ interface ThemeState {
 const THEME_STORAGE_KEY = '@nutrisnap_theme_mode';
 
 export const useThemeStore = create<ThemeState>((set, get) => ({
-  mode: 'light',
-  colors: getTheme('light'),
-  isDark: false,
+  mode: 'dark',
+  colors: getTheme('dark'),
+  isDark: true,
   
   setMode: async (mode: ThemeMode) => {
     const colors = getTheme(mode);
@@ -44,15 +44,15 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
         const colors = getTheme(savedMode);
         set({ mode: savedMode, colors, isDark: savedMode === 'dark' });
       } else {
-        // Default to light mode
-        const colors = getTheme('light');
-        set({ mode: 'light', colors, isDark: false });
+        // Default to dark mode (premium experience)
+        const colors = getTheme('dark');
+        set({ mode: 'dark', colors, isDark: true });
       }
     } catch (error) {
       console.error('Failed to load theme preference:', error);
-      // Default to light mode on error
-      const colors = getTheme('light');
-      set({ mode: 'light', colors, isDark: false });
+      // Default to dark mode on error
+      const colors = getTheme('dark');
+      set({ mode: 'dark', colors, isDark: true });
     }
   },
 }));
