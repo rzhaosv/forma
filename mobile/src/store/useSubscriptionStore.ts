@@ -7,8 +7,12 @@ import Purchases, {
   LOG_LEVEL,
 } from 'react-native-purchases';
 
-// Set your key in .env as EXPO_PUBLIC_REVENUECAT_IOS_KEY=appl_...
+// Set your keys in .env:
+//   EXPO_PUBLIC_REVENUECAT_IOS_KEY=appl_...
+//   EXPO_PUBLIC_REVENUECAT_ANDROID_KEY=goog_...
 const IOS_KEY = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY ?? '';
+const ANDROID_KEY = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY ?? '';
+const RC_API_KEY = Platform.OS === 'ios' ? IOS_KEY : ANDROID_KEY;
 
 // RC must only be configured once per app session — track at module level
 let _rcConfigured = false;
@@ -35,13 +39,8 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
   customerInfo: null,
 
   initialize: async (userId?: string) => {
-    if (Platform.OS !== 'ios') {
-      set({ isLoading: false });
-      return;
-    }
-
-    if (!IOS_KEY) {
-      console.warn('[RC] EXPO_PUBLIC_REVENUECAT_IOS_KEY is not set');
+    if (!RC_API_KEY) {
+      console.warn(`[RC] No RevenueCat API key for ${Platform.OS}. Set EXPO_PUBLIC_REVENUECAT_${Platform.OS === 'ios' ? 'IOS' : 'ANDROID'}_KEY in .env`);
       set({ isLoading: false });
       return;
     }
@@ -49,7 +48,7 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
     // Configure RC exactly once — subsequent calls only log in the user
     if (!_rcConfigured) {
       Purchases.setLogLevel(__DEV__ ? LOG_LEVEL.DEBUG : LOG_LEVEL.ERROR);
-      Purchases.configure({ apiKey: IOS_KEY });
+      Purchases.configure({ apiKey: RC_API_KEY });
       _rcConfigured = true;
     }
 
@@ -114,8 +113,9 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
     try {
       const { customerInfo } = await Purchases.purchasePackage(pkg);
       const isPremium = !!customerInfo.entitlements.active['premium'];
-      set({ customerInfo, isPremium, isPurchasing: false });
-      return isPremium;
+      set({ customerInfo, isPremium: isPremium || true, isPurchasing: false });
+      // Purchase succeeded — treat as premium even if entitlement isn't immediately active
+      return true;
     } catch (e: any) {
       set({ isPurchasing: false });
       if (e.userCancelled) return false;

@@ -112,6 +112,8 @@ export default function SignUpScreen() {
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry={!showPassword}
+                  textContentType="oneTimeCode"
+                  autoComplete="off"
                   editable={!loading}
                   returnKeyType="next"
                 />
@@ -132,6 +134,8 @@ export default function SignUpScreen() {
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
                   secureTextEntry={!showPassword}
+                  textContentType="oneTimeCode"
+                  autoComplete="off"
                   editable={!loading}
                   returnKeyType="done"
                   onSubmitEditing={handleSignUp}

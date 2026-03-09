@@ -287,13 +287,6 @@ export default function PaywallScreen() {
           <Text style={[styles.signInLinkText, { color: C.textTertiary }]}>Restore purchases</Text>
         </TouchableOpacity>
 
-        {/* Skip */}
-        <TouchableOpacity
-          style={styles.signInLink}
-          onPress={() => navigation.navigate('Main' as never)}
-        >
-          <Text style={[styles.signInLinkText, { color: C.textTertiary, fontSize: 13 }]}>Maybe later</Text>
-        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
