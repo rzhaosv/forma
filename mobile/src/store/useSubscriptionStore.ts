@@ -47,9 +47,15 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
 
     // Configure RC exactly once — subsequent calls only log in the user
     if (!_rcConfigured) {
-      Purchases.setLogLevel(__DEV__ ? LOG_LEVEL.DEBUG : LOG_LEVEL.ERROR);
-      Purchases.configure({ apiKey: RC_API_KEY });
-      _rcConfigured = true;
+      try {
+        Purchases.setLogLevel(__DEV__ ? LOG_LEVEL.DEBUG : LOG_LEVEL.ERROR);
+        Purchases.configure({ apiKey: RC_API_KEY });
+        _rcConfigured = true;
+      } catch (e) {
+        console.warn('[RC] configure failed:', e);
+        set({ isLoading: false });
+        return;
+      }
     }
 
     // Link to Firebase user ID so RC tracks purchases per user
@@ -66,6 +72,10 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
   },
 
   loadOffering: async () => {
+    if (!_rcConfigured) {
+      console.warn('[RC] SDK not configured — skipping loadOffering');
+      return;
+    }
     try {
       const offerings = await Purchases.getOfferings();
       if (offerings.current) {
@@ -98,6 +108,11 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
   },
 
   checkStatus: async () => {
+    if (!_rcConfigured) {
+      console.warn('[RC] SDK not configured — skipping checkStatus');
+      set({ isLoading: false });
+      return;
+    }
     try {
       const info = await Purchases.getCustomerInfo();
       const isPremium = !!info.entitlements.active['premium'];
@@ -109,6 +124,10 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
   },
 
   purchase: async (pkg: PurchasesPackage) => {
+    if (!_rcConfigured) {
+      Alert.alert('Store Unavailable', 'The subscription service is not available right now. Please restart the app and try again.');
+      return false;
+    }
     set({ isPurchasing: true });
     try {
       const { customerInfo } = await Purchases.purchasePackage(pkg);
@@ -125,6 +144,10 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
   },
 
   restore: async () => {
+    if (!_rcConfigured) {
+      Alert.alert('Store Unavailable', 'The subscription service is not available right now. Please restart the app and try again.');
+      return false;
+    }
     set({ isPurchasing: true });
     try {
       const info = await Purchases.restorePurchases();
