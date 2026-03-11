@@ -49,7 +49,7 @@
         "android.permission.BODY_SENSORS",
         "android.permission.ACTIVITY_RECOGNITION"
       ],
-      "package": "com.raymondzhao3000.forma",
+      "package": "com.formaz.macra",
       "versionCode": 6,
       "googleServicesFile": "./google-services.json"
     },
