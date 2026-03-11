@@ -38,8 +38,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('🔴 App Error Boundary caught error:', error);
-    console.error('🔴 Error Info:', errorInfo);
+    console.error('App Error Boundary caught error:', error);
+    console.error('Error Info:', errorInfo);
   }
 
   handleRestart = () => {
@@ -127,13 +127,13 @@ export default function App() {
     const buildNumber = Constants.expoConfig?.ios?.buildNumber || Constants.expoConfig?.android?.versionCode || 'dev';
 
     console.log('\n' + '='.repeat(50));
-    console.log('🚀 NUTRISNAP APP STARTED');
+    console.log('MACRA APP STARTED');
     console.log('='.repeat(50));
-    console.log(`📦 Version:     ${appVersion}`);
-    console.log(`🔢 Build:       ${buildNumber}`);
-    console.log(`📱 Platform:    ${Constants.platform?.ios ? 'iOS' : Constants.platform?.android ? 'Android' : 'Unknown'}`);
-    console.log(`🔧 Environment: ${__DEV__ ? 'Development' : 'Production'}`);
-    console.log(`⏰ Started at:  ${new Date().toLocaleString()}`);
+    console.log(`Version:     ${appVersion}`);
+    console.log(`Build:       ${buildNumber}`);
+    console.log(`Platform:    ${Constants.platform?.ios ? 'iOS' : Constants.platform?.android ? 'Android' : 'Unknown'}`);
+    console.log(`Environment: ${__DEV__ ? 'Development' : 'Production'}`);
+    console.log(`Started at:  ${new Date().toLocaleString()}`);
     console.log('='.repeat(50) + '\n');
 
     // Initialize theme store (doesn't require userId)
@@ -143,14 +143,20 @@ export default function App() {
     // Initialize unit system store
     initializeUnitSystem();
 
-    // Initialize notifications
-    initializeNotifications().catch(console.error);
+    // Defer native module initialization to allow the bridge to fully settle.
+    // This prevents race conditions with native module method dispatch on iPad.
+    const timer = setTimeout(() => {
+      // Initialize notifications
+      initializeNotifications().catch((e) => console.warn('Notification init failed:', e));
 
-    // Initialize Firebase Analytics
-    initializeAnalytics().catch(console.error);
+      // Initialize Firebase Analytics
+      initializeAnalytics().catch((e) => console.warn('Analytics init failed:', e));
 
-    // Initialize RevenueCat SDK (anonymous user — userId is linked after auth in authService)
-    initializeSubscription().catch(console.error);
+      // Initialize RevenueCat SDK (anonymous user — userId is linked after auth in authService)
+      initializeSubscription().catch((e) => console.warn('Subscription init failed:', e));
+    }, 1500);
+
+    return () => clearTimeout(timer);
   }, [initializeTheme, initializeUnitSystem, initializeSubscription]);
 
   return (
@@ -163,7 +169,7 @@ export default function App() {
             const initialRouteName = navigationRef.current?.getCurrentRoute()?.name;
             routeNameRef.current = initialRouteName;
             if (initialRouteName) {
-              console.log(`📊 Tracking initial screen: ${initialRouteName}`);
+              console.log(`Tracking initial screen: ${initialRouteName}`);
               await trackScreenView(initialRouteName, initialRouteName);
             }
           }}
@@ -173,7 +179,7 @@ export default function App() {
 
             if (previousRouteName !== currentRouteName && currentRouteName) {
               // Track screen view in Firebase Analytics
-              console.log(`📊 Tracking screen change: ${previousRouteName} → ${currentRouteName}`);
+              console.log(`Tracking screen change: ${previousRouteName} → ${currentRouteName}`);
               await trackScreenView(currentRouteName, currentRouteName);
             }
 
