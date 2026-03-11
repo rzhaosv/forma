@@ -16,7 +16,13 @@
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_OPENAI_API_KEY": "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",
+        "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_MCMsHWCvHakToGcBJnHKoipuVEU",
+        "EXPO_PUBLIC_REVENUECAT_ANDROID_KEY": "goog_vlVHjatHPbHOVkUZsAgwyGLjzdg",
+        "EXPO_PUBLIC_CLARIFAI_API_KEY": "86831c95efa048a6b2fdbf37470a14ad"
+      }
     }
   },
   "submit": {
