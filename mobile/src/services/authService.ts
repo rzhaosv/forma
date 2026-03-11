@@ -24,8 +24,12 @@ import { useAchievementStore } from '../store/useAchievementStore';
 import { useSubscriptionStore } from '../store/useSubscriptionStore';
 import { trackSignUp, trackLogin, setUserId } from '../utils/analytics';
 
-// Complete the auth session
-WebBrowser.maybeCompleteAuthSession();
+// Complete the auth session (wrapped in try/catch for safety)
+try {
+  WebBrowser.maybeCompleteAuthSession();
+} catch (e) {
+  console.warn('WebBrowser.maybeCompleteAuthSession failed:', e);
+}
 
 /**
  * Sign up a new user with email and password
@@ -54,18 +58,28 @@ export const signIn = async (email: string, password: string): Promise<User> => 
 };
 
 /**
- * Initialize Google Sign-In
+ * Initialize Google Sign-In (lazy, on first use)
  */
-GoogleSignin.configure({
-  webClientId: '311242226872-eu8t1pqae795572hsbs6svmv0gh87sc4.apps.googleusercontent.com',
-  iosClientId: '311242226872-4jrv4kndh6j0s974u1h0uqbj4bvmp3af.apps.googleusercontent.com',
-});
+let _googleSignInConfigured = false;
+const ensureGoogleSignInConfigured = () => {
+  if (_googleSignInConfigured) return;
+  try {
+    GoogleSignin.configure({
+      webClientId: '311242226872-eu8t1pqae795572hsbs6svmv0gh87sc4.apps.googleusercontent.com',
+      iosClientId: '311242226872-4jrv4kndh6j0s974u1h0uqbj4bvmp3af.apps.googleusercontent.com',
+    });
+    _googleSignInConfigured = true;
+  } catch (e) {
+    console.warn('GoogleSignin.configure failed:', e);
+  }
+};
 
 /**
  * Sign In with Google (Native)
  */
 export const signInWithGoogle = async (): Promise<User> => {
   try {
+    ensureGoogleSignInConfigured();
     await GoogleSignin.hasPlayServices();
     const userInfo = await GoogleSignin.signIn();
 
@@ -259,4 +273,3 @@ export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
     }
   });
 };
-
