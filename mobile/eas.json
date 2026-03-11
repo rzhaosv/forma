@@ -1,39 +1,33 @@
 {
-    "cli": {
-          "version": ">= 16.27.0",
-          "appVersionSource": "remote"
+  "cli": {
+    "version": ">= 16.27.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
     },
-    "build": {
-          "development": {
-                  "developmentClient": true,
-                  "distribution": "internal"
-          },
-          "dev-dual": {
-                  "developmentClient": true,
-                  "distribution": "internal"
-          },
-          "preview": {
-                  "distribution": "internal"
-          },
-          "production": {
-                  "autoIncrement": true,
-                  "env": {
-                            "EXPO_PUBLIC_OPENAI_API_KEY": "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",
-                            "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_MCMsHWCvHakToGcBJnHKoipuVEU",
-                            "EXPO_PUBLIC_REVENUECAT_ANDROID_KEY": "goog_vlVHjatHPbHOVkUZsAgwyGLjzdg",
-                            "EXPO_PUBLIC_CLARIFAI_API_KEY": "86831c95efa048a6b2fdbf37470a14ad"
-                  }
-          }
+    "dev-dual": {
+      "developmentClient": true,
+      "distribution": "internal"
     },
-    "submit": {
-          "production": {
-                  "android": {
-                            "serviceAccountKeyPath": "google-play-key.json",
-                            "track": "production"
-                  },
-                  "ios": {
-                            "ascAppId": "6755325879"
-                  }
-          }
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "autoIncrement": true
     }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "google-play-key.json",
+        "track": "production"
+      },
+      "ios": {
+        "ascAppId": "6755325879"
+      }
+    }
+  }
 }
