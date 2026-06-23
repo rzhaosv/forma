@@ -164,26 +164,23 @@ export default function App() {
       <GestureHandlerRootView style={styles.container}>
         <NavigationContainer
           ref={navigationRef}
-          onReady={async () => {
-            // Track the initial screen when app starts
+          onReady={() => {
             const initialRouteName = navigationRef.current?.getCurrentRoute()?.name;
             routeNameRef.current = initialRouteName;
             if (initialRouteName) {
               console.log(`Tracking initial screen: ${initialRouteName}`);
-              await trackScreenView(initialRouteName, initialRouteName);
+              trackScreenView(initialRouteName, initialRouteName).catch(() => {});
             }
           }}
-          onStateChange={async () => {
+          onStateChange={() => {
             const previousRouteName = routeNameRef.current;
             const currentRouteName = navigationRef.current?.getCurrentRoute()?.name;
 
             if (previousRouteName !== currentRouteName && currentRouteName) {
-              // Track screen view in Firebase Analytics
               console.log(`Tracking screen change: ${previousRouteName} → ${currentRouteName}`);
-              await trackScreenView(currentRouteName, currentRouteName);
+              trackScreenView(currentRouteName, currentRouteName).catch(() => {});
             }
 
-            // Save the current route name for next change
             routeNameRef.current = currentRouteName;
           }}
         >

@@ -49,7 +49,7 @@ export default function ProgressScreen() {
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
-      isHealthKitEnabled().then(setHealthKitEnabled);
+      isHealthKitEnabled().then(setHealthKitEnabled).catch(() => {});
     }
   }, []);
 

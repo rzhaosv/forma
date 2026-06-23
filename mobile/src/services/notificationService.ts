@@ -505,7 +505,7 @@ export const addNotificationResponseListener = (
     if (notifs) {
       notifs.addNotificationResponseReceivedListener(callback);
     }
-  });
+  }).catch(() => {});
 };
 
 // Add notification received listener (foreground)
@@ -516,6 +516,6 @@ export const addNotificationReceivedListener = (
     if (notifs) {
       notifs.addNotificationReceivedListener(callback);
     }
-  });
+  }).catch(() => {});
 };
 

@@ -39,7 +39,7 @@ export default function FoodResultsScreen() {
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
-      isHealthKitEnabled().then(setHealthKitEnabled);
+      isHealthKitEnabled().then(setHealthKitEnabled).catch(() => {});
     }
   }, []);
   const [selectedMealType, setSelectedMealType] = useState<MealType>(existingMealType || 'Lunch');

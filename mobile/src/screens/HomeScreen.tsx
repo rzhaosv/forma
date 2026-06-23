@@ -37,7 +37,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
-      isHealthKitEnabled().then(setHealthKitEnabled);
+      isHealthKitEnabled().then(setHealthKitEnabled).catch(() => {});
     }
   }, []);
 
