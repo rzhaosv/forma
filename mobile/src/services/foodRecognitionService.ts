@@ -2,6 +2,7 @@
 // Analyzes food photos and returns identified foods with nutrition estimates
 // OPTIMIZED: 10s → 2-3s via compression, gpt-4o-mini, detail:low, caching
 
+import { proxyChatCompletion } from './aiProxyService';
 import { compressFoodPhoto } from '../utils/imageCompression';
 import { generateImageHash, getCachedResult, cacheResult } from '../utils/scanCache';
 
@@ -24,7 +25,6 @@ export interface FoodRecognitionResult {
   error?: string;
 }
 
-const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
 
 /**
  * Analyze a food photo using OpenAI Vision API
@@ -44,10 +44,6 @@ export async function analyzeFoodPhoto(imageUri: string): Promise<FoodRecognitio
   const startTime = Date.now();
 
   try {
-    if (!OPENAI_API_KEY || OPENAI_API_KEY.includes('YOUR_')) {
-      throw new Error('OpenAI API Key is missing or invalid in this build. Please check EAS secrets.');
-    }
-
     console.log('📸 Starting food analysis (optimized)...');
 
     // OPTIMIZATION 1: Compress image (saves 2-3 seconds)
@@ -74,13 +70,7 @@ export async function analyzeFoodPhoto(imageUri: string): Promise<FoodRecognitio
     console.log('🤖 Calling OpenAI API...');
 
     // 2. Call OpenAI Vision API with OPTIMIZED settings
-    const apiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    const data = await proxyChatCompletion({
         // OPTIMIZATION 3: Use gpt-4o-mini (3-5x faster, 10x cheaper)
         model: 'gpt-4o-mini',
         messages: [
@@ -123,12 +113,9 @@ export async function analyzeFoodPhoto(imageUri: string): Promise<FoodRecognitio
         ],
         response_format: { type: 'json_object' },
         max_tokens: 1000,
-      }),
     });
 
-    const data = await apiResponse.json();
-
-    if (!apiResponse.ok) {
+    if (data.error) {
       console.error('OpenAI API Error:', data);
       throw new Error(data.error?.message || 'Failed to analyze image');
     }

@@ -3,9 +3,9 @@
  * Records voice → Whisper transcription → GPT-4o extracts exercise data
  */
 import { startRecording, stopRecording } from './voiceLogService';
+import { proxyChatCompletion, proxyTranscription } from './aiProxyService';
 export { startRecording, stopRecording };
 
-const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
 
 export interface VoiceExerciseResult {
   success: boolean;
@@ -19,41 +19,13 @@ export interface VoiceExerciseResult {
 }
 
 const transcribeAudio = async (audioUri: string): Promise<string> => {
-  if (!OPENAI_API_KEY || OPENAI_API_KEY.includes('YOUR_')) {
-    throw new Error('OpenAI API key is not configured.');
-  }
-
-  const formData = new FormData();
-  // @ts-ignore
-  formData.append('file', { uri: audioUri, name: 'exercise_log.m4a', type: 'audio/m4a' });
-  formData.append('model', 'whisper-1');
-
-  const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${OPENAI_API_KEY}`,
-      'Content-Type': 'multipart/form-data',
-    },
-    body: formData,
-  });
-
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error?.message || 'Transcription failed');
+    const data = await proxyTranscription(audioUri, 'audio/m4a', 'exercise_log.m4a');
+    if (data.error) throw new Error(data.error?.message || 'Transcription failed');
   return data.text;
 };
 
 const extractExerciseData = async (text: string): Promise<VoiceExerciseResult> => {
-  if (!OPENAI_API_KEY || OPENAI_API_KEY.includes('YOUR_')) {
-    throw new Error('OpenAI API key is not configured.');
-  }
-
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${OPENAI_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
+  const data = await proxyChatCompletion({
       model: 'gpt-4o',
       messages: [
         {
@@ -78,11 +50,9 @@ If the input is not about exercise or is unclear, return { "success": false }.`,
         { role: 'user', content: text },
       ],
       response_format: { type: 'json_object' },
-    }),
   });
 
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error?.message || 'Analysis failed');
+  if (data.error) throw new Error(data.error?.message || 'Analysis failed');
   return JSON.parse(data.choices[0].message.content);
 };
 

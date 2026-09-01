@@ -25,7 +25,7 @@ if (getApps().length === 0) {
 
 // Initialize Auth with AsyncStorage persistence for React Native
 // This ensures users stay logged in across app restarts
-let auth;
+let auth: import('firebase/auth').Auth;
 try {
   auth = initializeAuth(app, {
     persistence: getReactNativePersistence(AsyncStorage)

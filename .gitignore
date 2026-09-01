@@ -89,3 +89,4 @@ coverage/
 google-play-key.json
 mobile/google-play-key.json
 .vercel
+.env*

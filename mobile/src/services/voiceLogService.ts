@@ -1,7 +1,7 @@
 import { Audio } from 'expo-av';
+import { proxyChatCompletion, proxyTranscription } from './aiProxyService';
 import { FoodRecognitionResult, IdentifiedFood } from './foodRecognitionService';
 
-const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
 
 export const startRecording = async (): Promise<Audio.Recording | null> => {
     try {
@@ -41,49 +41,14 @@ export const stopRecording = async (recording: Audio.Recording): Promise<string 
 };
 
 const transcribeAudio = async (audioUri: string): Promise<string> => {
-    if (!OPENAI_API_KEY || OPENAI_API_KEY.includes('YOUR_')) {
-        const status = !OPENAI_API_KEY ? 'UNDEFINED' : `STARTS_WITH_${OPENAI_API_KEY.substring(0, 3)}`;
-        throw new Error(`OpenAI API Key is missing or invalid (${status}). Check EAS secrets.`);
-    }
-
-    const formData = new FormData();
-    // @ts-ignore: React Native FormData expects explicit name/type/uri object
-    formData.append('file', {
-        uri: audioUri,
-        name: 'voice_log.m4a',
-        type: 'audio/m4a',
-    });
-    formData.append('model', 'whisper-1');
-
-    const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${OPENAI_API_KEY}`,
-            'Content-Type': 'multipart/form-data',
-        },
-        body: formData,
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-        throw new Error(data.error?.message || 'Transcription failed');
-    }
+    const data = await proxyTranscription(audioUri, 'audio/m4a', 'voice_log.m4a');
+    if (data.error) throw new Error(data.error?.message || 'Transcription failed');
 
     return data.text;
 };
 
 const extractNutritionFromText = async (text: string): Promise<FoodRecognitionResult> => {
-    if (!OPENAI_API_KEY || OPENAI_API_KEY.includes('YOUR_')) {
-        throw new Error('OpenAI API Key is missing or invalid. Check EAS secrets.');
-    }
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${OPENAI_API_KEY}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+    const data = await proxyChatCompletion({
             model: 'gpt-4o',
             messages: [
                 {
@@ -118,11 +83,9 @@ const extractNutritionFromText = async (text: string): Promise<FoodRecognitionRe
                 { role: 'user', content: text }
             ],
             response_format: { type: 'json_object' }
-        }),
     });
 
-    const data = await response.json();
-    if (!response.ok) {
+    if (data.error) {
         throw new Error(data.error?.message || 'Analysis failed');
     }
 

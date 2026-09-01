@@ -1,5 +1,6 @@
 // Food Database Service
 // Provides searchable database of common foods with nutrition data
+import { proxyChatCompletion } from './aiProxyService';
 //
 // NUTRITION DATA SOURCES:
 // All nutrition values are based on data from the U.S. Department of Agriculture (USDA)
@@ -41,25 +42,13 @@ interface OnlineFoodResult {
   };
 }
 
-const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
-
 // Search for food nutrition info online using OpenAI
 export async function searchFoodOnline(query: string): Promise<FoodDatabaseItem[]> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
   try {
-    if (!OPENAI_API_KEY || OPENAI_API_KEY.includes('YOUR_')) {
-      throw new Error('OpenAI API Key is not configured');
-    }
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
+    const data = await proxyChatCompletion({
         model: 'gpt-4o-mini',
         messages: [
           {
@@ -102,15 +91,8 @@ RULES:
         ],
         temperature: 0.3,
         max_tokens: 500,
-      }),
-      signal: controller.signal,
     });
 
-    if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status}`);
-    }
-
-    const data = await response.json();
     let content = data.choices[0]?.message?.content?.trim();
 
     if (!content) {
