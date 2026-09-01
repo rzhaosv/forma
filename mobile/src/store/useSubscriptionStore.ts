@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Platform, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Purchases, {
   CustomerInfo,
   PurchasesOffering,
@@ -16,6 +17,16 @@ const RC_API_KEY = Platform.OS === 'ios' ? IOS_KEY : ANDROID_KEY;
 
 // RC must only be configured once per app session — track at module level
 let _rcConfigured = false;
+
+// Last-known premium status, persisted so a returning subscriber routes
+// straight to the app at cold launch instead of seeing a paywall flash while
+// RevenueCat loads. RevenueCat remains the source of truth: every real status
+// check overwrites this cache.
+const PREMIUM_CACHE_KEY = '@macra_is_premium_cache';
+
+const cachePremium = (isPremium: boolean) => {
+  AsyncStorage.setItem(PREMIUM_CACHE_KEY, isPremium ? 'true' : 'false').catch(() => {});
+};
 
 interface SubscriptionStore {
   isPremium: boolean;
@@ -39,6 +50,17 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
   customerInfo: null,
 
   initialize: async (userId?: string) => {
+    // Hydrate last-known premium status first so routing doesn't have to wait
+    // on (or wrongly default during) the network status check below.
+    try {
+      const cached = await AsyncStorage.getItem(PREMIUM_CACHE_KEY);
+      if (cached === 'true' && !get().isPremium) {
+        set({ isPremium: true });
+      }
+    } catch {
+      // cache unavailable — fall through to the live check
+    }
+
     if (!RC_API_KEY) {
       console.warn(`[RC] No RevenueCat API key for ${Platform.OS}. Set EXPO_PUBLIC_REVENUECAT_${Platform.OS === 'ios' ? 'IOS' : 'ANDROID'}_KEY in .env`);
       set({ isLoading: false });
@@ -117,8 +139,11 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
       const info = await Purchases.getCustomerInfo();
       const isPremium = !!info.entitlements.active['premium'];
       set({ customerInfo: info, isPremium, isLoading: false });
+      cachePremium(isPremium);
     } catch (e) {
       console.error('[RC] getCustomerInfo failed', e);
+      // Keep the hydrated cache value — RC being unreachable (offline launch)
+      // must not bounce a paying subscriber back to the paywall.
       set({ isLoading: false });
     }
   },
@@ -134,6 +159,7 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
       const isPremium = !!customerInfo.entitlements.active['premium'];
       set({ customerInfo, isPremium: isPremium || true, isPurchasing: false });
       // Purchase succeeded — treat as premium even if entitlement isn't immediately active
+      cachePremium(true);
       return true;
     } catch (e: any) {
       set({ isPurchasing: false });
@@ -153,6 +179,7 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
       const info = await Purchases.restorePurchases();
       const isPremium = !!info.entitlements.active['premium'];
       set({ customerInfo: info, isPremium, isPurchasing: false });
+      cachePremium(isPremium);
       return isPremium;
     } catch (e: any) {
       set({ isPurchasing: false });

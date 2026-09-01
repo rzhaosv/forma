@@ -20,7 +20,7 @@ const Stack = createStackNavigator();
 export default function AppNavigator() {
   const { isAuthenticated, isLoading, user } = useAuthStore();
   const { isComplete: isOnboardingComplete, isLoading: isOnboardingLoading, initialize: initializeOnboarding } = useOnboardingStore();
-  const { isPremium } = useSubscriptionStore();
+  const { isPremium, isLoading: isSubscriptionLoading } = useSubscriptionStore();
   const { colors } = useTheme();
   const [bootTimedOut, setBootTimedOut] = useState(false);
 
@@ -45,8 +45,13 @@ export default function AppNavigator() {
     return () => unsubscribe();
   }, []);
 
-  // Show loading screen while checking auth state
-  if ((isLoading || isOnboardingLoading) && !bootTimedOut) {
+  // Show loading screen while checking auth state.
+  // For a signed-in user, also wait for the subscription status before
+  // committing the initial route: rendering the stack while isPremium is
+  // still its default (false) used to lock every subscriber onto the paywall
+  // at cold launch. The cached isPremium (hydrated in the subscription store)
+  // plus the boot watchdog keep this wait short and bounded.
+  if ((isLoading || isOnboardingLoading || (isAuthenticated && isSubscriptionLoading)) && !bootTimedOut) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.primary} />

@@ -232,6 +232,11 @@ export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
 
       // Initialize all stores with user-specific data
       try {
+        // RevenueCat first: the boot screen waits on subscription status to
+        // pick the initial route (paywall vs main), so resolve it before the
+        // slower Firestore-backed stores.
+        await useSubscriptionStore.getState().initialize(userId);
+
         // Initialize meal store (meals, goals)
         await useMealStore.getState().initialize(userId);
 
@@ -249,11 +254,13 @@ export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
 
         // Initialize exercise store (workouts, goals)
         await useExerciseStore.getState().initialize(userId);
-
-        // Link RevenueCat to the Firebase user ID (merges any anonymous purchases)
-        await useSubscriptionStore.getState().initialize(userId);
       } catch (error) {
         console.error('Failed to initialize user stores:', error);
+        // A failed store init must not strand the boot spinner (the navigator
+        // waits on subscription isLoading for signed-in users)
+        try {
+          useSubscriptionStore.setState({ isLoading: false });
+        } catch {}
       }
     } else {
       // User is signed out - clear all user-specific data
