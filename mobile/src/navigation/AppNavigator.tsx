@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import WelcomeScreen from '../screens/WelcomeScreen';
@@ -22,6 +22,15 @@ export default function AppNavigator() {
   const { isComplete: isOnboardingComplete, isLoading: isOnboardingLoading, initialize: initializeOnboarding } = useOnboardingStore();
   const { isPremium } = useSubscriptionStore();
   const { colors } = useTheme();
+  const [bootTimedOut, setBootTimedOut] = useState(false);
+
+  // Boot watchdog: if auth/onboarding restore hangs (network failure, a store
+  // init that never resolves), stop waiting after 8s and show the app instead
+  // of an infinite spinner — App Review rejects apps stuck on a loading screen.
+  useEffect(() => {
+    const timer = setTimeout(() => setBootTimedOut(true), 8000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Initialize onboarding store
   useEffect(() => {
@@ -37,7 +46,7 @@ export default function AppNavigator() {
   }, []);
 
   // Show loading screen while checking auth state
-  if (isLoading || isOnboardingLoading) {
+  if ((isLoading || isOnboardingLoading) && !bootTimedOut) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.primary} />

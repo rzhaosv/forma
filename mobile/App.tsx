@@ -138,10 +138,10 @@ export default function App() {
 
     // Initialize theme store (doesn't require userId)
     // All other stores are initialized in authService when user logs in
-    initializeTheme();
+    initializeTheme().catch((e) => console.warn('Theme init failed:', e));
 
     // Initialize unit system store
-    initializeUnitSystem();
+    initializeUnitSystem().catch((e) => console.warn('Unit system init failed:', e));
 
     // Defer native module initialization to allow the bridge to fully settle.
     // This prevents race conditions with native module method dispatch on iPad.

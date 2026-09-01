@@ -277,6 +277,25 @@ export const trackCustomEvent = async (
 };
 
 /**
+ * Track an uncaught JS error or unhandled promise rejection.
+ * Called by the global error guard (src/config/errorGuard.ts) so production
+ * JS errors leave a readable trace in GA4 instead of only a native crash log.
+ *
+ * @param context - 'fatal_js_error' | 'js_error' | 'unhandled_rejection'
+ * @param message - Error message (truncated by caller to fit GA4 param limits)
+ * @param stack - First portion of the stack trace, if available
+ */
+export const trackJsError = async (
+  context: string,
+  message: string,
+  stack: string
+): Promise<void> => {
+  return safeAnalytics(async () => {
+    await analytics().logEvent('js_error', { context, message, stack });
+  }, 'trackJsError');
+};
+
+/**
  * Enable/disable analytics collection.
  * Useful for respecting user privacy preferences.
  *

@@ -217,8 +217,15 @@ export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
     const store = useAuthStore.getState();
 
     if (user) {
-      // User is signed in
-      const token = await user.getIdToken();
+      // User is signed in.
+      // getIdToken can reject (flaky network, expired credentials) — never let
+      // that leave the app stuck on the boot spinner with isLoading=true.
+      let token = '';
+      try {
+        token = await user.getIdToken();
+      } catch (e) {
+        console.warn('getIdToken failed, continuing with cached session:', e);
+      }
       store.setUser(user, token);
 
       const userId = user.uid;
@@ -252,24 +259,37 @@ export const listenToAuthChanges = (callback?: (user: User | null) => void) => {
       // User is signed out - clear all user-specific data
       store.clearUser();
 
-      // Clear all stores
-      try {
-        await useMealStore.getState().clearData();
-        await useProgressStore.getState().clearData();
-        await useRecipeStore.getState().clearData();
-        await useOnboardingStore.getState().clearData();
-        await useAchievementStore.getState().clearData();
-        await useExerciseStore.getState().clearData();
-
-
-      } catch (error) {
-        console.error('Failed to clear user data on logout:', error);
+      // Clear each store independently: one failure must not skip the rest
+      // (a skipped onboarding clearData used to leave isLoading=true forever,
+      // stranding the app on the boot spinner)
+      const clears: Array<[string, () => Promise<void>]> = [
+        ['meal', () => useMealStore.getState().clearData()],
+        ['progress', () => useProgressStore.getState().clearData()],
+        ['recipe', () => useRecipeStore.getState().clearData()],
+        ['onboarding', () => useOnboardingStore.getState().clearData()],
+        ['achievement', () => useAchievementStore.getState().clearData()],
+        ['exercise', () => useExerciseStore.getState().clearData()],
+      ];
+      for (const [name, clear] of clears) {
+        try {
+          await clear();
+        } catch (error) {
+          console.error(`Failed to clear ${name} store on logout:`, error);
+        }
       }
+      // Belt and braces: the onboarding spinner flag must never survive logout
+      try {
+        useOnboardingStore.setState({ isLoading: false });
+      } catch {}
     }
 
     // Call optional callback
     if (callback) {
-      callback(user);
+      try {
+        callback(user);
+      } catch (error) {
+        console.error('Auth change callback failed:', error);
+      }
     }
   });
 };
