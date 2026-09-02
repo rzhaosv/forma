@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Internal / non-marketing pages — keep out of the index
+Disallow: /stats.html
+Disallow: /copy-doc.html
+Disallow: /test-analytics.html
+Disallow: /test-mixpanel.html
+Disallow: /ads.html
+Disallow: /api/
+
+Sitemap: https://tryforma.app/sitemap.xml
