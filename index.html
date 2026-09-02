@@ -2,33 +2,77 @@
 <html lang="en">
 
 <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NK4HJPH2');</script>
+    <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriSnap - AI Calorie Tracker That Takes 5 Seconds</title>
-    <meta name="description"
-        content="Track calories in 5 seconds with AI. Snap a photo, speak, or scan a barcode. NutriSnap makes nutrition tracking effortless for busy people who hate tedious logging.">
+    <title>Forma: AI Calorie & Macro Tracker – Log Meals by Photo, Voice or Barcode</title>
+    <meta name="description" content="Forma is the AI nutrition app that tracks your calories and macros in seconds. Snap a photo, scan a barcode, or just talk — Forma logs it instantly. Free on iPhone and Android.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://tryforma.app/">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tryforma.app/">
+    <meta property="og:site_name" content="Forma">
+    <meta property="og:title" content="Forma: AI Calorie & Macro Tracker – Log Meals in Seconds">
+    <meta property="og:description" content="Stop manually logging every bite. Snap a photo, scan a barcode, or describe your meal — Forma's AI handles the rest. Join 2,300+ users tracking smarter.">
+    <meta property="og:image" content="https://tryforma.app/assets/logo.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Forma: AI Calorie & Macro Tracker – Log Meals in Seconds">
+    <meta name="twitter:description" content="Stop manually logging every bite. Snap a photo, scan a barcode, or describe your meal — Forma's AI handles the rest.">
+    <meta name="twitter:image" content="https://tryforma.app/assets/logo.png">
+
+    <!-- iOS Smart App Banner -->
+    <meta name="apple-itunes-app" content="app-id=6755325879">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Forma",
+      "description": "AI-powered calorie and macro tracker. Log meals by photo, voice, or barcode scan in seconds.",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "iOS, Android",
+      "url": "https://tryforma.app",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "bestRating": "5",
+        "ratingCount": "2342"
+      },
+      "featureList": [
+        "AI photo food recognition",
+        "Voice meal logging",
+        "Barcode scanner with 500K+ foods",
+        "Calorie and macro tracking",
+        "Apple Health integration",
+        "Weight progress tracking"
+      ]
+    }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="phone-videos.css">
-
-    <!-- Google Tag Manager -->
-    <script>(function (w, d, s, l, i) {
-            w[l] = w[l] || []; w[l].push({
-                'gtm.start':
-                    new Date().getTime(), event: 'gtm.js'
-            }); var f = d.getElementsByTagName(s)[0],
-                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
-                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
-        })(window, document, 'script', 'dataLayer', 'GTM-NK4HJH2');</script>
-    <!-- End Google Tag Manager -->
+    <link rel="stylesheet" href="/web/styles.css">
 
     <!-- Google Analytics (GA4) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-9L6PRKEYBS"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
         gtag('config', 'G-9L6PRKEYBS');
@@ -63,13 +107,12 @@
     <!-- TikTok Pixel Code End -->
 
     <!-- Unified Analytics -->
-    <script src="analytics-config.js"></script>
-    <script src="analytics.js"></script>
+    <script src="/web/analytics-config.js"></script>
+    <script src="/web/analytics.js"></script>
 </head>
 
-<body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NK4HJH2" height="0" width="0"
+<body style="opacity: 1; transition: opacity 0.5s;"><!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NK4HJPH2" height="0" width="0"
             style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
     <!-- Navigation -->
@@ -77,8 +120,8 @@
         <div class="container">
             <div class="nav-content">
                 <a href="/" class="logo">
-                    <img src="assets/logo.png" alt="NutriSnap Logo" class="logo-img">
-                    <span class="logo-text">NutriSnap</span>
+                    <img src="/web/assets/logo.png" alt="Forma Logo" class="logo-img">
+                    <span class="logo-text">Forma</span>
                 </a>
                 <button class="mobile-menu-btn" id="mobile-menu-btn">
                     <span></span>
@@ -88,7 +131,7 @@
                 <div class="nav-links" id="nav-links">
                     <a href="#features">Features</a>
                     <a href="#how-it-works">How It Works</a>
-                    <a href="#download" class="btn-primary">Download Free</a>
+                    <a href="#early-access" class="btn-primary">Get Early Access</a>
                 </div>
             </div>
         </div>
@@ -99,49 +142,20 @@
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
-                    <!-- App Store Badge -->
-                    <div class="hero-badge">
-                        <span class="badge-star">🚀</span> AI-Powered · Just Launched
-                    </div>
                     <h1 class="hero-title">
-                        Track Calories in <span class="gradient-text">5 Seconds.</span>
-                        Seriously.
+                        Track Your Meals in <span class="gradient-text">Seconds,</span>
+                        Not Minutes
                     </h1>
                     <p class="hero-subtitle">
-                        The AI calorie tracker for people who hate calorie tracking. Snap a photo, say what you ate, or
-                        scan a barcode. No tedious typing. No guessing portions.
+                        Too busy to manually log every meal? Just talk to Forma or snap a photo.
+                        Our AI does the rest—accurate calories and macros, zero tedious typing.
                     </p>
-
-                    <!-- Download Buttons in Hero -->
-                    <div class="hero-download-buttons">
-                        <a href="https://apps.apple.com/us/app/nutrisnap-ai-tracker/id6755325879"
-                            class="store-btn ios-btn" target="_blank" onclick="window.trackDownload('ios');">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="currentColor"
-                                class="store-icon">
-                                <path
-                                    d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 52.3-11.4 69.5-34.3z" />
-                            </svg>
-                            <div class="store-text">
-                                <span class="store-label">Download on the</span>
-                                <span class="store-name">App Store</span>
-                            </div>
+                    <div class="hero-cta">
+                        <a href="#early-access" class="btn-primary btn-large">
+                            Get Early Access
                         </a>
-                        <a href="https://play.google.com/store/apps/details?id=com.raymondzhao3000.forma"
-                            class="store-btn android-btn" target="_blank" onclick="window.trackDownload('android');">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor"
-                                class="store-icon">
-                                <path
-                                    d="M420.55,301.93a24,24,0,1,1,24-24,24,24,0,0,1-24,24m-265.1,0a24,24,0,1,1,24-24,24,24,0,0,1-24,24m273.7-144.48,47.94-83a10,10,0,1,0-17.27-10h0l-48.54,84.07a301.25,301.25,0,0,0-246.56,0L116.18,64.45a10,10,0,1,0-17.27,10h0l47.94,83C64.53,202.22,8.24,285.55,0,384H576c-8.24-98.45-64.54-181.78-146.85-226.55" />
-                            </svg>
-                            <div class="store-text">
-                                <span class="store-label">Get it on</span>
-                                <span class="store-name">Google Play</span>
-                            </div>
-                        </a>
+                        <p class="hero-social-proof">Join 2,342+ professionals tracking smarter</p>
                     </div>
-
-                    <p class="hero-social-proof">Join 2,500+ people tracking smarter</p>
-
                     <div class="trust-badges">
                         <div class="trust-badge">
                             <span class="badge-icon">
@@ -152,7 +166,7 @@
                                 </svg>
                             </span>
                             <div class="badge-text">
-                                <div class="badge-number">2,500+</div>
+                                <div class="badge-number">2,342+</div>
                                 <div class="badge-label">Active Users</div>
                             </div>
                         </div>
@@ -161,12 +175,12 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                                        d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
                                 </svg>
                             </span>
                             <div class="badge-text">
-                                <div class="badge-number">100K+</div>
-                                <div class="badge-label">Meals Logged</div>
+                                <div class="badge-number">4.8</div>
+                                <div class="badge-label">Avg Rating</div>
                             </div>
                         </div>
                         <div class="trust-badge">
@@ -174,12 +188,12 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        d="M21 7.5l-2.25-1.313M21 7.5v2.25m0-2.25l-2.25 1.313M3 7.5l2.25-1.313M3 7.5l2.25 1.313M3 7.5v2.25m9 3l2.25-1.313M12 12.75l-2.25-1.313M12 12.75V15m0 6.75l2.25-1.313M12 21.75V19.5m0 2.25l-2.25-1.313m0-16.875L12 2.25l2.25 1.313M21 14.25v2.25l-2.25 1.313m-13.5 0L3 16.5v-2.25" />
                                 </svg>
                             </span>
                             <div class="badge-text">
-                                <div class="badge-number">5 sec</div>
-                                <div class="badge-label">Avg Log Time</div>
+                                <div class="badge-number">500K+</div>
+                                <div class="badge-label">Meals Logged</div>
                             </div>
                         </div>
                     </div>
@@ -188,7 +202,7 @@
                     <!-- Photo/Scanner Phone -->
                     <div class="phone-mockup phone-primary">
                         <div class="phone-screen">
-                            <video src="assets/videos/hero-video.mov" autoplay muted loop playsinline
+                            <video src="/web/assets/videos/hero-video.mov" autoplay muted loop playsinline
                                 class="hero-video"></video>
                         </div>
                     </div>
@@ -196,7 +210,7 @@
                     <!-- Voice Phone -->
                     <div class="phone-mockup phone-secondary">
                         <div class="phone-screen">
-                            <video src="assets/videos/voice-video.mov" autoplay muted loop playsinline
+                            <video src="/web/assets/videos/voice-video.mov" autoplay muted loop playsinline
                                 class="hero-video"></video>
 
                             <!-- Voice Transcript Overlay -->
@@ -249,45 +263,12 @@
         </div>
     </section>
 
-    <!-- Pain Point Section (NEW) -->
-    <section class="pain-point-section">
-        <div class="container">
-            <div class="pain-point-content">
-                <h2 class="pain-point-title">Tired of Spending 10 Minutes Logging Every Meal?</h2>
-                <p class="pain-point-text">
-                    You've tried other calorie trackers. You know the drill: search for each ingredient, estimate
-                    portions, give up after a week because it's too tedious. <strong>NutriSnap is different.</strong>
-                </p>
-                <div class="comparison-grid">
-                    <div class="comparison-card old-way">
-                        <h3>❌ The Old Way</h3>
-                        <ul>
-                            <li>Search database for each food</li>
-                            <li>Guess portion sizes</li>
-                            <li>Type everything manually</li>
-                            <li>Give up after a week</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card new-way">
-                        <h3>✓ The NutriSnap Way</h3>
-                        <ul>
-                            <li>Snap a photo or speak</li>
-                            <li>AI estimates portions automatically</li>
-                            <li>Zero typing required</li>
-                            <li>Actually stick with it</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Features Section -->
     <section id="features" class="features">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Three Ways to Track in Seconds</h2>
-                <p class="section-subtitle">Choose whatever's fastest for you. NutriSnap handles the rest.</p>
+                <h2 class="section-title">Everything you need to reach your goals</h2>
+                <p class="section-subtitle">Powerful tools to make nutrition tracking effortless and accurate.</p>
             </div>
             <div class="features-grid">
                 <div class="feature-card">
@@ -300,24 +281,9 @@
                                 d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
                         </svg>
                     </div>
-                    <h3 class="feature-title">📸 Snap a Photo</h3>
-                    <p class="feature-description">Point your camera at any meal. Our AI identifies foods and estimates
-                        portions instantly—even complex restaurant dishes.</p>
-                    <p class="feature-benefit"><strong>Best for:</strong> Restaurant meals, homemade dishes</p>
-                </div>
-                <div class="feature-card featured">
-                    <div class="feature-badge">Most Popular</div>
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
-                        </svg>
-                    </div>
-                    <h3 class="feature-title">🎤 Just Speak</h3>
-                    <p class="feature-description">Say "I had a chicken salad and a Diet Coke" while walking to your
-                        next meeting. NutriSnap logs it instantly.</p>
-                    <p class="feature-benefit"><strong>Best for:</strong> Busy professionals, multitasking</p>
+                    <h3 class="feature-title">AI Photo Analysis</h3>
+                    <p class="feature-description">Snap a photo of your meal and let AI instantly identify foods and
+                        estimate calories.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
@@ -329,10 +295,21 @@
                                 d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75z" />
                         </svg>
                     </div>
-                    <h3 class="feature-title">📱 Scan Barcode</h3>
-                    <p class="feature-description">Scan packaged foods for instant, accurate nutrition info from our
-                        database of millions of products.</p>
-                    <p class="feature-benefit"><strong>Best for:</strong> Packaged foods, snacks</p>
+                    <h3 class="feature-title">Barcode Scanner</h3>
+                    <p class="feature-description">Scan millions of food items instantly for accurate nutritional
+                        information.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Voice Logging</h3>
+                    <p class="feature-description">Just say "I had a grilled chicken salad" and Forma will log it for
+                        you.</p>
                 </div>
             </div>
         </div>
@@ -342,8 +319,8 @@
     <section id="how-it-works" class="how-it-works">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">How It Works</h2>
-                <p class="section-subtitle">From meal to logged entry in under 5 seconds.</p>
+                <h2 class="section-title">Tracking made simple</h2>
+                <p class="section-subtitle">Three simple steps to better nutrition habits.</p>
             </div>
             <div class="steps">
                 <div class="step">
@@ -366,9 +343,9 @@
                 <div class="step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3 class="step-title">AI Analyzes</h3>
-                        <p class="step-description">Our AI identifies ingredients, estimates portions, and calculates
-                            accurate nutrition values.</p>
+                        <h3 class="step-title">Analyze</h3>
+                        <p class="step-description">Our advanced AI identifies ingredients and calculates accurate
+                            nutritional values.</p>
                     </div>
                     <div class="step-visual">
                         <span class="step-icon">
@@ -383,16 +360,16 @@
                 <div class="step">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3 class="step-title">Done</h3>
-                        <p class="step-description">Your meal is logged. Track your daily macros and progress toward
-                            your goals.</p>
+                        <h3 class="step-title">Track</h3>
+                        <p class="step-description">Get insights into your daily macros and progress toward your goals.
+                        </p>
                     </div>
                     <div class="step-visual">
                         <span class="step-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="w-6 h-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
                             </svg>
                         </span>
                     </div>
@@ -401,13 +378,12 @@
         </div>
     </section>
 
-
     <!-- Testimonials Section -->
     <section class="testimonials">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Why People Switch to NutriSnap</h2>
-                <p class="section-subtitle">Join thousands who finally made calorie tracking stick.</p>
+                <h2 class="section-title">Trusted by Fast Paced Professionals</h2>
+                <p class="section-subtitle">See why people like you are finally staying consistent.</p>
             </div>
             <div class="carousel-wrapper">
                 <div class="carousel-scroller">
@@ -421,7 +397,7 @@
                                 while walking to my next meeting. Six weeks in and still going. First time that's ever
                                 happened."</p>
                             <div class="testimonial-author">
-                                <img src="assets/testimonials/alex.png" alt="Alex M." class="author-avatar"
+                                <img src="/web/assets/testimonials/alex.png" alt="Alex M." class="author-avatar"
                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                                 <div class="author-avatar-fallback" style="display:none;">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -442,13 +418,12 @@
                             <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
                             <p class="testimonial-text">"As a consultant living out of hotels, I eat out 90% of the
                                 time. Every
-                                other app made me guess portions or skip logging entirely. With NutriSnap, I snap a
-                                photo or
+                                other app made me guess portions or skip logging entirely. With Forma, I snap a photo or
                                 just
                                 say what I ordered. Down 12 pounds in two months without changing my travel schedule."
                             </p>
                             <div class="testimonial-author">
-                                <img src="assets/testimonials/sarah_natural.png" alt="Sarah L." class="author-avatar">
+                                <img src="/web/assets/testimonials/sarah_natural.png" alt="Sarah L." class="author-avatar">
                                 <div>
                                     <div class="author-name">Sarah L. <span class="verified-badge">✓</span></div>
                                     <div class="author-title">Management Consultant</div>
@@ -466,7 +441,7 @@
                                 months in, I'm leaner and my lifts went up. Turns out consistency was the missing
                                 piece."</p>
                             <div class="testimonial-author">
-                                <img src="assets/testimonials/michael_natural.png" alt="Michael T." class="author-avatar">
+                                <img src="/web/assets/testimonials/michael_natural.png" alt="Michael T." class="author-avatar">
                                 <div>
                                     <div class="author-name">Michael T. <span class="verified-badge">✓</span></div>
                                     <div class="author-title">Software Engineer</div>
@@ -484,7 +459,8 @@
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Real Results from Real Users</h2>
-                <p class="section-subtitle">Join thousands of people achieving their nutrition goals effortlessly.</p>
+                <p class="section-subtitle">Join thousands of professionals achieving their nutrition goals
+                    effortlessly.</p>
             </div>
             <div class="results-grid">
                 <div class="result-card">
@@ -534,7 +510,7 @@
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Frequently Asked Questions</h2>
-                <p class="section-subtitle">Everything you need to know about NutriSnap.</p>
+                <p class="section-subtitle">Everything you need to know about Forma.</p>
             </div>
             <div class="faq-grid">
                 <div class="faq-item">
@@ -564,8 +540,7 @@
                         </span>
                     </div>
                     <div class="faq-answer">
-                        <p>Absolutely! NutriSnap excels at recognizing restaurant dishes, even complex plated meals.
-                            Simply
+                        <p>Absolutely! Forma excels at recognizing restaurant dishes, even complex plated meals. Simply
                             snap a photo or describe what you ordered, and our AI will estimate the calories and macros
                             based on typical restaurant portions.</p>
                     </div>
@@ -597,8 +572,8 @@
                         </span>
                     </div>
                     <div class="faq-answer">
-                        <p>NutriSnap is available on both iOS (iPhone/iPad) and Android devices. Download now from the
-                            App Store or Google Play and start tracking immediately.</p>
+                        <p>Forma is available on both iOS (iPhone/iPad) and Android devices. You can download the beta
+                            version right now and start tracking immediately. A web version is coming soon.</p>
                     </div>
                 </div>
             </div>
@@ -606,13 +581,13 @@
     </section>
 
 
-    <!-- Download Section -->
-    <section id="download" class="waitlist">
+    <!-- Download Access Section -->
+    <section id="early-access" class="waitlist">
         <div class="container">
             <div class="waitlist-content">
-                <span class="waitlist-badge">🎉 Live on App Store & Google Play</span>
-                <h2 class="waitlist-title">Start Tracking in 5 Seconds</h2>
-                <p class="waitlist-subtitle">Download NutriSnap free and join thousands who've finally made
+                <span class="waitlist-badge">⚡ Beta Available Now</span>
+                <h2 class="waitlist-title">Get Started in Seconds</h2>
+                <p class="waitlist-subtitle">Download Forma now and join busy professionals who've finally made
                     nutrition tracking effortless.</p>
 
                 <div class="download-grid">
@@ -625,10 +600,10 @@
                             </svg>
                         </span>
                         <h3>iOS (iPhone)</h3>
-                        <p class="download-note">✓ Free Download</p>
-                        <a href="https://apps.apple.com/us/app/nutrisnap-ai-tracker/id6755325879" class="download-btn"
-                            target="_blank" onclick="window.trackDownload('ios');">
-                            Download on App Store
+                        <p class="download-note">Free on the App Store</p>
+                        <a href="https://apps.apple.com/app/id6755325879" class="download-btn" target="_blank"
+                            onclick="window.trackDownload('ios');">
+                            Download Macra on the App Store
                         </a>
                     </div>
 
@@ -641,11 +616,26 @@
                             </svg>
                         </span>
                         <h3>Android</h3>
-                        <p class="download-note">Now Live on Google Play</p>
-                        <a href="https://play.google.com/store/apps/details?id=com.raymondzhao3000.forma"
-                            class="download-btn" target="_blank" onclick="window.trackDownload('android');">
-                            Get on Google Play
+                        <p class="download-note">Google Play Open Testing</p>
+                        <a href="https://play.google.com/apps/testing/com.raymondzhao3000.forma" class="download-btn"
+                            target="_blank" onclick="window.trackDownload('android');">
+                            Join on Google Play
                         </a>
+                    </div>
+                </div>
+
+                <div class="store-proof">
+                    <div class="store-proof-item">
+                        <span class="proof-pill">Live on iOS</span>
+                        <div class="proof-meta">TestFlight build with HealthKit + barcode scanning</div>
+                    </div>
+                    <div class="store-proof-item">
+                        <span class="proof-pill">Live on Android</span>
+                        <div class="proof-meta">Available now on Google Play Open Testing</div>
+                    </div>
+                    <div class="store-proof-item">
+                        <span class="proof-pill">4.8★ rated</span>
+                        <div class="proof-meta">Backed by 2,300+ busy professionals this week</div>
                     </div>
                 </div>
 
@@ -668,14 +658,16 @@
                     </a>
                 </div>
 
+                <p class="waitlist-count">
+                    <span>2,342</span> people downloaded this week
+                </p>
             </div>
         </div>
     </section>
 
     <!-- Floating CTA for Mobile -->
     <div id="floating-cta" class="floating-cta">
-        <a href="https://apps.apple.com/us/app/nutrisnap-ai-tracker/id6755325879" class="btn-primary" target="_blank"
-            onclick="window.trackDownload('ios');">Download Free</a>
+        <a href="#early-access" class="btn-primary">Get Early Access</a>
     </div>
 
     <!-- Footer -->
@@ -684,8 +676,8 @@
             <div class="footer-content">
                 <div class="footer-column branding-column">
                     <a href="/" class="logo" style="color: white;">
-                        <img src="assets/logo.png" alt="NutriSnap Logo" class="logo-img">
-                        <span class="logo-text">NutriSnap</span>
+                        <img src="/web/assets/logo.png" alt="Forma Logo" class="logo-img">
+                        <span class="logo-text">Forma</span>
                     </a>
                     <p class="footer-tagline">Making nutrition tracking effortless through the power of AI.</p>
                 </div>
@@ -699,8 +691,8 @@
                 <div class="footer-column">
                     <h4 class="footer-heading">Legal</h4>
                     <div class="footer-links">
-                        <a href="privacy.html">Privacy</a>
-                        <a href="terms.html">Terms</a>
+                        <a href="/web/privacy.html">Privacy</a>
+                        <a href="/web/terms.html">Terms</a>
                     </div>
                 </div>
                 <div class="footer-column">
@@ -711,7 +703,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                &copy; 2025 NutriSnap. All rights reserved.
+                &copy; 2026 Forma. All rights reserved.
             </div>
         </div>
     </footer>
@@ -720,7 +712,7 @@
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
-    <script type="module" src="script.js"></script>
+    <script type="module" src="/web/script.js"></script>
 </body>
 
 </html>
