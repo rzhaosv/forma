@@ -73,6 +73,17 @@ export const useMealStore = create<MealStore>((set, get) => ({
         console.log('New badges earned:', newBadges);
         // The UI can listen to achievement store changes to show confetti
       }
+
+      // Ask for a rating at genuine positive moments: a badge just earned, or
+      // once the user has logged enough meals to have a real opinion. The
+      // service throttles hard and never requires/rewards a review.
+      const { maybeRequestReview } = await import('../services/reviewPrompt');
+      const mealCount = get().meals.length;
+      if (newBadges.length > 0) {
+        maybeRequestReview('badge');
+      } else if (mealCount === 4) {
+        maybeRequestReview('milestone');
+      }
     } catch (error) {
       console.error('Error checking achievements:', error);
     }
