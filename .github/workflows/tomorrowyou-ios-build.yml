@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: wisp git ref to build
+        description: tomorrowyou git ref to build
         default: main
         required: true
       submit:
