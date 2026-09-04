@@ -180,7 +180,7 @@ export const exportAllData = async (format: ExportFormat): Promise<string> => {
   
   const allData = {
     exportDate: new Date().toISOString(),
-    appName: 'Macra',
+    appName: 'Nibble',
     summary: {
       totalMeals: meals.length,
       totalFoodItems: meals.reduce((sum, m) => sum + m.foods.length, 0),
@@ -332,20 +332,20 @@ export const generateExportFile = async (options: ExportOptions): Promise<boolea
     switch (options.dataType) {
       case 'meals':
         content = await exportMeals(options.format);
-        filename = `macra-meals-${timestamp}.${options.format}`;
+        filename = `nibble-meals-${timestamp}.${options.format}`;
         break;
       case 'progress':
         content = await exportProgress(options.format);
-        filename = `macra-progress-${timestamp}.${options.format}`;
+        filename = `nibble-progress-${timestamp}.${options.format}`;
         break;
       case 'recipes':
         content = await exportRecipes(options.format);
-        filename = `macra-recipes-${timestamp}.${options.format}`;
+        filename = `nibble-recipes-${timestamp}.${options.format}`;
         break;
       case 'all':
       default:
         content = await exportAllData(options.format);
-        filename = `macra-all-data-${timestamp}.${options.format}`;
+        filename = `nibble-all-data-${timestamp}.${options.format}`;
         break;
     }
     
@@ -365,7 +365,7 @@ export const generateExportFile = async (options: ExportOptions): Promise<boolea
         
         await Sharing.shareAsync(file.uri, {
           mimeType: options.format === 'json' ? 'application/json' : 'text/csv',
-          dialogTitle: 'Export Your Macra Data',
+          dialogTitle: 'Export Your Nibble Data',
         });
         
         return true;
@@ -407,7 +407,7 @@ export const generateExportFile = async (options: ExportOptions): Promise<boolea
     // Share the file
     await Sharing.shareAsync(fileUri, {
       mimeType: options.format === 'json' ? 'application/json' : 'text/csv',
-      dialogTitle: 'Export Your Macra Data',
+      dialogTitle: 'Export Your Nibble Data',
       UTI: options.format === 'json' ? 'public.json' : 'public.comma-separated-values-text',
     });
     

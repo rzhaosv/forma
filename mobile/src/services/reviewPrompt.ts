@@ -1,7 +1,7 @@
 import * as StoreReview from 'expo-store-review';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Native "Enjoying Macra?" rating prompt, fired only at genuine positive
+// Native "Enjoying Nibble?" rating prompt, fired only at genuine positive
 // moments (a badge earned, or after enough real usage to have an opinion).
 // This is the compliant, highest-ROI way to grow ratings: Apple itself
 // throttles requestReview to ~3x/year per user, and we add our own guard so we

@@ -10,6 +10,7 @@ import {
   Animated,
   Dimensions,
   ScrollView,
+  Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { signInWithGoogle, signInWithApple } from '../services/authService';
@@ -210,8 +211,8 @@ export default function WelcomeScreen() {
 
             {/* Logo */}
             <View style={styles.logoRow}>
-              <MMark size={36} />
-              <Text style={styles.logoText}>Macra</Text>
+              <Image source={require('../../assets/icon.png')} style={{ width: 36, height: 36, borderRadius: 9 }} />
+              <Text style={styles.logoText}>Nibble</Text>
             </View>
 
             {/* Headline */}

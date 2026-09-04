@@ -127,7 +127,7 @@ export default function App() {
     const buildNumber = Constants.expoConfig?.ios?.buildNumber || Constants.expoConfig?.android?.versionCode || 'dev';
 
     console.log('\n' + '='.repeat(50));
-    console.log('MACRA APP STARTED');
+    console.log('NIBBLE APP STARTED');
     console.log('='.repeat(50));
     console.log(`Version:     ${appVersion}`);
     console.log(`Build:       ${buildNumber}`);

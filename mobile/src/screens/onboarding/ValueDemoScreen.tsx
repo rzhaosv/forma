@@ -359,7 +359,7 @@ export default function ValueDemoScreen() {
                   },
                 ]}
               />
-              <Text style={dynamicStyles.scanningText}>Analyzing with Macra AI...</Text>
+              <Text style={dynamicStyles.scanningText}>Analyzing with Nibble AI...</Text>
             </View>
           )}
         </View>

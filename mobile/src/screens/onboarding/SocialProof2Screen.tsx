@@ -97,7 +97,7 @@ export default function SocialProof2Screen() {
               <Text style={styles.scienceTitle}>Built on peer-reviewed metabolic research</Text>
             </View>
             <Text style={styles.scienceText}>
-              Macra's calorie and macro calculations use the{' '}
+              Nibble's calorie and macro calculations use the{' '}
               <Text style={styles.scienceBold}>Mifflin-St Jeor equation</Text> — the gold standard
               used by registered dietitians worldwide.
             </Text>
