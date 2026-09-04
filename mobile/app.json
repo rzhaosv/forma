@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "Macra",
+    "name": "Nibble",
     "slug": "forma",
     "scheme": [
       "com.raymondzhao3000.forma",
       "forma",
       "com.googleusercontent.apps.311242226872-4jrv4kndh6j0s974u1h0uqbj4bvmp3af"
     ],
-    "version": "1.5",
+    "version": "1.6",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -15,7 +15,7 @@
     "splash": {
       "image": "./assets/icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#07070B"
+      "backgroundColor": "#288752"
     },
     "ios": {
       "supportsTablet": true,
@@ -39,7 +39,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#07070B"
+        "backgroundColor": "#288752"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
