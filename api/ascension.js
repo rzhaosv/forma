@@ -218,12 +218,15 @@ async function handleScan(body, res) {
   const raw = await callGemini({
     systemInstruction: { parts: [{ text: SCAN_SYSTEM_PROMPT }] },
     contents: [{ role: 'user', parts }],
-    generationConfig: { responseMimeType: 'application/json', temperature: 0.15, maxOutputTokens: 2200 },
+    generationConfig: { responseMimeType: 'application/json', temperature: 0.15, maxOutputTokens: 4500 },
   });
   if (raw == null) return res.status(502).json({ error: 'upstream' });
 
   const parsed = parseJsonLoose(raw);
-  if (!parsed) return res.status(502).json({ error: 'upstream' });
+  if (!parsed) {
+    console.error('scan parse failed; raw head/tail:', String(raw).slice(0, 300), '...', String(raw).slice(-300));
+    return res.status(502).json({ error: 'upstream' });
+  }
 
   return res.status(200).json(normalizeScan(parsed, base));
 }
