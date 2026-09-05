@@ -260,3 +260,5 @@ input.cmt-input{max-width:260px}
   .cmt{--c-panel:#162420;--c-ink:#e9e6df;--c-soft:#a4ada6;--c-line:#26362f;--c-accent:#6cc9a0;--c-accent-ink:#08150f;--c-accent-soft:rgba(108,201,160,.13);--c-warn:#e2b268;--c-warn-soft:rgba(226,178,104,.14);--c-bg:#0f1a16}
   .cmt-form{box-shadow:0 1px 2px rgba(0,0,0,.3),0 12px 30px -14px rgba(0,0,0,.5)}
 }
+
+.sub{font-family:"Fraunces","Iowan Old Style",Palatino,Georgia,serif;font-style:italic;font-size:clamp(18px,2.2vw,22px);color:var(--soft);max-width:52ch;margin:-8px 0 18px;line-height:1.45;text-wrap:pretty}
