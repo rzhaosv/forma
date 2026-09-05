@@ -321,10 +321,34 @@ input.cmt-input{max-width:260px}
 .week span{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--accent)}
 .week b{font-family:var(--display);font-weight:500;font-variation-settings:"opsz" 48,"SOFT" 40;font-size:21px;letter-spacing:-.015em}
 .week p{margin:0;font-size:14.5px;color:var(--soft)}
-/* whisper: the quiet builders section on the umbrella */
+/* whisper: the quiet builders card on the umbrella. Hairline border, thin warm rule on the left. */
 .whisper{padding:28px 0}
-.whisper .eyebrow{margin-bottom:12px}
-.whisper-line{font-family:var(--display);font-weight:500;font-variation-settings:"opsz" 72,"SOFT" 40;font-size:clamp(21px,2.8vw,27px);line-height:1.2;letter-spacing:-.018em;color:var(--ink);margin:0 0 8px;max-width:34ch;text-wrap:balance}
-.whisper>.wrap>p:not([class]){color:var(--soft);margin:0 0 6px;font-size:16px}
-.whisper .log-follow{margin:0 0 12px}
-.whisper .honest{font-size:13px}
+.whisper-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:26px 28px 22px;box-shadow:var(--shadow),inset 0 1px 0 var(--hi),inset 3px 0 0 var(--warn);position:relative}
+.whisper .eyebrow{margin-bottom:14px}
+.whisper-line{font-family:var(--display);font-weight:500;font-variation-settings:"opsz" 72,"SOFT" 40;font-size:clamp(24px,3.4vw,32px);line-height:1.15;letter-spacing:-.02em;color:var(--ink);margin:0 0 10px;max-width:30ch;text-wrap:balance}
+.whisper-sub{color:var(--soft);margin:0 0 4px;font-size:16px;max-width:52ch}
+.whisper .status-row{margin:12px 0 14px}
+.whisper .btn.ghost{padding:10px 16px;font-size:15px}
+.whisper .honest{font-size:13px;max-width:none}
+@media (max-width:480px){.whisper-card{padding:20px 18px 18px}}
+
+/* ---- prestige pass: masthead, journal numbers, ledger, house rules, batch pill ---- */
+.masthead{display:block;font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--soft);margin:-6px 0 16px;font-variant-numeric:tabular-nums}
+.fz-js .hero>.wrap>.masthead{animation-delay:.04s}
+.no{font-family:var(--display);font-weight:600;font-variation-settings:"opsz" 14,"SOFT" 40;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1;margin-bottom:4px}
+a.card.path .no{opacity:.85}
+.est{color:var(--fz-ink)}
+.eyebrow.batch{background:var(--warn-soft);color:var(--warn)}
+.ledger-head{display:grid;grid-template-columns:72px 1fr auto;gap:16px;padding:0 0 8px}
+.ledger-head span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--soft);line-height:1.4}
+.ledger-head span:last-child{text-align:right}
+.log.ledger{border-top:1px solid var(--ink)}
+.log.ledger time{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:13px;letter-spacing:.02em;color:var(--soft);font-variant-numeric:tabular-nums}
+.log.ledger li{padding:12px 0}
+.log.ledger .pill{justify-self:end}
+@media (max-width:480px){.ledger-head{grid-template-columns:64px 1fr;gap:6px 12px}.ledger-head span:last-child{display:none}.log.ledger .pill{justify-self:start;grid-column:2}}
+.rules{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:-4px 0 6px;padding:0;font-size:14px;color:var(--soft)}
+.rules-h{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+.rules ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:0}
+.rules li{padding:0 12px;border-left:1px solid var(--line);color:var(--ink)}
+.rules li:first-child{padding-left:0;border-left:0}
