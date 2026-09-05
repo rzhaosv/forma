@@ -197,7 +197,7 @@
       f.addEventListener('submit', function (ev) {
         ev.preventDefault();
         var body = text.value.trim();
-        msg.textContent = '';
+        msg.textContent = ''; msg.className = 'cmt-msg';
         if (!body) { msg.textContent = 'Write something first.'; text.focus(); return; }
         if (/https?:|www\.|\bhttp\b/i.test(body)) { msg.textContent = errorText('links_not_allowed'); return; }
         var nm = name.value.trim().slice(0, 32);
@@ -218,7 +218,12 @@
           }
           text.value = ''; counter.textContent = '';
           btn.disabled = false; text.disabled = false;
-          if (parentId) f.remove();
+          if (parentId) { f.remove(); } else {
+            btn.classList.remove('is-posted'); void btn.offsetWidth; btn.classList.add('is-posted');
+            msg.className = 'cmt-msg is-ok'; msg.textContent = c.hidden ? 'Held for a quick look.' : 'Posted.';
+            setTimeout(function () { btn.classList.remove('is-posted'); }, 1200);
+            setTimeout(function () { if (msg.classList.contains('is-ok')) { msg.textContent = ''; msg.className = 'cmt-msg'; } }, 3200);
+          }
         }, function (e) {
           node.remove();
           delete byId[temp.id];
