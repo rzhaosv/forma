@@ -123,6 +123,7 @@ p{margin:0 0 1em}
 .voice{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
 .voice.v1{color:var(--warn)}
 .voice.v2{color:var(--accent)}
+.voice.v3{color:var(--soft)}
 
 footer.fz-footer{max-width:none;margin:72px 0 0;padding:0;border-top:1px solid var(--fz-line);font-size:14px}
 .tile-stride{background:linear-gradient(135deg,#7fb7a0,#2f7d63 70%,#1d5a47)}
