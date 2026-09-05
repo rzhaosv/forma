@@ -1,0 +1,41 @@
+/* Forma shared chrome (nav + footer). Self-contained: safe to load inside legacy pages with their own CSS. */
+.fz-nav,.fz-footer{--fz-panel:#ffffff;--fz-ink:#1b1f24;--fz-soft:#5b6169;--fz-line:#e6e1d8;--fz-accent:#0e5e4a;--fz-accent-soft:#e3efe9;box-sizing:border-box;text-align:left}
+.fz-nav *,.fz-footer *{box-sizing:border-box}
+.fz-links>li{margin:0}
+.fz-footer ul,.fz-footer li{padding:0;max-width:none}
+.fz-footer p{max-width:none;margin:0 0 8px}
+/* ---- shared nav ---- */
+.fz-nav{background:var(--fz-panel);border-bottom:1px solid var(--fz-line);position:relative;z-index:50;font:15px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--fz-ink)}
+.fz-nav .fz-in{max-width:1040px;margin:0 auto;padding:0 22px;display:flex;align-items:center;justify-content:space-between;min-height:58px;gap:16px}
+.fz-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--fz-ink);font-weight:700;letter-spacing:-.01em}
+.fz-brand i{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#1f8a5f,#0e5e4a);display:inline-block}
+.fz-links{display:flex;align-items:center;gap:6px;margin:0;padding:0;list-style:none}
+.fz-links>li{position:relative}
+.fz-links a{display:block;padding:8px 12px;border-radius:10px;text-decoration:none;color:var(--fz-ink);font-weight:500}
+.fz-links a:hover,.fz-links a:focus-visible{background:var(--fz-accent-soft);color:var(--fz-accent)}
+.fz-links .fz-dd{position:absolute;top:100%;left:0;min-width:230px;background:var(--fz-panel);border:1px solid var(--fz-line);border-radius:12px;padding:6px;margin:4px 0 0;list-style:none;box-shadow:0 12px 30px rgba(0,0,0,.08);display:none}
+.fz-links li:hover>.fz-dd,.fz-links li:focus-within>.fz-dd{display:block}
+.fz-dd a{padding:8px 10px;font-weight:500;white-space:nowrap}
+.fz-dd small{display:block;color:var(--fz-soft);font-weight:400;font-size:12px}
+@media (max-width:560px){
+  .fz-nav .fz-in{flex-wrap:wrap;padding-top:8px;padding-bottom:8px}
+  .fz-links{width:100%;justify-content:flex-start;flex-wrap:wrap}
+  .fz-links .fz-dd{position:static;display:none;box-shadow:none}
+  .fz-links li:focus-within>.fz-dd{display:block}
+}
+
+/* ---- shared footer ---- */
+.fz-footer{margin-top:72px;border-top:1px solid var(--fz-line);background:var(--fz-panel);font:14px/1.6 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--fz-soft)}
+.fz-footer .fz-in{max-width:1040px;margin:0 auto;padding:36px 22px 40px;display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:28px}
+.fz-footer h4{margin:0 0 10px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--fz-ink)}
+.fz-footer ul{list-style:none;margin:0;padding:0}
+.fz-footer li{margin:4px 0}
+.fz-footer a{color:var(--fz-soft);text-decoration:none}
+.fz-footer a:hover{color:var(--fz-accent);text-decoration:underline}
+.fz-footer .fz-tag{color:var(--fz-ink);font-weight:600;margin:0 0 6px}
+.fz-footer .fz-legal{grid-column:1/-1;border-top:1px solid var(--fz-line);padding-top:16px;font-size:13px}
+.fz-footer .fz-quiet{font-style:italic;color:var(--fz-soft);margin-top:6px}
+@media (max-width:700px){.fz-footer .fz-in{grid-template-columns:1fr 1fr}.fz-footer .fz-in>div:first-child{grid-column:1/-1}}
+
+
+footer.fz-footer{max-width:none;margin:72px 0 0;padding:0;border-top:1px solid var(--fz-line);font-size:14px}

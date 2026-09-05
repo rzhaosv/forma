@@ -172,7 +172,7 @@ const handleEmailSubmit = async (e) => {
         console.log("Document written with ID: ", docRef.id);
 
         // Success! Redirect immediately
-        window.location.href = 'success.html';
+        window.location.href = '/success.html';
 
         // Analytics
         if (window.analytics) {
