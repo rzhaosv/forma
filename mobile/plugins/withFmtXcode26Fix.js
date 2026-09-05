@@ -17,14 +17,18 @@ const SNIPPET = `
         bc.build_settings['OTHER_CPLUSPLUSFLAGS'] = "#{flags} -DFMT_CONSTEVAL=" unless flags.include?('FMT_CONSTEVAL')
       end
     end
-    ['fmt/include/fmt/base.h', 'fmt/include/fmt/core.h', 'fmt/include/fmt/format.h'].each do |rel|
-      f = File.join(installer.sandbox.root.to_s, rel)
-      next unless File.exist?(f)
+    fmt_root = File.join(installer.sandbox.root.to_s, 'fmt')
+    hdrs = Dir.glob(File.join(fmt_root, '**', '*.h'))
+    puts "withFmtXcode26Fix: #{hdrs.length} fmt headers under #{fmt_root}"
+    hdrs.each do |f|
       src = File.read(f)
-      next if src.include?('withFmtXcode26Fix')
-      patched = "// withFmtXcode26Fix: force non-consteval format strings under Xcode 26 clang\n#ifndef FMT_CONSTEVAL\n#define FMT_CONSTEVAL\n#endif\n" + src
-      File.write(f, patched)
-      puts "withFmtXcode26Fix: patched #{rel}"
+      next unless src.include?('FMT_CONSTEVAL')
+      patched = src.gsub(/define\s+FMT_CONSTEVAL\s+consteval/, 'define FMT_CONSTEVAL')
+      patched = patched.gsub(/^\s*#\s*define\s+FMT_HAS_CONSTEVAL\s*$/, '')
+      if patched != src
+        File.write(f, patched)
+        puts "withFmtXcode26Fix: neutralised consteval in #{f.sub(fmt_root + '/', '')}"
+      end
     end
 `;
 
