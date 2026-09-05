@@ -62,7 +62,7 @@
   </url>
   <url>
     <loc>https://tryforma.app/paths/autistic-adults/</loc>
-    <lastmod>2026-09-04</lastmod>
+    <lastmod>2026-09-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -278,6 +278,24 @@
   </url>
   <url>
     <loc>https://tryforma.app/evensong/terms.html</loc>
+    <lastmod>2026-09-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://tryforma.app/plainly/</loc>
+    <lastmod>2026-09-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://tryforma.app/plainly/privacy.html</loc>
+    <lastmod>2026-09-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://tryforma.app/plainly/terms.html</loc>
     <lastmod>2026-09-05</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
