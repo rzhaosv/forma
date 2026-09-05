@@ -1,3 +1,4 @@
+import { trackCustomEvent } from '../utils/analytics';
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -52,6 +53,7 @@ export default function PaywallScreen() {
   const trialEndDate = getTrialEndDate();
 
   useEffect(() => {
+    trackCustomEvent('paywall_view', { has_offering: offering ? 1 : 0 }).catch(() => {});
     if (!offering) {
       setOfferingLoading(true);
       loadOffering().finally(() => setOfferingLoading(false));
@@ -71,6 +73,7 @@ export default function PaywallScreen() {
   const lifetimePrice = lifetimePkg?.product.priceString ?? '$149';
 
   const handleStartTrial = async () => {
+    trackCustomEvent('paywall_cta_tap', { plan: selectedPlan, loading: offeringLoading ? 1 : 0 }).catch(() => {});
     // If still loading, wait — don't show error yet
     if (offeringLoading) return;
 
@@ -93,6 +96,7 @@ export default function PaywallScreen() {
           : useSubscriptionStore.getState().offering?.availablePackages.find(p => p.packageType === PACKAGE_TYPE.LIFETIME);
 
       if (!retryPkg) {
+        trackCustomEvent('paywall_plans_unavailable', { plan: selectedPlan }).catch(() => {});
         Alert.alert(
           'Plans Unavailable',
           'Could not connect to the subscription service. Please check your internet connection and try again.',
@@ -113,6 +117,7 @@ export default function PaywallScreen() {
   };
 
   const handleRestore = async () => {
+    trackCustomEvent('paywall_restore_tap').catch(() => {});
     await restore();
   };
 

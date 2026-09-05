@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Platform, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { trackCustomEvent } from '../utils/analytics';
 import Purchases, {
   CustomerInfo,
   PurchasesOffering,
@@ -116,6 +117,7 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
       if (retried.current) {
         set({ offering: retried.current });
       } else {
+        trackCustomEvent('paywall_offering_missing', { stage: 'retry' }).catch(() => {});
         console.warn(
           '[RC] Still no current offering after retry.\n' +
           'Fix in RevenueCat dashboard:\n' +
@@ -124,8 +126,9 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
           '  3. Set that offering as "Current"'
         );
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error('[RC] getOfferings retry failed:', e);
+      trackCustomEvent('paywall_offering_error', { message: String(e?.message ?? e).slice(0, 90) }).catch(() => {});
     }
   },
 
@@ -154,16 +157,22 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
       return false;
     }
     set({ isPurchasing: true });
+    trackCustomEvent('purchase_start', { product: pkg.product.identifier }).catch(() => {});
     try {
       const { customerInfo } = await Purchases.purchasePackage(pkg);
       const isPremium = !!customerInfo.entitlements.active['premium'];
+      trackCustomEvent('purchase_success', { product: pkg.product.identifier, price: pkg.product.price }).catch(() => {});
       set({ customerInfo, isPremium: isPremium || true, isPurchasing: false });
       // Purchase succeeded — treat as premium even if entitlement isn't immediately active
       cachePremium(true);
       return true;
     } catch (e: any) {
       set({ isPurchasing: false });
-      if (e.userCancelled) return false;
+      if (e.userCancelled) {
+        trackCustomEvent('purchase_cancelled', { product: pkg.product.identifier }).catch(() => {});
+        return false;
+      }
+      trackCustomEvent('purchase_error', { product: pkg.product.identifier, code: String(e?.code ?? ''), message: String(e?.message ?? '').slice(0, 90) }).catch(() => {});
       Alert.alert('Purchase failed', e.message ?? 'Something went wrong. Please try again.');
       return false;
     }
