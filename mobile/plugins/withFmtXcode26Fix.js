@@ -23,8 +23,8 @@ const SNIPPET = `
     hdrs.each do |f|
       src = File.read(f)
       next unless src.include?('FMT_CONSTEVAL')
-      patched = src.gsub(/define\s+FMT_CONSTEVAL\s+consteval/, 'define FMT_CONSTEVAL')
-      patched = patched.gsub(/^\s*#\s*define\s+FMT_HAS_CONSTEVAL\s*$/, '')
+      patched = src.gsub(/define\\s+FMT_CONSTEVAL\\s+consteval/, 'define FMT_CONSTEVAL')
+      patched = patched.gsub(/^\\s*#\\s*define\\s+FMT_HAS_CONSTEVAL\\s*$/, '')
       if patched != src
         File.write(f, patched)
         puts "withFmtXcode26Fix: neutralised consteval in #{f.sub(fmt_root + '/', '')}"
