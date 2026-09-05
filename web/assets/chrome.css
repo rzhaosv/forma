@@ -83,3 +83,5 @@ input.cmt-input{max-width:260px}
 .cmt-replies .cmt-item+.cmt-item{border-top:1px dashed var(--c-line)}
 .cmt-more{margin-top:14px}
 @media (max-width:480px){input.cmt-input{max-width:none}}
+
+.fz-blessing{font-style:italic;color:var(--soft,#5b6b64);max-width:44ch;margin-top:10px;line-height:1.55}
