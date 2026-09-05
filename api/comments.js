@@ -1,10 +1,12 @@
 // Anonymous comments for the Forma studio site (paths, Lounge wall, home).
 //
-// Modeled on api/identify.js: Firebase Admin is initialised from
-// FIREBASE_SERVICE_ACCOUNT, requests are rate-limited by client IP through
-// Firestore (failing open if the counter is unavailable), CORS is open and
-// every response is JSON. No accounts: a comment is a name (optional), a
-// text and a page key. Raw IPs are never stored; only a salted sha256.
+// Storage is Supabase, reached through PostgREST RPC endpoints with plain
+// fetch (no supabase-js). Direct table access is blocked; every operation is a
+// SECURITY DEFINER function the anon key may execute. Requests are rate-limited
+// by a salted hash of the client IP (failing open if the counter is
+// unavailable), CORS is open and every response is JSON. No accounts: a
+// comment is a name (optional), a text and a page key. Raw IPs are never sent
+// to storage; only sha256(ip|salt).
 //
 // GET  /api/comments?page=/paths/founders/&limit=50&cursor=<ms>
 //      -> { comments: [{id, page, name, text, parentId, likes, createdAt}], next }
@@ -14,35 +16,32 @@
 // POST /api/comments  { action: "like", id }
 //      -> { id, likes, liked }         (200)
 //
-// Env (Vercel): FIREBASE_SERVICE_ACCOUNT   (required for persistence)
-//               COMMENTS_IP_SALT           (optional; salts the IP hash)
+// Env (Vercel): SUPABASE_URL, SUPABASE_ANON_KEY   (required; without them GET
+//               returns an empty list and POST answers 503 storage_unavailable)
+//               COMMENTS_IP_SALT                  (optional; salts the IP hash)
 //
-// Firestore: siteComments      { page, name, text, parentId, likes, likedBy[], createdAt, ipHash, hidden }
-//            siteCommentRates  { count, window, kind }   (10-minute buckets per ip hash)
-//
-// The list query (page == X, hidden == false, order by createdAt desc) needs a
-// composite index. Until it exists the handler falls back to an unordered
-// fetch sorted in memory, and logs the index-creation link Firestore returns.
+// RPCs: comments_list(p_page, p_limit, p_cursor)          -> rows, newest first, hidden filtered
+//       comments_rate_hit(p_key, p_limit, p_window_seconds) -> boolean (true = allowed)
+//       comments_post(p_page, p_name, p_text, p_parent, p_ip_hash, p_hidden) -> row (raises parent_not_found)
+//       comments_like(p_id, p_ip_hash)                      -> {id, likes, liked} (raises not_found)
 
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import crypto from 'crypto';
 
-const COLLECTION = 'siteComments';
-const RATE_COLLECTION = 'siteCommentRates';
-const RATE_WINDOW_MS = 10 * 60 * 1000;
+const SUPABASE_URL = (process.env.SUPABASE_URL || '').replace(/\/+$/, '');
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
+const IP_SALT = process.env.COMMENTS_IP_SALT || 'forma-site-comments-v1';
+
+const RATE_WINDOW_SECONDS = 600;
 const POSTS_PER_WINDOW = 5;
 const LIKES_PER_WINDOW = 60;
 const DEFAULT_LIMIT = 50;
 const MAX_LIMIT = 100;
-const FALLBACK_SCAN = 400; // docs scanned per page when the composite index is missing
 const NAME_MAX = 32;
 const TEXT_MAX = 800;
 const PAGE_MAX = 120;
-const LIKED_BY_MAX = 200;
 const PAGE_RE = /^\/[a-z0-9\-/]*$/;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const LINK_RE = /https?:|\bwww\.|\bhttp\b|\b[a-z0-9-]+\.(?:com|net|org|io|app|co|me|ly|xyz|info|biz|gg|tv|ai|dev|link|site|online|shop)\b/i;
-const IP_SALT = process.env.COMMENTS_IP_SALT || 'forma-site-comments-v1';
 
 // Comments matching any of these are stored but hidden (not rejected), so a
 // slip in an otherwise honest note does not bounce with an error.
@@ -51,18 +50,6 @@ const BAD_WORDS = [
   /\bnigg(?:a|er)s?\b/i, /\bfag(?:got)?s?\b/i, /\bretard(?:ed|s)?\b/i, /\btranny\b/i, /\bkike\b/i, /\bspic\b/i, /\bchink\b/i,
   /\bkill (?:yourself|urself)\b/i, /\bkys\b/i, /\bslut\b/i, /\bwhore\b/i, /\brape\b/i, /\bporn\b/i,
 ];
-
-if (getApps().length === 0) {
-  try {
-    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-      initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
-    } else {
-      initializeApp({ projectId: 'forma-3803d' });
-    }
-  } catch (e) {
-    console.error('firebase init failed:', e);
-  }
-}
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -99,28 +86,20 @@ async function handleList(req, res) {
   const cursor = q.cursor != null && q.cursor !== '' ? Number(q.cursor) : null;
   if (cursor != null && !Number.isFinite(cursor)) return res.status(400).json({ error: 'bad_cursor' });
 
-  const db = getFirestore();
-  let docs;
-  try {
-    let query = db.collection(COLLECTION).where('page', '==', page).where('hidden', '==', false).orderBy('createdAt', 'desc');
-    if (cursor != null) query = query.startAfter(new Date(cursor));
-    const snap = await query.limit(limit + 1).get();
-    docs = snap.docs;
-  } catch (e) {
-    // Most likely the composite index is missing (error carries the console link).
-    console.error('comments list query failed, falling back to in-memory sort:', e && e.message ? e.message : e);
-    const snap = await db.collection(COLLECTION).where('page', '==', page).limit(FALLBACK_SCAN).get();
-    docs = snap.docs
-      .filter((d) => d.data().hidden !== true)
-      .filter((d) => cursor == null || toMillis(d.data().createdAt) < cursor)
-      .sort((a, b) => toMillis(b.data().createdAt) - toMillis(a.data().createdAt))
-      .slice(0, limit + 1);
+  if (!storageConfigured()) {
+    console.error('comments: SUPABASE_URL / SUPABASE_ANON_KEY missing; serving empty list');
+    return res.status(200).json({ comments: [], next: null });
   }
 
-  const hasMore = docs.length > limit;
-  const rows = docs.slice(0, limit).map(publicComment);
-  const next = hasMore && rows.length ? toMillis(docs[rows.length - 1].data().createdAt) : null;
-  return res.status(200).json({ comments: rows, next });
+  const rows = asRows(await rpc('comments_list', {
+    p_page: page,
+    p_limit: limit + 1,
+    p_cursor: cursor != null ? new Date(cursor).toISOString() : null,
+  }));
+  const hasMore = rows.length > limit;
+  const out = rows.slice(0, limit).map(publicComment);
+  const next = hasMore && out.length ? Date.parse(out[out.length - 1].createdAt) : null;
+  return res.status(200).json({ comments: out, next });
 }
 
 // ---------------------------------------------------------------------------
@@ -141,40 +120,33 @@ async function handlePost(body, ipHash, res) {
   if (name && LINK_RE.test(name)) return res.status(400).json({ error: 'links_not_allowed' });
   if (!name) name = 'anonymous';
 
-  if (body.parentId != null && body.parentId !== '' && (typeof body.parentId !== 'string' || body.parentId.length > 64)) {
-    return res.status(400).json({ error: 'bad_parent' });
+  let parentId = null;
+  if (body.parentId != null && body.parentId !== '') {
+    if (typeof body.parentId !== 'string' || !UUID_RE.test(body.parentId.trim())) return res.status(400).json({ error: 'bad_parent' });
+    parentId = body.parentId.trim().toLowerCase();
   }
 
+  if (!storageConfigured()) return res.status(503).json({ error: 'storage_unavailable' });
   if (!(await underCap(ipHash, 'post', POSTS_PER_WINDOW))) return res.status(429).json({ error: 'rate_limited' });
 
-  const db = getFirestore();
-
-  // Replies nest one level: a reply to a reply attaches to the root comment.
-  let parentId = null;
-  if (typeof body.parentId === 'string' && body.parentId) {
-    const parentSnap = await db.collection(COLLECTION).doc(body.parentId).get();
-    if (!parentSnap.exists) return res.status(404).json({ error: 'parent_not_found' });
-    const parent = parentSnap.data();
-    if (parent.page !== page || parent.hidden === true) return res.status(400).json({ error: 'bad_parent' });
-    parentId = parent.parentId || parentSnap.id;
-  }
-
   const hidden = BAD_WORDS.some((re) => re.test(text) || re.test(name));
-  const ref = db.collection(COLLECTION).doc();
-  await ref.set({
-    page,
-    name,
-    text,
-    parentId,
-    likes: 0,
-    likedBy: [],
-    createdAt: FieldValue.serverTimestamp(),
-    ipHash,
-    hidden,
-  });
-  const saved = await ref.get();
-  const out = publicComment(saved);
-  if (hidden) out.hidden = true;
+  let row;
+  try {
+    row = asRow(await rpc('comments_post', {
+      p_page: page,
+      p_name: name,
+      p_text: text,
+      p_parent: parentId, // the RPC flattens reply-to-reply to the root itself
+      p_ip_hash: ipHash,
+      p_hidden: hidden,
+    }));
+  } catch (e) {
+    if (rpcRaised(e, 'parent_not_found')) return res.status(404).json({ error: 'parent_not_found' });
+    throw e;
+  }
+  if (!row) throw new Error('comments_post returned no row');
+  const out = publicComment(row);
+  if (row.hidden === true || hidden) out.hidden = true;
   return res.status(201).json({ comment: out });
 }
 
@@ -183,53 +155,91 @@ async function handlePost(body, ipHash, res) {
 // ---------------------------------------------------------------------------
 
 async function handleLike(body, ipHash, res) {
-  const id = typeof body.id === 'string' ? body.id.trim() : '';
-  if (!id || id.length > 64 || !/^[A-Za-z0-9_-]+$/.test(id)) return res.status(400).json({ error: 'bad_id' });
+  const id = typeof body.id === 'string' ? body.id.trim().toLowerCase() : '';
+  if (!id || !UUID_RE.test(id)) return res.status(400).json({ error: 'bad_id' });
+  if (!storageConfigured()) return res.status(503).json({ error: 'storage_unavailable' });
   if (!(await underCap(ipHash, 'like', LIKES_PER_WINDOW))) return res.status(429).json({ error: 'rate_limited' });
 
-  const db = getFirestore();
-  const ref = db.collection(COLLECTION).doc(id);
-  let result = null;
-  await db.runTransaction(async (tx) => {
-    const snap = await tx.get(ref);
-    if (!snap.exists || snap.data().hidden === true) {
-      result = null;
-      return;
-    }
-    const data = snap.data();
-    const likedBy = Array.isArray(data.likedBy) ? data.likedBy : [];
-    const likes = Number(data.likes) || 0;
-    if (likedBy.includes(ipHash)) {
-      result = { id, likes, liked: false };
-      return;
-    }
-    const update = { likes: FieldValue.increment(1) };
-    // Past the cap we still count the like but stop tracking who left it.
-    if (likedBy.length < LIKED_BY_MAX) update.likedBy = FieldValue.arrayUnion(ipHash);
-    tx.update(ref, update);
-    result = { id, likes: likes + 1, liked: true };
-  });
-  if (!result) return res.status(404).json({ error: 'not_found' });
-  return res.status(200).json(result);
+  let row;
+  try {
+    row = asRow(await rpc('comments_like', { p_id: id, p_ip_hash: ipHash }));
+  } catch (e) {
+    if (rpcRaised(e, 'not_found')) return res.status(404).json({ error: 'not_found' });
+    throw e;
+  }
+  if (!row) return res.status(404).json({ error: 'not_found' });
+  return res.status(200).json({ id: String(row.id || id), likes: Number(row.likes) || 0, liked: row.liked === true });
 }
 
 // ---------------------------------------------------------------------------
-// Rate limiting (fails open, like identify.js)
+// Rate limiting (fails open, like the other handlers)
 // ---------------------------------------------------------------------------
 
 async function underCap(ipHash, kind, cap) {
   try {
-    const window = Math.floor(Date.now() / RATE_WINDOW_MS);
-    const ref = getFirestore().collection(RATE_COLLECTION).doc(`${kind}_${ipHash}_${window}`);
-    const snap = await ref.get();
-    const count = snap.exists ? snap.data().count || 0 : 0;
-    if (count >= cap) return false;
-    await ref.set({ count: FieldValue.increment(1), window, kind }, { merge: true });
-    return true;
+    const bucket = Math.floor(Date.now() / (RATE_WINDOW_SECONDS * 1000));
+    const allowed = await rpc('comments_rate_hit', {
+      p_key: `${kind}:${ipHash}:${bucket}`,
+      p_limit: cap,
+      p_window_seconds: RATE_WINDOW_SECONDS,
+    });
+    return allowed !== false;
   } catch (e) {
     console.error('rate counter error (failing open):', e);
     return true; // fail open — a counter outage must not break the site
   }
+}
+
+// ---------------------------------------------------------------------------
+// Supabase RPC over fetch
+// ---------------------------------------------------------------------------
+
+function storageConfigured() {
+  return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
+}
+
+async function rpc(fn, params) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+    method: 'POST',
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(params),
+  });
+  const text = await r.text();
+  let data = null;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = null;
+    }
+  }
+  if (!r.ok) {
+    const msg = data && typeof data === 'object' ? data.message || data.hint || data.details || '' : String(text).slice(0, 200);
+    const e = new Error(`rpc ${fn} failed (${r.status}): ${msg}`);
+    e.status = r.status;
+    e.rpcMessage = String(msg || '');
+    throw e;
+  }
+  return data;
+}
+
+// A `raise exception 'code'` inside the function surfaces as a PostgREST error
+// whose message is that code.
+function rpcRaised(e, code) {
+  return Boolean(e && typeof e.rpcMessage === 'string' && e.rpcMessage.includes(code));
+}
+
+function asRows(data) {
+  if (Array.isArray(data)) return data;
+  if (data && typeof data === 'object') return [data];
+  return [];
+}
+function asRow(data) {
+  return asRows(data)[0] || null;
 }
 
 // ---------------------------------------------------------------------------
@@ -310,25 +320,15 @@ function clampInt(v, min, max, dflt) {
   return Math.min(max, Math.max(min, n));
 }
 
-function toMillis(ts) {
-  if (!ts) return 0;
-  if (typeof ts.toMillis === 'function') return ts.toMillis();
-  if (ts instanceof Date) return ts.getTime();
-  if (typeof ts === 'number') return ts;
-  if (typeof ts.seconds === 'number') return ts.seconds * 1000 + Math.floor((ts.nanoseconds || 0) / 1e6);
-  return 0;
-}
-
-function publicComment(doc) {
-  const d = doc.data() || {};
-  const ms = toMillis(d.createdAt);
+function publicComment(row) {
+  const ms = Date.parse(row.created_at);
   return {
-    id: doc.id,
-    page: d.page,
-    name: d.name || 'anonymous',
-    text: d.text || '',
-    parentId: d.parentId || null,
-    likes: Number(d.likes) || 0,
-    createdAt: ms ? new Date(ms).toISOString() : new Date().toISOString(),
+    id: String(row.id),
+    page: row.page,
+    name: row.name || 'anonymous',
+    text: row.text || '',
+    parentId: row.parent_id ? String(row.parent_id) : null,
+    likes: Number(row.likes) || 0,
+    createdAt: Number.isFinite(ms) ? new Date(ms).toISOString() : new Date().toISOString(),
   };
 }
