@@ -1,0 +1,78 @@
+# Builds the Stride iOS app (public repo rzhaosv/stride) on a free GitHub macOS runner via `eas build --local`.
+# Lives in this repo so it can reuse the shared secrets (EXPO_TOKEN, ASC key, dist cert).
+name: Stride iOS build (local EAS)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: stride git ref to build
+        default: main
+        required: true
+      submit:
+        description: Upload the IPA to App Store Connect after building
+        type: boolean
+        default: false
+
+concurrency:
+  group: stride-ios-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 90
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: rzhaosv/stride
+          ref: ${{ inputs.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+      - name: Write signing credentials
+        env:
+          P12_PASSWORD: ${{ secrets.IOS_DIST_P12_PASSWORD }}
+        run: |
+          mkdir -p .credentials
+          printf '%s' "${{ secrets.IOS_DIST_P12_B64 }}" | base64 --decode > .credentials/dist.p12
+          printf '%s' "${{ secrets.STRIDE_PROFILE_B64 }}" | base64 --decode > .credentials/stride.mobileprovision
+          node -e '
+            const fs = require("fs");
+            fs.writeFileSync("credentials.json", JSON.stringify({ ios: {
+              provisioningProfilePath: ".credentials/stride.mobileprovision",
+              distributionCertificate: { path: ".credentials/dist.p12", password: process.env.P12_PASSWORD } } }, null, 2));
+          '
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          eas whoami
+      - name: Build IPA locally
+        run: |
+          eas build --platform ios --profile production --local --non-interactive \
+            --output "$GITHUB_WORKSPACE/stride-ios.ipa"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stride-ios-ipa
+          path: stride-ios.ipa
+          retention-days: 14
+          if-no-files-found: error
+      - name: Upload to App Store Connect
+        if: ${{ inputs.submit }}
+        run: |
+          printf '%s\n' "${{ secrets.ASC_API_KEY_P8 }}" > "$RUNNER_TEMP/AuthKey.p8"
+          node -e '
+            const fs = require("fs");
+            const c = JSON.parse(fs.readFileSync("eas.json", "utf8"));
+            c.submit.production.ios.ascApiKeyPath = process.env.RUNNER_TEMP + "/AuthKey.p8";
+            fs.writeFileSync("eas.json", JSON.stringify(c, null, 2));
+          '
+          eas submit --platform ios --profile production --non-interactive \
+            --path "$GITHUB_WORKSPACE/stride-ios.ipa"
