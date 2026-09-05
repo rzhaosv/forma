@@ -111,7 +111,7 @@ async function handleApply(body, res) {
   if (image && Buffer.byteLength(image, 'base64') > MAX_IMAGE_BYTES) return res.status(413).json({ error: 'image_too_large' });
   const parts = [{ text: APPLY_PROMPT }, { text: 'APPLICATION ANSWERS:\n' + JSON.stringify(answers).slice(0, 4000) }];
   if (image && typeof image === 'string') parts.push({ inline_data: { mime_type: mime || 'image/jpeg', data: image } });
-  const parsed = await gemini(parts, 400);
+  const parsed = await gemini(parts, 1500);
   if (!parsed) return res.status(502).json({ error: 'unparseable' });
   return res.status(200).json({
     read: {
@@ -132,7 +132,7 @@ async function handleCheck(body, res) {
   const parts = [{ text: CHECK_PROMPT }];
   if (context.length) parts.push({ text: 'CONTEXT:\n' + context.join('\n') });
   parts.push({ inline_data: { mime_type: mime || 'image/jpeg', data: image } });
-  const parsed = await gemini(parts, 1200);
+  const parsed = await gemini(parts, 4000);
   if (!parsed) return res.status(502).json({ error: 'unparseable' });
   return res.status(200).json(normalizeCheck(parsed));
 }
@@ -166,7 +166,7 @@ async function gemini(parts, maxOutputTokens) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       contents: [{ parts }],
-      generationConfig: { responseMimeType: 'application/json', temperature: 0.4, maxOutputTokens },
+      generationConfig: { responseMimeType: 'application/json', temperature: 0.4, maxOutputTokens, thinkingConfig: { thinkingBudget: 0 } },
     }),
   });
   if (!gRes.ok) {
@@ -178,6 +178,7 @@ async function gemini(parts, maxOutputTokens) {
   try {
     return JSON.parse(text);
   } catch {
+    console.error('gemini unparseable', data?.candidates?.[0]?.finishReason, text.slice(0, 300));
     const m = text.match(/\{[\s\S]*\}/);
     try {
       return m ? JSON.parse(m[0]) : null;
