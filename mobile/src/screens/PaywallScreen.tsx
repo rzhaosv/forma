@@ -175,14 +175,12 @@ export default function PaywallScreen() {
             </View>
             <View style={styles.planInfo}>
               <Text style={[styles.planName, selectedPlan === 'annual' && { color: C.accent }]}>Annual</Text>
-              <Text style={styles.planBilling}>{annualFull} billed once a year</Text>
+              <Text style={styles.planBilling}>Billed once a year</Text>
             </View>
             <View style={styles.planPrice}>
-              <View style={styles.strikePriceRow}>
-                <Text style={styles.strikePrice}>{monthlyPrice}</Text>
-              </View>
-              <Text style={[styles.mainPrice, selectedPlan === 'annual' && { color: C.accent }]}>{annualMonthly}</Text>
-              <Text style={styles.perMonth}>/mo</Text>
+              <Text style={[styles.mainPrice, selectedPlan === 'annual' && { color: C.accent }]}>{annualFull}</Text>
+              <Text style={styles.perPeriod}>/year</Text>
+              <Text style={styles.equivPrice}>about {annualMonthly}/month</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -203,7 +201,7 @@ export default function PaywallScreen() {
             </View>
             <View style={styles.planPrice}>
               <Text style={styles.mainPriceNeutral}>{monthlyPrice}</Text>
-              <Text style={styles.perMonth}>/mo</Text>
+              <Text style={styles.perPeriod}>/month</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -224,7 +222,7 @@ export default function PaywallScreen() {
             </View>
             <View style={styles.planPrice}>
               <Text style={styles.mainPriceNeutral}>{lifetimePrice}</Text>
-              <Text style={styles.perMonth}> once</Text>
+              <Text style={styles.perPeriod}>once</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -248,7 +246,9 @@ export default function PaywallScreen() {
 
         <Text style={styles.ctaSubtext}>
           Try free for 7 days, then{' '}
-          {selectedPlan === 'annual' ? `${annualFull}/year` : selectedPlan === 'monthly' ? `${monthlyPrice}/month` : `${lifetimePrice} once`}
+          <Text style={styles.ctaSubtextPrice}>
+            {selectedPlan === 'annual' ? `${annualFull}/year` : selectedPlan === 'monthly' ? `${monthlyPrice}/month` : `${lifetimePrice} once`}
+          </Text>
         </Text>
 
         {/* Risk reversal */}
@@ -265,8 +265,12 @@ export default function PaywallScreen() {
         <View style={styles.billingNotice}>
           <Ionicons name="information-circle-outline" size={16} color={C.textTertiary} />
           <Text style={styles.billingNoticeText}>
-            Your free trial ends {trialEndDate}. Cancel before then and pay nothing.
-            Subscription renews automatically.
+            Your free trial ends {trialEndDate}. Cancel before then and pay nothing.{' '}
+            {selectedPlan === 'lifetime'
+              ? `Lifetime is a one-time charge of ${lifetimePrice} and does not renew.`
+              : selectedPlan === 'annual'
+              ? `After the trial you will be charged ${annualFull} per year. The subscription renews automatically every year at ${annualFull} unless cancelled at least 24 hours before the end of the current period.`
+              : `After the trial you will be charged ${monthlyPrice} per month. The subscription renews automatically every month at ${monthlyPrice} unless cancelled at least 24 hours before the end of the current period.`}
           </Text>
         </View>
 
@@ -411,12 +415,7 @@ const styles = StyleSheet.create({
   planName: { fontSize: 16, fontWeight: '700', color: C.text, marginBottom: 2 },
   planBilling: { fontSize: 13, color: C.textSub },
   planPrice: { alignItems: 'flex-end' },
-  strikePriceRow: { flexDirection: 'row' },
-  strikePrice: {
-    fontSize: 13,
-    color: C.textTertiary,
-    textDecorationLine: 'line-through',
-  },
+  // Billed amount is always the dominant price element (App Review 3.1.2(c)).
   mainPrice: {
     fontSize: 24,
     fontWeight: '800',
@@ -428,11 +427,18 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: C.textSub,
   },
-  perMonth: {
+  perPeriod: {
     fontSize: 12,
     color: C.textSub,
     fontWeight: '500',
     alignSelf: 'flex-end',
+  },
+  // Per-month equivalent: subordinate, small and muted.
+  equivPrice: {
+    fontSize: 11,
+    color: C.textTertiary,
+    fontWeight: '400',
+    marginTop: 2,
   },
   ctaBtn: {
     marginHorizontal: 24,
@@ -451,6 +457,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: C.textSub,
     marginBottom: 20,
+  },
+  ctaSubtextPrice: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: C.text,
   },
   riskReversal: {
     flexDirection: 'row',

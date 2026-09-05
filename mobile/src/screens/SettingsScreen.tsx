@@ -574,6 +574,44 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* About & Legal */}
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>About</Text>
+
+          <TouchableOpacity
+            style={dynamicStyles.settingRow}
+            onPress={() => navigation.navigate('Sources' as never)}
+          >
+            <View style={dynamicStyles.settingContent}>
+              <Text style={dynamicStyles.settingLabel}>Sources & References</Text>
+              <Text style={dynamicStyles.settingDescription}>
+                Where our BMI, calorie and macro formulas come from
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={dynamicStyles.settingRow}
+            onPress={() => navigation.navigate('PrivacyPolicy' as never)}
+          >
+            <View style={dynamicStyles.settingContent}>
+              <Text style={dynamicStyles.settingLabel}>Privacy Policy</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={dynamicStyles.settingRow}
+            onPress={() => navigation.navigate('TermsOfUse' as never)}
+          >
+            <View style={dynamicStyles.settingContent}>
+              <Text style={dynamicStyles.settingLabel}>Terms of Use</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
+          </TouchableOpacity>
+        </View>
+
         {/* Account Actions */}
         <View style={dynamicStyles.section}>
           <Text style={dynamicStyles.sectionTitle}>Account</Text>

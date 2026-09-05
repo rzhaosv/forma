@@ -259,6 +259,11 @@ export default function HomeScreen() {
       letterSpacing: 0.8,
       textTransform: 'uppercase',
     },
+    calorieSourceNote: {
+      fontSize: 11,
+      color: colors.textTertiary,
+      textAlign: 'center',
+    },
     macroLabel: {
       fontSize: 13,
       fontWeight: '600',
@@ -522,6 +527,15 @@ export default function HomeScreen() {
           <Text style={[dynamicStyles.caloriesLeft, { color: getProgressColor() }]}>
             {caloriesLeft}
           </Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Sources' as never)}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            style={{ marginTop: -16, marginBottom: 20 }}
+          >
+            <Text style={dynamicStyles.calorieSourceNote}>
+              Target per Mifflin–St Jeor · <Text style={{ color: colors.primary, textDecorationLine: 'underline' }}>Sources</Text>
+            </Text>
+          </TouchableOpacity>
 
           {/* Macro Progress */}
           <View style={styles.macrosContainer}>

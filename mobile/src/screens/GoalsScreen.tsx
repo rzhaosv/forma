@@ -276,7 +276,15 @@ export default function GoalsScreen() {
                 <Text style={dynamicStyles.goalUnit}>kcal</Text>
               </View>
             ) : (
-              <Text style={dynamicStyles.goalDisplay}>{calorieGoal} kcal</Text>
+              <>
+                <Text style={dynamicStyles.goalDisplay}>{calorieGoal} kcal</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                  <Text style={[dynamicStyles.infoText, { fontSize: 12 }]}>Calorie target per Mifflin–St Jeor · </Text>
+                  <TouchableOpacity onPress={() => navigation.navigate('Sources' as never)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                    <Text style={[dynamicStyles.infoText, { fontSize: 12, fontWeight: '600', color: colors.primary, textDecorationLine: 'underline' }]}>Sources</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
             )}
             {isEditing ? (
               <View style={dynamicStyles.buttonRow}>
@@ -404,9 +412,15 @@ export default function GoalsScreen() {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => Linking.openURL('https://www.nationalacademies.org/our-work/dietary-reference-intakes-for-macronutrients')}
+              style={{ marginBottom: 6 }}
             >
               <Text style={[dynamicStyles.infoText, { textAlign: 'left', color: colors.primary, textDecorationLine: 'underline' }]}>
                 • NASEM Dietary Reference Intakes
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Sources' as never)}>
+              <Text style={[dynamicStyles.infoText, { textAlign: 'left', color: colors.primary, fontWeight: '600' }]}>
+                View all sources & references →
               </Text>
             </TouchableOpacity>
           </View>

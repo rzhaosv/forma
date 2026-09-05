@@ -180,6 +180,13 @@ export default function ProfileCompleteScreen() {
       marginTop: 4,
       fontWeight: '600',
     },
+    calorieSource: {
+      fontSize: 12,
+      color: '#FFFFFF',
+      opacity: 0.85,
+      marginTop: 8,
+      textDecorationLine: 'underline',
+    },
     celebrationMessage: {
       fontSize: 18,
       fontWeight: '600',
@@ -307,6 +314,9 @@ export default function ProfileCompleteScreen() {
         >
           <Text style={dynamicStyles.calorieValue}>{displayCalories}</Text>
           <Text style={dynamicStyles.calorieLabel}>calories per day</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Sources' as never)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <Text style={dynamicStyles.calorieSource}>Calorie target per Mifflin–St Jeor · Sources</Text>
+          </TouchableOpacity>
         </Animated.View>
 
         <Text style={dynamicStyles.celebrationMessage}>

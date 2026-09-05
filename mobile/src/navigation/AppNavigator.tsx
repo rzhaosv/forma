@@ -14,6 +14,7 @@ import { useTheme } from '../hooks/useTheme';
 import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
 import TermsOfUseScreen from '../screens/TermsOfUseScreen';
 import PaywallScreen from '../screens/PaywallScreen';
+import SourcesScreen from '../screens/SourcesScreen';
 
 const Stack = createStackNavigator();
 
@@ -73,6 +74,7 @@ export default function AppNavigator() {
             <Stack.Screen name="Paywall" component={PaywallScreen} />
           )}
           <Stack.Screen name="Main" component={MainNavigator} />
+          <Stack.Screen name="Sources" component={SourcesScreen} />
         </>
       ) : (
         // Auth/Onboarding screens
@@ -84,6 +86,7 @@ export default function AppNavigator() {
           <Stack.Screen name="Paywall" component={PaywallScreen} />
           <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
           <Stack.Screen name="TermsOfUse" component={TermsOfUseScreen} />
+          <Stack.Screen name="Sources" component={SourcesScreen} />
         </>
       )}
     </Stack.Navigator>

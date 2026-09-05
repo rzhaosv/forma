@@ -116,6 +116,9 @@ export default function TransformationTimelineScreen() {
             <Text style={styles.calorieLabel}>Daily calorie target</Text>
             <Text style={styles.calorieNumber}>{calorieCount.toLocaleString()}</Text>
             <Text style={styles.calorieUnit}>cal / day</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Sources' as never)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <Text style={styles.calorieSource}>Calorie target per Mifflin–St Jeor · Sources</Text>
+            </TouchableOpacity>
 
             <View style={styles.macroRow}>
               <View style={styles.macroItem}>
@@ -223,6 +226,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(0,230,118,0.15)',
   },
   calorieLabel: { fontSize: 13, color: C.textSub, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 },
+  calorieSource: { fontSize: 11, color: C.textTertiary, marginTop: 6, textDecorationLine: 'underline' },
   calorieNumber: { fontSize: 72, fontWeight: '800', color: C.accent, letterSpacing: -3 },
   calorieUnit: { fontSize: 16, color: C.textSub, fontWeight: '600', marginBottom: 20 },
   macroRow: { flexDirection: 'row', alignItems: 'center', width: '100%' },

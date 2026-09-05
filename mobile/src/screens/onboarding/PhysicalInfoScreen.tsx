@@ -252,6 +252,21 @@ export default function PhysicalInfoScreen() {
       marginTop: 12,
       lineHeight: 18,
     },
+    sourceRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 8,
+    },
+    sourceNote: {
+      fontSize: 12,
+      color: colors.textSecondary,
+    },
+    sourceLink: {
+      fontSize: 12,
+      fontWeight: '600',
+      color: colors.primary,
+      textDecorationLine: 'underline',
+    },
     continueButton: {
       backgroundColor: colors.primary,
       paddingVertical: 18,
@@ -455,6 +470,12 @@ export default function PhysicalInfoScreen() {
             <Text style={dynamicStyles.bmiNote}>
               This is just a starting point! We'll create a personalized plan for your goals.
             </Text>
+            <View style={dynamicStyles.sourceRow}>
+              <Text style={dynamicStyles.sourceNote}>BMI per WHO classification · </Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Sources' as never)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                <Text style={dynamicStyles.sourceLink}>Sources</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           <Text style={dynamicStyles.encouragement}>
