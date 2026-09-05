@@ -99,8 +99,11 @@ export default function PaywallScreen() {
         trackCustomEvent('paywall_plans_unavailable', { plan: selectedPlan }).catch(() => {});
         Alert.alert(
           'Plans Unavailable',
-          'Could not connect to the subscription service. Please check your internet connection and try again.',
-          [{ text: 'OK' }]
+          'Could not load subscription plans right now. You can keep using Nibble for free and upgrade later from Settings.',
+          [
+            { text: 'Try again', style: 'cancel' },
+            { text: 'Continue free', onPress: () => navigation.navigate('Main' as never) },
+          ]
         );
         return;
       }
@@ -278,6 +281,18 @@ export default function PaywallScreen() {
               : `After the trial you will be charged ${monthlyPrice} per month. The subscription renews automatically every month at ${monthlyPrice} unless cancelled at least 24 hours before the end of the current period.`}
           </Text>
         </View>
+
+        {/* Continue on the free tier: the paywall must never be a dead end */}
+        <TouchableOpacity
+          style={styles.signInLink}
+          onPress={() => {
+            trackCustomEvent('paywall_continue_free', { plan: selectedPlan, had_offering: offering ? 1 : 0 }).catch(() => {});
+            navigation.navigate('Main' as never);
+          }}
+          disabled={isPurchasing}
+        >
+          <Text style={styles.signInLinkText}>Continue with the free version</Text>
+        </TouchableOpacity>
 
         {/* Already have account */}
         <TouchableOpacity
