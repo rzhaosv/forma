@@ -44,7 +44,7 @@ p{margin:0 0 1em}
 
 /* ---- shared footer ---- */
 .fz-footer{margin-top:72px;border-top:1px solid var(--fz-line);background:var(--fz-panel);font:14px/1.6 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--fz-soft)}
-.fz-footer .fz-in{max-width:1040px;margin:0 auto;padding:36px 22px 40px;display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:28px}
+.fz-footer .fz-in{max-width:1040px;margin:0 auto;padding:36px 22px 40px;display:grid;grid-template-columns:1.2fr 1fr 1fr 1.1fr;gap:28px}
 .fz-footer h4{margin:0 0 10px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--fz-ink)}
 .fz-footer ul{list-style:none;margin:0;padding:0}
 .fz-footer li{margin:4px 0}
@@ -128,3 +128,11 @@ footer.fz-footer{max-width:none;margin:72px 0 0;padding:0;border-top:1px solid v
 .tile-stride{background:linear-gradient(135deg,#7fb7a0,#2f7d63 70%,#1d5a47)}
 .beliefs{list-style:none;margin:0;padding:0}
 .beliefs li{padding:10px 0 10px 18px;border-left:3px solid var(--accent);margin:8px 0;color:var(--ink);font-size:16.5px}
+/* path cards */
+.grid.paths{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+a.card.path{text-decoration:none;color:inherit;gap:6px}
+a.card.path h3{margin:0;font-size:17px}
+a.card.path p{font-size:14.5px}
+a.card.path .more{margin-top:auto;color:var(--accent);font-weight:600;font-size:14px;padding-top:6px}
+a.card.path:hover{border-color:var(--accent)}
+.fz-dd b{font-weight:700}

@@ -26,7 +26,7 @@
 
 /* ---- shared footer ---- */
 .fz-footer{margin-top:72px;border-top:1px solid var(--fz-line);background:var(--fz-panel);font:14px/1.6 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--fz-soft)}
-.fz-footer .fz-in{max-width:1040px;margin:0 auto;padding:36px 22px 40px;display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:28px}
+.fz-footer .fz-in{max-width:1040px;margin:0 auto;padding:36px 22px 40px;display:grid;grid-template-columns:1.2fr 1fr 1fr 1.1fr;gap:28px}
 .fz-footer h4{margin:0 0 10px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--fz-ink)}
 .fz-footer ul{list-style:none;margin:0;padding:0}
 .fz-footer li{margin:4px 0}
