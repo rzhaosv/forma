@@ -172,6 +172,7 @@ footer.fz-footer{max-width:none;margin:72px 0 0;padding:0;border-top:1px solid v
 .tile-evensong{background:linear-gradient(135deg,#2b3449,#1c2233 70%,#141a28);color:#e6b655}
 .tile-sesame{background:linear-gradient(135deg,#fffdf8,#fbf6ee 70%,#f2e7d3);color:#c99a3a}
 .tile-kotatsu{background:linear-gradient(135deg,#2c261e,#1F1B16 70%,#15120e);color:#E0873A}
+.tile-undim{background:linear-gradient(135deg,#2a2521,#1C1A17 70%,#14120f);color:#E8A23B}
 .beliefs{list-style:none;margin:0;padding:0}
 .beliefs li{padding:10px 0 10px 18px;border-left:3px solid var(--accent);margin:8px 0;color:var(--ink);font-size:16.5px;text-wrap:pretty}
 /* hope line under a path lede, and grouped path grids */
