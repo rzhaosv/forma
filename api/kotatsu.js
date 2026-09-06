@@ -2,11 +2,7 @@
 // POST { device, mode: 'group'|'dm', speaker?, messages: [{role:'user'|'crew', id?, text}], memory?, user: {name, pronouns?},
 //        daysAway?, hour?, pro?: boolean, rcId?: string, crew?: string[] }
 // -> { replies: [{id, text}], memory, risk, remaining, limit }
-const fs = require('fs');
-const path = require('path');
-
-const CREW = JSON.parse(fs.readFileSync(path.join(__dirname, '_kotatsu', 'crew.json'), 'utf8'));
-const BIBLE = fs.readFileSync(path.join(__dirname, '_kotatsu', 'bible.md'), 'utf8');
+const { CREW, BIBLE } = require('./_kotatsu/data.js');
 const FREE_LIMIT = 20;
 const PRO_LIMIT = 600; // abuse cap
 const MODEL = process.env.KOTATSU_MODEL || 'gemini-2.5-flash';
