@@ -360,12 +360,14 @@ a.card.path .no{opacity:.85}
 .hero .aim b{font-weight:700;color:var(--accent)}
 @media (max-width:480px){.hero .aim{padding-left:12px}}
 
-/* ---- hero figure: editorial plate, right-anchored, dissolved into the ground ---- */
-.hero-figure{position:absolute;z-index:-1;top:0;right:0;bottom:0;width:min(46%,560px);pointer-events:none;
-  background:url(/assets/hero-figure.webp) right bottom/cover no-repeat;opacity:.15;
-  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 68%),linear-gradient(to bottom,transparent 0,#000 26%),linear-gradient(to top,transparent 0,#000 16%);
-  mask-image:linear-gradient(to right,transparent 0,#000 68%),linear-gradient(to bottom,transparent 0,#000 26%),linear-gradient(to top,transparent 0,#000 16%);
+/* ---- hero figure: the lit room. Blended as light, not as paint, so the window glows
+       on dark and only the shadows land on light. Must never out-read the h1. ---- */
+.hero-figure{position:absolute;z-index:-1;top:0;right:0;bottom:0;width:min(52%,640px);pointer-events:none;
+  background:url(/assets/hero-figure.webp) right bottom/auto 100% no-repeat;
+  opacity:.20;mix-blend-mode:multiply;
+  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 64%),linear-gradient(to bottom,transparent 0,#000 22%),linear-gradient(to top,transparent 0,#000 12%);
+  mask-image:linear-gradient(to right,transparent 0,#000 64%),linear-gradient(to bottom,transparent 0,#000 22%),linear-gradient(to top,transparent 0,#000 12%);
   -webkit-mask-composite:source-in;mask-composite:intersect}
-@media (prefers-color-scheme:dark){.hero-figure{opacity:.20}}
-@media (max-width:820px){.hero-figure{width:72%;opacity:.07}}
-@media (prefers-color-scheme:dark) and (max-width:820px){.hero-figure{opacity:.10}}
+@media (prefers-color-scheme:dark){.hero-figure{opacity:.38;mix-blend-mode:screen}}
+@media (max-width:820px){.hero-figure{width:80%;opacity:.10}}
+@media (prefers-color-scheme:dark) and (max-width:820px){.hero-figure{opacity:.22}}
