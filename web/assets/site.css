@@ -371,3 +371,18 @@ a.card.path .no{opacity:.85}
 @media (prefers-color-scheme:dark){.hero-figure{opacity:.38;mix-blend-mode:screen}}
 @media (max-width:820px){.hero-figure{width:80%;opacity:.10}}
 @media (prefers-color-scheme:dark) and (max-width:820px){.hero-figure{opacity:.22}}
+
+/* ---- room plates: photographs bled to the card edge ---- */
+.card .plate{display:block;width:calc(100% + 44px);max-width:none;margin:-22px -22px 8px;border-radius:15px 15px 0 0;aspect-ratio:800/484;object-fit:cover;background:var(--muted-bg)}
+
+/* ---- closing plate: the door standing open at first light ---- */
+#way-back{position:relative;isolation:isolate;overflow:clip;padding:66px 0}
+.plate-door{position:absolute;z-index:-1;inset:0;pointer-events:none;
+  background:url(/assets/plate-open-door.webp) right center/auto 116% no-repeat;
+  opacity:.18;mix-blend-mode:multiply;
+  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 76%),linear-gradient(to bottom,transparent 0,#000 14%),linear-gradient(to top,transparent 0,#000 10%);
+  mask-image:linear-gradient(to right,transparent 0,#000 76%),linear-gradient(to bottom,transparent 0,#000 14%),linear-gradient(to top,transparent 0,#000 10%);
+  -webkit-mask-composite:source-in;mask-composite:intersect}
+@media (prefers-color-scheme:dark){.plate-door{opacity:.30;mix-blend-mode:screen}}
+@media (max-width:820px){.plate-door{opacity:.08}}
+@media (prefers-color-scheme:dark) and (max-width:820px){.plate-door{opacity:.16}}
