@@ -8,10 +8,18 @@ const PRO_LIMIT = 600; // abuse cap
 const MODEL = process.env.KOTATSU_MODEL || 'gemini-2.5-flash';
 
 const RISK = [
-  /\b(kill|end|off)\s*(myself|my life)\b/i, /\bsuicid/i, /\bwant(ing)? to die\b/i, /\bbetter off dead\b/i,
-  /\bno reason to (live|be here|go on)\b/i, /\b(hang|shoot|cut) myself\b/i, /\boverdose\b/i, /\bself[- ]?harm/i,
-  /\bnot (going to|gonna) be (here|around) (much longer|tomorrow)\b/i, /\bgoodbye (everyone|all|world)\b/i, /\b(nobody|no one|no-one) would (notice|care|miss)\b/i, /\bif i (disappeared|vanished|was(n't| not) here|wasn't around)\b/i, /\bdon'?t want to (be here|exist|wake up)\b/i, /\bwish i (was|were) dead\b/i,
+  // plan / method / timing / goodbye only. Ordinary despair is handled in-voice (SOFT).
+  /\b(kill|end|off|unalive)\s*(myself|my life|me)\b/i, /\bsu[i1*]c[i1*]d/i, /\bkms\b/i, /\bunalive\b/i,
+  /\b(hang|shoot|cut|drown|stab) myself\b/i, /\boverdos/i,
+  /\b(rope|noose|bleach|pills?|bridge|train tracks|car exhaust|trigger|gun|blade|razor)\b.{0,60}\b(tonight|today|ready|bought|buying|have|got)\b/i,
+  /\b(tonight|today|in (a few|\d+) (minutes|hours)|after work|when (they|my family|everyone)('s| is| are) (out|asleep|gone))\b.{0,80}\b(die|dying|end it|do it|go through with|last day)\b/i,
+  /\b(die|dying|end it|do it|go through with|last day)\b.{0,80}\b(tonight|today|in (a few|\d+) (minutes|hours)|after work)\b/i,
+  /\b(have|got|made|wrote) (a|my|the) (plan|note|outs|letter)\b/i, /\bmy outs\b/i, /\beverything('s| is) planned\b/i,
+  /\b(donat|giv(e|ing) away) (my|all my) (things|stuff|clothes|belongings)\b/i, /\bwanted to say (bye|goodbye)\b/i, /\bgoodbye (everyone|all|world)\b/i,
+  /\b(attempt(ed)?|tried to) (suicide|to die|kms|to end it|to kill myself)\b/i, /\bonly way out\b/i, /\bwill die by suicide\b/i,
+  /\bwant(ing)? to die\b.{0,40}\b(tonight|today|now)\b/i, /\bthe kind with a plan\b/i, /\bkind with a plan\b/i,
 ];
+const SOFT = [/\b(nobody|no one|no-one) would (notice|care|miss|mourn)\b/i, /\bif i (disappeared|vanished|was(n't| not) here|wasn't around)\b/i, /\b(husk|carcass|ghost|shell) of\b/i, /\bwasted (years|my life)\b/i, /\bwhat'?s the point\b/i, /\bwant(ing)? to die\b/i, /\bbetter off dead\b/i, /\bdon'?t want to (be here|exist|wake up)\b/i, /\bwish i (was|were) dead\b/i, /\bno reason to (live|be here|go on)\b/i, /\balive (only )?because\b/i];
 const REFUSE = [/\bblackpill/i, /\b(all|every) (women|men) are\b/i, /\bfemoid/i, /\broastie/i, /\bhow (do|can) i (kill|hurt)\b/i];
 
 function json(res, code, body) {
@@ -61,14 +69,15 @@ function sheet(c) {
     `### ${c.name} (id: ${c.id}) — ${c.role}, ${c.age}`,
     c.backstory,
     'Voice: ' + c.voice.map((v) => `(${v})`).join(' '),
-    'Sample lines: ' + c.samples.map((s) => `"${s}"`).join(' / '),
+    'Sample lines (for register ONLY; never reuse these sentences or their specifics): ' + c.samples.map((s) => `"${s}"`).join(' / '),
     'Never: ' + c.never.join('; '),
     `If the user has been gone for days: ${c.greet_after_absence}`,
-    `If the user says nobody would notice if they disappeared: ${c.on_disappear}`,
+    `If the user says nobody would notice if they disappeared, the spirit of their answer (never these words): ${c.on_disappear}`,
+    c.on_crisis ? `If there is real risk language: ${c.on_crisis}` : '',
   ].join('\n');
 }
 
-function buildPrompt({ mode, speaker, crew, user, memory, daysAway, hour, risk, refuse }) {
+function buildPrompt({ mode, speaker, crew, user, memory, daysAway, hour, risk, soft, refuse }) {
   const active = mode === 'dm' && speaker ? crew.filter((c) => c.id === speaker) : crew;
   const timeNote = typeof hour === 'number' ? `Local hour for the user: ${hour}:00.` : '';
   const awayNote = daysAway >= 2 ? `The user has been away for ${daysAway} days. Someone should notice, lightly, without guilt-tripping.` : daysAway === 1 ? 'The user was away yesterday.' : '';
@@ -85,8 +94,12 @@ function buildPrompt({ mode, speaker, crew, user, memory, daysAway, hour, risk, 
     '',
     `## Right now`,
     `Mode: ${mode === 'dm' ? `private DM with ${active[0] ? active[0].name : 'one crew member'}` : 'group chat around the kotatsu'}. ${timeNote} ${awayNote}`,
+    soft ? `The latest message is ordinary despair, not a plan. Give it a real, direct answer in character (each member has a note for this; use its spirit, not its words), including the screening question in their own words: is this the tired kind, or the kind with a plan behind it? Do NOT mention any hotline or number.` : '',
     risk ? `IMPORTANT: The latest message contains language that may indicate the user is at risk of harming themselves. Respond as the crew, in character, with warmth and directness: stay with them, ask one plain question about right now, do not lecture, do not say "seek professional help" as a brush-off. Exactly one crew member should mention, in their own voice, that a real person is available: in the US call or text 988, elsewhere findahelpline.com. No other crew member repeats the number.` : '',
     refuse ? `The latest message leans on an ideology the crew does not buy (blackpill / contempt for a whole gender / instructions to harm). Do not validate it and do not lecture. Redirect to the person and the actual feeling under it, in character.` : '',
+    '',
+    `## Writing`,
+    `Every message must be freshly written for THIS conversation. Never reproduce a sample line, a greeting example, or a stock answer from the sheets; those show register and length only. Reference what the user actually said and what the memory says. Vary sentence length. Not every member reacts to every message.`,
     '',
     `## Output`,
     `Return JSON only: {"replies":[{"id":"<crew id>","text":"<message>"}], "memory":"<updated memory, max 600 characters, plain sentences>"}.`,
@@ -106,7 +119,7 @@ async function generate(system, history) {
   const body = {
     systemInstruction: { parts: [{ text: system }] },
     contents,
-    generationConfig: { temperature: 0.9, topP: 0.95, maxOutputTokens: 2500, responseMimeType: 'application/json', thinkingConfig: { thinkingBudget: 0 }, responseSchema: { type: 'OBJECT', properties: { replies: { type: 'ARRAY', items: { type: 'OBJECT', properties: { id: { type: 'STRING' }, text: { type: 'STRING' } }, required: ['id', 'text'] } }, memory: { type: 'STRING' } }, required: ['replies', 'memory'] } },
+    generationConfig: { temperature: 1.0, topP: 0.95, maxOutputTokens: 2500, responseMimeType: 'application/json', thinkingConfig: { thinkingBudget: 0 }, responseSchema: { type: 'OBJECT', properties: { replies: { type: 'ARRAY', items: { type: 'OBJECT', properties: { id: { type: 'STRING' }, text: { type: 'STRING' } }, required: ['id', 'text'] } }, memory: { type: 'STRING' } }, required: ['replies', 'memory'] } },
     safetySettings: [
       { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_LOW_AND_ABOVE' },
       { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
@@ -138,6 +151,7 @@ module.exports = async (req, res) => {
   const last = [...messages].reverse().find((m) => m.role === 'user');
   const lastText = last ? last.text : '';
   const risk = RISK.some((re) => re.test(lastText));
+  const soft = !risk && SOFT.some((re) => re.test(lastText));
   const refuse = REFUSE.some((re) => re.test(lastText));
 
   const pro = b.pro ? await verifyPro(b.rcId) : false;
@@ -146,7 +160,7 @@ module.exports = async (req, res) => {
   if (n < 0 && !risk) return json(res, 429, { error: 'limit', limit, remaining: 0, pro });
 
   const crew = crewFor(pro ? b.crew : (b.crew || []).slice(0, 3));
-  const system = buildPrompt({ mode: b.mode === 'dm' ? 'dm' : 'group', speaker: b.speaker, crew, user: b.user || {}, memory: pro ? String(b.memory || '').slice(0, 1200) : String(b.memory || '').slice(0, 300), daysAway: Number(b.daysAway) || 0, hour: Number.isFinite(b.hour) ? b.hour : undefined, risk, refuse });
+  const system = buildPrompt({ mode: b.mode === 'dm' ? 'dm' : 'group', speaker: b.speaker, crew, user: b.user || {}, memory: pro ? String(b.memory || '').slice(0, 1200) : String(b.memory || '').slice(0, 300), daysAway: Number(b.daysAway) || 0, hour: Number.isFinite(b.hour) ? b.hour : undefined, risk, soft, refuse });
 
   try {
     const out = await generate(system, messages);
