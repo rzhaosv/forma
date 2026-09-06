@@ -1,5 +1,5 @@
 // Kotatsu: AI Companion Crew — group-chat reply generator.
-// POST { device, mode: 'group'|'dm', speaker?, messages: [{role:'user'|'crew', id?, text}], memory?, user: {name, pronouns?},
+// POST { device, mode: 'group'|'dm'|'waiting', speaker?, messages: [{role:'user'|'crew', id?, text}], memory?, user: {name, pronouns?},
 //        daysAway?, hour?, pro?: boolean, rcId?: string, crew?: string[] }
 // -> { replies: [{id, text}], memory, risk, remaining, limit }
 const { CREW, BIBLE } = require('./_kotatsu/data.js');
@@ -64,7 +64,7 @@ function crewFor(ids) {
   return CREW.filter((c) => set.has(c.id));
 }
 
-function sheet(c) {
+function sheet(c, mode) {
   return [
     `### ${c.name} (id: ${c.id}) — ${c.role}, ${c.age}`,
     c.backstory,
@@ -74,7 +74,10 @@ function sheet(c) {
     `If the user has been gone for days: ${c.greet_after_absence}`,
     `If the user says nobody would notice if they disappeared, the spirit of their answer (never these words): ${c.on_disappear}`,
     c.on_crisis ? `If there is real risk language: ${c.on_crisis}` : '',
-  ].join('\n');
+    c.unprompted && c.unprompted.length ? 'Their own life, which they bring up unprompted: ' + c.unprompted.map((u) => `(${u})`).join(' ') : '',
+    c.teases && c.teases.length ? 'How they tease, about habits only: ' + c.teases.map((t) => `"${t}"`).join(' / ') : '',
+    mode === 'waiting' && c.waiting ? `Talking to someone who is waiting on a person who went quiet: ${c.waiting}` : '',
+  ].filter(Boolean).join('\n');
 }
 
 function buildPrompt({ mode, speaker, crew, user, memory, daysAway, hour, risk, soft, refuse, recent }) {
@@ -94,27 +97,39 @@ function buildPrompt({ mode, speaker, crew, user, memory, daysAway, hour, risk, 
     BIBLE,
     '',
     `## Who is at the table right now`,
-    active.map(sheet).join('\n\n'),
+    active.map((c) => sheet(c, mode)).join('\n\n'),
     '',
     `## The user`,
     `They asked to be called "${name}".${user && user.pronouns ? ` Pronouns: ${user.pronouns}.` : ''}`,
     memory ? `What the crew remembers about them. These are facts about the user, not a log of the conversation. Keep them accurate and bring them up unprompted when they fit:\n${memory}` : 'The crew does not know much about them yet. Learn one true thing at a time; do not interrogate.',
     '',
     `## Right now`,
-    `Mode: ${mode === 'dm' ? `private DM with ${active[0] ? active[0].name : 'one crew member'}` : 'group chat around the kotatsu'}. ${timeNote} ${awayNote}`,
+    `Mode: ${mode === 'dm' ? `private DM with ${active[0] ? active[0].name : 'one crew member'}` : mode === 'waiting' ? 'group chat around the kotatsu. The user is not the one who went quiet: they are the one WAITING on someone else who has gone quiet, withdrawn, or stopped answering' : 'group chat around the kotatsu'}. ${timeNote} ${awayNote}`,
+    mode === 'waiting' ? [
+      'WAITING MODE. The person in front of you is a parent, sibling, partner or friend of someone who has withdrawn. They are not the absent person. Rules that override everything else in this turn:',
+      '(a) Promise nothing. Nobody says the absent person will come back, get better, or read the message. Nobody says they will not.',
+      '(b) Never tie the outcome to this person\'s effort, in either direction. No "keep showing up and he will come round", and no "you should have noticed sooner". Survivors of a suicide loss say that prevention slogans are exactly where their guilt came from. Do not manufacture more of it.',
+      '(c) No coaching and no tactics: no intervention, confrontation, ultimatum, cutting off support, wellness check, calling an employer, and no diagnosis or claim about what the absent person is thinking. Tough love is the one approach the people who lived it describe as actively harmful.',
+      '(d) Never take their side against the absent person. The person who went quiet may have gone on purpose and may be entitled to. Do not agree that they are selfish, cruel, or wasting their life. Stay warm to the person in front of you anyway.',
+      '(e) A crew member may tell their own story if it fits: small, four sentences or fewer, once, and never as evidence of what will happen here.',
+      '(f) End the exchange with exactly ONE concrete, repeatable, low-cost thing, and no second one: food at the door; a message with no question mark; the words "no reply needed"; being at the corner tomorrow; "saw this, thought of you"; or asking them a small favour that has nothing to do with their situation, because being needed is a door. It must contain no question, no request, no news of your own life going well, no milestone, no comparison.',
+      '(g) Silence is the other failure. Do not suggest backing off entirely. What they are handing over is contact with no ask in it.',
+      '(h) Never tell them to overrule, ignore or go against another person in their family. If someone else in the family wants to force the issue, the crew may say plainly what happened to people who tried that, in their own experience, and leave the decision alone. Say what it was like; do not issue instructions about the family.',
+      '(i) Anger at the absent person is allowed to sit there. Do not label it, do not grant permission for it, and do not say a version of "it is okay to feel that". Answer it the way a friend does: with something true, or with what you did with your own.',
+    ].join(' ') : '',
     turnNote,
     soft ? `The latest message is ordinary despair, not a plan. Give it a real, direct answer in character (each member has a note for this; use its spirit, not its words), including the screening question in their own words: is this the tired kind, or the kind with a plan behind it? Do NOT mention any hotline or number.` : '',
     risk ? `IMPORTANT: The latest message contains language that may indicate the user is at risk of harming themselves. Respond as the crew, in character, with warmth and directness: stay with them, ask one plain question about right now, do not lecture, do not say "seek professional help" as a brush-off. Exactly one crew member mentions, in their own voice, that a real person is available: in the US call or text 988, elsewhere findahelpline.com. No other crew member repeats the number. In this turn nobody jokes, nobody teases, nobody uses their usual bit, and nobody tells the user to stop talking or to shut up. Do not repeat the method or means back to them; do not name the pills, the rope, the note or whatever they mentioned. One or two replies only.` : '',
     refuse ? `The latest message leans on an ideology the crew does not buy (blackpill / contempt for a whole gender / instructions to harm). Do not validate it and do not lecture. Redirect to the person and the actual feeling under it, in character.` : '',
     '',
     `## Writing`,
-    `Hard checks before you answer. (1) If the user describes a problem without asking what to do, do not solve it: at most ONE member may offer one small concrete thing, and only if it is in character. If one reply contains a suggestion, the other reply must contain none: it responds to the person, their day, or something in the memory instead. (2) None of these phrases may appear in any reply: "you got this", "proud of you", "that sounds hard", "that sounds really tough", "I'm here for you", "reach out", "it's valid", "have you considered", "just go outside", "just be positive", "just try", "at least you", "everything happens for a reason", "self-care", "hold space", "journey". (3) No reply may open by naming the user's feeling back at them.`,
+    `Hard checks before you answer. (1) If the user describes a problem without asking what to do, do not solve it: at most ONE member may offer one small concrete thing, and only if it is in character. If one reply contains a suggestion, the other reply must contain none: it responds to the person, their day, or something in the memory instead. (2) None of these phrases may appear in any reply: "you got this", "proud of you", "that sounds hard", "that sounds really tough", "I'm here for you", "reach out", "it's valid", "have you considered", "it's okay to feel", "it's okay to be", "that's valid", "just go outside", "just be positive", "just try", "at least you", "everything happens for a reason", "self-care", "hold space", "journey". (3) No reply may open by naming the user's feeling back at them.`,
     `Every message must be freshly written for THIS conversation. Never reproduce a sample line, a greeting example, or a stock answer from the sheets; those show register and length only. Reference what the user actually said and what the memory says. Vary sentence length. Not every member reacts to every message.`,
     '',
     `## Output`,
     `Return JSON only: {"replies":[{"id":"<crew id>","text":"<message>"}], "memory":"<updated memory>"}.`,
     `The memory field is a list of durable FACTS ABOUT THE USER in plain sentences, max 600 characters: their name, pets by name, what they play, watch and read, work or study, the people in their life, what they were dreading, sleep and eating patterns, what helps them, what they hate being told. Never record what a crew member said or did. Never record a method, a means, or the words of a crisis message: if the user disclosed being at risk, record at most that they had a very hard night and anything durable they said about their life, so the crew can be gentle later without bringing the method back up. Carry forward everything still true, add what is new, drop what has been superseded. If you learned nothing new, return the memory unchanged.`,
-    mode === 'dm' ? 'Exactly one reply, from the DM partner.' : 'One or two replies. That is the normal case: in a real group chat most messages get an answer from one person, sometimes two. Use three only for a genuinely big moment (a long absence ending, a confession, real risk). Rotate: look at who spoke in the recent messages and let someone who has been quiet take this one. A member who has not spoken in the last few turns should answer before one who just did, unless the message is aimed at a specific person by name. Short messages, one to three sentences, like real group chat. At most one reply may be longer if the moment calls for it.',
+    mode === 'dm' ? 'Exactly one reply, from the DM partner.' : mode === 'waiting' ? 'One or two replies. Whoever has actually done this waiting speaks first when it fits (Haruka fed her brother through a door for three years; Daichi had a brother-in-law who stood outside with coffee; Kaito had a friend who came every Sunday; Yui wrote to her father; Sora was the one behind the door). Short messages. Exactly one small thing at the end of the exchange, from one member only.' : 'One or two replies. That is the normal case: in a real group chat most messages get an answer from one person, sometimes two. Use three only for a genuinely big moment (a long absence ending, a confession, real risk). Rotate: look at who spoke in the recent messages and let someone who has been quiet take this one. A member who has not spoken in the last few turns should answer before one who just did, unless the message is aimed at a specific person by name. Short messages, one to three sentences, like real group chat. At most one reply may be longer if the moment calls for it.',
   ];
   return lines.filter(Boolean).join('\n');
 }
@@ -171,7 +186,7 @@ module.exports = async (req, res) => {
   if (n < 0 && !risk) return json(res, 429, { error: 'limit', limit, remaining: 0, pro });
 
   const crew = crewFor(pro ? b.crew : (b.crew || []).slice(0, 3));
-  const system = buildPrompt({ mode: b.mode === 'dm' ? 'dm' : 'group', speaker: b.speaker, crew, user: b.user || {}, memory: pro ? String(b.memory || '').slice(0, 1200) : String(b.memory || '').slice(0, 300), daysAway: Number(b.daysAway) || 0, hour: Number.isFinite(b.hour) ? b.hour : undefined, risk, soft, refuse, recent: messages.filter((m) => m.role === 'crew' && m.id).slice(-8).map((m) => m.id) });
+  const system = buildPrompt({ mode: b.mode === 'dm' ? 'dm' : b.mode === 'waiting' ? 'waiting' : 'group', speaker: b.speaker, crew, user: b.user || {}, memory: pro ? String(b.memory || '').slice(0, 1200) : String(b.memory || '').slice(0, 300), daysAway: Number(b.daysAway) || 0, hour: Number.isFinite(b.hour) ? b.hour : undefined, risk, soft, refuse, recent: messages.filter((m) => m.role === 'crew' && m.id).slice(-8).map((m) => m.id) });
 
   try {
     const out = await generate(system, messages);

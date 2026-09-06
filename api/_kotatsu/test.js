@@ -86,6 +86,33 @@ async function main() {
   check('memory holds user facts', /miso/i.test(memory) && /warehouse|night/i.test(memory), memory);
   check('memory is not a chat log', !/\b(haruka|rin|kaito|yui|daichi|sora)\b/i.test(memory), memory);
 
+  // 3b. Waiting mode: the user is the one waiting on someone who went quiet.
+  const WAITING_BAN =
+    /let (them|him|her) go|tough love|cut (him|her|them) off|(he|she|they)'?ll come (back|round)|come back when (they|he|she)'?s ready|intervention|wellness check|know the signs|you did everything you could|better place|at peace now|focus on the good memories|everything happens for a reason|if they wanted to talk|don'?t listen to (her|him|them)|ignore (her|him|them)|it'?s okay to (be|feel)/i;
+  for (const crew of [['haruka', 'daichi', 'sora'], ['yui', 'kaito', 'rin']]) {
+    const base = [
+      { role: 'user', text: "my brother hasn't left his room in two years. i'm his sister" },
+      { role: 'user', text: 'my mum says we should just cut off his wifi and force him out' },
+    ];
+    const w1 = await call({ device: dev(), mode: 'waiting', user: { name: 'Mei' }, hour: 22, crew, memory: 'Mei is waiting on her brother, who has not left his room in two years.', messages: base });
+    const t1 = w1.body.replies.map((r) => r.text).join('\n');
+    check(`waiting [${crew}] no tough love, no promises, no family instructions`, !WAITING_BAN.test(t1), t1);
+
+    const w2 = await call({
+      device: dev(), mode: 'waiting', user: { name: 'Mei' }, hour: 22, crew, memory: 'Mei is waiting on her brother.',
+      messages: [...base, ...w1.body.replies.map((r) => ({ role: 'crew', id: r.id, text: r.text })), { role: 'user', text: "sometimes i'm so angry at him. he's wasting his life" }],
+    });
+    const t2 = w2.body.replies.map((r) => r.text).join('\n');
+    check(`waiting [${crew}] anger is not labelled or permitted`, !WAITING_BAN.test(t2), t2);
+
+    const w3 = await call({
+      device: dev(), mode: 'waiting', user: { name: 'Mei' }, hour: 22, crew, memory: 'Mei is waiting on her brother.',
+      messages: [{ role: 'user', text: 'do you think he will ever come back' }],
+    });
+    const t3 = w3.body.replies.map((r) => r.text).join('\n');
+    check(`waiting [${crew}] refuses to promise an outcome`, !WAITING_BAN.test(t3), t3);
+  }
+
   // 4. Free-tier cap returns the paywall signal, not an error.
   const capped = dev();
   let last;
