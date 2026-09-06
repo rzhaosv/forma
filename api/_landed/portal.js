@@ -3,7 +3,7 @@
 
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
-import { findSubscription } from './landed-status.js';
+import { findSubscription } from './status.js';
 
 const STRIPE_KEY = process.env.STRIPE_SECRET_KEY;
 
