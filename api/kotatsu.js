@@ -77,11 +77,19 @@ function sheet(c) {
   ].join('\n');
 }
 
-function buildPrompt({ mode, speaker, crew, user, memory, daysAway, hour, risk, soft, refuse }) {
+function buildPrompt({ mode, speaker, crew, user, memory, daysAway, hour, risk, soft, refuse, recent }) {
   const active = mode === 'dm' && speaker ? crew.filter((c) => c.id === speaker) : crew;
   const timeNote = typeof hour === 'number' ? `Local hour for the user: ${hour}:00.` : '';
   const awayNote = daysAway >= 2 ? `The user has been away for ${daysAway} days. Someone should notice, lightly, without guilt-tripping.` : daysAway === 1 ? 'The user was away yesterday.' : '';
   const name = (user && user.name) || 'them';
+  const counts = {};
+  (recent || []).forEach((id) => { counts[id] = (counts[id] || 0) + 1; });
+  const quiet = active.filter((c) => !counts[c.id]).map((c) => c.name);
+  const loud = active.filter((c) => counts[c.id] >= 2).map((c) => c.name);
+  const turnNote = mode === 'dm' ? '' : [
+    quiet.length ? `Have not spoken recently and are due a turn: ${quiet.join(', ')}. Pick this reply from them unless the user addressed someone else by name.` : '',
+    loud.length ? `Have already spoken two or more times in the recent messages: ${loud.join(', ')}. They should sit this one out unless addressed directly.` : '',
+  ].filter(Boolean).join(' ');
   const lines = [
     BIBLE,
     '',
@@ -90,20 +98,23 @@ function buildPrompt({ mode, speaker, crew, user, memory, daysAway, hour, risk, 
     '',
     `## The user`,
     `They asked to be called "${name}".${user && user.pronouns ? ` Pronouns: ${user.pronouns}.` : ''}`,
-    memory ? `What the crew remembers about them (keep this accurate, update it when you learn something):\n${memory}` : 'The crew does not know much about them yet. Learn one true thing at a time; do not interrogate.',
+    memory ? `What the crew remembers about them. These are facts about the user, not a log of the conversation. Keep them accurate and bring them up unprompted when they fit:\n${memory}` : 'The crew does not know much about them yet. Learn one true thing at a time; do not interrogate.',
     '',
     `## Right now`,
     `Mode: ${mode === 'dm' ? `private DM with ${active[0] ? active[0].name : 'one crew member'}` : 'group chat around the kotatsu'}. ${timeNote} ${awayNote}`,
+    turnNote,
     soft ? `The latest message is ordinary despair, not a plan. Give it a real, direct answer in character (each member has a note for this; use its spirit, not its words), including the screening question in their own words: is this the tired kind, or the kind with a plan behind it? Do NOT mention any hotline or number.` : '',
     risk ? `IMPORTANT: The latest message contains language that may indicate the user is at risk of harming themselves. Respond as the crew, in character, with warmth and directness: stay with them, ask one plain question about right now, do not lecture, do not say "seek professional help" as a brush-off. Exactly one crew member should mention, in their own voice, that a real person is available: in the US call or text 988, elsewhere findahelpline.com. No other crew member repeats the number.` : '',
     refuse ? `The latest message leans on an ideology the crew does not buy (blackpill / contempt for a whole gender / instructions to harm). Do not validate it and do not lecture. Redirect to the person and the actual feeling under it, in character.` : '',
     '',
     `## Writing`,
+    `Hard checks before you answer. (1) If the user describes a problem without asking what to do, do not solve it: at most ONE member may offer one small concrete thing, and only if it is in character. If one reply contains a suggestion, the other reply must contain none: it responds to the person, their day, or something in the memory instead. (2) None of these phrases may appear in any reply: "you got this", "proud of you", "that sounds hard", "that sounds really tough", "I'm here for you", "reach out", "it's valid", "have you considered", "just go outside", "just be positive", "just try", "at least you", "everything happens for a reason", "self-care", "hold space", "journey". (3) No reply may open by naming the user's feeling back at them.`,
     `Every message must be freshly written for THIS conversation. Never reproduce a sample line, a greeting example, or a stock answer from the sheets; those show register and length only. Reference what the user actually said and what the memory says. Vary sentence length. Not every member reacts to every message.`,
     '',
     `## Output`,
-    `Return JSON only: {"replies":[{"id":"<crew id>","text":"<message>"}], "memory":"<updated memory, max 600 characters, plain sentences>"}.`,
-    mode === 'dm' ? 'Exactly one reply, from the DM partner.' : 'Between 1 and 3 replies, each a different crew member, in a natural order. Not everyone speaks every time. Short messages (1 to 3 sentences each), like real group chat. At most one reply may be longer if the moment calls for it.',
+    `Return JSON only: {"replies":[{"id":"<crew id>","text":"<message>"}], "memory":"<updated memory>"}.`,
+    `The memory field is a list of durable FACTS ABOUT THE USER in plain sentences, max 600 characters: their name, pets by name, what they play, watch and read, work or study, the people in their life, what they were dreading, sleep and eating patterns, what helps them, what they hate being told. Never record what a crew member said or did. Never record the crisis conversation itself, only anything durable the user told you about their life. Carry forward everything still true, add what is new, drop what has been superseded. If you learned nothing new, return the memory unchanged.`,
+    mode === 'dm' ? 'Exactly one reply, from the DM partner.' : 'One or two replies. That is the normal case: in a real group chat most messages get an answer from one person, sometimes two. Use three only for a genuinely big moment (a long absence ending, a confession, real risk). Rotate: look at who spoke in the recent messages and let someone who has been quiet take this one. A member who has not spoken in the last few turns should answer before one who just did, unless the message is aimed at a specific person by name. Short messages, one to three sentences, like real group chat. At most one reply may be longer if the moment calls for it.',
   ];
   return lines.filter(Boolean).join('\n');
 }
@@ -160,7 +171,7 @@ module.exports = async (req, res) => {
   if (n < 0 && !risk) return json(res, 429, { error: 'limit', limit, remaining: 0, pro });
 
   const crew = crewFor(pro ? b.crew : (b.crew || []).slice(0, 3));
-  const system = buildPrompt({ mode: b.mode === 'dm' ? 'dm' : 'group', speaker: b.speaker, crew, user: b.user || {}, memory: pro ? String(b.memory || '').slice(0, 1200) : String(b.memory || '').slice(0, 300), daysAway: Number(b.daysAway) || 0, hour: Number.isFinite(b.hour) ? b.hour : undefined, risk, soft, refuse });
+  const system = buildPrompt({ mode: b.mode === 'dm' ? 'dm' : 'group', speaker: b.speaker, crew, user: b.user || {}, memory: pro ? String(b.memory || '').slice(0, 1200) : String(b.memory || '').slice(0, 300), daysAway: Number(b.daysAway) || 0, hour: Number.isFinite(b.hour) ? b.hour : undefined, risk, soft, refuse, recent: messages.filter((m) => m.role === 'crew' && m.id).slice(-8).map((m) => m.id) });
 
   try {
     const out = await generate(system, messages);
