@@ -1,6 +1,18 @@
 {
     "rewrites": [
         {
+            "source": "/api/landed-status",
+            "destination": "/api/landed?fn=status"
+        },
+        {
+            "source": "/api/landed-portal",
+            "destination": "/api/landed?fn=portal"
+        },
+        {
+            "source": "/api/landed-checkout",
+            "destination": "/api/landed?fn=checkout"
+        },
+        {
             "source": "/api/(.*)",
             "destination": "/api/$1"
         },
