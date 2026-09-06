@@ -1,60 +1,63 @@
-# Creating the Reddit API app (2 minutes, once)
+# Creating the Reddit API app
 
-The form must be filled in a browser Claude is **not** driving. reCAPTCHA detects the
-DevTools connection that the Chrome extension uses and quietly refuses the checkbox,
-which is why "I'm not a robot" does nothing and the submit comes back with the
-Responsible Builder Policy banner.
+## What we know
 
-## Steps
+Diagnosed on the live form (old.reddit.com/prefs/apps):
 
-1. Open **Safari**, or a Chrome window started fresh (quit Chrome first, then reopen).
-   Not the window Claude has been using.
-2. Go to <https://www.reddit.com/prefs/apps>
-3. Log in as **u/midnight_chatter126** if asked.
-4. Click **are you a developer? create an app…** and fill in:
+- reCAPTCHA loads correctly: the `grecaptcha` object is present, the widget has its
+  sitekey, and the challenge iframe renders at full size. Reddit is not blocking the
+  account and the page is not broken.
+- The account email (midnight.chatter126@gmail.com) is on file with no "verify" prompt.
+- `/settings/oauth-apps` just redirects back to this same legacy form, so there is no
+  alternative UI to use.
+- The Responsible Builder Policy banner next to the button is the response to a submit
+  that had no solved CAPTCHA. It also clears the description field, which makes it look
+  like an error. It is not one.
 
-   | field        | value                            |
-   |--------------|----------------------------------|
-   | name         | `forma-poster`                   |
-   | type         | **script** (the third radio)     |
-   | description  | `Posts release notes for tryforma.app apps` |
-   | about url    | `https://tryforma.app/`          |
-   | redirect uri | `http://localhost:8765/callback` |
+So the CAPTCHA itself is the only gate, and it is failing on the browser side.
 
-5. Tick **I'm not a robot**, then **create app**.
+## Why Private Browsing makes it worse, not better
 
-The app appears at the top of the page. You need two strings from it:
+reCAPTCHA v2 needs third-party cookies from google.com. Safari Private Browsing plus
+"Prevent cross-site tracking" blocks exactly that, so the checkbox either does nothing
+or the challenge never resolves. Incognito is the wrong tool here.
 
-- **client id** — the short string directly under the app name, near "personal use script"
-- **secret** — the longer string on the line labelled `secret`
+## Try in this order
 
-## Then, in your own terminal
+1. **Normal Safari window** (not Private), with Safari > Settings > Privacy >
+   **Prevent cross-site tracking** temporarily unticked. Turn it back on afterwards.
+2. **Normal Chrome window.** Quit Chrome completely first, so the window is not the one
+   Claude drives over the DevTools protocol; that connection also breaks reCAPTCHA.
+3. **Your phone.** old.reddit.com/prefs/apps works in mobile Safari and usually has none
+   of the desktop content blockers in the way.
+4. **Turn off any ad or content blocker** for reddit.com and google.com, then retry 1.
+
+Field values:
+
+| field        | value                            |
+|--------------|----------------------------------|
+| name         | `forma-poster`                   |
+| type         | **script** (the third radio)     |
+| description  | `Posts release notes for tryforma.app apps` |
+| about url    | `https://tryforma.app/`          |
+| redirect uri | `http://localhost:8765/callback` |
+
+Then, in your own terminal:
 
 ```
 bash ~/workspace/forma/marketing/reddit/setup.sh
 ```
 
-It prompts for your username, the client id and the secret (hidden while typing),
-writes `~/.config/reddit_forma.json` with mode 600, and runs the one-time OAuth
-consent. Nothing is echoed and nothing goes through the chat.
+It prompts for username, client id and secret (hidden), writes
+`~/.config/reddit_forma.json` at mode 600, and runs the OAuth consent step.
 
-## If "create app" still refuses
+## Note
 
-Two other things gate it, in order of likelihood:
+Claude cannot complete CAPTCHAs. That is a hard rule, not a capability gap, so this one
+step will always need a human regardless of which browser works.
 
-1. **Email not verified** on the account. Check
-   <https://www.reddit.com/settings/account> — an unverified email blocks app
-   creation. Verify, then retry.
-2. **API usage not registered.** The form links to
-   <https://www.reddit.com/wiki/api/#wiki_read_the_full_api_terms_and_sign_up_for_usage>.
-   Low-volume script apps normally do not need this, but if step 1 is fine and it
-   still fails, sign up there and retry.
+## The alternative, if this stays stuck
 
-## If you would rather not bother
-
-The drafts are ready to paste by hand:
-
-- `marketing/reddit-sideproject-post.md` — for r/SideProject and r/indiehackers
-
-Posting them manually takes about the same time as this setup. The API only pays
-off if we post repeatedly.
+Post by hand. The draft is at `marketing/reddit-sideproject-post.md`, sized for
+r/SideProject and r/indiehackers. Doing that twice costs about what this setup costs
+once. The API only wins if we post on a schedule.
