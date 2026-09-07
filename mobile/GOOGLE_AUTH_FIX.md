@@ -23,7 +23,7 @@ Follow these steps to fix the authorization error:
 Click **"+ ADD URI"** and add these **THREE** URIs:
 
 ```
-https://auth.expo.io/@raymondzhao3000/forma
+https://auth.expo.io/@<expo-username>/forma
 ```
 
 ```
@@ -64,7 +64,7 @@ Without these registered, Google blocks the sign-in attempt.
 
 ## ⚠️ Important Notes
 
-- Your Expo username is: `raymondzhao3000`
+- Your Expo username is: `<expo-username>`
 - Your app slug is: `forma`
 - The redirect URI format is: `https://auth.expo.io/@USERNAME/SLUG`
 

@@ -132,7 +132,7 @@ If not using `.env`, replace the placeholder values directly in the code.
 
 ### Mistake 2: App Bundle ID Mismatch
 Your RevenueCat project needs to match your app's bundle ID:
-- Bundle ID: `com.raymondzhao3000.forma`
+- Bundle ID: `<your-bundle-id>`
 - Check `app.json` → `ios.bundleIdentifier`
 - Check RevenueCat dashboard → Project Settings → iOS App
 

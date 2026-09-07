@@ -14,7 +14,7 @@ module.exports = () => {
     // Keep the same name, only change bundle ID and scheme
     config.ios = {
       ...config.ios,
-      bundleIdentifier: 'com.raymondzhao3000.forma.dev',
+      bundleIdentifier: 'com.formaz.nibble.dev',
     };
 
     const schemes = ensureArray(config.scheme);

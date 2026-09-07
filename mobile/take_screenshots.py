@@ -21,7 +21,7 @@ from pathlib import Path
 
 # ── Config ────────────────────────────────────────────────────────────────────
 DEVICE_ID     = "1B7B36AB-38F6-4EDE-B4AB-6C1882573E50"
-BUNDLE_ID     = "com.raymondzhao3000.forma"
+BUNDLE_ID     = "<your-bundle-id>"
 WORKSPACE     = Path(__file__).parent / "ios/Macra.xcworkspace"
 OUTPUT        = Path(__file__).parent / "screenshots"
 TEST_PASSWORD = "ScreenshotTest1!"

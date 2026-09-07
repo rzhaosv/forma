@@ -28,7 +28,7 @@ If you're using Expo Go, you can test with the Test Store:
 
 ### 3. Add Your App
 - Click "Add app"
-- For iOS: Enter your Bundle ID: `com.raymondzhao3000.forma`
+- For iOS: Enter your Bundle ID: `<your-bundle-id>`
 - You don't need App Store Connect integration yet for testing
 
 ### 4. Create an Entitlement

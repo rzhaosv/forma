@@ -114,7 +114,7 @@ xcrun simctl spawn booted log config --mode "level:debug" --subsystem com.google
 
 #### Android (Physical Device)
 ```bash
-adb shell setprop debug.firebase.analytics.app com.raymondzhao3000.forma
+adb shell setprop debug.firebase.analytics.app <your-bundle-id>
 ```
 
 To disable debug mode:
