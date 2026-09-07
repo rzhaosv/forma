@@ -438,4 +438,23 @@
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
+
+  <url>
+    <loc>https://tryforma.app/eastwind/</loc>
+    <lastmod>2026-09-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://tryforma.app/eastwind/privacy.html</loc>
+    <lastmod>2026-09-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://tryforma.app/eastwind/terms.html</loc>
+    <lastmod>2026-09-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
 </urlset>
