@@ -44,14 +44,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rzhaosv/forma.git"
+    "url": "git+https://github.com/tryforma/forma.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/rzhaosv/forma/issues"
+    "url": "https://github.com/tryforma/forma/issues"
   },
-  "homepage": "https://github.com/rzhaosv/forma#readme"
+  "homepage": "https://github.com/tryforma/forma#readme"
 }

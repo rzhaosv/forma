@@ -1,4 +1,4 @@
-# Builds the Onsite iOS app (public repo rzhaosv/onsite) on a free GitHub macOS runner via `eas build --local`.
+# Builds the Onsite iOS app (public repo tryforma/onsite) on a free GitHub macOS runner via `eas build --local`.
 # Lives in this repo so it can reuse the shared secrets (EXPO_TOKEN, ASC key, dist cert).
 name: Onsite iOS build (local EAS)
 
@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: rzhaosv/onsite
+          repository: tryforma/onsite
           ref: ${{ inputs.ref }}
       - uses: actions/setup-node@v4
         with:

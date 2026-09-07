@@ -1,4 +1,4 @@
-# Builds the Evensong iOS app (public repo rzhaosv/evensong) on a free GitHub macOS runner via `eas build --local`.
+# Builds the Evensong iOS app (public repo tryforma/evensong) on a free GitHub macOS runner via `eas build --local`.
 # Lives in this repo so it can reuse the shared secrets (EXPO_TOKEN, ASC key, dist cert).
 name: Evensong iOS build (local EAS)
 
@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: rzhaosv/evensong
+          repository: tryforma/evensong
           ref: ${{ inputs.ref }}
       - uses: actions/setup-node@v4
         with:

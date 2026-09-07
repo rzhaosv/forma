@@ -1,4 +1,4 @@
-# Builds the Cutoff iOS app (public repo rzhaosv/cutoff) on a free GitHub macOS runner via `eas build --local`.
+# Builds the Cutoff iOS app (public repo tryforma/cutoff) on a free GitHub macOS runner via `eas build --local`.
 # Lives in this repo so it can reuse the shared secrets (EXPO_TOKEN, ASC key, dist cert).
 name: Cutoff iOS build (local EAS)
 
@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: rzhaosv/cutoff
+          repository: tryforma/cutoff
           ref: ${{ inputs.ref }}
       - uses: actions/setup-node@v4
         with:

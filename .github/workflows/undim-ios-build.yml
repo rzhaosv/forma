@@ -1,4 +1,4 @@
-# Builds the Undim iOS app (public repo rzhaosv/undim) on a free GitHub macOS runner via `eas build --local`.
+# Builds the Undim iOS app (public repo tryforma/undim) on a free GitHub macOS runner via `eas build --local`.
 # Lives in this repo so it can reuse the shared secrets (EXPO_TOKEN, ASC key, dist cert).
 name: Undim iOS build (local EAS)
 
@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: rzhaosv/undim
+          repository: tryforma/undim
           ref: ${{ inputs.ref }}
       - uses: actions/setup-node@v4
         with:
