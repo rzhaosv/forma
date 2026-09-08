@@ -118,67 +118,132 @@
     globe(host, { you: you, pins: [], colors: {}, mini: true, label: 'A small turning globe' });
   }
 
-  /* ---------------- make a call ---------------- */
-  function calls() {
-    var list = document.getElementById('calls'), tally = document.getElementById('tally'); if (!list || !D.calls) return;
-    var KEY = D.callsKey || 'fz-calls-v1', CALLS = D.calls, st;
-    try { st = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { st = {}; }
-    function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
-    function draw() {
-      var r = 0, w = 0, o = 0; list.innerHTML = '';
-      CALLS.forEach(function (c) {
-        var s = st[c.id] || {};
-        if (s.c) { if (s.o === 'right') r++; else if (s.o === 'wrong') w++; else o++; }
-        var li = document.createElement('li');
-        var q = document.createElement('span'); q.className = 'q'; q.textContent = c.q;
-        var kl = c.k || (window.WORLD_CALL_LINKS || {})[c.id]; if (kl) { c = Object.assign({}, c, { k: kl }); var sm = document.createElement('small'); sm.innerHTML = 'Kalshi has this one: <a href="' + c.k + '" rel="noopener" target="_blank">see the live price</a>'; q.appendChild(sm); }
-        li.appendChild(q);
-        var opts = document.createElement('div'); opts.className = 'opts';
-        ['yes', 'no'].forEach(function (v) { var b = document.createElement('button'); b.type = 'button'; b.className = 'tog' + (s.c === v ? ' is-on' : ''); b.textContent = v === 'yes' ? 'Yes' : 'No'; b.onclick = function () { st[c.id] = { c: v, o: null }; save(); draw(); }; opts.appendChild(b); });
-        li.appendChild(opts);
-        var mark = document.createElement('div'); mark.className = 'mark';
-        if (s.c) {
-          var lab = document.createElement('span'); lab.textContent = 'You called ' + (s.c === 'yes' ? 'yes' : 'no') + '. Sunday:'; mark.appendChild(lab);
-          [['right', 'I was right'], ['wrong', 'I was wrong'], ['clear', 'clear']].forEach(function (p) { var b = document.createElement('button'); b.type = 'button'; b.className = 'tog sm ' + p[0] + (s.o === p[0] ? ' is-on' : ''); b.textContent = p[1]; b.onclick = function () { if (p[0] === 'clear') { delete st[c.id]; } else { st[c.id].o = p[0]; } save(); draw(); }; mark.appendChild(b); });
-        }
-        li.appendChild(mark); list.appendChild(li);
-      });
-      if (tally) tally.innerHTML = '<span><b>' + r + '</b>right</span><span><b>' + w + '</b>wrong</span><span><b>' + o + '</b>still open</span><span><b>' + (CALLS.length - r - w - o) + '</b>not called</span>';
-    }
-    draw();
-  }
+  /* ---------------- make a call: the house beside the money ----------------
+     Every question is voted here and the tally is shared, so you are never
+     playing against yourself. Where Kalshi has the same question we show their
+     price next to the house's opinion and hold the door open. Prices and votes
+     both come from /api/world; either can be missing and the board still reads. */
+  function board() {
+    var list = document.getElementById('markets'); if (!list) return;
+    var ROWS = (D.board || []).slice(0, 24); if (!ROWS.length) return;
+    var elById = {}, state = {};
 
-  /* ---------------- the Kalshi board ---------------- */
-  function kalshi() {
-    var list = document.getElementById('markets'); var MK = D.markets || window.WORLD_MARKETS; if (!list || !MK || !MK.length) return; D.markets = MK; D.marketsApi = D.marketsApi || window.WORLD_MARKETS_API;
-    function row(m) {
-      var li = document.createElement('li');
-      var q = document.createElement('span'); q.className = 'mq'; q.textContent = m.title;
-      var sm = document.createElement('small'); sm.textContent = m.sub || ''; q.appendChild(sm);
-      li.appendChild(q);
-      if (m.yes != null) {
-        var yes = Math.round(m.yes), odds = document.createElement('span'); odds.className = 'odds';
-        odds.innerHTML = yes + '¢<small>yes</small>'; li.appendChild(odds);
+    function pct(v) { return Math.round(v) + '%'; }
+    function houseYes(t) { var n = (t.yes || 0) + (t.no || 0); return n ? (t.yes / n) * 100 : null; }
+
+    function paint(row) {
+      var el = elById[row.id]; if (!el) return;
+      var st = state[row.id] || {}, t = st.votes || { yes: 0, no: 0 }, n = t.yes + t.no;
+      var h = houseYes(t), m = st.money == null ? null : st.money;
+
+      el.house.innerHTML = (h == null ? '&mdash;' : pct(h)) + '<small>the house</small>';
+      el.houseN.textContent = n === 0 ? 'no calls yet' : n === 1 ? '1 call' : n + ' calls';
+      if (el.money) el.money.innerHTML = (m == null ? '&mdash;' : m + '¢') + '<small>the money</small>';
+      el.split.style.setProperty('--h', (h == null ? 50 : h) + '%');
+      el.split.style.setProperty('--m', (m == null ? -1 : m) + '%');
+      el.split.classList.toggle('has-money', m != null);
+
+      for (var k in el.btn) el.btn[k].classList.toggle('is-on', st.you === k);
+
+      var say = '';
+      if (st.you) {
+        say = 'You said ' + st.you + '. ';
+        if (h != null && n > 1) {
+          var agree = st.you === 'yes' ? h : 100 - h;
+          say += pct(agree) + ' of the house is with you';
+          say += m == null ? '.' : ', and the money says ' + m + '.';
+        } else if (m != null) {
+          say += 'You are the first here. The money says ' + m + '.';
+        } else {
+          say += 'You are the first here.';
+        }
+      } else if (h != null && m != null && n >= 3) {
+        var gap = Math.round(h - m);
+        if (Math.abs(gap) >= 12) say = 'The house is ' + Math.abs(gap) + ' points more ' + (gap > 0 ? 'hopeful' : 'doubtful') + ' than the money. One of you is wrong.';
+        else say = 'The house and the money agree, near enough.';
       }
-      var a = document.createElement('a'); a.className = 'btn sm ghost trade'; a.href = m.url; a.rel = 'noopener'; a.target = '_blank'; a.textContent = 'Open on Kalshi';
-      li.appendChild(a);
-      if (m.yes != null) { var bar = document.createElement('span'); bar.className = 'bar'; bar.innerHTML = '<i style="--p:' + Math.round(m.yes) + '%"></i>'; li.appendChild(bar); }
-      return li;
+      el.say.textContent = say;
+      el.say.hidden = !say;
     }
-    function draw(ms) { list.innerHTML = ''; ms.forEach(function (m) { list.appendChild(row(m)); }); }
-    draw(D.markets);
-    // Live prices if the browser is allowed to ask. If not, the snapshot stands and the "as of" line says so.
-    if (D.marketsApi) {
-      var asof = document.getElementById('asof');
-      Promise.all(D.markets.map(function (m) {
-        return fetch(D.marketsApi + encodeURIComponent(m.ticker), { mode: 'cors' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
-          var mk = j && (j.market || j); if (!mk) return m;
-          var p = mk.last_price != null ? mk.last_price : (mk.yes_ask != null ? mk.yes_ask : null);
-          if (p != null && p > 1) return Object.assign({}, m, { yes: p });
-          return m;
-        }).catch(function () { return m; });
-      })).then(function (ms) { draw(ms); if (asof && ms.some(function (m, i) { return m.yes !== D.markets[i].yes; })) asof.textContent = 'Live prices, just now.'; });
+
+    function cast(row, side) {
+      var st = state[row.id] || (state[row.id] = {});
+      var prev = st.you, t = st.votes || (st.votes = { yes: 0, no: 0 });
+      if (prev === side) return;
+      if (prev) t[prev] = Math.max(0, t[prev] - 1);
+      t[side]++; st.you = side; paint(row);
+      fetch('/api/world', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ market: row.id, side: side }) })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (j) { if (j && j.market === row.id) { st.votes = { yes: j.yes, no: j.no }; st.you = j.you; paint(row); } })
+        .catch(function () {});
+      try { localStorage.setItem('fz-call-' + row.id, side); } catch (e) {}
     }
+
+    ROWS.forEach(function (row) {
+      var li = document.createElement('li');
+      var q = document.createElement('div'); q.className = 'mq';
+      q.appendChild(document.createTextNode(row.q));
+      if (row.sub) { var sm = document.createElement('small'); sm.textContent = row.sub; q.appendChild(sm); }
+      li.appendChild(q);
+
+      var reads = document.createElement('div'); reads.className = 'reads';
+      var house = document.createElement('span'); house.className = 'read house'; reads.appendChild(house);
+      var money = null;
+      if (row.ticker) { money = document.createElement('span'); money.className = 'read money'; reads.appendChild(money); }
+      li.appendChild(reads);
+
+      var vote = document.createElement('div'); vote.className = 'vote';
+      var btn = {};
+      ['yes', 'no'].forEach(function (side) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'tog ' + side;
+        b.textContent = side === 'yes' ? 'Yes' : 'No';
+        b.setAttribute('aria-label', (side === 'yes' ? 'Yes' : 'No') + ': ' + row.q);
+        b.onclick = function () { cast(row, side); };
+        vote.appendChild(b); btn[side] = b;
+      });
+      if (row.url) {
+        var a = document.createElement('a'); a.className = 'trade'; a.href = row.url; a.rel = 'noopener'; a.target = '_blank';
+        a.textContent = 'Trade it'; a.setAttribute('aria-label', 'Trade this on Kalshi: ' + row.q);
+        vote.appendChild(a);
+      }
+      li.appendChild(vote);
+
+      var split = document.createElement('div'); split.className = 'split'; split.innerHTML = '<i></i><b></b>';
+      li.appendChild(split);
+      var houseN = document.createElement('span'); houseN.className = 'houseN'; li.appendChild(houseN);
+      var say = document.createElement('p'); say.className = 'say'; say.hidden = true; li.appendChild(say);
+
+      elById[row.id] = { house: house, money: money, split: split, say: say, houseN: houseN, btn: btn };
+      state[row.id] = { votes: { yes: 0, no: 0 }, money: null, you: null };
+      try { var seen = localStorage.getItem('fz-call-' + row.id); if (seen === 'yes' || seen === 'no') state[row.id].you = seen; } catch (e) {}
+      list.appendChild(li);
+      paint(row);
+    });
+
+    var q = ROWS.map(function (r) { return r.id + ':' + (r.ticker || ''); }).join(',');
+    fetch('/api/world?q=' + encodeURIComponent(q))
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        if (!j) return;
+        var total = 0, priced = 0;
+        ROWS.forEach(function (row) {
+          var st = state[row.id];
+          var t = j.votes && j.votes[row.id]; if (t) { st.votes = { yes: t.yes || 0, no: t.no || 0 }; }
+          if (j.you && j.you[row.id]) st.you = j.you[row.id];
+          var p = row.ticker && j.prices && j.prices[row.ticker];
+          if (p && p.yes != null) { st.money = p.yes; priced++; }
+          total += st.votes.yes + st.votes.no;
+          paint(row);
+        });
+        var asof = document.getElementById('asof');
+        if (asof) {
+          var bits = [];
+          bits.push(total === 0 ? 'No calls made here yet. Be the first.' : total.toLocaleString() + (total === 1 ? ' call made here.' : ' calls made here.'));
+          if (priced) bits.push('Prices from Kalshi, updated every minute.');
+          asof.textContent = bits.join(' ');
+        }
+      })
+      .catch(function () {});
   }
 
   /* ---------------- the cut and the build ---------------- */
@@ -207,6 +272,6 @@
     });
   }
 
-  function init() { mountGlobe(); mountMini(); calls(); kalshi(); cut(); }
+  function init() { mountGlobe(); mountMini(); board(); cut(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(init, 0); }); else setTimeout(init, 0);
 })();

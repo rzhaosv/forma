@@ -26,6 +26,9 @@
 //       comments_like(p_id, p_ip_hash)                      -> {id, likes, liked} (raises not_found)
 
 import crypto from 'crypto';
+// /api/world (rewritten here in vercel.json) shares this function because a
+// Hobby deployment is capped at 12 serverless functions and we are at the cap.
+import { handleWorld } from './_world/board.js';
 
 const SUPABASE_URL = (process.env.SUPABASE_URL || '').replace(/\/+$/, '');
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
@@ -59,6 +62,16 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end();
 
   try {
+    if (queryOf(req).fn === 'world') {
+      return await handleWorld(req, res, {
+        rpc,
+        storageConfigured,
+        underCap,
+        ipHash: hashIp(clientIp(req)),
+        queryOf,
+        parseBody,
+      });
+    }
     if (req.method === 'GET') return await handleList(req, res);
     if (req.method === 'POST') {
       const body = parseBody(req);

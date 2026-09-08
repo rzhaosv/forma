@@ -65,39 +65,42 @@
 .hire .tag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--warn)}
 .sub-h{font-family:var(--display);font-weight:500;font-variation-settings:"opsz" 48,"SOFT" 40;font-size:23px;letter-spacing:-.015em;margin:34px 0 4px}
 
-/* make a call: the Kalshi board + your own board */
-.kalshi-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 12px}
-.kalshi-mark{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;color:var(--ink);text-decoration:none;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
-.kalshi-mark i{width:18px;height:18px;border-radius:5px;background:#00d26a;display:inline-block;position:relative}
-.kalshi-mark i::after{content:"";position:absolute;left:5px;top:4px;width:8px;height:8px;border-right:2.5px solid #062;border-bottom:2.5px solid #062;transform:rotate(45deg) translate(-1px,-1px)}
+/* make a call: one shared board. The rose bar is the house, the green tick is the money. */
+.kalshi-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin:0 0 14px}
+.kalshi-mark{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;color:var(--ink);text-decoration:none;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;white-space:nowrap}
+.kalshi-mark:hover{border-color:#00b85c}
+.kalshi-mark i{width:16px;height:16px;border-radius:5px;background:#00d26a;display:inline-block;position:relative;flex:none}
+.kalshi-mark i::after{content:"";position:absolute;left:4px;top:3px;width:7px;height:7px;border-right:2.4px solid #06422a;border-bottom:2.4px solid #06422a;transform:rotate(45deg)}
 .markets{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink)}
-.markets li{display:grid;grid-template-columns:1fr auto;gap:10px 18px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
-.markets li:has(.odds){grid-template-columns:1fr auto auto}
-.markets .mq{font-size:16px;color:var(--ink);text-wrap:pretty}
-.markets .mq small{display:block;font-size:12.5px;color:var(--soft);margin-top:2px}
-.markets .odds{font-family:var(--display);font-weight:500;font-variation-settings:"opsz" 48,"SOFT" 40;font-size:26px;letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
-.markets .odds small{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Segoe UI,Roboto,sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--soft);display:block;line-height:1}
-.markets .trade{white-space:nowrap}
-.markets .bar{grid-column:1/-1;height:4px;border-radius:2px;background:var(--muted-bg);overflow:hidden;margin-top:-4px}
-.markets .bar i{display:block;height:100%;background:linear-gradient(90deg,#00d26a,#00b85c);width:var(--p,50%)}
-@media (max-width:560px){.markets li{grid-template-columns:1fr auto}.markets .trade{grid-column:1/-1;justify-self:start}}
-.calls{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink)}
-.calls li{display:grid;grid-template-columns:1fr auto;gap:8px 18px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
-.calls .q{font-size:16.5px;color:var(--ink);text-wrap:pretty}
-.calls .q small{display:block;font-size:12.5px;color:var(--soft);margin-top:2px}
-.calls .q small a{font-weight:600}
-.calls .opts,.calls .mark{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.calls .mark{grid-column:1/-1;justify-content:flex-start;font-size:13px;color:var(--soft);align-items:center;min-height:0}
-.calls .mark:empty{display:none}
-.tog{font:600 13px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Text",Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
-.tog:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
-.tog.is-on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.tog.sm{padding:5px 10px;font-size:12px}
-.tog.right.is-on{background:#2f7d63;border-color:#2f7d63;color:#fff}
-.tog.wrong.is-on{background:var(--warn);border-color:var(--warn);color:#fff}
-.tally{display:flex;gap:22px;flex-wrap:wrap;margin:0 0 14px;font-size:14px;color:var(--soft)}
-.tally b{font-family:var(--display);font-weight:500;font-size:22px;color:var(--ink);letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-right:6px}
-@media (max-width:520px){.calls li{grid-template-columns:1fr}.calls .opts{justify-content:flex-start}}
+.markets li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"q reads vote" "split split split" "n say say";gap:9px 20px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}
+.markets .mq{grid-area:q;font-size:16.5px;line-height:1.4;color:var(--ink);text-wrap:pretty}
+.markets .mq small{display:block;font-size:12.5px;color:var(--soft);margin-top:3px}
+.reads{grid-area:reads;display:flex;gap:20px;align-items:flex-start}
+.read{font-family:var(--display);font-weight:500;font-variation-settings:"opsz" 48,"SOFT" 40;font-size:25px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.read small{display:block;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Segoe UI,Roboto,sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-top:5px;line-height:1}
+.read.house{color:var(--accent)}
+.read.house small{color:var(--soft)}
+.read.money{color:#2f9c6a}
+.read.money small{color:var(--soft)}
+@media (prefers-color-scheme:dark){.read.money{color:#57d39b}}
+.vote{grid-area:vote;display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.vote .tog.yes.is-on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.vote .tog.no.is-on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.vote .trade{font-size:13px;font-weight:600;text-decoration:none;color:#2f9c6a;border:1px solid color-mix(in srgb,#2f9c6a 40%,var(--line));border-radius:999px;padding:7px 12px;white-space:nowrap;transition:background .2s,border-color .2s}
+.vote .trade:hover{background:color-mix(in srgb,#2f9c6a 12%,transparent);border-color:#2f9c6a}
+@media (prefers-color-scheme:dark){.vote .trade{color:#57d39b}}
+.split{grid-area:split;position:relative;height:6px;border-radius:3px;background:var(--muted-bg);overflow:visible}
+.split i{display:block;height:100%;width:var(--h,50%);border-radius:3px;background:var(--accent);opacity:.5;transition:width .45s var(--ease)}
+.split b{position:absolute;top:-4px;bottom:-4px;left:var(--m,50%);width:2px;background:#2f9c6a;border-radius:1px;display:none;transition:left .45s var(--ease)}
+.split.has-money b{display:block}
+.markets .houseN{grid-area:n;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--soft);white-space:nowrap}
+.markets .say{grid-area:say;margin:0;font-size:14.5px;color:var(--ink);text-wrap:pretty}
+.markets .say[hidden]{display:none}
+@media (max-width:700px){
+  .markets li{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"q q" "reads vote" "split split" "n n" "say say";gap:10px 14px}
+  .reads{justify-content:flex-start}
+  .read{text-align:left}
+}
 
 /* start something */
 .partner{border-left:3px solid var(--warn);background:linear-gradient(135deg,var(--warn-soft),var(--panel))}
