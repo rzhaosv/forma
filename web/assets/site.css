@@ -47,7 +47,10 @@ p{margin:0 0 1em;text-wrap:pretty}
 .fz-nav.is-scrolled{box-shadow:0 1px 0 var(--fz-line),0 8px 24px -16px rgba(0,0,0,.25)}
 .fz-nav .fz-in{max-width:1040px;margin:0 auto;padding:0 22px;display:flex;align-items:center;justify-content:space-between;min-height:58px;gap:16px}
 .fz-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--fz-ink);font-weight:700;letter-spacing:-.01em}
-.fz-brand i{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#f08cb0,#b5386b);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 1px 2px rgba(181,56,107,.3);display:inline-block;transition:transform .3s var(--ease,ease)}
+/* The mark: a rose tile carrying the F, drawn as a small ring around a still point. The dot is the reader; the ring is everything else. */
+.fz-brand i{width:26px;height:26px;border-radius:8px;display:inline-block;transition:transform .3s var(--ease,ease);
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M9.5 7.5h13.5v3.4h-9.7v4.4h8.2v3.4h-8.2V25H9.5z' fill='white' opacity='.96'/><circle cx='24.3' cy='24' r='2.1' fill='white' opacity='.95'/><circle cx='24.3' cy='24' r='4.6' fill='none' stroke='white' stroke-width='.9' opacity='.55'/></svg>") center/100% 100% no-repeat,linear-gradient(135deg,#f08cb0,#b5386b);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 1px 2px rgba(181,56,107,.3)}
 .fz-brand:hover i{transform:rotate(-6deg) scale(1.05)}
 .fz-links{display:flex;align-items:center;gap:6px;margin:0;padding:0;list-style:none}
 .fz-links>li{position:relative}
@@ -400,3 +403,40 @@ a.card.path .no{opacity:.85}
 .wrap.narrow>.told-turn,.told-turn{margin:22px 0 0;font-family:var(--display);font-weight:500;font-variation-settings:"opsz" 96,"SOFT" 40;font-size:clamp(24px,3.4vw,34px);line-height:1.18;letter-spacing:-.02em;color:var(--ink);max-width:22ch}
 /* ---- the closing question ---- */
 .ask{font-size:clamp(19px,2.5vw,23px);line-height:1.4;color:var(--ink);max-width:34ch;margin:0 0 14px;font-weight:500}
+
+/* ---- chips (shared by the app sorter and the world legend) ---- */
+.chip{display:inline-flex;align-items:center;gap:8px;font:600 13px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Text",Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:8px 13px;cursor:pointer;transition:border-color .2s,background .2s,transform .2s var(--ease);box-shadow:inset 0 1px 0 var(--hi)}
+.chip:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));transform:translateY(-1px)}
+.chip.is-on{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 45%,var(--line));color:var(--accent)}
+.chip i{width:9px;height:9px;border-radius:50%;background:var(--sw,var(--accent));flex:none;box-shadow:0 0 0 2px color-mix(in srgb,var(--sw,var(--accent)) 22%,transparent)}
+
+/* ---- home: app sorter ---- */
+.sorter{display:flex;flex-direction:column;gap:10px;margin:0 0 18px}
+.sorter .chips{display:flex;flex-wrap:wrap;gap:8px}
+.search{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 14px;max-width:420px;width:100%;box-shadow:inset 0 1px 0 var(--hi);transition:border-color .2s,box-shadow .2s}
+.search:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+#app-grid .card[hidden]{display:none}
+/* ---- home: make your own ---- */
+.make{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:18px;align-items:start}
+@media (max-width:820px){.make{grid-template-columns:1fr}}
+.make-form{display:flex;flex-direction:column;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow),inset 0 1px 0 var(--hi)}
+.make-form label{display:flex;flex-direction:column;gap:6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--soft)}
+.make-form input,.make-form textarea{font:16px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-transform:none;letter-spacing:0;font-weight:400}
+.make-form input:focus,.make-form textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.make-form textarea{resize:vertical}
+.make-out{background:var(--bg-warm);border:1px dashed color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:var(--radius);padding:16px 18px;min-height:100%}
+.make-out-h{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.make-out-h .no{margin:0}
+.make-out pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:13px;line-height:1.6;color:var(--ink)}
+.sub-h{font-family:var(--display);font-weight:500;font-variation-settings:"opsz" 48,"SOFT" 40;font-size:23px;letter-spacing:-.015em;margin:34px 0 10px}
+/* ---- home: world teaser ---- */
+.teaser{display:grid;grid-template-columns:minmax(220px,.7fr) minmax(0,1.3fr);gap:32px;align-items:center}
+.teaser .globe-wrap{max-width:360px}
+.teaser h2{margin-bottom:12px}
+@media (max-width:760px){.teaser{grid-template-columns:1fr}.teaser .globe-wrap{max-width:260px;margin:0}}
+/* ---- home: paths, each with its own colour so nine do not read as one ---- */
+a.card.path{border-top:3px solid var(--pc,var(--accent))}
+a.card.path .no{color:var(--pc,var(--accent))}
+.paths-rest{margin:18px 0 0;font-size:15px;color:var(--soft);line-height:1.8}
+.paths-rest a{text-decoration:none;font-weight:500;color:var(--ink)}
+.paths-rest a:hover{color:var(--accent);text-decoration:underline}

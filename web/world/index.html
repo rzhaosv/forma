@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The World — Forma</title>
-<meta name="description" content="Eight billion people, and eight of them are in the group chat. A slowly turning globe, and four rooms you can walk into: someone to adore, a call to make for nothing, a company the size of one person, and the cut and the build.">
+<title>The World, for him — Forma</title>
+<meta name="description" content="Eight billion people, and eight of them are in the group chat. A slowly turning globe and four rooms: someone to adore, a call to make on Kalshi or for nothing, a company the size of one person, and the cut and the build.">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#fffbfc" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1a1218" media="(prefers-color-scheme: dark)">
@@ -12,110 +12,26 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Forma">
 <meta property="og:url" content="https://tryforma.app/world/">
-<meta property="og:title" content="The World — Forma">
+<meta property="og:title" content="The World, for him — Forma">
 <meta property="og:description" content="Eight billion people, and eight of them are in the group chat. A slowly turning globe and four rooms you can walk into.">
 <meta property="og:image" content="https://tryforma.app/assets/og-forma.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="The World — Forma">
+<meta name="twitter:title" content="The World, for him — Forma">
 <meta name="twitter:description" content="Eight billion people, and eight of them are in the group chat. A slowly turning globe and four rooms you can walk into.">
 <meta name="twitter:image" content="https://tryforma.app/assets/og-forma.png">
-<meta name="keywords" content="how small you are, the comparison trap, kpop to adore, prediction game no money, start a one person company, llc mercury bank, two block haircut skincare gym plan, pc bang">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%231f8a5f%27/%3E%3Cstop offset=%271%27 stop-color=%27%230e5e4a%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2732%27 height=%2732%27 rx=%279%27 fill=%27url(%23g)%27/%3E%3Cpath d=%27M10 8h13v3.6h-9v4.2h7.6v3.6H14V25h-4z%27 fill=%27%23faf8f4%27/%3E%3C/svg%3E">
+<meta name="keywords" content="how small you are, the comparison trap, kpop to adore, kalshi prediction market, start a one person company, llc mercury bank, two block haircut skincare gym plan, pc bang, rental girlfriend tokyo, timeleft dinner">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23f08cb0%27/%3E%3Cstop offset=%271%27 stop-color=%27%23b5386b%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2732%27 height=%2732%27 rx=%279%27 fill=%27url(%23g)%27/%3E%3Cpath d=%27M9.5 7.5h13.5v3.4h-9.7v4.4h8.2v3.4h-8.2V25H9.5z%27 fill=%27white%27/%3E%3Ccircle cx=%2724.3%27 cy=%2724%27 r=%272.1%27 fill=%27white%27/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500..600,0..100&display=swap">
 <link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/world.css">
 <script>document.documentElement.classList.add('fz-js')</script>
 <script src="/assets/glow.js" defer></script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"The World","url":"https://tryforma.app/world/","description":"Eight billion people, and eight of them are in the group chat. A slowly turning globe and four rooms you can walk into.","isPartOf":{"@type":"WebSite","name":"Forma","url":"https://tryforma.app/"}}</script>
-<style>
-/* ---- the world: globe stage, rooms, small tools. Page-local; everything else comes from site.css ---- */
-.hero.world{padding-bottom:12px}
-.world .lede{max-width:60ch}
-.stage{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:26px;align-items:start;margin-top:8px}
-@media (max-width:820px){.stage{grid-template-columns:1fr}}
-.globe-wrap{position:relative;aspect-ratio:1;max-width:600px;margin:0 auto;width:100%}
-.globe-wrap svg{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
-.globe-wrap svg:active{cursor:grabbing}
-.globe-wrap .ocean{fill:color-mix(in srgb,var(--panel) 70%,var(--bg-warm));stroke:var(--line);stroke-width:1}
-.globe-wrap .grat{fill:none;stroke:var(--line);stroke-width:.5;opacity:.7}
-.globe-wrap .land{fill:var(--accent-soft);stroke:color-mix(in srgb,var(--accent) 30%,var(--line));stroke-width:.6}
-.globe-wrap .pin{cursor:pointer;stroke:var(--panel);stroke-width:1.2;transition:opacity .3s,r .2s}
-.globe-wrap .pin:hover,.globe-wrap .pin.is-on{r:6.5}
-.globe-wrap .pin.dim{opacity:.16;pointer-events:none}
-.globe-wrap .you{fill:var(--accent);stroke:none}
-.globe-wrap .you-ring{fill:none;stroke:var(--accent);stroke-width:.8;opacity:.55;animation:you-ping 3.2s ease-out infinite}
-@keyframes you-ping{0%{r:2;opacity:.6}100%{r:22;opacity:0}}
-.globe-wrap .you-label{font:600 10px/1 -apple-system,BlinkMacSystemFont,"SF Pro Text",Segoe UI,Roboto,sans-serif;fill:var(--soft);letter-spacing:.08em;text-transform:uppercase}
-.globe-wrap .halo{position:absolute;inset:-14%;z-index:-1;pointer-events:none;background:radial-gradient(circle at 50% 46%,var(--accent-glow),transparent 62%);opacity:.9}
-@media (prefers-color-scheme:dark){.globe-wrap .land{fill:color-mix(in srgb,var(--accent) 22%,var(--panel))}.globe-wrap .ocean{fill:color-mix(in srgb,var(--panel) 60%,#000)}}
-.legend{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0;padding:0;list-style:none}
-.chip{display:inline-flex;align-items:center;gap:8px;font:600 13px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Text",Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:8px 13px;cursor:pointer;transition:border-color .2s,background .2s,transform .2s var(--ease);box-shadow:inset 0 1px 0 var(--hi)}
-.chip:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));transform:translateY(-1px)}
-.chip.is-on{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 45%,var(--line));color:var(--accent)}
-.chip i{width:9px;height:9px;border-radius:50%;background:var(--sw,var(--accent));flex:none;box-shadow:0 0 0 2px color-mix(in srgb,var(--sw,var(--accent)) 22%,transparent)}
-.panel{position:sticky;top:76px}
-.panel .card{min-height:200px;gap:8px}
-.panel .no{margin-bottom:0}
-.panel h3{font-family:var(--display);font-weight:500;font-variation-settings:"opsz" 48,"SOFT" 40;font-size:23px;letter-spacing:-.015em;margin:0}
-.panel p{color:var(--ink);font-size:15.5px;line-height:1.6}
-.panel .where{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--soft)}
-.panel .go{margin-top:auto;padding-top:8px;font-weight:600;font-size:14px;text-decoration:none}
-.panel .go:hover{text-decoration:underline}
-.scale{display:flex;flex-wrap:wrap;gap:0;margin:26px 0 0;padding:0;list-style:none;border-top:1px solid var(--ink)}
-.scale li{flex:1 1 180px;padding:14px 22px 12px 0;border-bottom:1px solid var(--line)}
-.scale b{display:block;font-family:var(--display);font-weight:500;font-variation-settings:"opsz" 96,"SOFT" 40;font-size:clamp(30px,4vw,42px);line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-.scale span{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--soft)}
-/* rooms */
-.room{padding:56px 0 24px;border-top:1px solid var(--line)}
-.room .paths-intro{margin-bottom:22px}
-.idols .card{gap:6px}
-.idols h3{margin:0;font-size:18px}
-.idols .who{font-size:13px;color:var(--soft)}
-.idols .start{margin-top:auto;padding-top:8px;font-size:14px;color:var(--ink)}
-.idols .start b{color:var(--accent);font-weight:700}
-/* calls */
-.calls{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink)}
-.calls li{display:grid;grid-template-columns:1fr auto;gap:8px 18px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
-.calls .q{font-size:16.5px;color:var(--ink);text-wrap:pretty}
-.calls .opts,.calls .mark{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.calls .mark{grid-column:1/-1;justify-content:flex-start;font-size:13px;color:var(--soft);align-items:center;min-height:0}
-.calls .mark:empty{display:none}
-.tog{font:600 13px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Text",Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
-.tog:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
-.tog.is-on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.tog.sm{padding:5px 10px;font-size:12px}
-.tog.right.is-on{background:#2f7d63;border-color:#2f7d63;color:#fff}
-.tog.wrong.is-on{background:var(--warn);border-color:var(--warn);color:#fff}
-.tally{display:flex;gap:22px;flex-wrap:wrap;margin:0 0 14px;font-size:14px;color:var(--soft)}
-.tally b{font-family:var(--display);font-weight:500;font-size:22px;color:var(--ink);letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-right:6px}
-@media (max-width:520px){.calls li{grid-template-columns:1fr}.calls .opts{justify-content:flex-start}}
-/* start */
-.partner{border-left:3px solid var(--warn);background:linear-gradient(135deg,var(--warn-soft),var(--panel));}
-.partner .tag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--warn)}
-.partner h3{margin:0}
-.partner p{color:var(--ink)}
-.links{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0;padding:0;list-style:none}
-.links a{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;transition:border-color .2s,color .2s}
-.links a:hover{border-color:var(--accent);color:var(--accent)}
-.links small{font-weight:400;color:var(--soft)}
-/* cut & build */
-.pick{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:0 0 16px}
-.pick h4{margin:0 0 8px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--soft)}
-.pick .row{display:flex;flex-wrap:wrap;gap:6px}
-.plan{margin-top:18px}
-.plan .card{gap:14px}
-.plan h4{font-family:var(--display);font-weight:500;font-variation-settings:"opsz" 48,"SOFT" 40;font-size:20px;letter-spacing:-.015em;margin:0 0 4px}
-.plan p{color:var(--ink);font-size:15.5px;line-height:1.6}
-.plan .brief{background:var(--bg-warm);border:1px dashed color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:12px;padding:14px 16px;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:13.5px;line-height:1.55;color:var(--ink);white-space:pre-wrap}
-.plan .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.plan [hidden]{display:none}
-/* close */
-#small{padding:64px 0 20px;border-top:1px solid var(--line)}
-</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"The World, for him","url":"https://tryforma.app/world/","description":"Eight billion people, and eight of them are in the group chat. A slowly turning globe and four rooms you can walk into.","isPartOf":{"@type":"WebSite","name":"Forma","url":"https://tryforma.app/"}}</script>
 </head>
 <body>
 <nav class="fz-nav" aria-label="Site">
@@ -123,7 +39,7 @@
     <a class="fz-brand" href="/"><i aria-hidden="true"></i>Forma</a>
     <ul class="fz-links">
       <li><a href="/">Home</a></li>
-      <li><a href="/paths/" aria-haspopup="true">Paths</a><ul class="fz-dd"><li><a href="/paths/stuck-at-home/">Getting out of the house</a></li><li><a href="/paths/start-over/">A fresh start, a bit later</a></li><li><a href="/paths/no-big-title/">Not announcing it</a></li><li><a href="/paths/not-him/">Looking after yourself</a></li><li><a href="/paths/founders/">Playing it long</a></li><li><a href="/paths/never-the-pretty-one/">Second from the left</a></li><li><a href="/paths/no-expiry/">There is no clock</a></li><li><a href="/paths/quiet-start/">Getting in shape, quietly</a></li><li><a href="/paths/autistic-adults/">Working out the rules late</a></li><li><a href="/paths/fandom/">Something to look forward to</a></li><li><a href="/paths/way-back/">Making it right, slowly</a></li><li><a href="/paths/too-loud-out-there/">Turning the noise down</a></li><li><a href="/paths/not-what-they-said/">Keeping your composure</a></li><li><a href="/paths/the-crew/">A few people who'd actually show up</a></li><li><a href="/paths/after-the-drop/">The other twenty hours</a></li><li><a href="/paths/wanted/">Getting a handle on it</a></li><li><a href="/paths/late-to-love/">Putting yourself out there</a></li><li><a href="/paths/"><b>All paths</b></a></li></ul></li>
+      <li><a href="/paths/" aria-haspopup="true">Paths</a><ul class="fz-dd"><li><a href="/paths/stuck-at-home/">Leaving the apartment</a></li><li><a href="/paths/start-over/">Starting over at 34</a></li><li><a href="/paths/no-big-title/">No big title, building anyway</a></li><li><a href="/paths/not-him/">You were never going to be him</a></li><li><a href="/paths/founders/">Nine customers is a company</a></li><li><a href="/paths/never-the-pretty-one/">Never the pretty one</a></li><li><a href="/paths/no-expiry/">You do not expire</a></li><li><a href="/paths/quiet-start/">In shape, without announcing it</a></li><li><a href="/paths/autistic-adults/">The rules arrived late</a></li><li><a href="/paths/fandom/">Fandom was never the flaw</a></li><li><a href="/paths/way-back/">Making it right</a></li><li><a href="/paths/too-loud-out-there/">When the news is too loud</a></li><li><a href="/paths/not-what-they-said/">A story went round about you</a></li><li><a href="/paths/the-crew/">Six people who would show up</a></li><li><a href="/paths/after-the-drop/">After the drop</a></li><li><a href="/paths/wanted/">The hunger, pointed right</a></li><li><a href="/paths/late-to-love/">Late to love</a></li><li><a href="/paths/"><b>All paths</b></a></li></ul></li>
       <li><a href="/#apps" aria-haspopup="true">Apps</a><ul class="fz-dd"><li><a href="/nibble/">Nibble<small>Log meals by photo, voice or barcode</small></a></li><li><a href="/landed/">Landed<small>Keep the weight off after Ozempic</small></a></li><li><a href="/lapis/">Lapis<small>Identify any rock or crystal</small></a></li><li><a href="/wisp/">Wisp<small>Craving SOS &amp; puff tracker</small></a></li><li><a href="/tomorrowyou/">Tomorrow You<small>Alcohol tracker &amp; morning log</small></a></li><li><a href="/lantern/">Lantern<small>A 7-minute daily ritual</small></a></li><li><a href="/stride/">Stride<small>Gentle step tracker</small></a></li><li><a href="/ascension/">Ascension<small>A plan for the frame and the face</small></a></li><li><a href="/evensong/">Evensong<small>Morning &amp; evening devotional</small></a></li><li><a href="/plainly/">Plainly<small>ND dating &amp; friends, said plainly</small></a></li><li><a href="/cutoff/">Cutoff<small>A house stylist that reads your outfit</small></a></li><li><a href="/onsite/">Onsite<small>Interview prep for the AI labs</small></a></li><li><a href="/sesame/">Sesame<small>120 high-protein Asian recipes</small></a></li><li><a href="/kotatsu/">Kotatsu<small>Six friends who kept your seat</small></a></li><li><a href="/undim/">Undim<small>Feel again, on purpose</small></a></li><li><a href="/eastwind/">Eastwind<small>Out of lust, into life</small></a></li><li><a href="/porchcats/">Porch Cats<small>Put out a bowl, see who comes</small></a></li><li><a href="/sizedown/">Size Down<small>Trading journal &amp; eval tracker</small></a></li></ul></li>
       <li><a href="/world/" aria-current="page">World</a></li>
       <li><a href="/community/">Lounge</a></li>
@@ -135,6 +51,7 @@
 
 <section class="hero world"><div class="wrap">
   <span class="eyebrow">Somewhere bigger</span>
+  <div class="switch" aria-label="Whose world"><a href="/world/" aria-current="page">For him</a><a href="/world/her/">For her</a></div>
   <p class="masthead">Population 8,200,000,000. Group chat, 8.</p>
   <h1>See how small you are. It is the best news you will get today.</h1>
   <p class="lede">Every scoreboard you have ever lost on had the same eight names at the top, and every one of them lives within forty miles of you. Below is the rest of it: the other 8,199,999,992, none of whom have heard of the group chat, most of whom are having a perfectly good Tuesday without your title. Drag it. Let it turn. Find yourself, and then notice how quickly the camera leaves you behind.</p>
@@ -144,13 +61,13 @@
       <article class="card" id="pin-panel">
         <span class="no" id="pp-no">Where you are</span>
         <h3 id="pp-title">Somewhere down there, near the fog</h3>
-        <p id="pp-body">There is a dot the size of one pixel on the peninsula. That is you. It has a ring around it so you can find it; nothing else on this ball has ever needed one. Tap any of the others.</p>
+        <p id="pp-body">There is a dot the size of one pixel on the peninsula. That is you. It has a ring around it so you can find it; nothing else on this ball has ever needed one. Tap a pin, or pick a room below and the globe will take you there.</p>
         <span class="where" id="pp-where">37.37° N, 122.04° W</span>
         <a class="go" id="pp-go" href="#adore" hidden>Go there <span aria-hidden="true">&rarr;</span></a>
       </article>
     </aside>
   </div>
-  <ul class="legend" id="legend" aria-label="Filter the map">
+  <ul class="legend" id="legend" aria-label="Pick a room and the globe turns to it">
     <li><button class="chip is-on" data-cat="all" type="button">Everything</button></li>
     <li><button class="chip" data-cat="adore" type="button" style="--sw:var(--accent)"><i></i>Someone to adore</button></li>
     <li><button class="chip" data-cat="call" type="button" style="--sw:var(--warn)"><i></i>Make a call</button></li>
@@ -171,37 +88,51 @@
   <h2>Someone to adore</h2>
   <p class="paths-intro">You already know how to do this. You have never once compared yourself to Hanni. You do not know her comp and it has never occurred to you to find out. You have not lain awake wondering whether Wonyoung thinks you are behind. For years, in private, you have been practising the one skill this whole site is trying to teach: loving something on purpose, at full volume, with nothing in it for you. That was never the guilty pleasure. That was the muscle.</p>
   <div class="grid idols">
-    <article class="card"><span class="no">Seoul &middot; Yongsan</span><h3>NewJeans</h3><p class="who">Minji, Hanni, Danielle, Haerin, Hyein</p><p>The sound of a summer you did not have and can still borrow. Nothing about them is trying to impress you, which is the whole trick.</p><p class="start">Start with <b>Ditto</b>, then <b>Super Shy</b>.</p></article>
-    <article class="card"><span class="no">Seoul &middot; Yongsan</span><h3>LE SSERAFIM</h3><p class="who">Sakura, Chaewon, Yunjin, Kazuha, Eunchae</p><p>Composed, unbothered, expensive-looking without a single logo. The reference for how this studio wants to carry itself.</p><p class="start">Start with <b>Perfect Night</b>, then <b>Antifragile</b>.</p></article>
-    <article class="card"><span class="no">Seoul &middot; Seongsu</span><h3>IVE</h3><p class="who">Yujin, Gaeul, Rei, Wonyoung, Liz, Leeseo</p><p>Self-possession as a genre. They sing about liking themselves and somehow it is not annoying; take notes.</p><p class="start">Start with <b>Love Dive</b>, then <b>I AM</b>.</p></article>
-    <article class="card"><span class="no">Seoul &middot; Seongsu</span><h3>aespa</h3><p class="who">Karina, Giselle, Winter, Ningning</p><p>For the nights you want the volume up and the lights off. Loud in a way that has nothing to prove either.</p><p class="start">Start with <b>Supernova</b>, then <b>Spicy</b>.</p></article>
-    <article class="card"><span class="no">Seoul</span><h3>IU</h3><p class="who">Lee Ji-eun</p><p>Twenty years in and still writing her own songs. The long game, in a person. Put this on when the tab is open again.</p><p class="start">Start with <b>Through the Night</b>, then <b>Love Poem</b>.</p></article>
-    <article class="card"><span class="no">Seoul &middot; Mapo</span><h3>TWICE</h3><p class="who">Nine of them, since 2015</p><p>Ten years of showing up, on time, cheerful, and no one member louder than the rest. A working definition of a crew.</p><p class="start">Start with <b>Feel Special</b>, then <b>The Feels</b>.</p></article>
-    <article class="card"><span class="no">Seoul &middot; Seongdong</span><h3>(G)I-DLE</h3><p class="who">Miyeon, Minnie, Soyeon, Yuqi, Shuhua</p><p>They write their own material and it shows: sharp, a little mean, entirely on their own terms.</p><p class="start">Start with <b>Queencard</b>, then <b>TOMBOY</b>.</p></article>
-    <article class="card"><span class="no">Seoul &middot; Mapo</span><h3>ITZY</h3><p class="who">Yeji, Lia, Ryujin, Chaeryeong, Yuna</p><p>Every song is about not needing permission. Useful to have in your ears on the drive down 101 to the office.</p><p class="start">Start with <b>WANNABE</b>, then <b>Not Shy</b>.</p></article>
+    <article class="card"><img class="photo" src="/assets/world/idols/newjeans.jpg" alt="The five members of NewJeans" width="1000" height="751" loading="lazy"><span class="no">Seoul &middot; Yongsan</span><h3>NewJeans</h3><p class="who">Minji, Hanni, Danielle, Haerin, Hyein</p><p>The sound of a summer you did not have and can still borrow. Nothing about them is trying to impress you, which is the whole trick.</p><p class="start">Start with <b>Ditto</b>, then <b>Super Shy</b>.</p><small class="credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:NewJeans_Incheon_Airport_Public_Relations_Ambassador_Ceremony.jpg" rel="noopener">TV10</a>, CC BY 3.0</small></article>
+    <article class="card"><img class="photo" src="/assets/world/idols/lesserafim.jpg" alt="LE SSERAFIM on a red carpet" width="1000" height="593" loading="lazy"><span class="no">Seoul &middot; Yongsan</span><h3>LE SSERAFIM</h3><p class="who">Sakura, Chaewon, Yunjin, Kazuha, Eunchae</p><p>Composed, unbothered, expensive-looking without a single logo. The reference for how this studio wants to carry itself.</p><p class="start">Start with <b>Perfect Night</b>, then <b>Antifragile</b>.</p><small class="credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Le_Sserafim_at_the_2026_Golden_Disc_Awards.png" rel="noopener">TV10</a>, CC BY 3.0</small></article>
+    <article class="card"><img class="photo" src="/assets/world/idols/ive.jpg" alt="The six members of IVE" width="1000" height="480" loading="lazy"><span class="no">Seoul &middot; Seongsu</span><h3>IVE</h3><p class="who">Yujin, Gaeul, Rei, Wonyoung, Liz, Leeseo</p><p>Self-possession as a genre. They sing about liking themselves and somehow it is not annoying; take notes.</p><p class="start">Start with <b>Love Dive</b>, then <b>I AM</b>.</p><small class="credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:IVE_in_2023.jpg" rel="noopener">TV10</a>, CC BY 3.0</small></article>
+    <article class="card"><img class="photo" src="/assets/world/idols/aespa.jpg" alt="aespa on a red carpet" width="1000" height="563" loading="lazy"><span class="no">Seoul &middot; Seongsu</span><h3>aespa</h3><p class="who">Karina, Giselle, Winter, Ningning</p><p>For the nights you want the volume up and the lights off. Loud in a way that has nothing to prove either.</p><p class="start">Start with <b>Supernova</b>, then <b>Spicy</b>.</p><small class="credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:20241115_aespa_TikTok_Awards_Korea_2024_Red_Carpet.jpg" rel="noopener">K-POPIT</a>, CC BY 3.0</small></article>
+    <article class="card"><img class="photo" src="/assets/world/idols/iu.jpg" alt="IU at a photo call" width="1000" height="1500" loading="lazy" style="object-position:50% 20%"><span class="no">Seoul</span><h3>IU</h3><p class="who">Lee Ji-eun</p><p>Twenty years in and still writing her own songs. The long game, in a person. Put this on when the tab is open again.</p><p class="start">Start with <b>Through the Night</b>, then <b>Love Poem</b>.</p><small class="credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:240807_IU_at_Estee_Lauder_Photo_Call_03.jpg" rel="noopener">Selfiepod</a>, CC BY 4.0</small></article>
+    <article class="card"><img class="photo" src="/assets/world/idols/twice.jpg" alt="The nine members of TWICE" width="1000" height="553" loading="lazy"><span class="no">Seoul &middot; Mapo</span><h3>TWICE</h3><p class="who">Nine of them, since 2015</p><p>Ten years of showing up, on time, cheerful, and no one member louder than the rest. A working definition of a crew.</p><p class="start">Start with <b>Feel Special</b>, then <b>The Feels</b>.</p><small class="credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Twice_Gaon_Chart_Kpop_Awards_2019_1.png" rel="noopener">Newsen</a>, CC BY 3.0</small></article>
+    <article class="card"><img class="photo" src="/assets/world/idols/gidle.jpg" alt="(G)I-DLE at a showcase" width="1000" height="591" loading="lazy"><span class="no">Seoul &middot; Seongdong</span><h3>(G)I-DLE</h3><p class="who">Miyeon, Minnie, Soyeon, Yuqi, Shuhua</p><p>They write their own material and it shows: sharp, a little mean, entirely on their own terms.</p><p class="start">Start with <b>Queencard</b>, then <b>TOMBOY</b>.</p><small class="credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:0226_%EB%AF%B8%EC%97%B0X%EB%AF%BC%EB%8B%88X%EC%88%98%EC%A7%84X%EC%86%8C%EC%97%B0X%EC%9A%B0%EA%B8%B0X%EC%8A%88%ED%99%94_%EB%A7%A4%EB%A0%A5%EB%84%98%EC%B9%98%EB%8A%94_%ED%8F%AC%ED%86%A0%ED%83%80%EC%9E%84_(%EC%97%AC%EC%9E%90)%EC%95%84%EC%9D%B4%EB%93%A4_%EB%AF%B8%EB%8B%882%EC%A7%91_%EC%87%BC%EC%BC%80%EC%9D%B4%EC%8A%A4.png" rel="noopener">News in Star</a>, CC BY-SA 4.0</small></article>
+    <article class="card"><img class="photo" src="/assets/world/idols/itzy.jpg" alt="The five members of ITZY" width="1000" height="462" loading="lazy"><span class="no">Seoul &middot; Mapo</span><h3>ITZY</h3><p class="who">Yeji, Lia, Ryujin, Chaeryeong, Yuna</p><p>Every song is about not needing permission. Useful to have in your ears on the drive down 101 to the office.</p><p class="start">Start with <b>WANNABE</b>, then <b>Not Shy</b>.</p><small class="credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:ITZY_at_SBS_Radio_in_July_2022.jpg" rel="noopener">SBS Radio</a>, CC BY 3.0</small></article>
   </div>
-  <div class="status-row" style="margin-top:22px"><a class="btn ghost" href="/paths/fandom/">Bring some of it home <span aria-hidden="true">&rarr;</span></a></div>
-  <p class="honest">Names and songs are public; nothing here is affiliated with any label or artist. Adoring from a distance is the correct distance.</p>
+
+  <h3 class="sub-h">Company, by the hour</h3>
+  <p class="paths-intro">The above-ground version. Tokyo worked out years ago that company is a service like any other, and the rest of the world is catching up on TikTok. None of these is a hostess club. All of them are the kind of thing you would tell the group chat about, if you told the group chat things.</p>
+  <div class="grid hire">
+    <article class="card"><img class="photo" src="/assets/world/idols/akihabara.jpg" alt="Akihabara at night" width="1000" height="666" loading="lazy"><span class="tag">Tokyo &middot; date only</span><h3>The rental girlfriend</h3><p>A licensed, above-board service: she meets you at the station, you go to the aquarium or the arcade, she holds the shopping bag and laughs at the right moments, and at six she goes home. About ¥6,000 an hour. Nobody touches anybody, by contract. It exists because a city of fourteen million decided that being accompanied is worth paying for, and they were right.</p><small class="credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Akihabara_Night.jpg" rel="noopener">ElHeineken</a>, CC BY 4.0</small></article>
+    <article class="card"><img class="photo" src="/assets/world/idols/shibuya.jpg" alt="Shibuya crossing at night" width="1000" height="681" loading="lazy"><span class="tag">Tokyo &middot; ¥10,000 and the train fare</span><h3>The man who does nothing</h3><p>Shoji Morimoto rents himself out to sit across from you and do nothing. He will come to the restaurant you did not want to eat at alone, the concert with the spare ticket, the courthouse. He will not advise, perform, or reply much. Hundreds of thousands of followers and a television drama later, it remains the most honest business model in this room.</p><small class="credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:1_shibuya_crossing_2012.jpg" rel="noopener">chensiyuan</a>, CC BY-SA 4.0</small></article>
+    <article class="card"><span class="tag">Tokyo &middot; ¥1,000 an hour</span><h3>Ossan Rental</h3><p>Rent a middle-aged man. He will listen to the thing you cannot tell the group chat, give you an opinion nobody asked him for, or help you carry the couch up the stairs. Started as a joke by a fashion stylist; became a company with thousands of bookings a year, because it turns out a lot of people are short of one uncle.</p></article>
+    <article class="card"><img class="photo" src="/assets/world/idols/supperclub.jpg" alt="A long dinner table set outdoors" width="1000" height="666" loading="lazy"><span class="tag">Wednesday &middot; six strangers</span><h3>Timeleft</h3><p>Dinner with five people you have never met, matched by a questionnaire, at a restaurant you find out that afternoon. San Francisco and three hundred other cities, every Wednesday. The least awkward version of putting yourself out there ever built, because nobody at the table is there to be picked.</p><small class="credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Kendall-Jackson_May_Farm-To-Table_Dinner_-_Stierch_01.jpg" rel="noopener">Sarah Stierch</a>, CC BY 4.0</small></article>
+    <article class="card"><span class="tag">San Francisco &middot; one night a week</span><h3>Thursday</h3><p>A dating app that only exists on Thursdays. For twenty-four hours it turns on, everyone in the city goes to the same few bars, and then it deletes itself until next week. You already get their emails. Go once, with the phone in your coat.</p></article>
+  </div>
+  <div class="status-row" style="margin-top:22px"><a class="btn ghost" href="/paths/fandom/">Bring some of it home <span aria-hidden="true">&rarr;</span></a><a class="btn ghost" href="/paths/late-to-love/">Late to love <span aria-hidden="true">&rarr;</span></a></div>
+  <p class="honest">Names, songs and services are public; nothing here is affiliated with any label, artist or company. Photographs are from Wikimedia Commons under the licences shown. Adoring from a distance is the correct distance.</p>
 </div></section>
 
 <section class="section room" id="call"><div class="wrap narrow">
   <span class="eyebrow">Room two</span>
   <h2>Make a call</h2>
-  <p class="paths-intro">The itch is real: to have a view about how the world will go, and to be right about it. Every app that sells you that charges for it, and the fee was never the money. Here it costs nothing, nobody sees your record, and being wrong is a Tuesday. Make your calls. Come back Sunday and mark them. Keep your own score, or do not.</p>
+  <p class="paths-intro">The itch is real: to have a view about how the world will go and to be right about it. The honest version of that itch is Kalshi, a regulated exchange where the price is the crowd's actual opinion and being wrong costs you. It is a good product and there is no reason to pretend it is not there, so here is what is on the board this week, with the door held open. Below it is your own board: the same kind of question, no money, no audience, marked by you on Sunday.</p>
+  <div class="kalshi-head"><a class="kalshi-mark" href="https://kalshi.com/" rel="noopener" target="_blank"><i aria-hidden="true"></i>This week on Kalshi</a><span class="note" id="asof">Their terms keep the prices on their side of the door, so tap through to see the odds. Not affiliated.</span></div>
+  <ol class="markets" id="markets"></ol>
+  <p class="honest">Kalshi is a real-money exchange regulated by the CFTC. Forma is not affiliated with it and earns nothing if you trade. Decide the most you would put in before you open the app, then have your view. The fun was always the view, never the size.</p>
+  <h3 class="sub-h">Your own board</h3>
   <div class="tally" id="tally" aria-live="polite"></div>
   <ol class="calls" id="calls"></ol>
-  <p class="note" style="margin-top:14px">Stored on this device only. No money changes hands, and no one but you will ever see the record. That is the entire point of it.</p>
+  <p class="note" style="margin-top:14px">Stored on this device only. No money changes hands here, and no one but you will ever see the record.</p>
 </div></section>
 
-<section class="section room" id="start"><div class="wrap">
+<section class="section room" id="start"><div class="plate-bg" style="--plate:url(/assets/world/plates/start-him.webp);--plate-op:.34" aria-hidden="true"></div><div class="wrap">
   <span class="eyebrow">Room three</span>
   <h2>Start something the size of one person</h2>
-  <p class="paths-intro">Not the company that gets reported. A company. One person, one thing people pay for, one bank account with a name on it that is not your employer's. It is more boring than the group chat makes it sound, and the boring part is the whole of it. Here is the ledger, in the order it actually happens.</p>
+  <p class="paths-intro">Not the company that gets reported. A company. One person, one thing people pay for, one bank account with a name on it that is not your employer's. It is more boring than the group chat makes it sound, and the boring part is the whole of it. Here is the ledger in the order it actually happens, and then the eight places it actually stalls.</p>
   <div class="stage" style="grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr)">
     <ol class="steps">
       <li><b>Name it.</b><span>Two words, spelled the way they sound. Check the domain. Do not spend a weekend on this; the name is the least of it.</span></li>
       <li><b>Make it a company.</b><span>A Delaware or Wyoming LLC through Northwest Registered Agent or Stripe Atlas. About three hundred dollars and forty minutes. You are now a founder in the eyes of the state, which is the only set of eyes that matters at this step.</span></li>
-      <li><b>Open the account.</b><span>Mercury, from your kitchen, in a day. A card with the company's name on it. From here on nothing for the company comes out of your own pocket, which is the first time it feels real.</span></li>
+      <li><b>Open the account.</b><span>Mercury, from your kitchen, in a day or two. A card with the company's name on it. From here on nothing for the company comes out of your own pocket, which is the first time it feels real.</span></li>
       <li><b>Put up a page.</b><span>One page, one sentence about what it does, one way to pay. Vercel is free until it is not, and by then you will not mind.</span></li>
       <li><b>Charge the first person.</b><span>Stripe. The first payment is small, and it changes something in you that no promotion ever has.</span></li>
       <li><b>Find the ninth.</b><span>Nine customers, looked after by name, is a real company. It was always going to be. Nobody screenshots it, and that is fine.</span></li>
@@ -216,16 +147,28 @@
       <ul class="links" aria-label="The rest of the kit">
         <li><a href="https://www.northwestregisteredagent.com/" rel="noopener">Northwest <small>LLC</small></a></li>
         <li><a href="https://stripe.com/atlas" rel="noopener">Stripe Atlas <small>LLC</small></a></li>
+        <li><a href="https://www.irs.gov/businesses/small-businesses-self-employed/get-an-employer-identification-number" rel="noopener">IRS <small>EIN, free</small></a></li>
         <li><a href="https://vercel.com/" rel="noopener">Vercel <small>page</small></a></li>
         <li><a href="https://stripe.com/" rel="noopener">Stripe <small>payments</small></a></li>
       </ul>
       <p class="honest" style="margin-top:14px">Plain links, no referral codes. Independent studio, not affiliated with any of them.</p>
     </div>
   </div>
-  <div class="status-row" style="margin-top:22px"><a class="btn ghost" href="/paths/founders/">The long version <span aria-hidden="true">&rarr;</span></a><a class="btn ghost" href="/yc/">If you are aiming at a batch <span aria-hidden="true">&rarr;</span></a></div>
+  <h3 class="sub-h">Where it actually stalls</h3>
+  <ol class="stuck">
+    <li><b>Picking the thing.</b><span>Not the LLC. You will spend a month on the name and four minutes on what it does. Sell the thing people already ask you to do for free; that request was the whole of the market research.</span></li>
+    <li><b>The first message.</b><span>Not a launch. One message to one person who has the problem: I built the thing you asked about, do you want it for forty dollars a month. Send it before the page is finished, not after.</span></li>
+    <li><b>Pricing.</b><span>Charge more than feels comfortable and make it monthly. Nine people at forty a month is a company; ninety people at four is a hobby with support tickets.</span></li>
+    <li><b>The EIN, and the bank's questions.</b><span>Get the EIN from the IRS site the same afternoon as the LLC; it is free and takes ten minutes. Mercury will ask for it and for a document with your address that matches the filing exactly. The mismatch is the three-day delay everybody hits.</span></li>
+    <li><b>Stripe holding the money.</b><span>New accounts get reviewed. Describe the business honestly, add the support email, and expect the first payout to take a week. That is the procedure, not a verdict.</span></li>
+    <li><b>Week three.</b><span>Nobody comes back after the first burst and you conclude it was a fad. It was not. Week three is where every one-person company is decided, and the decision is to send one more message.</span></li>
+    <li><b>The tax you did not set aside.</b><span>Move thirty percent of every payment into a second account the day it lands. Estimates are due in April, June, September and January. Nobody warned you because nobody remembers being warned.</span></li>
+    <li><b>Telling the group chat.</b><span>Not until the ninth customer. Not because it is a secret. Because the first eight are for you.</span></li>
+  </ol>
+  <div class="status-row" style="margin-top:22px"><a class="btn ghost" href="/paths/founders/">Nine customers is a company <span aria-hidden="true">&rarr;</span></a><a class="btn ghost" href="/yc/">If you are aiming at a batch <span aria-hidden="true">&rarr;</span></a></div>
 </div></section>
 
-<section class="section room" id="cut"><div class="wrap">
+<section class="section room" id="cut"><div class="plate-bg" style="--plate:url(/assets/world/plates/cut-him.webp);--plate-op:.34" aria-hidden="true"></div><div class="wrap">
   <span class="eyebrow">Room four</span>
   <h2>The cut and the build</h2>
   <p class="paths-intro">Twelve weeks, three decisions, and a piece of paper you can hand to a barber. This is not about being looked at. It is about walking past a shop window and being on your own side. Pick one from each row and it writes the plan.</p>
@@ -250,7 +193,7 @@
 <section class="section" id="small"><div class="wrap">
   <p style="font-size:clamp(26px,4vw,38px);font-weight:700;letter-spacing:-.02em;line-height:1.2;margin:0 0 18px;max-width:28ch">You are one of eight billion. Eight of them are in the group chat. The rest have never heard of it.</p>
   <p class="ask">Go outside. Not to prove anything. Because it is there, and so are you.</p>
-  <div class="status-row"><a class="btn" href="/#apps">Back to the apps</a><a class="btn ghost" href="/paths/">Pick a path</a></div>
+  <div class="status-row"><a class="btn" href="/#apps">Back to the apps</a><a class="btn ghost" href="/world/her/">The world, for her</a></div>
 </div></section>
 
 <section class="section" id="wall"><div class="wrap">
@@ -266,214 +209,81 @@
       <p>Small, honest tools for the long game. Made by a tiny studio.</p>
       <p><a href="/world/">The World</a> &middot; <a href="/community/">The Forma Lounge</a> &middot; <a href="mailto:tryformaapp@gmail.com">tryformaapp@gmail.com</a></p>
     </div>
-    <div><h4>Rooms</h4><ul><li><a href="#adore">Someone to adore</a></li><li><a href="#call">Make a call</a></li><li><a href="#start">Start something</a></li><li><a href="#cut">The cut and the build</a></li></ul></div>
+    <div><h4>Rooms</h4><ul><li><a href="#adore">Someone to adore</a></li><li><a href="#call">Make a call</a></li><li><a href="#start">Start something</a></li><li><a href="#cut">The cut and the build</a></li><li><a href="/world/her/">For her</a></li></ul></div>
     <div><h4>Elsewhere</h4><ul><li><a href="/paths/">All paths</a></li><li><a href="/#apps">All apps</a></li><li><a href="/community/">The Lounge</a></li><li><a href="/yc/">The playbook</a></li></ul></div>
     <div class="fz-legal">&copy; 2026 Forma &middot; <span class="est">Est. 2026</span> &middot; All rights reserved.</div>
   </div>
 </footer>
 
+<script>
+window.WORLD = {
+  you: {lat:37.3688, lon:-122.0363},
+  colors: {adore:'var(--accent)', call:'var(--warn)', start:'#2f7d63', cut:'var(--ink)'},
+  labels: {adore:'Someone to adore', call:'Make a call', start:'Start something', cut:'The cut and the build'},
+  panelDefault: {no:'Where you are', t:'Somewhere down there, near the fog', b:'There is a dot the size of one pixel on the peninsula. That is you. It has a ring around it so you can find it; nothing else on this ball has ever needed one. Tap a pin, or pick a room below and the globe will take you there.', w:'37.37° N, 122.04° W'},
+  pins: [
+    {cat:'adore',lat:37.529,lon:126.965,no:'Seoul · Yongsan',t:'NewJeans and LE SSERAFIM',b:'Two groups, one building by the river, and between them most of the songs you have played on the drive home this year. Nobody in that building knows your title either.',go:'#adore'},
+    {cat:'adore',lat:37.544,lon:127.056,no:'Seoul · Seongsu',t:'IVE and aespa',b:'The old warehouse district, now cafés and a label. Self-possession as an industry. Walk it in the evening and notice how nobody is checking anything.',go:'#adore'},
+    {cat:'adore',lat:37.549,lon:126.914,no:'Seoul · Mapo',t:'TWICE, ITZY, BLACKPINK',b:'Three of the biggest acts on earth were assembled on a few blocks in Mapo. None of them started with an audience. Every one of them started with reps.',go:'#adore'},
+    {cat:'adore',lat:37.57,lon:126.98,no:'Seoul',t:'IU',b:'Twenty years in and still writing her own songs. The long game, in a person. This is the pin to tap when the tab is open again.',go:'#adore'},
+    {cat:'adore',lat:35.699,lon:139.774,no:'Tokyo · Akihabara',t:'The rental girlfriend',b:'Date only, by contract, about ¥6,000 an hour. She meets you at the station and holds the shopping bag. Tokyo decided company is a service; the rest of the world is still catching up on TikTok.',go:'#adore'},
+    {cat:'adore',lat:35.659,lon:139.7,no:'Tokyo · Shibuya',t:'The man who does nothing',b:'Shoji Morimoto will sit across from you and do nothing, for ¥10,000 and the train fare. Hundreds of thousands of followers. The most honest business in Japan.',go:'#adore'},
+    {cat:'adore',lat:35.705,lon:139.752,no:'Tokyo · Bunkyo',t:'Tokyo Dome',b:'Fifty-five thousand people who came to adore something together and went home lighter. Nobody there is measuring anyone. Go once.',go:'#adore'},
+    {cat:'adore',lat:34.043,lon:-118.267,no:'Los Angeles',t:'KCON LA',b:'Six hours south, every summer. The one crowd in California where being obsessed with something is the price of admission and not a thing to hide.',go:'#adore'},
+    {cat:'adore',lat:37.79,lon:-122.41,no:'San Francisco',t:'Timeleft, on a Wednesday',b:'Dinner with five strangers matched by a questionnaire. Nobody at the table is there to be picked, which is why it works.',go:'#adore'},
+    {cat:'call',lat:37.79,lon:-122.4,no:'San Francisco',t:'Will it rain before Friday?',b:'The first call on the board, and one you can settle by looking up. Start with the ones where being wrong costs a glance out the window.',go:'#call'},
+    {cat:'call',lat:37.33,lon:-122.03,no:'Cupertino',t:'The next keynote',b:'A colour you would actually buy, a feature you would actually use. Make the call before the event and see how well you read a company you have watched for twenty years.',go:'#call'},
+    {cat:'call',lat:38.893,lon:-77.045,no:'Washington',t:'The next rate decision',b:'The one your uncle has a view about at dinner. Have one too, on Kalshi or on your own board, and check it in six weeks.',go:'#call'},
+    {cat:'call',lat:51.555,lon:-0.108,no:'London · Islington',t:'Arsenal, this weekend',b:'Sixty thousand people who have been wrong about the same thing every May for two decades and keep showing up. That is the correct relationship to a call.',go:'#call'},
+    {cat:'call',lat:40.707,lon:-74.011,no:'New York · Wall Street',t:'The S&P by Friday',b:'Up or down. You do not have to be right. You have to notice that you had a view, and that the world did not consult it.',go:'#call'},
+    {cat:'start',lat:39.745,lon:-75.547,no:'Wilmington, Delaware',t:'Where the LLC lives',b:'A quiet building on a quiet street holds the paperwork for half the companies you have heard of and, for about three hundred dollars, yours. Nobody there will ask what you do.',go:'#start'},
+    {cat:'start',lat:41.14,lon:-104.82,no:'Cheyenne, Wyoming',t:'Or here, cheaper and quieter',b:'The other place one-person companies live. Lower fees, no franchise tax, and a state that has never once been mentioned in the group chat.',go:'#start'},
+    {cat:'start',lat:37.775,lon:-122.418,no:'San Francisco',t:'The bank is a website',b:'Mercury has no branch. You open the account from your kitchen, and the card arrives with the company’s name on it. It is the first day the thing feels real.',go:'#start'},
+    {cat:'start',lat:37.87,lon:-122.26,no:'Berkeley',t:'Where you had the idea the first time',b:'You wrote it down in a library carrel, or on a napkin at Top Dog, and then took the offer instead. The idea did not expire. It is still in the notebook.',go:'#start'},
+    {cat:'start',lat:30.27,lon:-97.74,no:'Austin',t:'Where they went when they left',b:'Half the people who said the Bay was over moved here and started small things that work. It turns out the leaving was not the point. The starting was.',go:'#start'},
+    {cat:'start',lat:38.72,lon:-9.14,no:'Lisbon',t:'Where the one-person companies winter',b:'A city full of people running a single product from a café, on a time zone nine hours from anyone who could compare them to anything.',go:'#start'},
+    {cat:'start',lat:1.35,lon:103.82,no:'Singapore',t:'Where the Asia-facing ones incorporate',b:'If your customers are on the other side of the water, the company can live here. A day of paperwork and a bank that answers email.',go:'#start'},
+    {cat:'cut',lat:37.498,lon:127.028,no:'Seoul · Gangnam',t:'The skin',b:'A whole district built on the idea that a man can walk into a clinic on a Tuesday and walk out looking rested. Cleanser, moisturiser, SPF. That is the whole of it for the first ninety days.',go:'#cut'},
+    {cat:'cut',lat:37.557,lon:126.924,no:'Seoul · Hongdae',t:'The PC bang, after',b:'Two hours, a bowl of something, the rank you will never tell the group chat about. This is the reward for the twelve weeks, not the vice that undoes them.',go:'#cut'},
+    {cat:'cut',lat:35.667,lon:139.71,no:'Tokyo · Omotesando',t:'The cut',b:'Barbers who have done the two-block ten thousand times and will not ask you to explain it. Bring the brief anyway. It is good practice for saying what you want.',go:'#cut'},
+    {cat:'cut',lat:34.058,lon:-118.3,no:'Los Angeles · Koreatown',t:'The closest PC bang to the 405',b:'Open until four. Nobody at the next machine has ever seen your résumé. Go after leg day.',go:'#cut'},
+    {cat:'cut',lat:37.785,lon:-122.43,no:'San Francisco · Japantown',t:'The barber who knows',b:'The one on Post Street who has done the textured crop on a hundred engineers this year and will do yours in twenty-five minutes without asking what you work on.',go:'#cut'}
+  ],
+  callsKey: 'fz-calls-him-v2',
+  calls: [
+    {id:'rain',q:'It rains in San Francisco before Friday.'},
+    {id:'fed',q:'The Fed cuts at the next meeting.'},
+    {id:'apple',q:'Apple announces a colour this month you would actually buy.'},
+    {id:'arsenal',q:'Arsenal win their next league match.'},
+    {id:'niners',q:'The 49ers cover the spread on Sunday.'},
+    {id:'spx',q:'The S&P 500 closes the week higher than it opened.'},
+    {id:'dinner',q:'You cook dinner at home four nights this week.'},
+    {id:'tab',q:'You get through the week without opening LinkedIn on purpose.'}
+  ],
+  plan: {
+    sections: [
+      {id:'build', from:'frame', text:{
+        lean:'Three days a week, full body, the compound lifts first: a squat or leg press, a press, a row, a hinge, then twenty minutes of walking with the phone in your pocket. Protein at 0.8 grams per pound of the weight you want to be. Sleep is the supplement. Eat a little under; the mirror changes in week six, not week two, so do not check it in week two.',
+        athletic:'Four days: upper, lower, upper, lower. Five to eight reps on the big lift, then two accessories at ten to twelve. Add five pounds when you get every rep, and not before. Protein at 0.8 grams per pound. Eat at maintenance or slightly over; you are building, not shrinking, and the two do not happen at once.',
+        solid:'Four or five days: push, pull, legs, repeat. Progressive overload written down on paper, not by feel. Protein at a gram per pound. Eat over, deliberately. Accept the softness for twelve weeks; the size stays and the softness does not, and nobody who matters can tell the difference at week eight anyway.'}},
+      {id:'skin', from:'skin', text:{
+        dull:'Morning: gentle cleanser, a vitamin C if you can be bothered, moisturiser, SPF 50 every single day including the foggy ones, which are most of them. Night: cleanser, moisturiser. After eight weeks of that, ask a dermatologist about tretinoin; it is the one thing that actually works and it is prescription for a reason.',
+        oily:'Morning: gel cleanser, a light gel moisturiser, SPF 50 that says non-comedogenic on the tube. Night: cleanser, a 2% salicylic acid toner three nights a week, moisturiser regardless. Oily skin still needs the moisturiser; skipping it is the mistake that keeps it oily.',
+        dry:'Morning: cream cleanser or just water, hyaluronic serum on damp skin, a thick moisturiser, SPF 50. Night: cleanser, moisturiser, and in winter a thin layer of plain petroleum jelly over the top. Boring, cheap, and it works within a fortnight.',
+        fine:'Cleanser, moisturiser, SPF 50. That is the whole routine, and most men never get there. Do not add anything until you have done those three every day for ninety days. Then, if you want, come back and pick a different row.'}},
+      {id:'brief', from:'hair', text:{
+        crop:'TEXTURED CROP\n- Sides and back: skin fade, or a #1, blended high.\n- Top: leave 1.5 to 2 inches. Point-cut for texture, do not thin it out.\n- Fringe: forward, slightly broken up, not a straight line.\n- Finish: matte clay, warmed in the hands. No gel.\n- Back in four weeks.',
+        twoblock:'TWO-BLOCK\n- Sides and back: undercut to a #2, disconnected. No fade; the line is the point.\n- Top: leave 3 to 4 inches, layered so it falls forward and splits naturally.\n- Do not texturise the top too much; it needs weight to sit.\n- Finish: sea-salt spray, then a light cream at the ends.\n- Back in five weeks. Bring the photo.',
+        part:'COMMA / MIDDLE PART\n- Sides: a #3, with a soft taper at the neck.\n- Top: about 4 inches, thinned so it has movement rather than weight.\n- Style: blow-dry with a round brush toward the part, both sides.\n- Finish: wax at the ends only, nothing at the root.\n- Back in five weeks.',
+        buzz:'BUZZ\n- A #2 all over. Or a #1 on the sides and a #3 on top if the head shape wants it.\n- Neckline: natural, not squared.\n- Nothing to style. Every three weeks.\n- The cheapest confidence on this page.'}},
+      {id:'rest', text:'Then Hongdae if you are flying, Koreatown if you are not: a PC bang, two hours, a bowl of something, the rank you will never tell the group chat about. That is not the vice that undoes the twelve weeks. It is the rest that lets you do the thirteenth.'}
+    ]
+  }
+};
+</script>
+<script src="/assets/world-markets.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js" defer></script>
-<script>
-(function(){
-'use strict';
-var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-/* ---------- pins ---------- */
-var PINS = [
-  {cat:'adore',lat:37.529,lon:126.965,no:'Seoul · Yongsan',t:'NewJeans and LE SSERAFIM',b:'Two groups, one building by the river, and between them most of the songs you have played on the drive home this year. Nobody in that building knows your title either.',go:'#adore'},
-  {cat:'adore',lat:37.544,lon:127.056,no:'Seoul · Seongsu',t:'IVE and aespa',b:'The old warehouse district, now cafés and a label. Self-possession as an industry. Walk it in the evening and notice how nobody is checking anything.',go:'#adore'},
-  {cat:'adore',lat:37.549,lon:126.914,no:'Seoul · Mapo',t:'TWICE, ITZY, BLACKPINK',b:'Three of the biggest acts on earth were assembled on a few blocks in Mapo. None of them started with an audience. Every one of them started with reps.',go:'#adore'},
-  {cat:'adore',lat:37.57,lon:126.98,no:'Seoul',t:'IU',b:'Twenty years in and still writing her own songs. The long game, in a person. This is the pin to tap when the tab is open again.',go:'#adore'},
-  {cat:'adore',lat:35.705,lon:139.752,no:'Tokyo · Bunkyo',t:'Tokyo Dome',b:'Fifty-five thousand people who came to adore something together and went home lighter. Nobody there is measuring anyone. Go once.',go:'#adore'},
-  {cat:'adore',lat:34.043,lon:-118.267,no:'Los Angeles',t:'KCON LA',b:'Six hours south, every summer. The one crowd in California where being obsessed with something is the price of admission and not a thing to hide.',go:'#adore'},
-  {cat:'adore',lat:13.9,lon:100.55,no:'Bangkok',t:'Impact Arena',b:'Where the tours go after Seoul and Tokyo. Cheaper flights than you think, and a whole city that has never once opened LinkedIn.',go:'#adore'},
-
-  {cat:'call',lat:37.79,lon:-122.4,no:'San Francisco',t:'Will it rain before Friday?',b:'The first call on the list, and the one you can settle by looking up. Start with the ones where being wrong costs a glance out the window.',go:'#call'},
-  {cat:'call',lat:37.33,lon:-122.03,no:'Cupertino',t:'The next keynote',b:'A colour you would actually buy, a feature you would actually use. Make the call before the event and see how well you read a company you have watched for twenty years.',go:'#call'},
-  {cat:'call',lat:38.893,lon:-77.045,no:'Washington',t:'The next rate decision',b:'The one your uncle has a view about at dinner. Have one too, write it down, and check it in six weeks. For nothing.',go:'#call'},
-  {cat:'call',lat:51.555,lon:-0.108,no:'London · Islington',t:'Arsenal, this weekend',b:'Sixty thousand people who have been wrong about the same thing every May for two decades and keep showing up. That is the correct relationship to a call.',go:'#call'},
-  {cat:'call',lat:35.68,lon:139.77,no:'Tokyo · Nihonbashi',t:'The Nikkei by Friday',b:'Up or down. You do not have to be right. You have to notice that you had a view, and that the world did not consult it.',go:'#call'},
-
-  {cat:'start',lat:39.745,lon:-75.547,no:'Wilmington, Delaware',t:'Where the LLC lives',b:'A quiet building on a quiet street holds the paperwork for half the companies you have heard of and, for about three hundred dollars, yours. Nobody there will ask what you do.',go:'#start'},
-  {cat:'start',lat:41.14,lon:-104.82,no:'Cheyenne, Wyoming',t:'Or here, cheaper and quieter',b:'The other place one-person companies live. Lower fees, no franchise tax, and a state that has never once been mentioned in the group chat.',go:'#start'},
-  {cat:'start',lat:37.775,lon:-122.418,no:'San Francisco',t:'The bank is a website',b:'Mercury has no branch. You open the account from your kitchen, and the card arrives with the company’s name on it. It is the first day the thing feels real.',go:'#start'},
-  {cat:'start',lat:37.87,lon:-122.26,no:'Berkeley',t:'Where you had the idea the first time',b:'You wrote it down in a notebook in a library carrel, or on a napkin at Top Dog, and then took the offer instead. The idea did not expire. It is still in the notebook.',go:'#start'},
-  {cat:'start',lat:30.27,lon:-97.74,no:'Austin',t:'Where they went when they left',b:'Half the people who said the Bay was over moved here and started small things that work. It turns out the leaving was not the point. The starting was.',go:'#start'},
-  {cat:'start',lat:38.72,lon:-9.14,no:'Lisbon',t:'Where the one-person companies winter',b:'A city full of people running a single product from a café, on a time zone nine hours from anyone who could compare them to anything.',go:'#start'},
-  {cat:'start',lat:1.35,lon:103.82,no:'Singapore',t:'Where the Asia-facing ones incorporate',b:'If your customers are on the other side of the water, the company can live here. A day of paperwork and a bank that answers email.',go:'#start'},
-
-  {cat:'cut',lat:37.498,lon:127.028,no:'Seoul · Gangnam',t:'The skin',b:'A whole district built on the idea that a man can walk into a clinic on a Tuesday and walk out looking rested. Cleanser, moisturiser, SPF. That is the whole of it for the first ninety days.',go:'#cut'},
-  {cat:'cut',lat:37.557,lon:126.924,no:'Seoul · Hongdae',t:'The PC bang, after',b:'Two hours, a bowl of something, the rank you will never tell the group chat about. This is the reward for the twelve weeks, not the vice that undoes them.',go:'#cut'},
-  {cat:'cut',lat:35.667,lon:139.71,no:'Tokyo · Omotesando',t:'The cut',b:'Barbers who have done the two-block ten thousand times and will not ask you to explain it. Bring the brief anyway. It is good practice for saying what you want.',go:'#cut'},
-  {cat:'cut',lat:34.058,lon:-118.3,no:'Los Angeles · Koreatown',t:'The closest PC bang to the 405',b:'Open until four. Nobody at the next machine has ever seen your résumé. Go after leg day.',go:'#cut'},
-  {cat:'cut',lat:37.785,lon:-122.43,no:'San Francisco · Japantown',t:'The barber who knows',b:'The one on Post Street who has done the textured crop on a hundred engineers this year and will do yours in twenty-five minutes without asking what you work on.',go:'#cut'}
-];
-var YOU = {lat:37.3688,lon:-122.0363};
-var COLOR = {adore:'var(--accent)',call:'var(--warn)',start:'#2f7d63',cut:'var(--ink)'};
-var LABEL = {adore:'Someone to adore',call:'Make a call',start:'Start something',cut:'The cut and the build'};
-
-var pp = {no:document.getElementById('pp-no'),t:document.getElementById('pp-title'),b:document.getElementById('pp-body'),w:document.getElementById('pp-where'),go:document.getElementById('pp-go')};
-var DEFAULT = {no:'Where you are',t:'Somewhere down there, near the fog',b:'There is a dot the size of one pixel on the peninsula. That is you. It has a ring around it so you can find it; nothing else on this ball has ever needed one. Tap any of the others.',w:'37.37° N, 122.04° W'};
-function fmt(lat,lon){return Math.abs(lat).toFixed(2)+'° '+(lat<0?'S':'N')+', '+Math.abs(lon).toFixed(2)+'° '+(lon<0?'W':'E')}
-function show(p){
-  if(!p){pp.no.textContent=DEFAULT.no;pp.t.textContent=DEFAULT.t;pp.b.textContent=DEFAULT.b;pp.w.textContent=DEFAULT.w;pp.go.hidden=true;return}
-  pp.no.textContent=LABEL[p.cat]+' · '+p.no;pp.t.textContent=p.t;pp.b.textContent=p.b;pp.w.textContent=fmt(p.lat,p.lon);pp.go.href=p.go;pp.go.hidden=false;
-}
-
-/* ---------- globe ---------- */
-function globe(){
-  if(!window.d3||!window.topojson){return}
-  var host=document.getElementById('globe'), W=600;
-  var svg=d3.select(host).append('svg').attr('viewBox',[0,0,W,W]).attr('role','img').attr('aria-label','World globe');
-  var proj=d3.geoOrthographic().scale(W/2-14).translate([W/2,W/2]).clipAngle(90).rotate([-YOU.lon,-YOU.lat+6]);
-  var path=d3.geoPath(proj);
-  svg.append('circle').attr('class','ocean').attr('cx',W/2).attr('cy',W/2).attr('r',W/2-14);
-  var grat=svg.append('path').attr('class','grat').datum(d3.geoGraticule10());
-  var land=svg.append('path').attr('class','land');
-  var youRing=svg.append('circle').attr('class','you-ring').attr('r',2);
-  var you=svg.append('circle').attr('class','you').attr('r',2.2);
-  var youLabel=svg.append('text').attr('class','you-label').text('you');
-  var pins=svg.append('g').selectAll('circle').data(PINS).join('circle').attr('class','pin').attr('r',4.5).attr('fill',function(d){return COLOR[d.cat]});
-  pins.append('title').text(function(d){return d.t});
-  var locked=null, filter='all', paused=false, dragging=false;
-
-  function visible(lon,lat){var r=proj.rotate();return d3.geoDistance([-r[0],-r[1]],[lon,lat])<Math.PI/2-0.02}
-  function render(){
-    grat.attr('d',path);land.attr('d',path);
-    pins.each(function(d){
-      var el=d3.select(this), v=visible(d.lon,d.lat);
-      if(!v){el.style('display','none');return}
-      var xy=proj([d.lon,d.lat]);el.style('display',null).attr('cx',xy[0]).attr('cy',xy[1]);
-    });
-    var yv=visible(YOU.lon,YOU.lat), yxy=proj([YOU.lon,YOU.lat]);
-    you.style('display',yv?null:'none');youRing.style('display',yv?null:'none');youLabel.style('display',yv?null:'none');
-    if(yv){you.attr('cx',yxy[0]).attr('cy',yxy[1]);youRing.attr('cx',yxy[0]).attr('cy',yxy[1]);youLabel.attr('x',yxy[0]+9).attr('y',yxy[1]+4)}
-  }
-  function applyFilter(){pins.classed('dim',function(d){return filter!=='all'&&d.cat!==filter})}
-
-  d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/land-110m.json').then(function(world){
-    land.datum(topojson.feature(world,world.objects.land));render();
-  }).catch(function(){render()});
-  render();
-
-  pins.on('mouseenter',function(e,d){paused=true;if(!locked)show(d)})
-      .on('mouseleave',function(){paused=false;if(!locked)show(null)})
-      .on('click',function(e,d){e.stopPropagation();locked=(locked===d)?null:d;pins.classed('is-on',function(x){return x===locked});show(locked)});
-  svg.on('click',function(){locked=null;pins.classed('is-on',false);show(null)});
-
-  svg.call(d3.drag()
-    .on('start',function(){dragging=true;host.style.cursor='grabbing'})
-    .on('drag',function(e){var r=proj.rotate(),k=90/proj.scale();proj.rotate([r[0]+e.dx*k,Math.max(-70,Math.min(70,r[1]-e.dy*k))]);render()})
-    .on('end',function(){dragging=false;host.style.cursor=''}));
-
-  if(!reduce){
-    var last=0;
-    d3.timer(function(t){
-      if(paused||dragging){last=t;return}
-      var dt=Math.min(64,t-last);last=t;
-      var r=proj.rotate();proj.rotate([r[0]+0.0045*dt,r[1]]);render();
-    });
-  }
-
-  document.getElementById('legend').addEventListener('click',function(e){
-    var btn=e.target.closest('.chip');if(!btn)return;
-    filter=btn.getAttribute('data-cat');
-    this.querySelectorAll('.chip').forEach(function(c){c.classList.toggle('is-on',c===btn)});
-    applyFilter();
-    if(locked&&filter!=='all'&&locked.cat!==filter){locked=null;pins.classed('is-on',false);show(null)}
-  });
-}
-
-/* ---------- make a call ---------- */
-var CALLS=[
-  {id:'rain',q:'It rains in San Francisco before Friday.'},
-  {id:'apple',q:'Apple announces a colour this month you would actually buy.'},
-  {id:'fed',q:'The Fed cuts at the next meeting.'},
-  {id:'arsenal',q:'Arsenal win their next league match.'},
-  {id:'nj',q:'NewJeans announce a date before October.'},
-  {id:'niners',q:'The 49ers cover the spread on Sunday.'},
-  {id:'dinner',q:'You cook dinner at home four nights this week.'},
-  {id:'tab',q:'You get through the week without opening LinkedIn on purpose.'}
-];
-var KEY='fz-calls-v1';
-function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){return {}}}
-function save(st){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
-function calls(){
-  var list=document.getElementById('calls'),tally=document.getElementById('tally');if(!list)return;
-  var st=load();
-  function draw(){
-    var r=0,w=0,o=0;
-    list.innerHTML='';
-    CALLS.forEach(function(c){
-      var s=st[c.id]||{};
-      if(s.c){if(s.o==='right')r++;else if(s.o==='wrong')w++;else o++}
-      var li=document.createElement('li');
-      var q=document.createElement('span');q.className='q';q.textContent=c.q;li.appendChild(q);
-      var opts=document.createElement('div');opts.className='opts';
-      ['yes','no'].forEach(function(v){var b=document.createElement('button');b.type='button';b.className='tog'+(s.c===v?' is-on':'');b.textContent=v==='yes'?'Yes':'No';b.onclick=function(){st[c.id]={c:v,o:null};save(st);draw()};opts.appendChild(b)});
-      li.appendChild(opts);
-      var mark=document.createElement('div');mark.className='mark';
-      if(s.c){
-        var lab=document.createElement('span');lab.textContent='You called '+(s.c==='yes'?'yes':'no')+'. Sunday:';mark.appendChild(lab);
-        [['right','I was right'],['wrong','I was wrong'],['clear','clear']].forEach(function(p){var b=document.createElement('button');b.type='button';b.className='tog sm '+p[0]+(s.o===p[0]?' is-on':'');b.textContent=p[1];b.onclick=function(){if(p[0]==='clear'){delete st[c.id]}else{st[c.id].o=p[0]}save(st);draw()};mark.appendChild(b)});
-      }
-      li.appendChild(mark);
-      list.appendChild(li);
-    });
-    tally.innerHTML='<span><b>'+r+'</b>right</span><span><b>'+w+'</b>wrong</span><span><b>'+o+'</b>still open</span><span><b>'+(CALLS.length-r-w-o)+'</b>not called</span>';
-  }
-  draw();
-}
-
-/* ---------- the cut and the build ---------- */
-var BUILD={
-  lean:'Three days a week, full body, the compound lifts first: a squat or leg press, a press, a row, a hinge, then twenty minutes of walking with the phone in your pocket. Protein at 0.8 grams per pound of the weight you want to be. Sleep is the supplement. Eat a little under; the mirror changes in week six, not week two, so do not check it in week two.',
-  athletic:'Four days: upper, lower, upper, lower. Five to eight reps on the big lift, then two accessories at ten to twelve. Add five pounds when you get every rep, and not before. Protein at 0.8 grams per pound. Eat at maintenance or slightly over; you are building, not shrinking, and the two do not happen at once.',
-  solid:'Four or five days: push, pull, legs, repeat. Progressive overload written down on paper, not by feel. Protein at a gram per pound. Eat over, deliberately. Accept the softness for twelve weeks; the size stays and the softness does not, and nobody who matters can tell the difference at week eight anyway.'
-};
-var SKIN={
-  dull:'Morning: gentle cleanser, a vitamin C if you can be bothered, moisturiser, SPF 50 every single day including the foggy ones, which are most of them. Night: cleanser, moisturiser. After eight weeks of that, ask a dermatologist about tretinoin; it is the one thing that actually works and it is prescription for a reason.',
-  oily:'Morning: gel cleanser, a light gel moisturiser, SPF 50 that says non-comedogenic on the tube. Night: cleanser, a 2% salicylic acid toner three nights a week, moisturiser regardless. Oily skin still needs the moisturiser; skipping it is the mistake that keeps it oily.',
-  dry:'Morning: cream cleanser or just water, hyaluronic serum on damp skin, a thick moisturiser, SPF 50. Night: cleanser, moisturiser, and in winter a thin layer of plain petroleum jelly over the top. Boring, cheap, and it works within a fortnight.',
-  fine:'Cleanser, moisturiser, SPF 50. That is the whole routine, and most men never get there. Do not add anything until you have done those three every day for ninety days. Then, if you want, come back and pick a different row.'
-};
-var HAIR={
-  crop:'TEXTURED CROP\n- Sides and back: skin fade, or a #1, blended high.\n- Top: leave 1.5 to 2 inches. Point-cut for texture, do not thin it out.\n- Fringe: forward, slightly broken up, not a straight line.\n- Finish: matte clay, warmed in the hands. No gel.\n- Back in four weeks.',
-  twoblock:'TWO-BLOCK\n- Sides and back: undercut to a #2, disconnected. No fade; the line is the point.\n- Top: leave 3 to 4 inches, layered so it falls forward and splits naturally.\n- Do not texturise the top too much; it needs weight to sit.\n- Finish: sea-salt spray, then a light cream at the ends.\n- Back in five weeks. Bring the photo.',
-  part:'COMMA / MIDDLE PART\n- Sides: a #3, with a soft taper at the neck.\n- Top: about 4 inches, thinned so it has movement rather than weight.\n- Style: blow-dry with a round brush toward the part, both sides.\n- Finish: wax at the ends only, nothing at the root.\n- Back in five weeks.',
-  buzz:'BUZZ\n- A #2 all over. Or a #1 on the sides and a #3 on top if the head shape wants it.\n- Neckline: natural, not squared.\n- Nothing to style. Every three weeks.\n- The cheapest confidence on this page.'
-};
-var REST='Then Hongdae if you are flying, Koreatown if you are not: a PC bang, two hours, a bowl of something, the rank you will never tell the group chat about. That is not the vice that undoes the twelve weeks. It is the rest that lets you do the thirteenth.';
-function cut(){
-  var pick=document.getElementById('pick');if(!pick)return;
-  var st={frame:null,hair:null,skin:null};
-  pick.addEventListener('click',function(e){
-    var b=e.target.closest('.tog');if(!b)return;
-    var g=b.parentNode.getAttribute('data-group');st[g]=b.getAttribute('data-val');
-    b.parentNode.querySelectorAll('.tog').forEach(function(x){x.classList.toggle('is-on',x===b)});
-    var n=[st.frame,st.hair,st.skin].filter(Boolean).length;
-    document.getElementById('pick-note').textContent=n===3?'All three. Press it.':(3-n)+' more to pick.';
-  });
-  document.getElementById('write-plan').addEventListener('click',function(){
-    if(!(st.frame&&st.hair&&st.skin)){document.getElementById('pick-note').textContent='One from each row first.';return}
-    document.getElementById('plan-build').textContent=BUILD[st.frame];
-    document.getElementById('plan-skin').textContent=SKIN[st.skin];
-    document.getElementById('plan-brief').textContent=HAIR[st.hair];
-    document.getElementById('plan-rest').textContent=REST;
-    var plan=document.getElementById('plan');plan.hidden=false;
-    plan.querySelector('.card').classList.add('is-in');
-    plan.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});
-  });
-  document.getElementById('copy-brief').addEventListener('click',function(){
-    var t=document.getElementById('plan-brief').textContent, n=document.getElementById('copy-note');
-    if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){n.textContent='Copied. Hand it over.'},function(){n.textContent='Select it and copy by hand.'})}else{n.textContent='Select it and copy by hand.'}
-  });
-}
-
-function init(){globe();calls();cut()}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(init,0)});else setTimeout(init,0);
-})();
-</script>
+<script src="/assets/world.js" defer></script>
 </body>
 </html>
