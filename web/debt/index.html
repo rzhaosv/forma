@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The cycle — Forma</title>
+<meta name="description" content="Add up what the weeks actually cost, see what the same money becomes if you keep it, and learn how a credit card really works — the grace period, the minimum payment trap, and the order to pay things off in.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#faf8f4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1a16" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://tryforma.app/debt/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Forma">
+<meta property="og:url" content="https://tryforma.app/debt/">
+<meta property="og:title" content="The cycle — Forma">
+<meta property="og:description" content="Add up what the weeks actually cost, see what the same money becomes if you keep it, and learn how a credit card really works.">
+<meta property="og:image" content="https://tryforma.app/assets/icons/nibble.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The cycle — Forma">
+<meta name="twitter:description" content="What the weeks actually cost, what the same money becomes if you keep it, and how a credit card really works.">
+<meta name="twitter:image" content="https://tryforma.app/assets/icons/nibble.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%231f8a5f%27/%3E%3Cstop offset=%271%27 stop-color=%27%230e5e4a%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2732%27 height=%2732%27 rx=%279%27 fill=%27url(%23g)%27/%3E%3Cpath d=%27M9.5 7.5h13.5v3.4h-9.7v4.4h8.2v3.4h-8.2V25H9.5z%27 fill=%27white%27/%3E%3Ccircle cx=%2724.3%27 cy=%2724%27 r=%272.1%27 fill=%27white%27/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta name="keywords" content="credit card debt, minimum payment trap, credit card interest explained, grace period statement balance, debt snowball vs avalanche, how much am i spending, credit utilization, pay off credit card, apr explained">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500..600,0..100&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<style>
+  .calc{display:grid;gap:18px;grid-template-columns:minmax(280px,1fr) minmax(280px,1fr);align-items:start}
+  @media(max-width:720px){.calc{grid-template-columns:1fr}}
+  .calc .make-form label{gap:4px}
+  .calc .make-form input{font-variant-numeric:tabular-nums}
+  .big{font-family:var(--display);font-weight:600;font-variation-settings:"opsz" 96,"SOFT" 40;font-size:clamp(34px,6vw,52px);line-height:1.05;letter-spacing:-.03em;color:var(--accent);font-variant-numeric:tabular-nums;margin:0}
+  .big-sub{font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--soft);margin:2px 0 0}
+  .rows{list-style:none;margin:14px 0 0;padding:0}
+  .rows li{display:flex;justify-content:space-between;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+  .rows li b{font-weight:700}
+  .rows .hi{color:var(--accent)}
+  .rows .bad{color:var(--warn)}
+  .tbl{width:100%;border-collapse:collapse;margin-top:12px;font-variant-numeric:tabular-nums;font-size:15px}
+  .tbl th,.tbl td{text-align:right;padding:10px 8px;border-top:1px solid var(--line)}
+  .tbl th:first-child,.tbl td:first-child{text-align:left}
+  .tbl th{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);font-weight:700}
+  .tbl tr.win td{color:var(--accent);font-weight:600}
+  .scroller{overflow-x:auto}
+</style>
+<script>document.documentElement.classList.add('fz-js')</script>
+<script src="/assets/glow.js" defer></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The cycle", "url": "https://tryforma.app/debt/", "description": "Add up what the weeks actually cost, see what the same money becomes if you keep it, and learn how a credit card really works.", "isPartOf": {"@type": "WebSite", "name": "Forma", "url": "https://tryforma.app/"}, "publisher": {"@type": "Organization", "name": "Forma"}}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://tryforma.app/"}, {"@type": "ListItem", "position": 2, "name": "The cycle", "item": "https://tryforma.app/debt/"}]}</script>
+</head>
+<body>
+<nav class="fz-nav" aria-label="Site">
+  <div class="fz-in">
+    <a class="fz-brand" href="/"><i aria-hidden="true"></i>Forma</a>
+    <ul class="fz-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/paths/" aria-haspopup="true">Paths</a><ul class="fz-dd"><li><a href="/paths/stuck-at-home/">Leaving the apartment</a></li><li><a href="/paths/start-over/">Starting over at 34</a></li><li><a href="/paths/no-big-title/">No big title, building anyway</a></li><li><a href="/paths/not-him/">You were never going to be him</a></li><li><a href="/paths/founders/">Nine customers is a company</a></li><li><a href="/paths/never-the-pretty-one/">Never the pretty one</a></li><li><a href="/paths/no-expiry/">You do not expire</a></li><li><a href="/paths/quiet-start/">In shape, without announcing it</a></li><li><a href="/paths/autistic-adults/">The rules arrived late</a></li><li><a href="/paths/fandom/">Fandom was never the flaw</a></li><li><a href="/paths/way-back/">Making it right</a></li><li><a href="/paths/too-loud-out-there/">When the news is too loud</a></li><li><a href="/paths/not-what-they-said/">A story went round about you</a></li><li><a href="/paths/the-crew/">Six people who would show up</a></li><li><a href="/paths/after-the-drop/">After the drop</a></li><li><a href="/paths/wanted/">The hunger, pointed right</a></li><li><a href="/paths/late-to-love/">Late to love</a></li><li><a href="/paths/"><b>All paths</b></a></li></ul></li>
+      <li><a href="/#apps" aria-haspopup="true">Apps</a><ul class="fz-dd"><li><a href="/nibble/">Nibble<small>Log meals by photo, voice or barcode</small></a></li><li><a href="/landed/">Landed<small>Keep the weight off after Ozempic</small></a></li><li><a href="/lapis/">Lapis<small>Identify any rock or crystal</small></a></li><li><a href="/wisp/">Wisp<small>Craving SOS &amp; puff tracker</small></a></li><li><a href="/tomorrowyou/">Tomorrow You<small>Alcohol tracker &amp; morning log</small></a></li><li><a href="/lantern/">Lantern<small>A 7-minute daily ritual</small></a></li><li><a href="/stride/">Stride<small>Gentle step tracker</small></a></li><li><a href="/ascension/">Ascension<small>A plan for the frame and the face</small></a></li><li><a href="/evensong/">Evensong<small>Morning &amp; evening devotional</small></a></li><li><a href="/plainly/">Plainly<small>ND dating &amp; friends, said plainly</small></a></li><li><a href="/cutoff/">Cutoff<small>A house stylist that reads your outfit</small></a></li><li><a href="/onsite/">Onsite<small>Interview prep for the AI labs</small></a></li><li><a href="/sesame/">Sesame<small>120 high-protein Asian recipes</small></a></li><li><a href="/kotatsu/">Kotatsu<small>Six friends who kept your seat</small></a></li><li><a href="/sizedown/">Size Down<small>Trading journal &amp; eval tracker</small></a></li></ul></li>
+      <li><a href="/world/">World</a></li>
+      <li><a href="/community/">Lounge</a></li>
+      <li><a href="/yc/" aria-haspopup="true">Playbooks</a><ul class="fz-dd"><li><a href="/yc/">Get into YC</a></li><li><a href="/medvi-playbook/">The MedVi playbook</a></li></ul></li>
+    </ul>
+  </div>
+</nav>
+<main>
+<section class="hero" id="cycle"><div class="wrap">
+  <span class="eyebrow">Money &middot; The part nobody adds up</span>
+  <h1>The cycle.</h1>
+  <p class="sub">Nothing you bought was stupid. It's that nobody ever showed you the total.</p>
+  <p class="lede" style="color:var(--soft);max-width:60ch;font-size:clamp(17px,2.2vw,20px)">Almost nobody carrying card debt got there through one bad decision. It arrives forty dollars at a time, across a hundred ordinary evenings, none of which felt like anything at the time — and the card is designed so that you never see the sum. There's no moment where it tells you. So the first half of this page is just the total, and the second half is how the card actually works, which is a thing most people are never taught and then quietly blamed for not knowing.</p>
+  <p class="hope">Nobody is bad with money. Some people have just never seen the number.</p>
+</div></section>
+
+<section class="section" id="the-number"><div class="wrap">
+<span class="eyebrow">One &middot; The number</span>
+<h2>What a normal week actually costs.</h2>
+<p class="lede" style="color:var(--soft);max-width:64ch">Put in what a regular week looks like. Not a big week, not a quiet one — a Tuesday-to-Sunday you'd call unremarkable. Nothing is stored or sent anywhere; the maths happens in your browser.</p>
+<div class="calc" style="margin-top:20px">
+  <form class="make-form" id="spendForm" autocomplete="off">
+    <label>Nights out — bars, rounds, clubs<input type="number" id="s_out" value="120" min="0" step="5" inputmode="decimal"></label>
+    <label>Delivery &amp; takeout<input type="number" id="s_food" value="60" min="0" step="5" inputmode="decimal"></label>
+    <label>Rideshare &amp; taxis<input type="number" id="s_ride" value="40" min="0" step="5" inputmode="decimal"></label>
+    <label>Clothes, shoes, the fit<input type="number" id="s_fit" value="50" min="0" step="5" inputmode="decimal"></label>
+    <label>Coffee, energy drinks, corner-shop<input type="number" id="s_caf" value="30" min="0" step="5" inputmode="decimal"></label>
+    <label>Subscriptions — per month, not week<input type="number" id="s_sub" value="60" min="0" step="5" inputmode="decimal"></label>
+  </form>
+  <div class="make-out">
+    <p class="big" id="o_week">$314</p>
+    <p class="big-sub">A normal week</p>
+    <ul class="rows">
+      <li><span>A month</span><b id="o_month">$1,360</b></li>
+      <li><span>A year</span><b class="bad" id="o_year">$16,320</b></li>
+      <li><span>Five years, kept and invested</span><b class="hi" id="o_5y">$97,366</b></li>
+      <li><span>Ten years, kept and invested</span><b class="hi" id="o_10y">$235,395</b></li>
+    </ul>
+    <p class="note" style="margin-top:14px">Growth shown at 7% a year, a common long-run stock market assumption — an assumption, not a promise. The yearly figure is the honest one, and it's the one that matters.</p>
+  </div>
+</div>
+<p class="callout">That is not a small leak. That's a deposit.</p>
+<p style="max-width:64ch">The point of that number isn't guilt. It's that the money was never missing — it was never <em>counted</em>. Nobody decides to spend sixteen thousand a year on evenings. It happens because forty dollars on a Thursday is invisible and the statement arrives as one lump you scroll past. Seeing the year is the whole intervention. Most people cut a third of it in the first month just by knowing, without giving anything up that they'd actually miss.</p>
+</div></section>
+
+<section class="section" id="how-it-works"><div class="wrap narrow">
+<span class="eyebrow">Two &middot; The literacy bit</span>
+<h2>How the card actually works.</h2>
+<p class="lede" style="color:var(--soft);max-width:62ch">None of this is taught anywhere, all of it is on the back of the statement in six-point type, and every one of these costs real money to not know.</p>
+<ol class="qs">
+  <li><b>If you pay the full statement balance, you pay no interest at all.</b> That's the grace period, and it's usually 21 to 25 days. Used this way a credit card is a free short-term loan with protections a debit card doesn't have. This is the single most valuable fact on this page.</li>
+  <li><b>Pay the <em>statement</em> balance, not the current balance.</b> They're different numbers. The statement balance is what you owe from the closed billing cycle. Paying that in full by the due date is what switches the interest off — you don't need to pay for purchases you made yesterday.</li>
+  <li><b>Carry a balance once, and the grace period disappears.</b> This is the part that catches people. The month after you don't pay in full, new purchases start accruing interest from the moment you make them — no grace, no free window. It comes back only after you've cleared the balance entirely. This is the actual mechanism of the cycle.</li>
+  <li><b>Interest is calculated daily, not monthly.</b> Your APR divided by 365, applied to the average daily balance, compounding. A 24.99% APR isn't 24.99% of what you owe at month end — it's charged every day on what you owed that day, and then charged on the interest.</li>
+  <li><b>The minimum payment is designed to be slow.</b> Typically around 1% of the balance plus that month's interest, or a $25&ndash;$35 floor. It is calculated to keep you solvent and paying for as long as possible. Paying the minimum is not "keeping on top of it" — see the next section.</li>
+  <li><b>Cash advances have no grace period.</b> Interest from the moment you take it, at a higher APR, with a fee on top. This includes ATM withdrawals, and often gambling, crypto, and money transfers. There is essentially no good reason to use one.</li>
+  <li><b>Utilisation is about 30% of your credit score.</b> That's your balance divided by your total limit. Under 30% is the usual advice, under 10% is better. It's reported on the statement date, not the due date — so paying before the statement closes lowers the number that gets reported.</li>
+  <li><b>Payment history is the biggest factor — about 35%.</b> One payment 30 days late can sit on your file for years and costs more, over a mortgage, than almost anything else here. If you can only do one thing: automate the minimum, so you are never late, and pay more manually on top.</li>
+  <li><b>Don't close the old card once it's paid off.</b> It shortens your average account age and cuts your total available credit, which pushes utilisation up. Cut the plastic up if you need to. Leave the account open.</li>
+</ol>
+</div></section>
+
+<section class="section" id="payoff"><div class="wrap">
+<span class="eyebrow">Three &middot; The trap, with numbers</span>
+<h2>What the minimum payment really does.</h2>
+<p class="lede" style="color:var(--soft);max-width:64ch">Put your real balance and APR in. Your APR is on your statement, or in the app under card details — most people have never looked, and it's usually higher than they'd guess.</p>
+<div class="calc" style="margin-top:20px">
+  <form class="make-form" id="debtForm" autocomplete="off">
+    <label>What you owe<input type="number" id="d_bal" value="5000" min="0" step="100" inputmode="decimal"></label>
+    <label>APR %<input type="number" id="d_apr" value="24.99" min="0" step="0.01" inputmode="decimal"></label>
+    <label>What you can pay each month<input type="number" id="d_pay" value="150" min="0" step="10" inputmode="decimal"></label>
+  </form>
+  <div class="make-out">
+    <p class="big" id="d_head">19y 8m</p>
+    <p class="big-sub" id="d_headsub">Paying only the minimum</p>
+    <div class="scroller">
+    <table class="tbl">
+      <thead><tr><th>If you pay</th><th>Clear in</th><th>Interest paid</th></tr></thead>
+      <tbody id="d_rows"></tbody>
+    </table>
+    </div>
+    <p class="note" style="margin-top:12px">Minimum modelled as 1% of the balance plus interest, with a $25 floor — the common structure. Assumes you stop adding to the card, which is the entire trick.</p>
+  </div>
+</div>
+<p class="callout">The gap between the minimum and the minimum plus a hundred is usually a decade.</p>
+</div></section>
+
+<section class="section" id="order"><div class="wrap narrow">
+<span class="eyebrow">Four &middot; The order</span>
+<h2>What to do, in sequence.</h2>
+<p class="lede" style="color:var(--soft);max-width:62ch">Don't do these at the same time. Do them in this order, finish one, then start the next.</p>
+<ol class="steps">
+  <li><b>Automate every minimum payment today</b><span>Before anything else. This makes late marks — the most expensive mistake available to you — impossible. Ten minutes in the app.</span></li>
+  <li><b>Find your real number</b><span>Every card, every balance, every APR, on one page. Most people have never written them all down together, and the total is usually not what they'd have guessed in either direction.</span></li>
+  <li><b>Put aside one month of essentials</b><span>Rent, food, transport, phone. Not six months, not yet — just one. This is what stops the next flat tyre going back on the card and restarting everything. A small buffer beats a fast payoff that collapses in March.</span></li>
+  <li><b>Call and ask for a lower APR</b><span>Free, takes fifteen minutes, and works more often than anyone expects — especially if you've paid on time for a year. There's a script in the next section.</span></li>
+  <li><b>Pick avalanche or snowball, then don't switch</b><span><b>Avalanche</b> — highest APR first — costs you the least money and is mathematically correct. <b>Snowball</b> — smallest balance first — clears whole cards sooner, which people stick with better; there's real research showing the adherence gain often beats the interest saving. Choose on which one you'll still be doing in June, not which is optimal on a spreadsheet.</span></li>
+  <li><b>Consider a 0% balance transfer, carefully</b><span>Genuinely useful: 12&ndash;21 months at 0%, for a 3&ndash;5% transfer fee. Only worth it if you will clear it inside the promo window, and only if the old card doesn't quietly fill back up — which is the usual failure. The rate snaps back hard at the end.</span></li>
+  <li><b>Then, and only then, start investing</b><span>Except for an employer retirement match, if you have one — that's an instant 50&ndash;100% return and beats paying down almost any card. Otherwise: clearing 25% APR debt is a guaranteed 25% return, which no investment will reliably give you.</span></li>
+</ol>
+</div></section>
+
+<section class="section" id="call"><div class="wrap narrow">
+<span class="eyebrow">Five &middot; The phone call</span>
+<h2>Fifteen minutes, often worth thousands.</h2>
+<p class="lede" style="color:var(--soft);max-width:62ch">Card issuers have retention and hardship teams whose job is to keep you as a paying customer rather than lose you to default. Almost nobody calls them.</p>
+<p style="max-width:64ch"><b>To ask for a lower rate</b> — call the number on the back of the card and say, roughly:</p>
+<div class="make-out" style="margin:12px 0 20px"><pre>I've been a customer for [X] years and I've paid on time.
+I'm carrying a balance at [X]% and I'm looking at a
+balance transfer offer elsewhere. Before I move it,
+can you lower my APR?</pre></div>
+<p style="max-width:64ch"><b>If you're actually behind, or about to be</b>, ask specifically for the hardship department — a different team with different powers:</p>
+<div class="make-out" style="margin:12px 0 20px"><pre>I'm having trouble keeping up with the payments and I
+want to sort it out before it goes further. What hardship
+or repayment programmes do you have?</pre></div>
+<p class="note" style="max-width:66ch">Hardship plans can mean a reduced APR, waived fees, or a fixed payment schedule. Some are noted on your credit file, so ask what gets reported before agreeing. Calling early, while you're still current, gives you far more options than calling after you've missed two payments.</p>
+<p class="note" style="max-width:66ch">In the US, free non-profit credit counselling exists through NFCC-member agencies. Anyone charging a large upfront fee to "settle" or "erase" your debt is selling something worse than what you already have.</p>
+</div></section>
+
+<section class="section" id="wrong"><div class="wrap narrow">
+<span class="eyebrow">What keeps it going</span>
+<h2>The loop, and where it actually breaks.</h2>
+<ul class="beliefs">
+  <li>The statement arrives as one number, so no single purchase ever feels like the problem.</li>
+  <li>Paying the minimum feels like handling it. It's the only option on the page designed to be chosen.</li>
+  <li>Tap-to-pay removes the one second where you'd have noticed. Cash feels different for a reason.</li>
+  <li>The spending is usually social — it's a round, a taxi, a birthday. Cutting it feels like cutting people, which is why "just stop" never works.</li>
+  <li>Shame keeps people from opening the app, and not opening the app is what lets it grow.</li>
+  <li>The buffer is the real fix. Without one month set aside, one bad week undoes six good ones and you conclude you're hopeless.</li>
+  <li>The number is the intervention. Almost nobody who adds up a year keeps spending the same way.</li>
+</ul>
+<p class="callout">You don't need more discipline. You need the total, in front of you, once.</p>
+</div></section>
+
+<section class="section" id="notes"><div class="wrap narrow">
+<h3 style="font-size:20px">Honest notes</h3>
+<p class="note" style="max-width:70ch"><b>Nothing here is stored.</b> Both calculators run entirely in your browser. Nothing is sent to us, saved, or logged.</p>
+<p class="note" style="max-width:70ch"><b>Not financial advice.</b> This is general education about how consumer credit works, not advice about your situation. Figures are illustrative — your card's exact minimum formula, fees and terms are in your cardholder agreement, and they vary. If debt has reached the point of missed rent, collections, or court letters, that's worth taking to a non-profit credit counsellor, who is free, rather than a page on the internet.</p>
+</div></section>
+
+<section class="section" id="wall"><div class="wrap">
+  <div data-comments></div>
+</div></section>
+<script src="/assets/comments.js" defer></script>
+
+<section class="section" id="tools"><div class="wrap">
+  <h2>Tools for this</h2>
+  <p class="note">Small apps built for small steps. Each keeps your data on your phone.</p>
+  <div class="grid"><article class="card">
+    <div class="meta"><img class="tile" src="/assets/icons/tomorrowyou.png" alt="Tomorrow You app icon" width="56" height="56" loading="lazy"><h3><a href="/tomorrowyou/" style="text-decoration:none;color:inherit">Tomorrow You</a><small>Alcohol tracker &amp; morning log</small></h3></div>
+    <p>If most of the weekly number is rounds, this tracks the nights as well as the cost.</p>
+    <div class="actions"><a class="btn ghost sm" href="/tomorrowyou/">Learn more</a></div>
+  </article><article class="card">
+    <div class="meta"><img class="tile" src="/assets/icons/nibble.png" alt="Nibble app icon" width="56" height="56" loading="lazy"><h3><a href="/nibble/" style="text-decoration:none;color:inherit">Nibble</a><small>Log meals by photo, voice or barcode</small></h3></div>
+    <p>Delivery is usually the second-biggest line. Logging it tends to shrink it.</p>
+    <div class="actions"><a class="btn ghost sm" href="/nibble/">Learn more</a></div>
+  </article></div>
+  <p class="note" style="margin-top:22px"><a href="/paths/no-big-title/">No big title, building anyway</a> &middot; <a href="/paths/">All paths</a></p>
+</div></section>
+</main>
+<footer class="fz-footer">
+  <div class="fz-in">
+    <div>
+      <p class="fz-tag">Forma</p>
+      <p>Small, honest tools for the long game. Made by a tiny studio.</p>
+      <p><a href="/world/">The World</a> &middot; <a href="/community/">The Forma Lounge</a> &middot; <a href="mailto:tryformaapp@gmail.com">tryformaapp@gmail.com</a></p>
+    </div>
+    <div><h4>Paths</h4><ul><li><a href="/paths/stuck-at-home/">Leaving the apartment</a></li><li><a href="/paths/start-over/">Starting over at 34</a></li><li><a href="/paths/no-big-title/">No big title, building anyway</a></li><li><a href="/paths/not-him/">You were never going to be him</a></li><li><a href="/paths/founders/">Nine customers is a company</a></li><li><a href="/paths/never-the-pretty-one/">Never the pretty one</a></li><li><a href="/paths/no-expiry/">You do not expire</a></li><li><a href="/paths/quiet-start/">In shape, without announcing it</a></li><li><a href="/paths/autistic-adults/">The rules arrived late</a></li><li><a href="/paths/fandom/">Fandom was never the flaw</a></li><li><a href="/paths/way-back/">Making it right</a></li><li><a href="/paths/too-loud-out-there/">When the news is too loud</a></li><li><a href="/paths/not-what-they-said/">A story went round about you</a></li><li><a href="/paths/the-crew/">Six people who would show up</a></li><li><a href="/paths/after-the-drop/">After the drop</a></li><li><a href="/paths/wanted/">The hunger, pointed right</a></li><li><a href="/paths/late-to-love/">Late to love</a></li><li><a href="/paths/">All paths</a></li></ul></div>
+    <div><h4>Apps</h4><ul><li><a href="/nibble/">Nibble</a></li><li><a href="/landed/">Landed</a></li><li><a href="/lapis/">Lapis</a></li><li><a href="/wisp/">Wisp</a></li><li><a href="/tomorrowyou/">Tomorrow You</a></li><li><a href="/lantern/">Lantern</a></li><li><a href="/stride/">Stride</a></li><li><a href="/ascension/">Ascension</a></li><li><a href="/evensong/">Evensong</a></li><li><a href="/plainly/">Plainly</a></li><li><a href="/cutoff/">Cutoff</a></li><li><a href="/onsite/">Onsite</a></li><li><a href="/sesame/">Sesame</a></li><li><a href="/kotatsu/">Kotatsu</a></li><li><a href="/yc/">Get into YC</a></li><li><a href="/medvi-playbook/">The MedVi playbook</a></li><li><a href="/sizedown/">Size Down</a></li></ul></div>
+    <div><h4>Legal</h4><ul><li>Nibble: <a href="/privacy.html">Privacy</a> &middot; <a href="/terms.html">Terms</a></li><li>Landed: <a href="/landed/privacy.html">Privacy</a> &middot; <a href="/landed/terms.html">Terms</a></li><li>Lapis: <a href="/lapis/privacy.html">Privacy</a> &middot; <a href="/lapis/terms.html">Terms</a></li><li>Wisp: <a href="/wisp/privacy.html">Privacy</a> &middot; <a href="/wisp/terms.html">Terms</a></li><li>Tomorrow You: <a href="/tomorrowyou/privacy.html">Privacy</a> &middot; <a href="/tomorrowyou/terms.html">Terms</a></li><li>Lantern: <a href="/lantern/privacy.html">Privacy</a> &middot; <a href="/lantern/terms.html">Terms</a></li><li>Stride: <a href="/stride/privacy.html">Privacy</a> &middot; <a href="/stride/terms.html">Terms</a></li><li>Ascension: <a href="/ascension/privacy.html">Privacy</a> &middot; <a href="/ascension/terms.html">Terms</a></li><li>Evensong: <a href="/evensong/privacy.html">Privacy</a> &middot; <a href="/evensong/terms.html">Terms</a></li><li>Plainly: <a href="/plainly/privacy.html">Privacy</a> &middot; <a href="/plainly/terms.html">Terms</a></li><li>Cutoff: <a href="/cutoff/privacy.html">Privacy</a> &middot; <a href="/cutoff/terms.html">Terms</a></li><li>Onsite: <a href="/onsite/privacy.html">Privacy</a> &middot; <a href="/onsite/terms.html">Terms</a></li><li>Sesame: <a href="/sesame/privacy.html">Privacy</a> &middot; <a href="/sesame/terms.html">Terms</a></li><li>Kotatsu: <a href="/kotatsu/privacy.html">Privacy</a> &middot; <a href="/kotatsu/terms.html">Terms</a></li><li>Size Down: <a href="/sizedown/privacy.html">Privacy</a> &middot; <a href="/sizedown/terms.html">Terms</a></li></ul></div>
+    <div class="fz-legal">&copy; 2026 Forma &middot; <span class="est">Est. 2026</span> &middot; All rights reserved.</div>
+  </div>
+</footer>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var usd0 = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  var num = function (id) { var v = parseFloat($(id).value); return isFinite(v) && v > 0 ? v : 0; };
+
+  /* ---- One: what the week costs ---- */
+  function futureValue(monthly, years) {
+    var i = 0.07 / 12, n = years * 12;
+    return monthly * ((Math.pow(1 + i, n) - 1) / i);
+  }
+  function spend() {
+    var week = num('s_out') + num('s_food') + num('s_ride') + num('s_fit') + num('s_caf')
+             + num('s_sub') * 12 / 52;
+    var year = week * 52, month = year / 12;
+    $('o_week').textContent  = usd0.format(week);
+    $('o_month').textContent = usd0.format(month);
+    $('o_year').textContent  = usd0.format(year);
+    $('o_5y').textContent    = usd0.format(futureValue(month, 5));
+    $('o_10y').textContent   = usd0.format(futureValue(month, 10));
+  }
+
+  /* ---- Three: the minimum payment trap ---- */
+  function term(months) {
+    if (!isFinite(months)) return 'Never';
+    var y = Math.floor(months / 12), m = months % 12;
+    if (y === 0) return m + (m === 1 ? ' month' : ' months');
+    if (m === 0) return y + (y === 1 ? ' year' : ' years');
+    return y + 'y ' + m + 'm';
+  }
+  /* Simulated month by month. fixed=null means the usual minimum:
+     1% of the balance plus that month's interest, with a $25 floor. */
+  function payoff(balance, apr, fixed) {
+    var r = apr / 100 / 12, b = balance, interest = 0, m = 0;
+    if (b <= 0) return { months: 0, interest: 0 };
+    while (b > 0 && m < 1200) {
+      var i = b * r;
+      var pay = fixed === null ? Math.max(25, b * 0.01 + i) : fixed;
+      if (pay <= i) return { months: Infinity, interest: Infinity };
+      interest += i;
+      b = b + i - Math.min(pay, b + i);
+      m++;
+    }
+    return { months: m, interest: interest };
+  }
+  function debt() {
+    var bal = num('d_bal'), apr = num('d_apr'), pay = num('d_pay');
+    var min = payoff(bal, apr, null);
+    $('d_head').textContent = term(min.months);
+    $('d_headsub').textContent = 'Paying only the minimum';
+
+    var rows = [{ label: 'The minimum only', r: min, win: false }];
+    [0, 50, 100, 250].forEach(function (extra) {
+      if (pay <= 0) return;
+      var p = pay + extra;
+      rows.push({
+        label: extra === 0 ? usd0.format(p) + ' a month' : usd0.format(p) + '  (+' + usd0.format(extra) + ')',
+        r: payoff(bal, apr, p),
+        win: extra === 100
+      });
+    });
+
+    $('d_rows').innerHTML = rows.map(function (row) {
+      var saved = isFinite(row.r.interest) ? usd0.format(row.r.interest) : '—';
+      return '<tr' + (row.win ? ' class="win"' : '') + '><td>' + row.label + '</td><td>'
+           + term(row.r.months) + '</td><td>' + saved + '</td></tr>';
+    }).join('');
+  }
+
+  ['spendForm', 'debtForm'].forEach(function (id) {
+    var f = $(id);
+    if (!f) return;
+    f.addEventListener('input', id === 'spendForm' ? spend : debt);
+    f.addEventListener('submit', function (e) { e.preventDefault(); });
+  });
+  spend(); debt();
+})();
+</script>
+</body>
+</html>
