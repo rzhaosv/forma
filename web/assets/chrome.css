@@ -1,6 +1,6 @@
 /* Forma shared chrome (nav + footer + comments). Self-contained: safe to load inside legacy pages with their own CSS.
    Kept in sync with the matching blocks in site.css; stays light because the legacy page bodies are light. */
-.fz-nav,.fz-footer{--fz-panel:#ffffff;--fz-ink:#2b2228;--fz-soft:#6f5f68;--fz-line:#f3dde5;--fz-accent:#b5386b;--fz-accent-soft:#fce6ee;--ease:cubic-bezier(.2,.7,.2,1);box-sizing:border-box;text-align:left}
+.fz-nav,.fz-footer{--fz-panel:#ffffff;--fz-ink:#1b1f24;--fz-soft:#5b6169;--fz-line:#e6e1d8;--fz-accent:#0e5e4a;--fz-accent-soft:#e3efe9;--ease:cubic-bezier(.2,.7,.2,1);box-sizing:border-box;text-align:left}
 .fz-nav *,.fz-footer *{box-sizing:border-box}
 .fz-links>li{margin:0}
 .fz-footer ul,.fz-footer li{padding:0;max-width:none}
@@ -10,7 +10,7 @@
 .fz-nav.is-scrolled{box-shadow:0 1px 0 var(--fz-line),0 8px 24px -16px rgba(0,0,0,.25)}
 .fz-nav .fz-in{max-width:1040px;margin:0 auto;padding:0 22px;display:flex;align-items:center;justify-content:space-between;min-height:58px;gap:16px}
 .fz-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--fz-ink);font-weight:700;letter-spacing:-.01em}
-.fz-brand i{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#f08cb0,#b5386b);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 1px 2px rgba(181,56,107,.3);display:inline-block;transition:transform .3s var(--ease)}
+.fz-brand i{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#1f8a5f,#0e5e4a);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 1px 2px rgba(14,94,74,.3);display:inline-block;transition:transform .3s var(--ease)}
 .fz-brand:hover i{transform:rotate(-6deg) scale(1.05)}
 .fz-links{display:flex;align-items:center;gap:6px;margin:0;padding:0;list-style:none}
 .fz-links>li{position:relative}
@@ -45,14 +45,14 @@ footer.fz-footer{max-width:none;margin:72px 0 0;padding:0;border-top:1px solid v
 @media (prefers-reduced-motion:reduce){.fz-brand i,.fz-nav{transition:none}.fz-brand:hover i{transform:none}}
 
 /* ---- site comments (assets/comments.js). Self-contained: safe inside legacy pages. ---- */
-.cmt{--c-panel:#ffffff;--c-ink:#2b2228;--c-soft:#6f5f68;--c-line:#f3dde5;--c-accent:#b5386b;--c-accent-ink:#fff;--c-accent-soft:#fce6ee;--c-warn:#b7791f;--c-warn-soft:#fbf1dc;--c-bg:#fffbfc;box-sizing:border-box;max-width:720px;text-align:left;font:16px/1.6 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--c-ink)}
+.cmt{--c-panel:#ffffff;--c-ink:#1b1f24;--c-soft:#5b6169;--c-line:#e6e1d8;--c-accent:#0e5e4a;--c-accent-ink:#fff;--c-accent-soft:#e3efe9;--c-warn:#b7791f;--c-warn-soft:#fbf1dc;--c-bg:#faf8f4;box-sizing:border-box;max-width:720px;text-align:left;font:16px/1.6 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--c-ink)}
 .cmt *{box-sizing:border-box}
 .cmt [hidden]{display:none!important}
 .cmt .cmt-h{font-size:clamp(24px,3.6vw,32px);line-height:1.15;letter-spacing:-.02em;margin:0 0 14px;text-wrap:balance}
 .cmt-form{display:flex;flex-direction:column;gap:10px;background:var(--c-panel);border:1px solid var(--c-line);border-radius:16px;padding:16px;margin:0;box-shadow:0 1px 2px rgba(0,0,0,.04),0 10px 28px -14px rgba(0,0,0,.14)}
 .cmt-form-reply{margin:10px 0 0;padding:12px;border-radius:12px;background:var(--c-bg);box-shadow:none}
 .cmt-input{width:100%;font:inherit;color:var(--c-ink);background:var(--c-panel);border:1px solid var(--c-line);border-radius:10px;padding:10px 12px;margin:0;transition:border-color .2s,box-shadow .2s}
-.cmt-input:focus{outline:none;border-color:var(--c-accent);box-shadow:0 0 0 3px rgba(181,56,107,.22)}
+.cmt-input:focus{outline:none;border-color:var(--c-accent);box-shadow:0 0 0 3px rgba(14,94,74,.22)}
 input.cmt-input{max-width:260px}
 .cmt-textarea{resize:vertical;min-height:72px;line-height:1.5}
 .cmt-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
@@ -63,7 +63,7 @@ input.cmt-input{max-width:260px}
 .cmt-btn:disabled{opacity:.55;cursor:default;filter:none}
 .cmt-btn.cmt-ghost{background:transparent;color:var(--c-accent)}
 .cmt-btn.is-posted{animation:cmt-pulse 1.1s ease-out}
-@keyframes cmt-pulse{0%{box-shadow:0 0 0 0 rgba(181,56,107,.45)}100%{box-shadow:0 0 0 14px transparent}}
+@keyframes cmt-pulse{0%{box-shadow:0 0 0 0 rgba(14,94,74,.45)}100%{box-shadow:0 0 0 14px transparent}}
 .cmt-msg{font-size:14px;color:var(--c-warn)}
 .cmt-msg.is-ok{color:var(--c-accent)}
 .cmt-counter{font-size:13px;color:var(--c-soft);margin-left:auto;font-variant-numeric:tabular-nums}
